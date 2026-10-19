@@ -3,7 +3,7 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const CACHE_NAME = 'seprepare-app-shell-v1.0.37-launch-gate';
+const CACHE_NAME = 'seprepare-app-shell-v1.0.37-iphone-viewport';
 const CORE_ASSETS = [
   './',
   './index.html',

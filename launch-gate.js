@@ -9,6 +9,58 @@
 
   if (standalone) {
     document.documentElement.setAttribute('data-seprepare-mode', 'installed');
+
+    // Keep installed-app controls attached to the visible screen as iOS
+    // changes the viewport after keyboard use, rotation or returning to the app.
+    const root = document.documentElement;
+    const viewport = window.visualViewport;
+    const viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (viewportMeta) {
+      viewportMeta.content = 'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';
+    }
+
+    let viewportFrame = 0;
+    const updateViewport = () => {
+      viewportFrame = 0;
+      const layoutHeight = root.clientHeight || window.innerHeight;
+      const height = viewport ? viewport.height : window.innerHeight;
+      const top = viewport ? viewport.offsetTop : 0;
+      if (!(height > 0)) return;
+      root.style.setProperty('--ios-viewport-height', `${height}px`);
+      root.style.setProperty('--ios-viewport-top', `${top}px`);
+      root.toggleAttribute('data-seprepare-compact-viewport', height < 600);
+      // A negative offset is necessary when iOS expands the visible viewport
+      // while retaining a smaller layout viewport. Do not clamp this to zero.
+      root.style.setProperty('--ios-viewport-bottom', `${layoutHeight - height - top}px`);
+    };
+    const scheduleViewport = () => {
+      if (!viewportFrame) viewportFrame = window.requestAnimationFrame(updateViewport);
+    };
+    updateViewport();
+    if (viewport) {
+      viewport.addEventListener('resize', scheduleViewport, { passive: true });
+      viewport.addEventListener('scroll', scheduleViewport, { passive: true });
+    }
+    window.addEventListener('resize', scheduleViewport, { passive: true });
+    window.addEventListener('orientationchange', scheduleViewport, { passive: true });
+    window.addEventListener('pageshow', scheduleViewport, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) scheduleViewport();
+    });
+
+    // Safari may ignore viewport scale limits. Cancel only page-zoom gestures;
+    // single-finger scrolling, selection and the app's reader size controls work.
+    const preventPageZoom = event => {
+      if (event.cancelable) event.preventDefault();
+    };
+    document.addEventListener('gesturestart', preventPageZoom, { passive: false });
+    document.addEventListener('gesturechange', preventPageZoom, { passive: false });
+    const preventPinch = event => {
+      if (event.touches.length > 1) preventPageZoom(event);
+    };
+    document.addEventListener('touchstart', preventPinch, { passive: false });
+    document.addEventListener('touchmove', preventPinch, { passive: false });
+
     const appScript = document.createElement('script');
     appScript.src = 'app.js';
     appScript.async = false;
