@@ -3,7 +3,7 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const CACHE_NAME = 'seprepare-app-shell-v1.0.37';
+const CACHE_NAME = 'seprepare-app-shell-v1.0.37-launch-gate';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -13,6 +13,8 @@ const CORE_ASSETS = [
   './notes.css',
   './drive.css',
   './app.js',
+  './launch-gate.js',
+  './launch-gate.css',
   './review-worker.js',
   './semantic-worker.js',
   './branding/logo-light.png',
