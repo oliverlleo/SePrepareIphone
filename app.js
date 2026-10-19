@@ -183,11 +183,11 @@ Please report this to https://github.com/markedjs/marked.`,t){let a="<p>An error
           <span class="drive-emblem">${o("Smartphone")}</span>
           <div>
             <strong>Mem\xF3ria interna persistente</strong>
-            <small>${x||g?"Protegida contra limpeza de cache":"Banco de dados local do aparelho"}</small>
+            <small>${x?"Proteção persistente confirmada pelo iPhone":"Proteção persistente não confirmada pelo iPhone"}</small>
           </div>
           <span class="drive-state drive-state-connected">${o("CheckCircle2")}</span>
         </div>
-        <p class="help">Seus discursos, partes, vers\xF5es, anota\xE7\xF5es e ensaios s\xE3o gravados no <strong>banco de dados local (IndexedDB)</strong> e no <strong>sistema de arquivos interno (OPFS)</strong> do celular, e n\xE3o apenas no cache tempor\xE1rio do navegador.</p>
+        <p class="help">Seus discursos, partes, vers\xF5es, anota\xE7\xF5es e ensaios continuam salvos automaticamente no banco local (IndexedDB) e, quando dispon\xEDvel, em arquivos internos (OPFS), mesmo sem prote\xE7\xE3o persistente confirmada. A confirma\xE7\xE3o acima vem da resposta do iPhone a <code>navigator.storage.persisted()</code> ou <code>navigator.storage.persist()</code>. Backups exportados continuam recomendados.</p>
         <div class="drive-times">
           <p><span>Tamanho do caderno</span><strong>${rt(_)}</strong></p>
           <p><span>Espa\xE7o livre no aparelho</span><strong>${i(F)}</strong></p>
