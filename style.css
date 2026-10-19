@@ -298,3 +298,33 @@
 .iphone-only-steps>strong svg{width:18px;height:18px;color:var(--green);flex-shrink:0}
 .iphone-only-steps ol{margin:0;padding-left:20px;display:grid;gap:7px;font-size:13px;line-height:1.55;color:var(--ink)}
 
+/* Installed iPhone app: prevent page zoom and follow the visual viewport.
+ * Keep document scrolling for reader progress, page navigation and selection.
+ */
+html[data-seprepare-mode="installed"]{
+  --bottombar:calc(76px + env(safe-area-inset-bottom,0px));
+  overscroll-behavior:none;
+}
+:where(html[data-seprepare-mode="installed"],html[data-seprepare-mode="installed"] *){
+  touch-action:pan-x pan-y;
+}
+html[data-seprepare-mode="installed"] body{overscroll-behavior:none}
+html[data-seprepare-mode="installed"] :is(input:not(.title-input),textarea:not(.title-input),select){font-size:16px}
+html[data-seprepare-mode="installed"] .bottom-nav{bottom:var(--ios-viewport-bottom,0px)}
+html[data-seprepare-mode="installed"] .fab{bottom:calc(var(--bottombar) + 17px + var(--ios-viewport-bottom,0px))}
+html[data-seprepare-mode="installed"] :is(.timer-dock,.focus-exit){bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + var(--ios-viewport-bottom,0px))}
+html[data-seprepare-mode="installed"] #toast{bottom:calc(var(--bottombar) + 12px + var(--ios-viewport-bottom,0px))}
+html[data-seprepare-mode="installed"] :is(body.editor-open,body.reader-open) #toast{bottom:calc(85px + var(--ios-viewport-bottom,0px))}
+html[data-seprepare-mode="installed"] body.editor-open #app{position:fixed;top:var(--ios-viewport-top,0px);left:0;right:0;height:var(--ios-viewport-height,100dvh)}
+html[data-seprepare-mode="installed"] .editor-shell{height:100%}
+html[data-seprepare-mode="installed"][data-seprepare-compact-viewport] .editor-info{min-height:0;max-height:30%;flex-shrink:1;overflow-y:auto}
+html[data-seprepare-mode="installed"][data-seprepare-compact-viewport] .editor-tools{min-height:0;flex-shrink:1;overflow-y:auto}
+html[data-seprepare-mode="installed"][data-seprepare-compact-viewport] .part-assignment-bar{min-height:0;max-height:20%;flex-shrink:1;overflow-y:auto}
+html[data-seprepare-mode="installed"][data-seprepare-compact-viewport] .editor-scroll{min-height:min(96px,25%);padding-block:6px}
+html[data-seprepare-mode="installed"] .modal-backdrop{top:var(--ios-viewport-top,0px);bottom:var(--ios-viewport-bottom,0px)}
+html[data-seprepare-mode="installed"] .modal{max-height:calc(var(--ios-viewport-height,100dvh) - 12px)}
+html[data-seprepare-mode="installed"] .read-progress{top:var(--ios-viewport-top,0px)}
+@media(max-width:750px){
+  html[data-seprepare-mode="installed"] .app-shell.has-fab::after{height:74px}
+}
+
