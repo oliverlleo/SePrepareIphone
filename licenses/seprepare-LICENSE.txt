@@ -1,0 +1,49 @@
+SePrepare — direitos das criações próprias
+© 2026 Leonardo Rodrigues.
+
+Todos os direitos reservados às criações próprias distribuídas sob estes termos,
+observadas as permissões legais e as demais licenças aplicáveis.
+
+1. Uso do aplicativo e conteúdos dos usuários
+
+É permitido instalar e usar o SePrepare para criar, organizar, revisar, ensaiar,
+apresentar e compartilhar seus próprios conteúdos. Discursos, partes, textos,
+anotações e apresentações permanecem pertencendo aos seus respectivos autores.
+O SePrepare não reivindica propriedade sobre esses conteúdos pessoais.
+
+2. Elementos próprios
+
+O código e os materiais originais, a identidade visual, os elementos gráficos e
+as demais criações próprias do SePrepare estão sujeitos aos direitos de seus
+titulares, no alcance protegido pela legislação aplicável. O uso do aplicativo
+não transfere sua propriedade.
+
+Salvo autorização do titular ou permissão legal ou de licença aplicável, não é
+permitida a reprodução, distribuição, modificação ou comercialização de partes
+proprietárias. A disponibilização de arquivos para o titular ou para manutenção
+do projeto não concede, por si só, licença pública sobre novas partes reservadas.
+
+3. Permissões de distribuições anteriores
+
+A distribuição do projeto até a versão 1.0.27 incluiu licença MIT. Os direitos já
+concedidos por essa licença sobre os materiais por ela cobertos são preservados
+e não são revogados por este aviso. A cópia integral daquele aviso está no arquivo
+LICENSE-ATE-1.0.27-MIT.txt e acompanha também os avisos do aplicativo.
+
+As restrições sobre partes proprietárias não limitam os direitos concedidos sobre
+materiais anteriormente licenciados sob MIT nem sobre componentes de terceiros.
+Estes termos se aplicam às novas criações próprias reservadas a partir de 1.0.28.
+
+4. Componentes de terceiros
+
+Transformers.js, MiniLM, ONNX Runtime, Quill, Hunspell, VERO, DOMPurify, Marked,
+Lucide e as fontes Inter e Lora mantêm os direitos de seus respectivos titulares.
+As licenças específicas, seus avisos e suas permissões prevalecem para cada
+componente. Nenhuma restrição deste arquivo altera essas licenças ou impede o
+exercício dos direitos por elas concedidos.
+
+Os textos de licenças e os avisos estão em app/src/main/assets/licenses/ e no menu
+Sobre e licenças do aplicativo. Materiais de origem incluídos no projeto estão em
+third_party/; as dependências e versões estão identificadas em web/package-lock.json.
+
+SePrepare — Suas palavras merecem preparo.

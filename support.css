@@ -1,0 +1,43 @@
+/* Help and legal screens use the existing theme and modal components. */
+.guide-card{background:var(--soft)}
+.support-screen{font-size:13px;line-height:1.75;overflow-wrap:anywhere}
+.support-intro{margin:5px 0 22px}
+.support-intro p{color:var(--muted);margin-top:13px}
+.support-tag{display:inline-flex;align-items:center;padding:5px 10px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--green);background:var(--soft)}
+.support-sections,.support-topic-list{display:grid;gap:11px}
+.support-section{border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:19px}
+.support-section h3{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.5;margin-bottom:13px}
+.support-section h3 svg{color:var(--green);width:20px;height:20px;margin-top:1px}
+.support-section p{color:var(--muted);margin:0 0 11px}
+.support-section p:last-child{margin-bottom:0}
+.support-section .support-copyright{color:var(--ink);font-weight:600}
+.support-section .btn{white-space:normal;margin-top:5px}
+.support-signoff{text-align:center;color:var(--copper);font-family:Lora,Georgia,serif;font-size:14px;line-height:1.6;margin:23px 4px 0}
+.guide-start{padding:20px;border:1px solid var(--line);border-radius:17px;background:var(--soft);margin-bottom:18px}
+.guide-start .support-tag{padding:0;background:none;color:var(--copper)}
+.guide-start h3{font-family:Lora,Georgia,serif;font-size:23px;margin:8px 0 17px;line-height:1.35}
+.support-steps{list-style:none;counter-reset:guide-step;padding:0;margin:0;display:grid;gap:13px}
+.support-steps li{counter-increment:guide-step;position:relative;padding-left:35px;display:block;min-height:25px}
+.support-steps li:before{content:counter(guide-step);position:absolute;left:0;top:1px;display:grid;place-items:center;width:25px;height:25px;border:1px solid var(--line);border-radius:50%;color:var(--green);background:var(--paper);font-size:11px;font-weight:700;line-height:1}
+.guide-topic{border:1px solid var(--line);border-radius:15px;background:var(--paper);overflow:hidden}
+.guide-topic summary{display:flex;align-items:center;gap:12px;list-style:none;cursor:pointer;padding:16px;min-height:77px;touch-action:manipulation}
+.guide-topic summary::-webkit-details-marker{display:none}
+.guide-topic summary:focus-visible{outline:2px solid var(--copper);outline-offset:-4px;border-radius:14px}
+.support-symbol{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;background:var(--soft);color:var(--green);border-radius:11px}
+.support-symbol svg{width:19px;height:19px}
+.guide-topic-heading{flex:1;min-width:0}
+.guide-topic-heading strong{display:block;font-size:13px;line-height:1.45;font-weight:600}
+.guide-topic-heading small{display:block;color:var(--muted);font-size:11px;line-height:1.55;margin-top:3px}
+.guide-topic .guide-chevron{width:16px;height:16px;color:var(--muted);transition:transform .15s}
+.guide-topic[open] .guide-chevron{transform:rotate(180deg)}
+.guide-topic[open] summary{border-bottom:1px solid var(--line)}
+.guide-topic-body{padding:17px 16px 18px}
+.support-tip{display:flex;align-items:flex-start;gap:9px;padding:12px;border-radius:11px;background:var(--soft);color:var(--muted);font-size:11px;line-height:1.7;margin:17px 0 0}
+.support-tip svg{width:16px;height:16px;color:var(--copper);margin-top:2px}
+.license-links{display:grid;padding:7px 15px}
+.license-link{display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;color:var(--green);font-size:12px;text-align:left;line-height:1.5;min-height:44px;padding:11px 0}
+.license-link+ .license-link{border-top:1px solid var(--line)}
+.license-link svg{width:16px;height:16px}
+.license-text{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:17px;font:12px/1.75 Inter,Arial,sans-serif;color:var(--ink);margin:0}
+@media(max-width:380px){.guide-topic summary{padding:13px;gap:9px}.support-section{padding:16px}.guide-topic-heading strong{font-size:12px}.guide-start{padding:17px}.support-symbol{width:31px;height:31px;flex-basis:31px}}
+@media(prefers-reduced-motion:reduce){.guide-topic .guide-chevron{transition:none}}

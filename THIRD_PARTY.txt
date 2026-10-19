@@ -1,0 +1,13 @@
+SePrepare 1.0.37 — componentes de terceiros
+Google Identity Services 22.0.0 — termos do SDK Google; AndroidX, Kotlin e coroutines — licenças próprias — consulte licenses/android-components.txt e licenses/google-android-sdk-terms.txt
+Quill 2.0.3 — BSD-3-Clause — https://github.com/slab/quill
+Hunspell WebAssembly 0.3.0 — LGPL/GPL/MPL — https://github.com/rotemdan/hunspell-wasm — upstream: https://github.com/hunspell/hunspell
+dictionary-pt — dicionário português (Hunspell); licença nos arquivos do projeto
+Transformers.js 3.8.1 — Apache-2.0 — https://github.com/huggingface/transformers.js
+ONNX Runtime — MIT — https://github.com/microsoft/onnxruntime
+MiniLM multilíngue — Apache-2.0 — https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+DOMPurify — Apache-2.0 OR MPL-2.0 — https://github.com/cure53/DOMPurify
+Marked — MIT — https://github.com/markedjs/marked
+Lucide — ISC — https://github.com/lucide-icons/lucide
+Inter — SIL OFL-1.1 — https://github.com/rsms/inter
+Lora — SIL OFL-1.1 — https://github.com/cyrealtype/Lora-Cyrillic

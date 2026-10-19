@@ -1,0 +1,60 @@
+SePrepare — origem dos componentes
+
+Os componentes mantêm os direitos e as licenças dos respectivos titulares.
+Os endereços abaixo identificam os projetos de origem; a consulta a esses
+endereços exige internet. Os textos das licenças desta versão estão incluídos
+no aplicativo e podem ser lidos sem internet.
+
+Transformers.js 3.8.1
+https://github.com/huggingface/transformers.js
+Apache License 2.0.
+
+MiniLM multilíngue (paraphrase-multilingual-MiniLM-L12-v2)
+https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+Apache License 2.0. O projeto acompanha os arquivos do modelo, sua ficha,
+manifesto e referências em third_party/semantic-model/.
+
+ONNX Runtime Web 1.22.0-dev.20250409-89f8206ba4
+https://github.com/microsoft/onnxruntime
+MIT. O aviso foi obtido no commit 89f8206ba4 do projeto original.
+
+Quill 2.0.3
+https://github.com/slab/quill
+BSD-3-Clause.
+
+Hunspell WebAssembly 0.3.0
+https://github.com/rotemdan/hunspell-wasm
+https://github.com/hunspell/hunspell
+LGPL / GPL / MPL, conforme os avisos da distribuição original. Os arquivos de
+motor usados no APK são copiados do pacote hunspell-wasm sem modificações.
+
+Dicionário VERO / dictionary-pt
+https://github.com/wooorm/dictionaries/tree/main/dictionaries/pt
+https://pt-br.libreoffice.org/projetos/vero/
+LGPLv3 / MPL, conforme o aviso original do dicionário. Os arquivos .aff e .dic
+incluídos no projeto estão em third_party/dictionary-pt/.
+
+DOMPurify
+https://github.com/cure53/DOMPurify
+Apache License 2.0 / Mozilla Public License 2.0.
+
+Marked
+https://github.com/markedjs/marked
+MIT e avisos incluídos no arquivo original.
+
+Lucide
+https://github.com/lucide-icons/lucide
+ISC.
+
+Fontes Inter e Lora
+https://github.com/rsms/inter
+https://github.com/cyrealtype/Lora-Cyrillic
+SIL Open Font License 1.1.
+
+O projeto do SePrepare inclui avisos em third_party/, arquivos locais em
+app/src/main/assets/licenses/, fontes dos módulos de integração em web/src/ e
+web/package-lock.json com versões e referências de distribuição das dependências.
+As instruções para recompilar estão no README.
+
+LanguageTool é um serviço opcional consultado pela revisão online. Seu servidor
+não integra este APK. A síntese de voz é fornecida pelo mecanismo do Android.

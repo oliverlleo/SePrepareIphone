@@ -1,0 +1,59 @@
+{
+  "id": "./",
+  "name": "SePrepare — Crie, ensaie e apresente",
+  "short_name": "SePrepare",
+  "description": "Aplicativo pessoal para escrever, organizar, revisar, ensaiar e apresentar discursos e partes. Funciona offline e salva tudo na memória do aparelho.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f8f5ef",
+  "theme_color": "#f8f5ef",
+  "categories": ["productivity", "education", "utilities"],
+  "icons": [
+    {
+      "src": "branding/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "branding/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "branding/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "branding/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Seu caderno",
+      "short_name": "Caderno",
+      "url": "./index.html",
+      "icons": [{ "src": "branding/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./index.html",
+      "accept": {
+        "application/vnd.seprepare.speech+json": [".seprepare", ".orador"],
+        "application/json": [".seprepare", ".orador", ".json"]
+      }
+    }
+  ]
+}
