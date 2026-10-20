@@ -3,18 +3,19 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const CACHE_NAME = 'seprepare-app-shell-v1.0.37-iphone-viewport';
+const BUILD_ID = '20261019.2';
+const CACHE_PREFIX = 'seprepare-app-shell-';
+const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
+const versioned = path => `${path}?v=${BUILD_ID}`;
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './style.css',
-  './support.css',
-  './notes.css',
-  './drive.css',
-  './app.js',
-  './launch-gate.js',
-  './launch-gate.css',
+  ...['style.css', 'support.css', 'notes.css', 'drive.css', 'launch-gate.css',
+    'auto-update.js', 'launch-gate.js', 'app.js'].map(path => versioned('./' + path))
+];
+const CORE_URLS = new Set(CORE_ASSETS.map(path => new URL(path, self.location.href).href));
+const OPTIONAL_ASSETS = [
   './review-worker.js',
   './semantic-worker.js',
   './branding/logo-light.png',
@@ -45,34 +46,121 @@ const SW_UA = (self.navigator && self.navigator.userAgent) || '';
 const IS_IPHONE = /iPhone|iPod/i.test(SW_UA) && !/Android|Windows|CrOS|Linux|X11|iPad/i.test(SW_UA);
 
 self.addEventListener('install', event => {
-  self.skipWaiting();
   if (!IS_IPHONE) return;
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(async cache => {
-      for (const asset of CORE_ASSETS) {
-        try {
-          await cache.add(asset);
-        } catch {}
-      }
-    })
-  );
+  event.waitUntil((async () => {
+    // Do not replace a complete offline app with a partial download.
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(CORE_ASSETS.map(path => new Request(path, { cache: 'reload' })));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', event => {
   if (!IS_IPHONE) {
-    event.waitUntil(
-      caches.keys()
-        .then(keys => Promise.all(keys.map(key => caches.delete(key))))
-        .then(() => self.registration.unregister())
-    );
+    event.waitUntil(self.registration.unregister());
     return;
   }
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
-    ).then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    // Keep already downloaded dictionaries/models/fonts for offline use.
+    const oldNames = (await caches.keys()).filter(name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME);
+    for (const name of oldNames) {
+      const oldCache = await caches.open(name);
+      let migrated = true;
+      for (const request of await oldCache.keys()) {
+        const url = new URL(request.url);
+        if (url.origin !== self.location.origin || !/\.(?:woff2|wasm|onnx|png|part\d+|json|dic|aff|js|mjs)$/i.test(url.pathname)) continue;
+        // Never migrate executable app entry points or release-check responses.
+        if (/(?:^|\/)(?:app|launch-gate|auto-update|sw)\.js$/i.test(url.pathname) || url.searchParams.has('seprepare-check')) continue;
+        if (!(await cache.match(request))) {
+          const response = await oldCache.match(request);
+          if (response) {
+            try { await cache.put(request, response); }
+            catch { migrated = false; }
+          }
+        }
+      }
+      // Large offline models may not fit twice. Keep their original cache as
+      // a fallback rather than failing activation or discarding the download.
+      if (migrated) await caches.delete(name);
+    }
+    await self.clients.claim();
+  })());
 });
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SEPREPARE_GET_BUILD' && event.ports[0]) {
+    event.ports[0].postMessage({ type: 'SEPREPARE_BUILD', build: BUILD_ID });
+  }
+  if (event.data && event.data.type === 'SEPREPARE_WARM_OFFLINE' && IS_IPHONE) {
+    event.waitUntil((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      await Promise.allSettled(OPTIONAL_ASSETS.map(async path => {
+        if (await cache.match(path)) return;
+        const response = await fetch(path);
+        await storeResponse(path, response);
+      }));
+    })());
+  }
+});
+
+async function storeResponse(request, response) {
+  if (!response || !response.ok) return;
+  const length = Number(response.headers.get('content-length')) || 0;
+  if (length > 26 * 1024 * 1024) return;
+  const cache = await caches.open(CACHE_NAME);
+  await cache.put(request, response.clone());
+}
+
+async function cachedResponse(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const current = await cache.match(request);
+  if (current) return current;
+  const url = new URL(typeof request === 'string' ? request : request.url, self.location.href);
+  if (/(?:^|\/)(?:app|launch-gate|auto-update|sw)\.js$/i.test(url.pathname)
+      || url.searchParams.has('v') || url.searchParams.has('seprepare-check')) return;
+  for (const name of await caches.keys()) {
+    if (name === CACHE_NAME || !name.startsWith(CACHE_PREFIX)) continue;
+    const old = await (await caches.open(name)).match(request);
+    if (old) return old;
+  }
+}
+
+function networkFirst(event, fallbackToIndex = false) {
+  const request = event.request;
+  const available = caches.open(CACHE_NAME).then(async cache =>
+    (await cachedResponse(request)) || (fallbackToIndex ?
+      (await cache.match('./index.html')) || (await cache.match('./')) : undefined));
+  const network = fetch(new Request(request, { cache: 'no-cache' })).then(async response => {
+    if (fallbackToIndex && response.ok) {
+      const html = await response.clone().text();
+      const release = html.match(/data-seprepare-build=["']([\w.-]+)["']/);
+      // Keep this release's coherent offline shell until the next worker has
+      // successfully precached its own code. Discovery uses the uncached URL.
+      if (release && release[1] !== BUILD_ID) return (await available) || response;
+    }
+    return response;
+  });
+  const save = network.then(response => storeResponse(request, response)).catch(() => {});
+  event.waitUntil(save);
+  event.respondWith((async () => {
+    let timeout;
+    try {
+      // A poor connection must not prevent an already installed app opening.
+      const response = await Promise.race([
+        network,
+        new Promise(resolve => { timeout = setTimeout(() => resolve(null), 4000); })
+      ]);
+      if (response && response.ok) return response;
+      const cached = await available;
+      return cached || response || await network;
+    } catch {
+      return (await available) || Response.error();
+    } finally {
+      clearTimeout(timeout);
+    }
+  })());
+}
 
 self.addEventListener('fetch', event => {
   if (!IS_IPHONE) return;
@@ -81,52 +169,47 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  // Navigation requests: serve index.html offline-first with background update
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req).then(res => {
-        if (res && res.ok) {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put('./index.html', copy)).catch(() => {});
-        }
-        return res;
-      }).catch(async () => {
-        return (await caches.match(req)) || (await caches.match('./index.html')) || (await caches.match('./'));
-      })
-    );
+  // Release discovery must never read a previously cached HTML response.
+  if (url.searchParams.has('seprepare-check')) {
+    event.respondWith(fetch(new Request(req, { cache: 'no-store' })));
+    return;
+  }
+
+  // A release's versioned entry points are immutable as a group. Do not mix
+  // newer origin bytes into a working older shell if an update cannot install.
+  if (url.searchParams.get('v') === BUILD_ID && CORE_URLS.has(url.href)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(req);
+      if (cached) return cached;
+      const response = await fetch(new Request(req, { cache: 'no-cache' }));
+      await storeResponse(req, response).catch(() => {});
+      return response;
+    })());
+    return;
+  }
+
+  // Navigations discover releases; unversioned feature code refreshes online.
+  const appCode = /\.(?:html|css|js)$/i.test(url.pathname);
+  if (req.mode === 'navigate' || appCode) {
+    networkFirst(event, req.mode === 'navigate');
     return;
   }
 
   // Static assets: Cache-first for fonts/wasm/models/images, Stale-While-Revalidate for JS/CSS
   const isImmutableBinary = /\.(?:woff2|wasm|onnx|png|part\d+)$/i.test(url.pathname);
   if (isImmutableBinary) {
-    event.respondWith(
-      caches.match(req).then(cached => {
-        if (cached) return cached;
-        return fetch(req).then(res => {
-          // Only cache files <= 25 MB in SW cache to respect iOS Safari quota
-          const len = Number(res.headers.get('content-length')) || 0;
-          if (res && res.ok && len <= 26 * 1024 * 1024) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
-          }
-          return res;
-        });
-      })
-    );
+    event.respondWith((async () => {
+      const cached = await cachedResponse(req);
+      if (cached) return cached;
+      const response = await fetch(req);
+      await storeResponse(req, response).catch(() => {});
+      return response;
+    })());
     return;
   }
 
-  event.respondWith(
-    caches.match(req).then(cached => {
-      const networkFetch = fetch(req).then(res => {
-        if (res && res.ok) {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
-        }
-        return res;
-      }).catch(() => cached);
-      return cached || networkFetch;
-    })
-  );
+  const network = fetch(req);
+  event.waitUntil(network.then(res => storeResponse(req, res)).catch(() => {}));
+  event.respondWith(cachedResponse(req).then(cached => cached || network.catch(() => Response.error())));
 });
