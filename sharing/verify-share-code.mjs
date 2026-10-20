@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {inflateSync} from 'node:zlib';
 import {zlibSync} from 'fflate';
 import {newSpeech,ensureVersions,plain} from './core.js';
-import {encodeShareCode,decodeShareCode,createCodePayload,codeChecksum,MAX_CODE_BYTES,MAX_CODE_LENGTH} from './share-code.js';
+import {encodeShareCode,decodeShareCode,createCodePayload,codeChecksum,MAX_CODE_BYTES,MAX_CODE_LENGTH,MAX_SHARED_MESSAGE_LENGTH,decodeShareMessage} from './share-code.js';
+import {APP_DOWNLOAD_URL,CODE_MESSAGE_START,CODE_MESSAGE_END,codeShareMessage,textShareMessage,fileShareMessage} from './share-message.js';
 import {shareFixture,fixtureCategory} from './share-code-fixture.mjs';
 const checks=[],check=name=>{checks.push(name);console.log('PASS',name);};
 const speech=shareFixture(),original=JSON.stringify(speech),options={category:fixtureCategory,includeNotes:true};
@@ -36,4 +37,17 @@ assert.throws(()=>decodeShareCode('a'.repeat(MAX_CODE_LENGTH+1)));assert.throws(
 const bomb=new TextEncoder().encode('A'.repeat(300000));assert.throws(()=>decodeShareCode(`SEPREPARE:1:w:00000000:${Buffer.from(zlibSync(bomb)).toString('base64url')}`));check('Expansão acima do tamanho declarado interrompida');
 assert.throws(()=>decodeShareCode(pack('Não é JSON')));check('Payload que não é JSON rejeitado');
 content.versions[0].delta.ops[0].insert='Alterada';assert.notEqual(content.versions[1].delta.ops[0].insert,'Alterada');assert.equal(JSON.stringify(speech),original);check('Versões independentes entre si e da origem');
+
+const selectedIds=[speech.versions[0].id,speech.versions[2].id],subset=decodeShareCode(encodeShareCode(speech,{...options,versionIds:selectedIds}));
+assert.deepEqual(subset.speech.versions.map(v=>v.name),[speech.versions[0].name,speech.versions[2].name]);assert.equal(subset.speech.activeVersionId,'shared-1');assert.deepEqual(subset.speech.delta,speech.versions[0].delta);assert.deepEqual(subset.speech.versions[1].delta,speech.versions[2].delta);assert.deepEqual(subset.speech.versions[1].presenterNotes,speech.versions[2].presenterNotes||[]);check('Seleção exclui versões não marcadas e mantém os dados de cada versão selecionada');
+const activeOnly=decodeShareCode(encodeShareCode(speech,{...options,versionIds:[speech.activeVersionId]}));assert.equal(activeOnly.speech.versions.length,1);assert.equal(activeOnly.speech.versions[0].name,'Versão resumida');assert.deepEqual(activeOnly.speech.delta,speech.delta);assert.deepEqual(activeOnly.speech.presenterNotes,speech.presenterNotes);check('Só a versão ativa pode ser compartilhada com notas e formatação corretas');
+assert.throws(()=>encodeShareCode(speech,{versionIds:[]}));assert.throws(()=>encodeShareCode(speech,{versionIds:['ausente']}));assert.equal(JSON.stringify(speech),original);check('Seleções vazias ou inexistentes não geram código nem alteram a origem');
+const wrapped=codeShareMessage(speech,code,3);assert(wrapped.includes(APP_DOWNLOAD_URL));assert(wrapped.includes('Colar código copiado'));assert.deepEqual(decodeShareMessage(wrapped),payload);check('Mensagem contém instruções e link; importação reconhece apenas o código');
+assert.deepEqual(decodeShareMessage('Encaminhada várias vezes\nBom dia! '+wrapped+'\nAté mais! https://example.com/outra-pagina'),payload);check('Texto e outros links antes e depois da mensagem não entram na preparação');
+assert.deepEqual(decodeShareMessage(wrapped.replace(code,code.replace(/(.{55})/g,'$1\n '))),payload);check('Mensagem inteira aceita quebras de linha dentro do código delimitado');
+assert.deepEqual(decodeShareMessage('Recebido: '+code+'\nBaixe aqui: '+APP_DOWNLOAD_URL),payload);assert.deepEqual(decodeShareMessage('`'+code+'`'),payload);assert.deepEqual(decodeShareMessage(code.replace(/(.{55})/g,'$1\n ')),payload);check('Códigos antigos, avulsos e sem delimitadores continuam funcionando');
+assert.throws(()=>decodeShareMessage(wrapped+'\n'+wrapped),/mais de um/);assert.throws(()=>decodeShareMessage(code+' '+code),/mais de um/);check('Duas preparações na mesma mensagem pedem importação separada');
+assert.throws(()=>decodeShareMessage(wrapped.replace(CODE_MESSAGE_END,'')));assert.throws(()=>decodeShareMessage(wrapped.replace(code,code.slice(0,-8))));assert.throws(()=>decodeShareMessage('x'.repeat(MAX_SHARED_MESSAGE_LENGTH+1)));check('Mensagens incompletas, adulteradas e grandes demais continuam bloqueadas');
+const justText=textShareMessage(speech,[speech.activeVersionId]);assert.equal(justText.slice(-APP_DOWNLOAD_URL.length),APP_DOWNLOAD_URL);assert(!justText.includes('Conferir preparação'));assert(!justText.includes(CODE_MESSAGE_START));assert(justText.includes('vantagem das esquadrias'));check('Compartilhamento em texto recebe somente o link depois do conteúdo');
+const caption=fileShareMessage();assert(caption.includes(APP_DOWNLOAD_URL));assert(caption.includes('.seprepare'));assert(caption.includes('Usar arquivo'));assert(!caption.includes('SEPREPARE:1:'));check('Arquivo tem mensagem breve de importação e link de download');
 console.log(JSON.stringify({checks:checks.length,format:'SEPREPARE:1',networkUsed:false}));

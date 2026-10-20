@@ -2,11 +2,13 @@ import {zlibSync,Unzlib} from 'fflate';
 import {clone,ensureVersions,validState} from './core.js';
 import {encodeSpeechVersions,portableSharedContent} from './sharing.js';
 import {normalizeNotes,noteIds,NOTE_ATTRIBUTE} from './notes-core.js';
+import {CODE_MESSAGE_START,CODE_MESSAGE_END} from './share-message.js';
 
 // Identical on Android, web and iPhone. Entire content, no URL or remote lookup.
 // SEPREPARE:1:<UTF-8 size in base36>:<CRC32 hex>:<zlib as base64url>
 export const SHARE_CODE_PREFIX='SEPREPARE:1:';
 export const MAX_CODE_BYTES=12_000_000,MAX_CODE_LENGTH=16_100_000;
+export const MAX_SHARED_MESSAGE_LENGTH=MAX_CODE_LENGTH+20_000;
 const encoder=new TextEncoder(),decoder=new TextDecoder('utf-8',{fatal:true});
 const invalid=()=>Error('Código inválido ou incompleto. Copie o código inteiro e tente novamente.');
 const table=Uint32Array.from({length:256},(_,n)=>{for(let i=0;i<8;i++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0;});
@@ -43,10 +45,11 @@ function categoryContent(source){
  if(typeof source.name!=='string'||!source.name.trim()||source.name.length>100||typeof source.icon!=='string'||source.icon.length>100||source.icon in Object.prototype||!/^#[\da-f]{6}$/i.test(source.color))throw Error('Categoria inválida no código.');
  return {name:source.name.trim(),icon:source.icon,color:source.color};
 }
-export function createCodePayload(speech,{category=null,includeNotes=false}={}){
+export function createCodePayload(speech,{category=null,includeNotes=false,versionIds}={}){
  const source=clone(speech);ensureVersions(source);
- const content=JSON.parse(encodeSpeechVersions(source,source.versions.map(version=>version.id))).speech;
- for(let i=0;i<content.versions.length;i++)annotations(content.versions[i],source.versions[i].id===source.activeVersionId?source:source.versions[i],includeNotes);
+ const ids=versionIds??source.versions.map(version=>version.id),content=JSON.parse(encodeSpeechVersions(source,ids)).speech;
+ const chosen=new Set(ids),versions=source.versions.filter(version=>chosen.has(version.id));
+ for(let i=0;i<content.versions.length;i++)annotations(content.versions[i],versions[i].id===source.activeVersionId?source:versions[i],includeNotes);
  content.read.showPresenterNotes=source.read?.showPresenterNotes!==false;
  content.scheduledAt=source.scheduledAt;content.reminders=source.reminders;content.pinned=source.pinned===true;
  return {format:'seprepare-share-code',schema:1,speech:portableCodeContent(content,includeNotes),category:categoryContent(category),includesNotes:includeNotes===true};
@@ -75,4 +78,24 @@ export function decodeShareCode(input){
  }catch{throw invalid();}
  if(payload?.format!=='seprepare-share-code'||payload.schema!==1||typeof payload.includesNotes!=='boolean')throw invalid();
  return {format:payload.format,schema:1,speech:portableCodeContent(payload.speech,payload.includesNotes),category:categoryContent(payload.category),includesNotes:payload.includesNotes};
+}
+// A received message may contain a title, instructions, URLs and forwarded text.
+// Keep the strict wire decoder unchanged; extract only its framed/plain code.
+export function decodeShareMessage(input){
+ if(typeof input!=='string'||input.length>MAX_SHARED_MESSAGE_LENGTH)throw invalid();
+ const text=input.replace(/[\u200b-\u200d\ufeff]/g,''),marker=text.indexOf(CODE_MESSAGE_START);
+ let body=text;
+ if(marker>=0){
+  if(text.indexOf(CODE_MESSAGE_START,marker+CODE_MESSAGE_START.length)>=0)throw Error('Há mais de um código na mensagem. Importe uma preparação de cada vez.');
+  const start=marker+CODE_MESSAGE_START.length,end=text.indexOf(CODE_MESSAGE_END,start);
+  if(end<0)throw invalid();body=text.slice(start,end);
+ }
+ const pattern=/SEPREPARE:\d+:/g,first=pattern.exec(body);if(!first)throw invalid();
+ if(pattern.exec(body))throw Error('Há mais de um código na mensagem. Importe uma preparação de cada vez.');
+ const candidate=body.slice(first.index).trim();
+ if(marker>=0)return decodeShareCode(candidate);
+ try{return decodeShareCode(candidate);}catch(error){
+  const token=candidate.match(/^SEPREPARE:\d+:[0-9a-z]+:[\da-f]{8}:[A-Za-z0-9_-]+/)?.[0];
+  if(token&&token!==candidate)return decodeShareCode(token);throw error;
+ }
 }

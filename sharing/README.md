@@ -1,10 +1,10 @@
-# Compartilhamento por código — SePrepare 1.0.39
+# Compartilhamento por código — SePrepare 1.0.40
 
-Abra **Compartilhar → Gerar código** na preparação. O código inclui todas as versões e mantém qual está ativa. Use **Copiar código** ou **Compartilhar**. Anotações privadas só entram se essa opção for marcada.
+Abra **Compartilhar → Gerar código** na preparação. Marque as versões que deseja enviar; a ativa vem selecionada por padrão. Somente as marcadas entram no código. Se a ativa ficar fora, a primeira selecionada será a ativa recebida, sem mudar a escolha no aparelho de origem. Use **Copiar mensagem** ou **Compartilhar**. Anotações privadas só entram se essa opção for marcada.
 
-Quem recebe toca no ícone de importar ao lado do tema, escolhe **Usar código**, usa **Colar código copiado** ou cola no campo e toca em **Conferir preparação**. A prévia permite consultar todas as versões, escolher categoria e participante, manter ou remover o agendamento recebido, cancelar ou salvar. Conferir outra versão não muda a versão ativa enviada. Confirmar cria uma nova preparação com novas identificações; nada existente é substituído.
+A mensagem inclui instruções e o endereço https://seprepareapp.com.br/baixar/. Quem recebe pode copiar e colar a mensagem inteira, com links e textos extras: somente o código validado é importado. Quem recebe toca no ícone de importar ao lado do tema, escolhe **Usar código**, usa **Colar código copiado** ou cola no campo e toca em **Conferir preparação**. A prévia permite consultar todas as versões, escolher categoria e participante, manter ou remover o agendamento recebido, cancelar ou salvar. Conferir outra versão não muda a versão ativa enviada. Confirmar cria uma nova preparação com novas identificações; nada existente é substituído.
 
-**Usar arquivo** mantém a importação anterior de arquivos, textos e backups. Compartilhar como texto/arquivo continua usando a versão ativa por padrão; Escolher versões continua disponível.
+**Usar arquivo** mantém a importação anterior de arquivos, textos e backups. Compartilhar como texto, arquivo ou código usa a versão ativa por padrão. Escolher versões oferece os três formatos. Texto simples recebe somente o link de download depois do conteúdo; arquivo recebe instruções breves e o link, inclusive na mensagem da intenção Android. Navegadores sem compartilhamento de arquivos oferecem o download e uma mensagem copiável para enviar junto.
 
 ## Dados portáveis
 
@@ -16,7 +16,9 @@ Anotações e âncoras só são incluídas por escolha explícita. A identifica�
 
 `SEPREPARE:1:<tamanho UTF-8 em base36>:<CRC32 de 8 dígitos hexadecimais>:<zlib em base64url sem padding>`
 
-Payload JSON: format `seprepare-share-code`, schema 1, speech, category (ou null) e includesNotes booleano. speech.versionSchema permanece 1. As três plataformas usam os mesmos módulos share-code.js e share-code-ui.js e fflate 0.8.2 local, sob MIT. O código contém o próprio conteúdo; não depende de banco, URL, servidor ou busca remota. Não expira. CRC32 detecta erro de cópia e não é autenticação nem criptografia.
+Payload JSON: format `seprepare-share-code`, schema 1, speech, category (ou null) e includesNotes booleano. speech.versionSchema permanece 1. As três plataformas usam os mesmos módulos share-code.js, share-code-ui.js e share-message.js e fflate 0.8.2 local, sob MIT. O código contém o próprio conteúdo; não depende de banco, URL, servidor ou busca remota. Não expira. CRC32 detecta erro de cópia e não é autenticação nem criptografia.
+
+A mensagem usa os delimitadores [INÍCIO DO CÓDIGO SEPREPARE] e [FIM DO CÓDIGO SEPREPARE]. O importador reconhece o bloco, ignora o texto externo e também aceita códigos antigos avulsos. Duas preparações no mesmo texto pedem importação separada. O decodificador estrito do formato permanece compatível.
 
 O decodificador valida schema, checksum, tamanho, versão ativa, participantes e estilos. A descompactação é limitada durante o fluxo a 12 MB. Códigos acima de 60 mil caracteres continuam copiáveis, com orientação para preferir arquivo quando a mensagem for extensa; não existe truncamento ou envio parcial.
 
@@ -28,4 +30,4 @@ Android mantém pacote e assinatura originais. Drive continua com quatro cópias
 
 ## Recompilar a integração
 
-Execute `cd sharing && npm ci --ignore-scripts && npm run build && npm test`. O builder identifica os pontos de integração no bundle iPhone atual e interrompe se forem ambíguos. É idempotente. Não substitua o app.js por builds de Android ou desktop. Ao publicar futuras mudanças, siga RELEASING.md para atualizar o identificador de index.html e sw.js sem apagar os dados.
+Execute `npm ci`, `npm run build` e `npm test` dentro de sharing. O builder preserva o bundle próprio do iPhone e seus mecanismos de memória, atualização e abertura. Siga RELEASING.md ao mudar o identificador de publicação.
