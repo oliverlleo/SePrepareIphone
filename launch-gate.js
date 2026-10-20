@@ -62,7 +62,12 @@
     document.addEventListener('touchmove', preventPinch, { passive: false });
 
     const appScript = document.createElement('script');
-    appScript.src = 'app.js';
+    // A versioned URL bypasses the old installed worker's stale cache on the
+    // first online navigation, before that worker has had time to update.
+    const build = new URL(document.currentScript.src).searchParams.get('v');
+    const appUrl = new URL('app.js', document.baseURI);
+    if (build) appUrl.searchParams.set('v', build);
+    appScript.src = appUrl.href;
     appScript.async = false;
     document.body.appendChild(appScript);
     return;
