@@ -1,0 +1,17 @@
+{
+  "name": "seprepare-shared-code",
+  "version": "1.0.39",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node verify-share-code.mjs && node ../tests/drive-retention.test.cjs"
+  },
+  "dependencies": {
+    "fflate": "0.8.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "acorn": "8.15.0"
+  }
+}

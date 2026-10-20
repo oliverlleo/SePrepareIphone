@@ -4,3 +4,5 @@ node_modules/
 wrangler.jsonc
 RELEASING.md
 tests/
+
+sharing/

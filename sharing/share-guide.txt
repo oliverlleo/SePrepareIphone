@@ -1,0 +1,7 @@
+{id:'share',symbol:'Share2',title:'Compartilhar e receber',detail:'Texto, arquivo ou código entre Android, iPhone e web',steps:[
+ 'Abra <strong>Compartilhar → Gerar código</strong>. O código inclui todas as versões e preserva a versão ativa, texto, formatação, participantes, categoria e ajustes de leitura. Marque a opção se desejar incluir anotações privadas.',
+ 'Use <strong>Copiar código</strong> ou <strong>Compartilhar</strong> e envie o código inteiro pelo WhatsApp ou outro aplicativo. Não precisa de link, conta ou servidor.',
+ 'Quem recebe toca no <strong>ícone de importar</strong>, ao lado do tema, escolhe <strong>Usar código → Colar código copiado → Conferir preparação</strong>. Pode consultar as versões e decidir se deseja salvar.',
+ '<strong>Salvar no aparelho</strong> cria uma nova preparação, sem substituir as existentes. Conferir outra versão na prévia mantém a versão ativa de quem enviou. O agendamento recebido pode ser desmarcado.',
+ 'Texto e arquivo continuam disponíveis e enviam a versão ativa por padrão. <strong>Escolher versões</strong> permite marcar outras. No menu de importar, <strong>Usar arquivo</strong> mantém a abertura de arquivos e backups.'
+ ],tip:'Cada pessoa escolhe seu participante na parte recebida. Conta Google, ensaios e histórico pessoal não entram no código. Para mensagens extensas, prefira compartilhar como arquivo.'}

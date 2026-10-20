@@ -3,13 +3,13 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261020.2';
+const BUILD_ID = '20261020.3';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
 const CORE_ASSETS = [
   './manifest.webmanifest',
-  ...['style.css', 'support.css', 'notes.css', 'drive.css', 'launch-gate.css',
+  ...['style.css', 'support.css', 'notes.css', 'drive.css', 'share-code.css', 'launch-gate.css',
     'auto-update.js', 'launch-gate.js', 'app.js'].map(path => versioned('./' + path))
 ];
 const CORE_URLS = new Set(CORE_ASSETS.map(path => new URL(path, self.location.href).href));

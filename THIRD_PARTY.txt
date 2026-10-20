@@ -11,3 +11,4 @@ Marked — MIT — https://github.com/markedjs/marked
 Lucide — ISC — https://github.com/lucide-icons/lucide
 Inter — SIL OFL-1.1 — https://github.com/rsms/inter
 Lora — SIL OFL-1.1 — https://github.com/cyrealtype/Lora-Cyrillic
+fflate 0.8.2 — MIT — https://github.com/101arrowz/fflate
