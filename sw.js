@@ -3,13 +3,11 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261020.1';
+const BUILD_ID = '20261020.2';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
 const CORE_ASSETS = [
-  './',
-  './index.html',
   './manifest.webmanifest',
   ...['style.css', 'support.css', 'notes.css', 'drive.css', 'launch-gate.css',
     'auto-update.js', 'launch-gate.js', 'app.js'].map(path => versioned('./' + path))
@@ -48,9 +46,25 @@ const IS_IPHONE = /iPhone|iPod/i.test(SW_UA) && !/Android|Windows|CrOS|Linux|X11
 self.addEventListener('install', event => {
   if (!IS_IPHONE) return;
   event.waitUntil((async () => {
-    // Do not replace a complete offline app with a partial download.
     const cache = await caches.open(CACHE_NAME);
+    // Use canonical / rather than the redirected /index.html, and cache a
+    // clean shell under both paths for existing home-screen installations.
+    const response = await fetch(new Request('./', { cache: 'reload' }));
+    if (!response.ok || !/\btext\/html\b/i.test(response.headers.get('Content-Type') || '')) {
+      throw new Error('SePrepare: shell HTML indisponível');
+    }
+    const shell = await normalizeNavigationResponse(response);
+    if (!shell.ok) throw new Error('SePrepare: shell redirecionado para outra origem');
+    const html = await shell.clone().text();
+    const release = html.match(/data-seprepare-build=["']([\w.-]+)["']/);
+    if (!release || release[1] !== BUILD_ID) {
+      throw new Error('SePrepare: versão do shell diferente do service worker');
+    }
+    // Preserve the previous offline install until all essential code is cached.
+    // IndexedDB and OPFS are never touched by this worker.
     await cache.addAll(CORE_ASSETS.map(path => new Request(path, { cache: 'reload' })));
+    await cache.put('./', shell.clone());
+    await cache.put('./index.html', shell.clone());
     await self.skipWaiting();
   })());
 });
@@ -104,6 +118,23 @@ self.addEventListener('message', event => {
   }
 });
 
+// Safari refuses navigated responses with retained redirect history.
+// Cloudflare may canonicalize /index.html to /; rebuild HTML to clear it.
+async function normalizeNavigationResponse(response) {
+  if (!response || !response.ok) return response;
+  if (response.url && new URL(response.url).origin !== self.location.origin) return Response.error();
+  const headers = new Headers(response.headers);
+  if (!response.redirected && !/\btext\/html\b/i.test(headers.get('Content-Type') || '')) return response;
+  headers.delete('Content-Length');
+  headers.delete('Content-Encoding');
+  headers.delete('Location');
+  return new Response(await response.blob(), {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+
 async function storeResponse(request, response) {
   if (!response || !response.ok) return;
   const length = Number(response.headers.get('content-length')) || 0;
@@ -132,30 +163,36 @@ function networkFirst(event, fallbackToIndex = false) {
     (await cachedResponse(request)) || (fallbackToIndex ?
       (await cache.match('./index.html')) || (await cache.match('./')) : undefined));
   const network = fetch(new Request(request, { cache: 'no-cache' })).then(async response => {
-    if (fallbackToIndex && response.ok) {
-      const html = await response.clone().text();
-      const release = html.match(/data-seprepare-build=["']([\w.-]+)["']/);
-      // Keep this release's coherent offline shell until the next worker has
-      // successfully precached its own code. Discovery uses the uncached URL.
-      if (release && release[1] !== BUILD_ID) return (await available) || response;
+    if (!fallbackToIndex || !response.ok) return response;
+    const clean = await normalizeNavigationResponse(response);
+    if (!clean.ok) return normalizeNavigationResponse((await available) || clean);
+    const html = await clean.clone().text();
+    const release = html.match(/data-seprepare-build=["']([\w.-]+)["']/);
+    // Keep the current coherent offline shell until a new worker is ready.
+    if (!release || release[1] !== BUILD_ID) {
+      return normalizeNavigationResponse((await available) || clean);
     }
-    return response;
+    return clean;
   });
   const save = network.then(response => storeResponse(request, response)).catch(() => {});
   event.waitUntil(save);
   event.respondWith((async () => {
     let timeout;
     try {
-      // A poor connection must not prevent an already installed app opening.
+      // A slow connection must not block an already cached app.
       const response = await Promise.race([
         network,
         new Promise(resolve => { timeout = setTimeout(() => resolve(null), 4000); })
       ]);
-      if (response && response.ok) return response;
+      if (response && response.ok) {
+        return fallbackToIndex ? normalizeNavigationResponse(response) : response;
+      }
       const cached = await available;
-      return cached || response || await network;
+      const best = cached || response || await network;
+      return fallbackToIndex ? normalizeNavigationResponse(best) : best;
     } catch {
-      return (await available) || Response.error();
+      const cached = await available;
+      return cached ? (fallbackToIndex ? normalizeNavigationResponse(cached) : cached) : Response.error();
     } finally {
       clearTimeout(timeout);
     }

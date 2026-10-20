@@ -5,7 +5,7 @@
   "description": "Aplicativo pessoal para escrever, organizar, revisar, ensaiar e apresentar discursos e partes. Funciona offline e salva tudo na memória do aparelho.",
   "lang": "pt-BR",
   "dir": "ltr",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
@@ -43,13 +43,13 @@
     {
       "name": "Seu caderno",
       "short_name": "Caderno",
-      "url": "./index.html",
+      "url": "./",
       "icons": [{ "src": "branding/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ],
   "file_handlers": [
     {
-      "action": "./index.html",
+      "action": "./",
       "accept": {
         "application/vnd.seprepare.speech+json": [".seprepare", ".orador"],
         "application/json": [".seprepare", ".orador", ".json"]

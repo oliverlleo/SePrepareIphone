@@ -108,7 +108,8 @@
     try {
       registration = registration || await navigator.serviceWorker.getRegistration();
       if (!registration) return;
-      const url = new URL('index.html', document.baseURI);
+      // Cloudflare redirects /index.html; check the canonical root instead.
+      const url = new URL('./', document.baseURI);
       url.searchParams.set('seprepare-check', String(Date.now()));
       const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
       if (!response.ok) return;
