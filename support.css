@@ -41,3 +41,42 @@
 .license-text{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:17px;font:12px/1.75 Inter,Arial,sans-serif;color:var(--ink);margin:0}
 @media(max-width:380px){.guide-topic summary{padding:13px;gap:9px}.support-section{padding:16px}.guide-topic-heading strong{font-size:12px}.guide-start{padding:17px}.support-symbol{width:31px;height:31px;flex-basis:31px}}
 @media(prefers-reduced-motion:reduce){.guide-topic .guide-chevron{transition:none}}
+
+
+/* Apoio voluntário: cartão de Ajustes e confirmação antes do Mercado Pago. */
+.donation-card{border-radius:22px;padding:26px 24px}
+.donation-card h3{font-size:18px;line-height:1.45;gap:14px;margin:0 0 9px}
+.donation-card h3>svg{width:24px;height:24px;color:var(--green)}
+.donation-card .donation-subtitle{color:var(--ink);font-style:italic;font-size:14px;margin:0 0 23px}
+.donation-card p:not(.donation-subtitle){font-size:14px;line-height:1.78;margin:0 0 19px;color:var(--muted)}
+.donation-card .donation-trigger{margin-top:2px;min-height:46px;padding:12px 18px;border-radius:14px;max-width:100%;white-space:normal}
+.donation-trigger svg,.donation-link svg{width:23px;height:23px}
+.modal:has(.donation-panel){max-width:620px}
+.modal:has(.donation-panel) .modal-head{padding:27px 26px 20px}
+.modal:has(.donation-panel) .modal-head h2{font-size:25px}
+.modal:has(.donation-panel) .modal-body{padding:4px 26px 25px}
+.modal:has(.donation-panel) .modal-footer{padding:16px 26px 22px}
+.donation-panel{font-size:14px;line-height:1.8;color:var(--muted)}
+.donation-intro{display:flex;align-items:center;gap:16px;padding:4px 0 23px;border-bottom:1px solid var(--line)}
+.donation-icon{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;border-radius:16px;background:var(--soft);color:var(--green)}
+.donation-icon svg{width:26px;height:26px}
+.donation-intro h3{font:500 24px/1.35 Lora,Georgia,serif;color:var(--ink);margin:0 0 7px}
+.donation-intro p{margin:0;font-style:italic;font-size:14px}
+.donation-copy{padding-top:23px}
+.donation-copy>p{margin:0 0 21px;line-height:1.75}
+.donation-notice{display:flex;align-items:flex-start;gap:14px;background:var(--soft);color:var(--ink);border-radius:15px;padding:18px 17px;margin-top:24px;line-height:1.6}
+.donation-notice svg{width:21px;height:21px;flex:0 0 21px;margin-top:3px}
+.donation-notice strong{font-weight:650}
+.donation-link{display:flex;align-items:center;justify-content:center;gap:13px;min-height:52px;padding:13px 18px;text-align:center;text-decoration:none;border-radius:14px;background:var(--green);color:#fffefa;font-weight:650;font-size:14px;line-height:1.4}
+.donation-link:focus-visible{outline:3px solid var(--copper);outline-offset:3px}
+@media(max-width:750px){
+ .donation-card{padding:24px 21px}
+ .donation-card p:not(.donation-subtitle){font-size:14px}
+ .modal-backdrop:has(.donation-panel){padding:0;align-items:flex-end}
+ .modal:has(.donation-panel){width:100%;max-width:none;max-height:calc(95dvh - env(safe-area-inset-top));border-radius:23px 23px 0 0;margin:0}
+ .modal:has(.donation-panel) .modal-head{padding:24px 22px 20px}
+ .modal:has(.donation-panel) .modal-body{padding:3px 22px 23px}
+ .modal:has(.donation-panel) .modal-footer{padding:13px 22px calc(18px + env(safe-area-inset-bottom,0px))}
+ .donation-intro h3{font-size:22px}
+ .donation-copy{padding-top:22px}
+}
