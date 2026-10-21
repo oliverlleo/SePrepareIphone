@@ -19,3 +19,10 @@ ao voltar ao aplicativo, ao recuperar conexão e a cada cinco minutos enquanto e
 estiver em uso. A aplicação espera um momento sem edição, leitura, áudio, modal,
 cronômetro em execução ou operação do Google Drive e exige a confirmação de gravação
 na memória do aparelho.
+
+## Traduções da interface
+
+Ao alterar os catálogos, execute `npm run build --prefix localization` depois do
+build de `sharing`. O runtime é incluído nos entry points existentes, sem nova
+dependência para o HTML instalado antigo. Consulte `localization/README.md` e
+execute também os testes de idiomas, do corretor e do service worker.

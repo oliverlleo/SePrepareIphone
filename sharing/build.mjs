@@ -23,9 +23,11 @@ const importing=only(actions.cases.filter(node=>node.test?.value==='import'),'im
 const start=fn('aI'),startup=only(nodes.filter(node=>node.type==='CallExpression'&&node.callee?.name==='aI'&&node.start>start.end),'inicialização');
 edit(startup.start,startup.start,marker('BRIDGE',`var SPShareCodes=window.SePrepareSharedCode.createShareCodeUI({getState:()=>B,rt:d,$:L,icon:te,btn:oe,option:Me,esc:P,native:fe,openModal:Te,closeModal:he,toast:ae,syncCurrent:_r,persist:le,importFile:KM,exportFile:ps,documentHTML:jp,refreshContrast:vo,go:gt,onImported(speech){for(const version of speech.versions)_t.set(za(speech,version.id),vn({...speech,...version,activeVersionId:version.id}));}});`));
 for(const node of nodes.filter(node=>node.type==='CallExpression'&&node.callee?.name==='Ge'&&node.arguments[0]?.value==='import'&&node.arguments[1]?.value==='FileUp'))edit(node.arguments[2].start,node.arguments[2].end,JSON.stringify('Importar preparação'));
-const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id?.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.40"');
+const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id?.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.46"');
 const guide=object('share');edit(guide.start,guide.end,readFileSync(path.join(here,'share-guide.txt'),'utf8').trim());
-const tip=property(object('notes'),'tip');if(!tip.value.includes('No código'))edit(tip.start,tip.end,JSON.stringify(tip.value+' No código, só entram se você marcar Incluir minhas anotações privadas.'));
+const tip=property(object('notes'),'tip'),tipText=tip.type==='CallExpression'?tip.arguments[0]?.value:tip.value;
+if(typeof tipText!=='string')throw Error('Revise o texto de ajuda das anotações antes de compilar.');
+if(!tipText.includes('No código'))edit(tip.start,tip.end,`SPLocale.t(${JSON.stringify(tipText+' No código, só entram se você marcar Incluir minhas anotações privadas.')})`);
 if(!nodes.some(node=>node.type==='ObjectExpression'&&property(node,'id')?.value==='fflate')){const licenses=object('sources');edit(licenses.start,licenses.start,`{id:'fflate',name:'fflate',note:'MIT · compactação local dos códigos',files:[['Licença MIT','fflate-LICENSE']]},`);}
 for(const change of edits.sort((a,b)=>b.start-a.start))source=source.slice(0,change.start)+change.text+source.slice(change.end);
 source=source.replace('Marked, Lucide e as fontes','Marked, Lucide, fflate e as fontes');
