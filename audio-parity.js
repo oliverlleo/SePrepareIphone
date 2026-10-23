@@ -139,13 +139,14 @@
       request++;
       const id=request, preferredLocale=voice?.lang||locale();
       const attempted=new Set();
-      let currentVoice=voice||null;
+      let fallbackCount=0,currentVoice=voice||null;
       const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
       const sameLanguage=v=>v && v.lang && v.lang.split('-')[0].toLowerCase()===preferredLocale.split('-')[0].toLowerCase();
       const valid=()=>id===request && (isPreview?previewing:['starting','playing'].includes(audio.state));
       let currentUtterance=null;
 
       function fallback() {
+        if(fallbackCount>=2)return false;
         // Retry only with a voice of the same language; never silently switch
         // a Japanese/Spanish presentation to Portuguese or English.
         attempted.add(voiceKey(currentVoice));
@@ -155,6 +156,7 @@
         const alternate=alternatives[0]||(!attempted.has('system-default')?null:undefined);
         if(alternate===undefined)return false;
         currentVoice=alternate;
+        fallbackCount++;
         return true;
       }
       function fail(code,at) {
@@ -162,7 +164,10 @@
         clearStartupTimer();
         const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout'].includes(code);
         if(retryable && fallback()) {
-          // The browser may keep a stale utterance in its queue.
+          // Invalidate the failed utterance before cancel(), which can
+          // synchronously emit another error event in Safari.
+          currentUtterance=null;
+          if(isPreview)previewUtterance=null;else activeUtterance=null;
           cancelActiveSpeech();
           nextChunk(at);
           return;
