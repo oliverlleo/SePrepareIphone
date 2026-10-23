@@ -131,7 +131,7 @@
   function showFirstUse() {
     if (isInstallGuide() || isAcknowledged() || document.getElementById(ID)) return;
     const app = document.getElementById('app');
-    if (!app) return;
+    if (!app || !app.querySelector('.app-shell, .editor-shell, .reader-shell')) return;
     originalAria = app.getAttribute('aria-hidden');
     originalInert = app.inert;
     const overlay = document.createElement('div');
@@ -186,7 +186,7 @@
     if (isInstallGuide()) return; // Pagina publica de instalacao do iPhone.
     showFirstUse();
     const app = document.getElementById('app');
-    if (app) new MutationObserver(queueSettingsSync).observe(app, {childList: true, subtree: true});
+    if (app) new MutationObserver(() => { showFirstUse(); queueSettingsSync(); }).observe(app, {childList: true, subtree: true});
     new MutationObserver(queueSettingsSync).observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
     queueSettingsSync();
   }
