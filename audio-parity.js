@@ -64,8 +64,8 @@
       const chosen=exactVoice(settings.voice,settings.audioLanguage);
       return chosen ? chosen.name+'\u001f'+chosen.lang : '';
     }
-    function voiceOptions(previous='') {
-      const chosen=previous || storedVoice();
+    function voiceOptions(previous) {
+      const chosen=previous===undefined ? storedVoice() : previous;
       let html='<option value="">'+escape(t(0))+'</option>';
       for(const v of candidates) {
         const value=v.name+'\u001f'+v.lang;
