@@ -326,3 +326,10 @@ html[data-seprepare-mode="installed"] .read-progress{top:var(--ios-viewport-top,
   html[data-seprepare-mode="installed"] .app-shell.has-fab::after{height:74px}
 }
 
+/* Centraliza apenas o botão de gerenciamento de vozes, mantendo o tamanho original. */
+#overlays .modal-body > .btn[data-action="install-voices"]{
+  display:flex;
+  width:fit-content;
+  max-width:100%;
+  margin-inline:auto;
+}
