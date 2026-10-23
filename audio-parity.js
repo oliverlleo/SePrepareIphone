@@ -120,27 +120,54 @@
       request++;
       const id=request;
       synth.cancel();
-      const utterance=new SpeechSynthesisUtterance(text.slice(offset));
-      utterance.lang=voice.lang;utterance.voice=voice;utterance.rate=clamp(Number(o.getSettings().rate)||1,.5,1.8);
-      utterance.onboundary = ev => {
-        if(id!==request||isPreview||audio.state!=='playing')return;
-        audio.offset=clamp(offset+(Number(ev.charIndex)||0),0,audio.text.length);
-        update();dispatch();
-      };
-      utterance.onend=()=> {
-        if(id!==request)return;
-        if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
-        else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
-        update();dispatch();
-      };
-      utterance.onerror=ev => {
-        if(id!==request||ev.error==='canceled'||ev.error==='interrupted')return;
-        if(isPreview){previewing=false;previewUtterance=null;}
-        else audio.state='paused';
-        update();dispatch();
-      };
-      if(isPreview)previewUtterance=utterance;else activeUtterance=utterance;
-      synth.speak(utterance);return true;
+      const rate=isPreview ? Number(document.getElementById('voiceRate')?.value||o.getSettings().rate||1) : Number(o.getSettings().rate||1);
+      function nextChunk(at) {
+        if(id!==request || (!isPreview && audio.state!=='playing'))return;
+        const remaining=text.slice(at);
+        // Safari/iOS and desktop Chromium may stop speaking extremely long utterances.
+        // Small chunks preserve resume/seek positions without downloading an online engine.
+        let length=Math.min(220,remaining.length);
+        if(remaining.length>length) {
+          const punctuation=remaining.slice(0,length).search(/[.!?;:][ \n]/);
+          const wordsEnd=remaining.slice(0,length).lastIndexOf(' ');
+          if(punctuation>50)length=punctuation+1;
+          else if(wordsEnd>100)length=wordsEnd+1;
+        }
+        const chunk=remaining.slice(0,length);
+        const utterance=new SpeechSynthesisUtterance(chunk);
+        utterance.lang=voice.lang;
+        utterance.voice=voice;
+        utterance.rate=clamp(rate,.5,1.8);
+        utterance.onboundary = ev => {
+          if(id!==request||isPreview||audio.state!=='playing')return;
+          audio.offset=clamp(at+(Number(ev.charIndex)||0),0,audio.text.length);
+          update();dispatch();
+        };
+        utterance.onend=()=>{
+          if(id!==request)return;
+          const end=at+chunk.length;
+          if(end<text.length) {
+            if(!isPreview)audio.offset=end;
+            update();dispatch();
+            // Queue another small utterance to avoid the platform's maximum duration.
+            setTimeout(()=>nextChunk(end),0);
+          } else {
+            if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
+            else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
+            update();dispatch();
+          }
+        };
+        utterance.onerror=ev=>{
+          if(id!==request||ev.error==='canceled'||ev.error==='interrupted')return;
+          if(isPreview){previewing=false;previewUtterance=null;}
+          else audio.state='paused';
+          update();dispatch();
+        };
+        if(isPreview)previewUtterance=utterance;else activeUtterance=utterance;
+        synth.speak(utterance);
+      }
+      nextChunk(offset);
+      return true;
     }
     function play() {
       if(audio.state==='playing'){pause();return;}
