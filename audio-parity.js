@@ -14,7 +14,7 @@
   const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
   function create(options) {
     const o=options, synth=global.speechSynthesis, audio=o.audio;
-    let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false;
+    let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null;
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
     const t=i => (translations[lang()] || translations.pt)[i];
     const locale=() => normalized(o.getSettings().language);
@@ -105,10 +105,26 @@
     function dispatch() {
       if(typeof o.onUpdate==='function')o.onUpdate();
     }
+    const clearStartupTimer=()=>{if(startupTimer!==null){clearTimeout(startupTimer);startupTimer=null;}};
+    function cancelActiveSpeech() {
+      clearStartupTimer();
+      if(!synth)return;
+      try{if(synth.speaking||synth.pending||synth.paused)synth.cancel();}catch(error){console.warn('SePrepare: falha ao limpar fila de voz',error);}
+    }
+    const speechErrors={
+      pt:{'not-allowed':'O iPhone bloqueou o início da voz. Toque novamente em Ouvir ou Testar voz.','audio-busy':'A saída de áudio está ocupada. Verifique outros aplicativos ou dispositivos conectados.','audio-hardware':'Não foi encontrada uma saída de áudio. Verifique o alto-falante ou os fones.','language-unavailable':'Não há voz utilizável para este idioma. Instale uma voz nas configurações do iPhone.','voice-unavailable':'A voz escolhida não está disponível para reproduzir áudio.','synthesis-unavailable':'O iPhone não disponibilizou um mecanismo de leitura em voz alta.','network':'Esta voz depende de uma conexão que não está disponível.','startup-timeout':'A voz não respondeu. Tente outra voz nas configurações de áudio.','synthesis-failed':'O iPhone não conseguiu reproduzir esta voz.'},
+      en:{'not-allowed':'The iPhone blocked speech. Tap Listen or Test voice again.','audio-busy':'Audio output is busy. Check other apps or connected devices.','audio-hardware':'No audio output was found. Check the speaker or headphones.','language-unavailable':'No usable voice was found for this language. Install a voice in iPhone Settings.','voice-unavailable':'The selected voice is unavailable for playback.','synthesis-unavailable':'Speech synthesis is unavailable on this iPhone.','network':'This voice needs a network connection.','startup-timeout':'The voice did not start. Try another voice in audio settings.','synthesis-failed':'The iPhone could not play this voice.'},
+      es:{'not-allowed':'El iPhone bloqueó la voz. Toca Escuchar o Probar voz de nuevo.','audio-busy':'La salida de audio está ocupada. Revisa otras aplicaciones o dispositivos.','audio-hardware':'No se encontró salida de audio. Comprueba el altavoz o los auriculares.','language-unavailable':'No hay una voz disponible para este idioma. Instala una en Ajustes del iPhone.','voice-unavailable':'La voz seleccionada no está disponible para reproducir.','synthesis-unavailable':'La lectura en voz alta no está disponible.','network':'Esta voz necesita conexión de red.','startup-timeout':'La voz no respondió. Prueba otra voz en ajustes de audio.','synthesis-failed':'El iPhone no pudo reproducir esta voz.'},
+      ja:{'not-allowed':'iPhoneが読み上げをブロックしました。もう一度タップしてください。','audio-busy':'音声出力が使用中です。ほかのアプリや接続機器をご確認ください。','audio-hardware':'音声出力先が見つかりません。スピーカーやイヤホンをご確認ください。','language-unavailable':'この言語で使用できる音声がありません。iPhoneの設定で追加してください。','voice-unavailable':'選択した音声を再生できません。','synthesis-unavailable':'このiPhoneでは読み上げを使用できません。','network':'この音声にはネットワーク接続が必要です。','startup-timeout':'音声が始まりませんでした。別の音声を選んでください。','synthesis-failed':'iPhoneでこの音声を再生できませんでした。'}
+    };
+    function speechErrorMessage(code) {
+      const messages=speechErrors[lang()]||speechErrors.pt;
+      return messages[code]||messages['synthesis-failed'];
+    }
     function stopPreview() {
-      if(!previewing) return;
-      request++;previewing=false;activeUtterance=null;
-      if(synth)synth.cancel();
+      if(!previewing)return;
+      request++;previewing=false;previewUtterance=null;activeUtterance=null;
+      cancelActiveSpeech();
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
       update();
     }
@@ -116,16 +132,60 @@
       if(!synth||typeof global.SpeechSynthesisUtterance!=='function') {
         o.toast(t(17));return false;
       }
-      if(!voice) {o.toast(t(16));return false;}
+      // The first speak() must run synchronously in the user's tap gesture on iOS.
+      // Calling cancel() on an idle synthesizer immediately before speak() can
+      // discard that first utterance in WebKit.
+      cancelActiveSpeech();
       request++;
-      const id=request;
-      synth.cancel();
-      const rate=isPreview ? Number(document.getElementById('voiceRate')?.value||o.getSettings().rate||1) : Number(o.getSettings().rate||1);
+      const id=request, preferredLocale=voice?.lang||locale();
+      const attempted=new Set();
+      let currentVoice=voice||null;
+      const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
+      const sameLanguage=v=>v && v.lang && v.lang.split('-')[0].toLowerCase()===preferredLocale.split('-')[0].toLowerCase();
+      const valid=()=>id===request && (isPreview?previewing:['starting','playing'].includes(audio.state));
+      let currentUtterance=null;
+
+      function fallback() {
+        // Retry only with a voice of the same language; never silently switch
+        // a Japanese/Spanish presentation to Portuguese or English.
+        attempted.add(voiceKey(currentVoice));
+        refreshVoices();
+        const alternatives=candidates.filter(v=>sameLanguage(v)&&!attempted.has(voiceKey(v)))
+          .sort((a,b)=>Number(b.localService!==false)-Number(a.localService!==false));
+        const alternate=alternatives[0]||(!attempted.has('system-default')?null:undefined);
+        if(alternate===undefined)return false;
+        currentVoice=alternate;
+        return true;
+      }
+      function fail(code,at) {
+        if(!valid())return;
+        clearStartupTimer();
+        const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout'].includes(code);
+        if(retryable && fallback()) {
+          // The browser may keep a stale utterance in its queue.
+          cancelActiveSpeech();
+          nextChunk(at);
+          return;
+        }
+        if(isPreview) {
+          previewing=false;previewUtterance=null;
+          const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
+        } else {
+          audio.state='paused';activeUtterance=null;
+        }
+        o.toast(speechErrorMessage(code));
+        console.warn('SePrepare: speech synthesis failed',code,{language:preferredLocale,preview:isPreview});
+        update();dispatch();
+      }
       function nextChunk(at) {
-        if(id!==request || (!isPreview && audio.state!=='playing'))return;
+        if(!valid())return;
+        clearStartupTimer();
         const remaining=text.slice(at);
-        // Safari/iOS and desktop Chromium may stop speaking extremely long utterances.
-        // Small chunks preserve resume/seek positions without downloading an online engine.
+        if(!remaining.length){
+          if(isPreview) {previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
+          else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
+          update();dispatch();return;
+        }
         let length=Math.min(220,remaining.length);
         if(remaining.length>length) {
           const punctuation=remaining.slice(0,length).search(/[.!?;:][ \n]/);
@@ -134,23 +194,31 @@
           else if(wordsEnd>100)length=wordsEnd+1;
         }
         const chunk=remaining.slice(0,length);
-        const utterance=new SpeechSynthesisUtterance(chunk);
-        utterance.lang=voice.lang;
-        utterance.voice=voice;
-        utterance.rate=clamp(rate,.5,1.8);
-        utterance.onboundary = ev => {
-          if(id!==request||isPreview||audio.state!=='playing')return;
+        const utterance=new global.SpeechSynthesisUtterance(chunk);
+        utterance.lang=currentVoice?.lang||preferredLocale;
+        if(currentVoice)utterance.voice=currentVoice;
+        utterance.rate=clamp(Number(isPreview?document.getElementById('voiceRate')?.value||o.getSettings().rate||1:o.getSettings().rate||1),.5,1.8);
+        const isCurrent=()=>valid()&&currentUtterance===utterance;
+        let started=false;
+        utterance.onstart=()=>{
+          if(!isCurrent())return;
+          started=true;clearStartupTimer();
+          if(!isPreview){audio.state='playing';update();dispatch();}
+        };
+        utterance.onboundary=ev=>{
+          if(!isCurrent()||isPreview||audio.state!=='playing')return;
           audio.offset=clamp(at+(Number(ev.charIndex)||0),0,audio.text.length);
           update();dispatch();
         };
         utterance.onend=()=>{
-          if(id!==request)return;
-          const end=at+chunk.length;
-          if(end<text.length) {
-            if(!isPreview)audio.offset=end;
+          if(!isCurrent())return;
+          clearStartupTimer();
+          const finish=at+chunk.length;
+          if(finish<text.length) {
+            if(!isPreview)audio.offset=finish;
             update();dispatch();
-            // Queue another small utterance to avoid the platform's maximum duration.
-            setTimeout(()=>nextChunk(end),0);
+            // On iOS a short task gap between chunks prevents a stalled queue.
+            setTimeout(()=>nextChunk(finish),0);
           } else {
             if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
             else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
@@ -158,19 +226,31 @@
           }
         };
         utterance.onerror=ev=>{
-          if(id!==request||ev.error==='canceled'||ev.error==='interrupted')return;
-          if(isPreview){previewing=false;previewUtterance=null;}
-          else audio.state='paused';
-          update();dispatch();
+          if(!isCurrent())return;
+          clearStartupTimer();
+          fail(ev.error||'synthesis-failed',at);
         };
+        currentUtterance=utterance;
         if(isPreview)previewUtterance=utterance;else activeUtterance=utterance;
-        synth.speak(utterance);
+        try {
+          synth.speak(utterance);
+          if(!started && isCurrent()) {
+            // Safari can silently drop speak(): don't leave a fake Playing state.
+            startupTimer=setTimeout(()=>{
+              startupTimer=null;
+              if(isCurrent()&&!started)fail('startup-timeout',at);
+            },4500);
+          }
+        } catch(error) {
+          console.warn('SePrepare: speechSynthesis.speak threw',error);
+          fail('synthesis-failed',at);
+        }
       }
       nextChunk(offset);
       return true;
     }
     function play() {
-      if(audio.state==='playing'){pause();return;}
+      if(audio.state==='playing'||audio.state==='starting'){pause();return;}
       stopPreview();
       o.sync();
       const speech=o.getSpeech();
@@ -179,22 +259,23 @@
         audio.speechId=speech.id;audio.text=speech.text;audio.offset=0;
       }
       if(audio.offset>=audio.text.length)audio.offset=0;
+      refreshVoices();
       const v=selectedVoice();
-      if(!v){o.toast(t(16));audio.state='paused';update();return;}
-      audio.state='playing';
+      // With no enumerated voices, ask iOS to choose its system voice by lang.
+      audio.state='starting';
       if(!startUtterance(audio.text,audio.offset,v,false))audio.state='paused';
       update();dispatch();
     }
     function pause() {
       if(previewing)stopPreview();
-      request++;if(synth)synth.cancel();
+      request++;cancelActiveSpeech();
       activeUtterance=null;
-      if(audio.state==='playing')audio.state='paused';
+      if(audio.state==='playing'||audio.state==='starting')audio.state='paused';
       update();dispatch();
     }
     function seek(value) {
       if(!audio.text||!audio.speechId)return;
-      const wasPlaying=audio.state==='playing';
+      const wasPlaying=audio.state==='playing'||audio.state==='starting';
       const fraction=clamp(Number(value)||0,0,1000)/1000;
       audio.offset=Math.min(audio.text.length-1,Math.round(audio.text.length*fraction));
       if(wasPlaying){request++;synth?.cancel();audio.state='paused';play();}
@@ -206,8 +287,8 @@
       const field=document.getElementById('voicePreviewText');
       const text=(field?.value||'').trim() || t(19);
       if(field&&!field.value.trim())field.value=text;
+      refreshVoices();
       const voice=selectedVoice(true);
-      if(!voice){o.toast(t(16));return;}
       previewing=true;
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(6);
       if(!startUtterance(text,0,voice,true))previewing=false;
@@ -243,13 +324,13 @@
       floating.style.top=clamp(y,8,Math.max(8,window.innerHeight-60))+'px';
     }
     function update() {
-      const playing=audio.state==='playing';
+      const playing=audio.state==='playing'||audio.state==='starting';
       document.querySelectorAll('[data-action="speak"]').forEach(btn=>{
         btn.innerHTML=o.icon(playing?'Pause':'Volume2')+'<span>'+escape(playing?t(14):t(13))+'</span>';
         btn.setAttribute('aria-label',playing?t(12):(audio.state==='paused'?t(15):t(13)));
       });
       const bar=document.getElementById('audioProgress'), slider=document.getElementById('audioSeek');
-      if(bar)bar.hidden=!(audio.speechId&&audio.text&&['playing','paused','finished'].includes(audio.state));
+      if(bar)bar.hidden=!(audio.speechId&&audio.text&&['starting','playing','paused','finished'].includes(audio.state));
       if(slider&&!slider.matches(':active')) {
         const n=audio.text?.length ? Math.round(clamp(audio.offset/audio.text.length,0,1)*1000):0;
         slider.value=String(n);
