@@ -1,0 +1,247 @@
+/* SePrepare: leitura por voz compartilhada entre PWA de iPhone e web/Windows. */
+(function(global) {
+  'use strict';
+  if (global.SePrepareAudio) return;
+  const langs = {'pt-BR':'pt-BR',pt:'pt-BR',en:'en-US',es:'es-ES',ja:'ja-JP'};
+  const translations = {
+    'pt': ['Automática (idioma do aplicativo)','Voz de leitura','Velocidade','Texto para testar a voz','Use a frase de exemplo ou escreva um texto. O teste não altera seus discursos.','Testar voz','Parar teste','Nenhuma voz disponível para este idioma. Instale uma voz nas configurações do dispositivo.','As vozes disponíveis dependem do navegador e do sistema. Apenas vozes acessíveis a este navegador podem ser usadas.','Posição da leitura','Avançar ou recuar a leitura','Arraste para voltar ou avançar no texto.','Pausar áudio','Ouvir','Pausar','Continuar áudio','Não há uma voz disponível para este idioma. Confira as vozes instaladas no dispositivo.','Este navegador não disponibiliza leitura em voz alta.','Esta voz é automática para o idioma selecionado.','Esta é uma frase para testar a voz do SePrepare.'],
+    en: ['Automatic (app language)','Reading voice','Speed','Text to test the voice','Use the sample sentence or write your own. This test does not change your speeches.','Test voice','Stop test','No voice is available for this language. Install one in device settings.','Available voices depend on your browser and operating system. Only accessible voices can be used.','Reading position','Skip forwards or backwards','Drag to move within the text.','Pause audio','Listen','Pause','Resume audio','No voice is available for this language. Check the installed voices.','This browser does not support speech synthesis.','Automatically use a voice in the selected language.','This is a sample sentence to test the SePrepare voice.'],
+    es: ['Automática (idioma de la aplicación)','Voz de lectura','Velocidad','Texto para probar la voz','Utiliza la frase de ejemplo o escribe un texto. La prueba no modifica tus discursos.','Probar voz','Detener prueba','No hay voces para este idioma. Instala una en los ajustes del dispositivo.','Las voces disponibles dependen del navegador y del sistema operativo.','Posición de lectura','Avanzar o retroceder','Arrastra para moverte por el texto.','Pausar audio','Escuchar','Pausar','Reanudar audio','No hay una voz disponible para este idioma. Revisa las voces instaladas.','Este navegador no permite la lectura en voz alta.','Seleccionar automáticamente la voz del idioma elegido.','Esta es una frase de ejemplo para probar la voz de SePrepare.'],
+    ja: ['自動（アプリの言語）','読み上げ音声','速度','音声を試すテキスト','例文を使うか、文章を入力してください。原稿は変更されません。','音声をテスト','テストを停止','この言語の音声がありません。端末の設定で追加してください。','利用可能な音声はブラウザーと端末によって異なります。','読み上げ位置','前後に移動','スライダーで再生位置を移動できます。','音声を一時停止','聞く','一時停止','音声を再開','この言語の音声がありません。端末の設定を確認してください。','このブラウザーは読み上げに対応していません。','選択した言語の音声を自動で使用します。','SePrepare の音声をテストするための例文です。']
+  };
+  const escape = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const normalized = code => langs[String(code || 'pt-BR').split('-')[0]] || 'pt-BR';
+  const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+  function create(options) {
+    const o=options, synth=global.speechSynthesis, audio=o.audio;
+    let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false;
+    const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
+    const t=i => (translations[lang()] || translations.pt)[i];
+    const locale=() => normalized(o.getSettings().language);
+    const normalizedName=name => String(name||'').replace(/(?:\s*\(?(?:online|offline|network)\)?|-network|-local)$/i,'').trim();
+    function refreshVoices() {
+      try { browserList=synth ? synth.getVoices() : []; } catch { browserList=[]; }
+      const map=new Map();
+      browserList.forEach(v => {
+        if (!v || !v.name || !v.lang) return;
+        const key=normalizedName(v.name).toLocaleLowerCase()+'|'+v.lang.toLowerCase();
+        const previous=map.get(key);
+        if (!previous || (v.localService && !previous.localService)) map.set(key,v);
+      });
+      const unique=[...map.values()];
+      // Prefer installed local voices and do not list a network duplicate.
+      candidates=unique.some(v=>v.localService) ? unique.filter(v=>v.localService!==false) : unique;
+      candidates.sort((a,b)=>a.lang.localeCompare(b.lang)||a.name.localeCompare(b.name));
+      o.setVoices(candidates.map(v=>({name:v.name,locale:v.lang,offline:v.localService!==false})));
+      const select=document.getElementById('voiceName');
+      if(select && !previewing) {
+        const selected=select.value;
+        select.innerHTML=voiceOptions(selected);
+        if([...select.options].some(v=>v.value===selected)) select.value=selected;
+      }
+      return candidates;
+    }
+    function exactVoice(name,voiceLocale) {
+      return candidates.find(v=>v.name===name && (!voiceLocale||v.lang===voiceLocale)) ||
+        candidates.find(v=>normalizedName(v.name)===normalizedName(name) && (!voiceLocale||v.lang===voiceLocale));
+    }
+    function automaticVoice(preferred=locale()) {
+      const language=preferred.split('-')[0].toLowerCase();
+      return candidates.find(v=>v.lang.toLowerCase()===preferred.toLowerCase()&&v.default) ||
+        candidates.find(v=>v.lang.toLowerCase()===preferred.toLowerCase()) ||
+        candidates.find(v=>v.lang.toLowerCase().split('-')[0]===language&&v.default) ||
+        candidates.find(v=>v.lang.toLowerCase().split('-')[0]===language) || null;
+    }
+    function selectedVoice(form=false) {
+      const settings=o.getSettings();
+      const name=form ? document.getElementById('voiceName')?.value : settings.voice;
+      const parsed=String(name||'').split('\u001f');
+      if(parsed[0]) return exactVoice(parsed[0],parsed[1] || (!form&&settings.audioLanguage) || '') || automaticVoice(locale());
+      return automaticVoice(locale());
+    }
+    function storedVoice() {
+      const settings=o.getSettings();
+      const chosen=exactVoice(settings.voice,settings.audioLanguage);
+      return chosen ? chosen.name+'\u001f'+chosen.lang : '';
+    }
+    function voiceOptions(previous='') {
+      const chosen=previous || storedVoice();
+      let html='<option value="">'+escape(t(0))+'</option>';
+      for(const v of candidates) {
+        const value=v.name+'\u001f'+v.lang;
+        html+='<option value="'+escape(value)+'"'+(value===chosen?' selected':'')+'>'+escape(normalizedName(v.name)+' · '+v.lang)+'</option>';
+      }
+      return html;
+    }
+    function settingsHTML() {
+      refreshVoices();
+      const s=o.getSettings();
+      return '<p class="help">'+escape(t(8))+'</p><div class="stack">'+
+        '<div class="field"><label for="voiceName">'+escape(t(1))+'</label><select id="voiceName">'+voiceOptions()+'</select>'+
+        '<small>'+escape(candidates.length ? t(18) : t(7))+'</small></div>'+
+        '<div class="field"><div class="range-line"><label for="voiceRate">'+escape(t(2))+'</label><output id="voiceRateValue">'+Number(s.rate||1).toFixed(1)+'×</output></div>'+
+        '<input type="range" id="voiceRate" min=".5" max="1.8" step=".1" value="'+escape(s.rate||1)+'"></div>'+
+        '<div class="field audio-preview-field"><label for="voicePreviewText">'+escape(t(3))+'</label>'+
+        '<textarea id="voicePreviewText" rows="3" maxlength="2000">'+escape(t(19))+'</textarea><small>'+escape(t(4))+'</small></div>'+
+        '<button type="button" class="btn soft" data-action="test-voice"><span id="audioTestLabel">'+escape(t(5))+'</span></button>'+
+        '</div>';
+    }
+    function bindSettings() {
+      const rate=document.getElementById('voiceRate');
+      if(rate) rate.addEventListener('input',()=>{const v=document.getElementById('voiceRateValue');if(v)v.textContent=Number(rate.value).toFixed(1)+'×';});
+    }
+    function saveSettings() {
+      const s=o.getSettings(), selector=document.getElementById('voiceName'), selected=String(selector?.value||'').split('\u001f');
+      s.voice=selected[0] || '';s.audioLanguage=selected[1] || '';
+      s.rate=clamp(Number(document.getElementById('voiceRate')?.value||s.rate||1),.5,1.8);
+      return s;
+    }
+    function applyLanguageChange() {
+      stopPreview(); pause();
+      const s=o.getSettings();s.voice='';s.audioLanguage='';
+      audio.offset=0;audio.text='';audio.speechId=null;audio.state='idle';
+      refreshVoices();update();
+    }
+    function dispatch() {
+      if(typeof o.onUpdate==='function')o.onUpdate();
+    }
+    function stopPreview() {
+      if(!previewing) return;
+      request++;previewing=false;activeUtterance=null;
+      if(synth)synth.cancel();
+      const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
+      update();
+    }
+    function startUtterance(text, offset, voice, isPreview) {
+      if(!synth||typeof global.SpeechSynthesisUtterance!=='function') {
+        o.toast(t(17));return false;
+      }
+      if(!voice) {o.toast(t(16));return false;}
+      request++;
+      const id=request;
+      synth.cancel();
+      const utterance=new SpeechSynthesisUtterance(text.slice(offset));
+      utterance.lang=voice.lang;utterance.voice=voice;utterance.rate=clamp(Number(o.getSettings().rate)||1,.5,1.8);
+      utterance.onboundary = ev => {
+        if(id!==request||isPreview||audio.state!=='playing')return;
+        audio.offset=clamp(offset+(Number(ev.charIndex)||0),0,audio.text.length);
+        update();dispatch();
+      };
+      utterance.onend=()=> {
+        if(id!==request)return;
+        if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
+        else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
+        update();dispatch();
+      };
+      utterance.onerror=ev => {
+        if(id!==request||ev.error==='canceled'||ev.error==='interrupted')return;
+        if(isPreview){previewing=false;previewUtterance=null;}
+        else audio.state='paused';
+        update();dispatch();
+      };
+      if(isPreview)previewUtterance=utterance;else activeUtterance=utterance;
+      synth.speak(utterance);return true;
+    }
+    function play() {
+      if(audio.state==='playing'){pause();return;}
+      stopPreview();
+      o.sync();
+      const speech=o.getSpeech();
+      if(!speech||!speech.text.trim()){o.toast(o.noSpeechMessage());return;}
+      if(audio.speechId!==speech.id||audio.text!==speech.text) {
+        audio.speechId=speech.id;audio.text=speech.text;audio.offset=0;
+      }
+      if(audio.offset>=audio.text.length)audio.offset=0;
+      const v=selectedVoice();
+      if(!v){o.toast(t(16));audio.state='paused';update();return;}
+      audio.state='playing';
+      if(!startUtterance(audio.text,audio.offset,v,false))audio.state='paused';
+      update();dispatch();
+    }
+    function pause() {
+      if(previewing)stopPreview();
+      request++;if(synth)synth.cancel();
+      activeUtterance=null;
+      if(audio.state==='playing')audio.state='paused';
+      update();dispatch();
+    }
+    function seek(value) {
+      if(!audio.text||!audio.speechId)return;
+      const wasPlaying=audio.state==='playing';
+      const fraction=clamp(Number(value)||0,0,1000)/1000;
+      audio.offset=Math.min(audio.text.length-1,Math.round(audio.text.length*fraction));
+      if(wasPlaying){request++;synth?.cancel();audio.state='paused';play();}
+      else {update();dispatch();}
+    }
+    function preview() {
+      if(previewing){stopPreview();return;}
+      pause();
+      const field=document.getElementById('voicePreviewText');
+      const text=(field?.value||'').trim() || t(19);
+      if(field&&!field.value.trim())field.value=text;
+      const voice=selectedVoice(true);
+      if(!voice){o.toast(t(16));return;}
+      previewing=true;
+      const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(6);
+      if(!startUtterance(text,0,voice,true))previewing=false;
+      update();
+    }
+    function progressHTML() {
+      return '<div class="audio-progress" id="audioProgress" hidden><div class="range-line"><label for="audioSeek">'+escape(t(9))+'</label>'+
+        '<output id="audioSeekValue">0%</output></div><input type="range" id="audioSeek" min="0" max="1000" step="1" value="0" aria-label="'+escape(t(10))+'">'+
+        '<small>'+escape(t(11))+'</small></div>';
+    }
+    let floating=document.getElementById('floatingAudioStop'),pos=null,ignoreClick=false,pointer=null;
+    try{const value=JSON.parse(localStorage.getItem('seprepare-audio-control-position')||'null');if(value&&Number.isFinite(value.x)&&Number.isFinite(value.y))pos=value;}catch{}
+    function ensureFloating() {
+      if(floating)return;
+      floating=document.createElement('button');floating.id='floatingAudioStop';floating.type='button';floating.className='audio-floating-stop';floating.hidden=true;
+      floating.innerHTML=o.icon('Volume2')+o.icon('Square','audio-stop-symbol');
+      floating.setAttribute('aria-label',t(12));floating.title=t(12);
+      document.body.append(floating);
+      floating.addEventListener('pointerdown',ev=>{pointer={id:ev.pointerId,x:ev.clientX,y:ev.clientY,ox:floating.offsetLeft,oy:floating.offsetTop};dragged=false;try{floating.setPointerCapture(ev.pointerId);}catch{}});
+      floating.addEventListener('pointermove',ev=>{if(!pointer||ev.pointerId!==pointer.id)return;if(Math.hypot(ev.clientX-pointer.x,ev.clientY-pointer.y)<7&&!dragged)return;dragged=true;const w=window.innerWidth,h=window.innerHeight;floating.style.left=clamp(pointer.ox+ev.clientX-pointer.x,8,w-60)+'px';floating.style.top=clamp(pointer.oy+ev.clientY-pointer.y,8,h-60)+'px';});
+      floating.addEventListener('pointerup',ev=>{if(!pointer||pointer.id!==ev.pointerId)return;pointer=null;if(dragged){ignoreClick=true;pos={x:floating.offsetLeft/Math.max(1,window.innerWidth-52),y:floating.offsetTop/Math.max(1,window.innerHeight-52)};try{localStorage.setItem('seprepare-audio-control-position',JSON.stringify(pos));}catch{}}});
+      floating.addEventListener('click',ev=>{if(ignoreClick){ignoreClick=false;ev.preventDefault();return;}pause();});
+    }
+    function updateFloating() {
+      ensureFloating();
+      const controls=document.querySelector('.reader-subtools'), rect=controls?.getBoundingClientRect();
+      const controlsVisible=!!rect&&rect.top<innerHeight&&rect.bottom>0;
+      floating.hidden=!(o.isReader()&&audio.state==='playing'&&!controlsVisible&&!document.querySelector('.modal-backdrop'));
+      if(floating.hidden)return;
+      const x=pos?clamp(pos.x,0,1)*(window.innerWidth-52):window.innerWidth-68;
+      const y=pos?clamp(pos.y,0,1)*(window.innerHeight-52):Math.max(8,window.innerHeight-132);
+      floating.style.left=clamp(x,8,Math.max(8,window.innerWidth-60))+'px';
+      floating.style.top=clamp(y,8,Math.max(8,window.innerHeight-60))+'px';
+    }
+    function update() {
+      const playing=audio.state==='playing';
+      document.querySelectorAll('[data-action="speak"]').forEach(btn=>{
+        btn.innerHTML=o.icon(playing?'Pause':'Volume2')+'<span>'+escape(playing?t(14):t(13))+'</span>';
+        btn.setAttribute('aria-label',playing?t(12):(audio.state==='paused'?t(15):t(13)));
+      });
+      const bar=document.getElementById('audioProgress'), slider=document.getElementById('audioSeek');
+      if(bar)bar.hidden=!(audio.speechId&&audio.text&&['playing','paused','finished'].includes(audio.state));
+      if(slider&&!slider.matches(':active')) {
+        const n=audio.text?.length ? Math.round(clamp(audio.offset/audio.text.length,0,1)*1000):0;
+        slider.value=String(n);
+        const output=document.getElementById('audioSeekValue');if(output)output.textContent=Math.round(n/10)+'%';
+      }
+      updateFloating();
+    }
+    global.addEventListener('scroll',updateFloating,{passive:true});
+    global.addEventListener('resize',updateFloating);
+    global.addEventListener('focus',refreshVoices);
+    if(synth)synth.addEventListener('voiceschanged',refreshVoices);
+    document.addEventListener('input',event=>{
+      if(event.target?.id!=='audioSeek')return;
+      const output=document.getElementById('audioSeekValue');
+      if(output)output.textContent=Math.round(Number(event.target.value)/10)+'%';
+    });
+    document.addEventListener('change',event=>{if(event.target?.id==='audioSeek')seek(event.target.value);});
+    refreshVoices();ensureFloating();
+    return {refreshVoices,settingsHTML,bindSettings,saveSettings,applyLanguageChange,play,pause,preview,stopPreview,seek,update,progressHTML};
+  }
+  global.SePrepareAudio={create};
+})(window);
