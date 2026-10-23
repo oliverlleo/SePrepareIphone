@@ -135,9 +135,9 @@
       // The first speak() must run synchronously in the user's tap gesture on iOS.
       // Calling cancel() on an idle synthesizer immediately before speak() can
       // discard that first utterance in WebKit.
-      cancelActiveSpeech();
       request++;
       const id=request, preferredLocale=voice?.lang||locale();
+      cancelActiveSpeech();
       const attempted=new Set();
       let fallbackCount=0,currentVoice=voice||null;
       const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
