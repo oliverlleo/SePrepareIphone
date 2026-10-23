@@ -1,0 +1,9 @@
+.legal-links{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.legal-document-link{flex:1 1 175px;min-width:0;text-decoration:none;white-space:normal;line-height:1.45;text-align:center}
+.legal-document-link svg{flex:0 0 auto}
+.legal-document-link span{min-width:0;overflow-wrap:break-word}
+.legal-settings-card .legal-links{margin-bottom:0}
+#seprepare-legal-overlay{z-index:10001;overscroll-behavior:contain;top:var(--ios-viewport-top,0px);bottom:var(--ios-viewport-bottom,0px)}
+#seprepare-legal-overlay .modal{max-height:calc(100% - 8px)}
+#seprepare-legal-overlay .seprepare-legal-error{color:var(--danger,#aa4940);margin:12px 0 0}
+#seprepare-legal-overlay .seprepare-legal-error[hidden]{display:none}
