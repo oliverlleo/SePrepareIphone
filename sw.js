@@ -3,7 +3,7 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261022.7';
+const BUILD_ID = '20261024.1';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
@@ -205,6 +205,8 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  // Authorization responses and cookies belong to the network, never the shell cache.
+  if (url.pathname.startsWith('/api/drive/')) return;
 
   // Release discovery must never read a previously cached HTML response.
   if (url.searchParams.has('seprepare-check')) {

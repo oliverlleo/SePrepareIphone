@@ -1,0 +1,30 @@
+{
+  "base": "4a75aa42cf5384a3833b6e9d9652cbb92a04e577",
+  "functions": [
+    {
+      "name": "Pb",
+      "purpose": "memória persistente do iPhone",
+      "sha256": "e5114ce7ff5cdfa365805d0fadc8b5e943f5f416feb186ccebc5f7be99c163f4"
+    },
+    {
+      "name": "aI",
+      "purpose": "inicialização e migração do caderno",
+      "sha256": "1caf89adae0636a15ee4fd8390dbc67e9b64b45bb9a06cc90a5982ab5aff1339"
+    },
+    {
+      "name": "flushForUpdate",
+      "purpose": "confirmação de gravação antes de atualizar",
+      "sha256": "bbe12b02ff49a4469c1f5ee939aed73e1fde4c8cd2cbc4d4f94e0cf81ee45797"
+    },
+    {
+      "name": "Tr",
+      "purpose": "validação do caderno",
+      "sha256": "e2ac69cc41467cd7596c875ae8ebce4a0e12aa60b6d1dbff7325f3b80e112ec8"
+    },
+    {
+      "name": "le",
+      "purpose": "gravação local original",
+      "sha256": "b2d937eb5656c878bcbf854967934c2e1ed6dde047de12ef70228bcb97aee6cf"
+    }
+  ]
+}

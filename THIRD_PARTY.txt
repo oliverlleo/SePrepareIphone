@@ -1,4 +1,4 @@
-SePrepare 1.0.37 — componentes de terceiros
+SePrepare 1.0.56 — componentes de terceiros
 Google Identity Services 22.0.0 — termos do SDK Google; AndroidX, Kotlin e coroutines — licenças próprias — consulte licenses/android-components.txt e licenses/google-android-sdk-terms.txt
 Quill 2.0.3 — BSD-3-Clause — https://github.com/slab/quill
 Hunspell WebAssembly 0.3.0 — LGPL/GPL/MPL — https://github.com/rotemdan/hunspell-wasm — upstream: https://github.com/hunspell/hunspell

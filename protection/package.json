@@ -1,0 +1,15 @@
+{
+  "name": "seprepare-iphone-protection",
+  "version": "1.0.56",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node verify-drive-intelligence.mjs && node verify-drive-scheduling.mjs && node verify-drive-retention.mjs && node verify-ios-authorization.mjs && node verify-worker-authorization.mjs && node verify-cloudflare-authorization.mjs",
+    "test:ui": "node verify-iphone-ui.mjs && node verify-iphone-upgrade.mjs && node verify-iphone-renewal.mjs"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.6",
+    "playwright": "1.64.1"
+  }
+}

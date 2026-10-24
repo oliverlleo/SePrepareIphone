@@ -1,4 +1,4 @@
-# Idiomas da interface — 1.0.46
+# Idiomas da interface — 1.0.56
 
 Em **Ajustes → Idioma do aplicativo**, o usuário escolhe Português (Brasil),
 English, Español ou 日本語. A troca é imediata e a preferência fica no armazenamento
