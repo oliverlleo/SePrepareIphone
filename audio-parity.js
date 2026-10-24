@@ -14,6 +14,9 @@
   const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
   function create(options) {
     const o=options, synth=global.speechSynthesis, audio=o.audio;
+    const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'');
+    const failedVoices=new Set(),failedSystemLocales=new Set();
+    const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
     let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null;
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
     const t=i => (translations[lang()] || translations.pt)[i];
@@ -47,16 +50,23 @@
     }
     function automaticVoice(preferred=locale()) {
       const language=preferred.split('-')[0].toLowerCase();
-      return candidates.find(v=>v.lang.toLowerCase()===preferred.toLowerCase()&&v.default) ||
-        candidates.find(v=>v.lang.toLowerCase()===preferred.toLowerCase()) ||
-        candidates.find(v=>v.lang.toLowerCase().split('-')[0]===language&&v.default) ||
-        candidates.find(v=>v.lang.toLowerCase().split('-')[0]===language) || null;
+      const available=candidates.filter(v=>!failedVoices.has(voiceKey(v)));
+      return available.find(v=>v.lang.toLowerCase()===preferred.toLowerCase()&&v.default) ||
+        available.find(v=>v.lang.toLowerCase()===preferred.toLowerCase()) ||
+        available.find(v=>v.lang.toLowerCase().split('-')[0]===language&&v.default) ||
+        available.find(v=>v.lang.toLowerCase().split('-')[0]===language) || null;
     }
     function selectedVoice(form=false) {
       const settings=o.getSettings();
       const name=form ? document.getElementById('voiceName')?.value : settings.voice;
       const parsed=String(name||'').split('\u001f');
-      if(parsed[0]) return exactVoice(parsed[0],parsed[1] || (!form&&settings.audioLanguage) || '') || automaticVoice(locale());
+      if(parsed[0]) {
+        const chosen=exactVoice(parsed[0],parsed[1] || (!form&&settings.audioLanguage) || '');
+        if(chosen&&!failedVoices.has(voiceKey(chosen)))return chosen;
+      }
+      // WebKit can expose installed voices that fail inside iPhone PWAs.
+      // Let iOS choose its own native voice before selecting an explicit one.
+      if(isIOS&&!failedSystemLocales.has(locale().toLowerCase()))return null;
       return automaticVoice(locale());
     }
     function storedVoice() {
@@ -140,7 +150,6 @@
       cancelActiveSpeech();
       const attempted=new Set();
       let fallbackCount=0,currentVoice=voice||null;
-      const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
       const sameLanguage=v=>v && v.lang && v.lang.split('-')[0].toLowerCase()===preferredLocale.split('-')[0].toLowerCase();
       const valid=()=>id===request && (isPreview?previewing:['starting','playing'].includes(audio.state));
       let currentUtterance=null;
@@ -163,9 +172,12 @@
         if(!valid())return;
         clearStartupTimer();
         const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout'].includes(code);
-        if(retryable && fallback()) {
-          // Invalidate the failed utterance before cancel(), which can
-          // synchronously emit another error event in Safari.
+        // A retry from an asynchronous callback loses the user's tap gesture
+        // on iOS. Use a different voice only on the next explicit tap.
+        if(isIOS&&retryable) {
+          if(currentVoice)failedVoices.add(voiceKey(currentVoice));
+          else failedSystemLocales.add(preferredLocale.toLowerCase());
+        } else if(retryable && fallback()) {
           currentUtterance=null;
           if(isPreview)previewUtterance=null;else activeUtterance=null;
           cancelActiveSpeech();
@@ -178,8 +190,14 @@
         } else {
           audio.state='paused';activeUtterance=null;
         }
-        o.toast(speechErrorMessage(code));
-        console.warn('SePrepare: speech synthesis failed',code,{language:preferredLocale,preview:isPreview});
+        const retryText={
+          pt:'O iPhone não iniciou esta voz. Toque novamente para tentar outra voz.',
+          en:'The iPhone could not start this voice. Tap again to try another.',
+          es:'El iPhone no inició esta voz. Toca de nuevo para probar otra.',
+          ja:'iPhoneで音声を開始できませんでした。もう一度タップして別の音声を試してください。'
+        };
+        o.toast(isIOS&&retryable ? retryText[lang()]||retryText.pt : speechErrorMessage(code));
+        console.warn('SePrepare: speech synthesis failed',code,{language:preferredLocale,preview:isPreview,voice:currentVoice?.name||'system'});
         update();dispatch();
       }
       function nextChunk(at) {
@@ -346,6 +364,13 @@
     global.addEventListener('scroll',updateFloating,{passive:true});
     global.addEventListener('resize',updateFloating);
     global.addEventListener('focus',refreshVoices);
+    // Reset a suspended iOS playback session but keep speech text/position.
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden&&(audio.state==='playing'||audio.state==='starting'||previewing))pause();
+    });
+    global.addEventListener('pagehide',()=>{
+      if(audio.state==='playing'||audio.state==='starting'||previewing)pause();
+    });
     if(synth)synth.addEventListener('voiceschanged',refreshVoices);
     document.addEventListener('input',event=>{
       if(event.target?.id!=='audioSeek')return;
