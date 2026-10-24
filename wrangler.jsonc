@@ -2,6 +2,12 @@
   "name": "seprepareiphone",
   "main": "worker/index.mjs",
   "compatibility_date": "2026-10-19",
+  "routes": [
+    {
+      "pattern": "ios.seprepareapp.com.br/api/drive/*",
+      "zone_name": "seprepareapp.com.br"
+    }
+  ],
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
