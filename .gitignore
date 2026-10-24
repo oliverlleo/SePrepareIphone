@@ -3,3 +3,5 @@ tests/qa-output/
 *.log
 
 /QA-drive-*.json
+.dev.vars*
+.env*

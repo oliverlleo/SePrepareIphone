@@ -1,16 +1,32 @@
+import {createCloudflareAuthorization} from './cloudflare-authorization.js';
 const KEY='seprepare-web-drive-token-v1';
 const fault=(message,code)=>Object.assign(new Error(message),{code});
 // Preserve the iPhone's bounded, tab-scoped credential during a reload/BFCache
 // return. A refresh token is never written to browser storage.
-export function createIosAuthorization({window:win=window,storage=win.sessionStorage,now=Date.now,timeout=30000}={}){
+export function createIosAuthorization({window:win=window,storage=win.sessionStorage,now=Date.now,timeout=30000,onChange=()=>{},backend=true}={}){
  let generation=0;
- function invalidate(){generation++;try{storage.removeItem(KEY);}catch{}}
+ const broker=backend&&win.location?.origin?createCloudflareAuthorization({window:win,onChange,timeout}):null;
+ function invalidate(){generation++;broker?.invalidate();try{storage.removeItem(KEY);}catch{}}
  function cached(account){
   if(!account)return null;
-  try{const value=JSON.parse(storage.getItem(KEY)||'null');if(value&&typeof value.token==='string'&&value.token&&Number.isFinite(value.expiresAt)&&value.expiresAt>now()+15000&&value.expiresAt<=now()+86400000&&(!value.account||value.account.toLowerCase()===account.toLowerCase()))return {access_token:value.token,expires_in:(value.expiresAt-now())/1000,scope:'https://www.googleapis.com/auth/drive.appdata'};}catch{}
+  try{const value=JSON.parse(storage.getItem(KEY)||'null');if(value&&typeof value.token==='string'&&value.token&&value.token.length<=8192&&Number.isFinite(value.expiresAt)&&value.expiresAt>now()+15000&&value.expiresAt<=now()+86400000&&(!value.account||value.account.toLowerCase()===account.toLowerCase()))return {access_token:value.token,expires_in:(value.expiresAt-now())/1000,scope:'https://www.googleapis.com/auth/drive.appdata'};}catch{}
   return null;
  }
- function acquire({mode,account,clientId,scopes}){
+ function acquire(options){
+  const {mode,account}=options;
+  if(broker&&!broker.isPrepared()){
+   const existing=cached(account);if(existing&&mode!=='user')return Promise.resolve(existing);
+   if(mode!=='user')return broker.prepare().then(()=>acquire(options));
+   void broker.prepare().catch(()=>{});return Promise.reject(fault('A conexão está sendo preparada. Toque em Conectar novamente.','authorization-pending'));
+  }
+  if(broker?.managed()){
+   if(mode==='user'&&broker.enabled()&&!broker.hasSession())return broker.connect(account).then(result=>{try{storage.removeItem(KEY);}catch{}return result;});
+   const existing=cached(account);if(existing)return Promise.resolve(existing);
+   return broker.renew(account);
+  }
+  return legacyAcquire(options);
+ }
+ function legacyAcquire({mode,account,clientId,scopes}){
   const existing=cached(account);if(existing)return Promise.resolve(existing);
   const oauth=win.google?.accounts?.oauth2;if(!oauth?.initTokenClient)return Promise.reject(fault('A conexão Google ainda está carregando.','configuration'));
   const started=generation;
@@ -36,5 +52,5 @@ export function createIosAuthorization({window:win=window,storage=win.sessionSto
  function confirm({email,accessToken}){
   try{const value=JSON.parse(storage.getItem(KEY)||'null');if(value?.token===accessToken){value.account=email.toLowerCase();storage.setItem(KEY,JSON.stringify(value));}}catch{}
  }
- return {acquire,invalidate,confirm,canResume:account=>!!cached(account)};
+ return {acquire,invalidate,confirm,prepare:force=>broker?.prepare(force)||Promise.resolve(),managed:()=>!!broker&&(broker.managed()||!broker.isPrepared()),allowGesture:()=>!broker||(broker.isPrepared()&&!broker.managed()),disconnect:()=>{generation++;try{storage.removeItem(KEY);}catch{}return broker?.disconnect()||Promise.resolve();},status:()=>broker?.status()||{},canResume:account=>!!cached(account)||!!broker&&(!broker.isPrepared()||broker.hasSession()||broker.managed()&&!broker.enabled())};
 }

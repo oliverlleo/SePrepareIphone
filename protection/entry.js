@@ -14,8 +14,13 @@ function migrateLegacy(storage){
 }
 export function createBridge(options){
  try{migrateLegacy(localStorage);}catch{/* The controller reports malformed records without touching notebook storage. */}
- const bridge=createBrowserDrive({...options,environment:{...options.environment,authorization:options.environment?.authorization||createIosAuthorization()}});
- window.addEventListener('seprepare:ready',()=>{bridge.preloadGis();bridge.driveResume();void bridge.driveLocalSaved();});
+ let bridge;const authorization=options.environment?.authorization||createIosAuthorization({onChange:()=>bridge?.driveAuthorizationChanged()});
+ bridge=createBrowserDrive({...options,environment:{...options.environment,authorization}});
+ void authorization.prepare?.().catch(()=>{});
+ window.addEventListener('online',()=>{void authorization.prepare?.(true).catch(()=>{});});
+ window.addEventListener('pageshow',()=>{void authorization.prepare?.().catch(()=>{});});
+ window.addEventListener('focus',()=>{void authorization.prepare?.().catch(()=>{});});
+ window.addEventListener('seprepare:ready',()=>{bridge.preloadGis();bridge.driveResume();void bridge.driveLocalSaved();void authorization.prepare?.().catch(()=>{});});
  return bridge;
 }
 const paths={

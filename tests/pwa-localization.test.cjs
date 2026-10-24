@@ -26,4 +26,6 @@ function harness({fail='',foreign=false}={}){
  assert(!/indexedDB\.(?:deleteDatabase|open)|localStorage\.(?:clear|removeItem)/.test(worker));
  console.log('PASS Failed/cross-origin download cannot activate a partial update or delete the previous offline shell.');
  console.log('PASS Locale runtime is self-contained in existing entry points; notebook storage is untouched.');
+ let intercepted=false;h.handlers.fetch({request:new Request(base+'api/drive/config'),respondWith(){intercepted=true;},waitUntil(){intercepted=true;}});assert(!intercepted);
+ console.log('PASS Authorization requests bypass the offline shell and can never become cached credentials.');
 })().catch(error=>{console.error(error.stack);process.exitCode=1;});

@@ -18,13 +18,15 @@ OPFS/IndexedDB, a instalação exclusiva do iPhone e o mecanismo de atualizaçã
 - Conta e escolhas anteriores migradas sem apagar os registros antigos.
 - Retomada de uma autorização temporária ainda válida, inclusive antes de carregar a biblioteca Google.
 - Tratamento de HTTP 401, resposta ausente, callback atrasado, BFCache e interrupção da primeira conexão enquanto há uma edição local.
+- Autorização por código e renovação protegida pelo Worker existente, com cookie cifrado e HttpOnly, sem banco de dados ou transferência de discursos pela hospedagem.
 
 ## Evidência
 
 Comando executado: `node protection/verify-all.mjs --ui`.
 
-**209 verificações aprovadas:** 194 verificações de núcleo, proteção, integração e
-compilação, mais 11 cenários completos de interface e 4 de atualização entre versões.
+**240 verificações aprovadas:** 219 verificações de núcleo, proteção, autorização,
+integração e compilação, mais 11 cenários completos de interface, 4 de atualização
+entre versões e 6 de renovação protegida com HTTPS no WebKit.
 
 O teste de atualização inicia o bundle original, edita e confirma a gravação,
 disponibiliza a nova versão ao mesmo PWA e aguarda a atualização automática. Em
@@ -37,7 +39,7 @@ pontos de integração documentados não substituem essas rotinas. Compilar nova
 produz os mesmos arquivos.
 
 A interface foi exercitada em larguras 375, 390, 430 e 844, com temas claro/escuro e
-português, inglês, espanhol e japonês. Os catálogos têm 1.836 mensagens por idioma.
+português, inglês, espanhol e japonês. Os catálogos têm 1.848 mensagens por idioma.
 
 OAuth e Drive foram simulados com dados fictícios. O WebKit executou armazenamento,
 service worker e atualização reais, com identidade e dimensões de iPhone simuladas.
@@ -47,17 +49,29 @@ em iPhone físico nem login em conta Google real.
 Relatórios e capturas locais ficam em `QA-drive-iphone-*.json` e
 `tests/qa-output/drive-iphone/`; esses arquivos não são publicados.
 
-## Reconexão totalmente automática: pendência explícita
+## Ativação da renovação protegida
 
 O PWA atual usa o modelo de token do Google e não possui refresh token. Uma sessão
 ainda válida pode ser reaproveitada; após expirar ou ser perdida pelo iOS, o Google
 pode exigir um gesto para emitir outra autorização. Repetir a janela silenciosa não
 elimina essa exigência.
 
-Para renovar sem exigir reconexão manual a cada expiração, foi solicitada ao usuário
-a definição sobre usar a hospedagem Cloudflare existente para uma autorização por
-código e renovação protegida, sem guardar discursos no serviço. Essa parte não foi
-implantada nesta etapa e não é apresentada como concluída.
+A autorização por código e a renovação estão implementadas em `worker/` e
+`protection/cloudflare-authorization.js`. Os testes HTTPS usam o handler real,
+cookies reais e a interface do aplicativo, com o Google simulado. Cobrem primeira
+autorização, perda da sessão temporária, expiração, recusa HTTP 401, indisponibilidade
+com novas tentativas e desconexão preservando os discursos.
+
+A ativação na hospedagem exige `GOOGLE_CLIENT_SECRET` e `DRIVE_AUTH_KEY` como
+segredos de execução, além da origem Google correta. Os valores não fazem parte
+do projeto nem da publicação. Sem eles, `/api/drive/config` responde
+`enabled:false` e o fluxo anterior é preservado. A instrução completa está em
+`worker/README.md`. O empacotamento Cloudflare foi validado sem publicação.
+
+Depois de configurada a hospedagem, é necessária uma autorização inicial no PWA
+instalado. A renovação posterior não depende de janelas ou gestos comuns. Revogação
+do Google, limpeza do site e vencimento do consentimento ainda podem exigir nova
+autorização. Isso não permite que o iOS execute continuamente um PWA fechado.
 
 Referências: [modelo de tokens](https://developers.google.com/identity/oauth2/web/guides/use-token-model),
 [modelo por código](https://developers.google.com/identity/oauth2/web/guides/use-code-model) e

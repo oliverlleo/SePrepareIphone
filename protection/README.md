@@ -14,7 +14,7 @@ o compartilhamento, os idiomas e o mecanismo de atualização permanecem na base
 - Quatro pontos de recuperação distribuídos no tempo, preservando cópias concorrentes ainda não conferidas.
 - Migração da conta e das preferências antigas sem apagar os registros anteriores.
 
-## Reconexão: causa confirmada e limite atual
+## Reconexão no iPhone
 
 A versão anterior mantém um access token temporário em `sessionStorage`. Sua função
 de retorno chama `initTokenClient().requestAccessToken()` novamente depois da expiração.
@@ -26,10 +26,25 @@ Drive. A retomada funciona inclusive antes de carregar a biblioteca Google. Tamb
 trata expiração, HTTP 401, retorno pelo BFCache, resposta ausente e callbacks atrasados.
 Uma primeira conexão interrompida enquanto o usuário edita não grava uma conta incompleta.
 
-Isso não garante renovação após expiração sem interação. Para cumprir essa parte do
-pedido, é necessário usar autorização por código com renovação protegida na hospedagem.
-Essa mudança está aguardando a definição solicitada ao usuário; não há backend OAuth
-implantado nem refresh token armazenado por esta etapa.
+Com a configuração da hospedagem concluída, a primeira conexão usa o modelo por
+código do Google. O Worker troca esse código e guarda a autorização durável num
+cookie cifrado com AES-GCM, Secure, HttpOnly e SameSite=Strict, vinculado à origem e
+ao cliente Google. A chave fica num segredo da Cloudflare; o JavaScript não recebe
+o refresh token. Não é necessário banco de dados, e os discursos continuam sendo
+transferidos diretamente entre o PWA e a área privada do Google Drive.
+
+Ao reabrir ou expirar o acesso, o PWA consulta o Worker e renova a autorização sem
+abrir a interface Google. Falhas temporárias conservam a conta e recebem novas
+tentativas com espera progressiva. O cancelamento real da autorização, a limpeza
+dos dados do site ou o vencimento do consentimento Google podem exigir nova
+autorização. O iOS também pode suspender o PWA fechado; a retomada ocorre ao abrir.
+
+Contas anteriores recebem uma ação de autorização única para ativar a renovação.
+Uma credencial temporária válida continua utilizável durante a migração. A ausência
+dos segredos mantém o fluxo anterior disponível e não anuncia renovação protegida.
+Depois de ativada, uma indisponibilidade não faz o app voltar a abrir janelas por
+toques comuns. A desconexão elimina somente o cookie deste PWA, sem revogar a
+autorização de outros dispositivos. Veja `../worker/README.md` para ativação.
 
 Fontes: [modelo de tokens do Google](https://developers.google.com/identity/oauth2/web/guides/use-token-model),
 [modelo por código e renovação no backend](https://developers.google.com/identity/oauth2/web/guides/use-code-model)

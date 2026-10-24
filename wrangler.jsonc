@@ -1,8 +1,15 @@
 {
   "name": "seprepareiphone",
+  "main": "worker/index.mjs",
   "compatibility_date": "2026-10-19",
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/drive/*"]
+  },
+  "vars": {
+    "APP_ORIGIN": "https://ios.seprepareapp.com.br",
+    "GOOGLE_CLIENT_ID": "4184165315-bjgek38jqbhjb2v8bggfh9ib7f84n33k.apps.googleusercontent.com"
   },
   "previews": {}
 }

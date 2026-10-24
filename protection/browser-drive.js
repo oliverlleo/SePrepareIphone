@@ -57,6 +57,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  const identity=()=>environment.identity||win.google?.accounts?.oauth2;
  let record,error='',errorCode='',busy=false,connecting=false,token='',expiresAt=0,ticket=null,disposed=false,gisLoading=null;
  let resuming=false,resumeTask=null,silentTried=false,gestureTried=false,forcedReconnect=false,authorizationVersion=0;
+ let authorizationRetryAt=0,authorizationFailures=0,authorizationTimer=null;
  const later=environment.setTimeout||globalThis.setTimeout.bind(globalThis),cancelLater=environment.clearTimeout||globalThis.clearTimeout.bind(globalThis);
  const requestGap=environment.requestGap??DRIVE_REQUEST_GAP,sleep=environment.sleep||(ms=>new Promise(resolve=>setTimeout(resolve,ms)));
  const sourceCache=environment.receiptCache||createDriveReceiptCache(environment.indexedDB||globalThis.indexedDB);
@@ -90,7 +91,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  function transient(e){return ['network','drive','rate-limit','authorization-pending'].includes(e.code);}
  function backgroundFailure(e){fail(e);const failures=data().backupFailures+1;try{commit({backupFailures:failures,backupRetryAt:now()+driveRetryDelay(failures),backupBlocked:!transient(e),blockedReason:transient(e)?'':e.code||'storage'});}catch{}}
  function commit(patch={},extras={}){const next={...record,...extras,data:{...data(),...patch}};try{storage.setItem(KEY,JSON.stringify({version:1,...next}));}catch{throw failure(SPLocale.t('Não foi possível salvar as preferências do Drive neste navegador. Exporte um backup para liberar espaço.'),'storage');}record=next;}
- function status(){const missing=data().connected&&!tokenValid();return {...data(),browserDrive:true,readOnly:!canWrite(),busy,nextBackupAt:data().autoBackup?due():0,backupIndexReady:!!record.confirmation,needsAuthorization:missing,authorizationPending:missing&&resuming,needsReconnect:missing&&(forcedReconnect||['authorization','popup','account','cancelled'].includes(errorCode)),error,errorCode};}
+ function status(){const missing=data().connected&&!tokenValid();return {...data(),...environment.authorization?.status?.(),browserDrive:true,readOnly:!canWrite(),busy,nextBackupAt:data().autoBackup?due():0,backupIndexReady:!!record.confirmation,needsAuthorization:missing,authorizationPending:missing&&resuming,needsReconnect:missing&&(forcedReconnect||['authorization','popup','account','cancelled'].includes(errorCode)),error,errorCode};}
  function emit(kind,requestId='',extras={}){win.dispatchEvent(new CustomEvent('nativeDrive',{detail:{kind,requestId,status:status(),...extras}}));}
  function invalidate(){authorizationVersion++;environment.authorization?.invalidate?.();token='';expiresAt=0;ticket=null;}
  function fail(e){if(e.code==='authorization-pending'){error='';errorCode='';return;}error=typeof e.code==='string'?e.message:SPLocale.t('Não foi possível acessar o Google Drive. Verifique sua conexão e tente novamente.');errorCode=typeof e.code==='string'?e.code:'network';if(['authorization','account','popup','cancelled'].includes(errorCode)){forcedReconnect=true;if(errorCode==='authorization')invalidate();}}
@@ -203,6 +204,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
     if(disposed||generation!==authorizationVersion)throw failure('A conta mudou durante a operação.','account');
     const seconds=Number(response?.expires_in);if(!response?.access_token||!Number.isFinite(seconds)||seconds<=0||!SCOPES.every(scope=>String(response.scope||'').split(' ').includes(scope)))throw failure('Autorize o acesso à área privada do Drive para continuar.','authorization');
     token=response.access_token;expiresAt=now()+Math.min(seconds,86400)*1000-1000;
+    if(response.drive_request_at){lastRequestAt=now();try{storage.setItem(KEY+'-last-request',String(lastRequestAt));}catch{}}
    });
   }
   const oauth=identity();if(!oauth?.initTokenClient){void loadGIS();return Promise.reject(failure(SPLocale.t('A conexão Google ainda está carregando. Verifique a internet e toque em Conectar novamente.'),'configuration'));}
@@ -231,7 +233,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
    const email=await accountEmail();
    if(email!==expected||data().email.toLowerCase()!==expected)throw failure(SPLocale.t('A conta Google autorizada é diferente da conta conectada. Use a conta anterior ou desconecte para trocar de conta.'),'account');
    if(data().blockedReason==='authorization')commit({backupBlocked:false,blockedReason:'',backupRetryAt:0});
-   silentTried=false;gestureTried=false;forcedReconnect=false;
+   silentTried=false;gestureTried=false;forcedReconnect=false;authorizationRetryAt=0;authorizationFailures=0;if(authorizationTimer!==null){cancelLater(authorizationTimer);authorizationTimer=null;}
   }catch(e){invalidate();throw e;}
  }
  // A tentativa com prompt:none não abre seletor/consentimento. Sem autorização silenciosa,
@@ -247,7 +249,9 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
    error='';errorCode='';silentTried=false;gestureTried=false;return true;
   }).catch(e=>{
    // Não apresentar erro vermelho quando o Google apenas requer interação.
-   if(mode!=='silent')fail(e);
+   if(environment.authorization?.managed?.()&&transient(e)){
+    silentTried=false;authorizationRetryAt=now()+driveRetryDelay(++authorizationFailures);scheduleAuthorizationRetry();
+   }else if(mode!=='silent'||environment.authorization?.managed?.())fail(e);
    return false;
   }).finally(()=>{
    resuming=false;resumeTask=null;emit('authorization');
@@ -255,12 +259,19 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   });
   resumeTask=attempt;return attempt;
  }
+ function scheduleAuthorizationRetry(){
+  if(authorizationTimer!==null||!active()||!authorizationRetryAt)return;
+  authorizationTimer=later(()=>{authorizationTimer=null;startAuthorization();},Math.max(0,authorizationRetryAt-now()));authorizationTimer?.unref?.();
+ }
  function startAuthorization(){
+  if(environment.authorization?.managed?.()&&!environment.authorization.canResume(data().email))return;
+  if(authorizationRetryAt>now()){scheduleAuthorizationRetry();return;}
   if(disposed||!data().connected||tokenValid()||!active()||win.navigator?.onLine===false||silentTried||resumeTask||forcedReconnect&&data().blockedReason==='authorization')return;
   if(environment.authorization?.canResume?.(data().email)||identity()?.initTokenClient){void resumeAuthorization('silent');return;}
   void loadGIS().then(()=>{if(!disposed&&identity()?.initTokenClient)void resumeAuthorization('silent');});
  }
  function onUserGesture(event){
+  if(environment.authorization?.allowGesture?.()===false)return;
   if(event.type==='keydown'&&(event.repeat||event.ctrlKey||event.altKey||event.metaKey))return;
   if(event.target?.closest?.('input,textarea,select,[contenteditable="true"]'))return;
   if(disposed||!data().connected||tokenValid()||!silentTried||gestureTried||resumeTask||!active()||win.navigator?.onLine===false)return;
@@ -305,9 +316,9 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
    }catch(e){record=previous;invalidate();throw e;}finally{connecting=false;}
   }
   if(kind==='disconnect'){
-   const oldToken=token,oldAccount=data().email;const next={data:{...defaults(),autoBackup:data().autoBackup,autoRead:data().autoRead,offerSeen:true},baseline:null,pending:null,confirmation:null,recentUploads:[]};
+   const oldToken=token,oldAccount=data().email,managed=environment.authorization?.managed?.();const next={data:{...defaults(),autoBackup:data().autoBackup,autoRead:data().autoRead,offerSeen:true},baseline:null,pending:null,confirmation:null,recentUploads:[]};
    try{storage.setItem(KEY,JSON.stringify({version:1,...next}));}catch{throw failure(SPLocale.t('Não foi possível desconectar neste navegador. Tente novamente.'),'storage');}
-   record=next;source=null;lastReadSource=null;checkedRaw='';checkedHash='';void sourceCache.remove(oldAccount).catch(()=>{});forcedReconnect=false;invalidate();try{storage.removeItem(RECOVERY_KEY);}catch{}try{if(oldToken)identity()?.revoke?.(oldToken,()=>{});}catch{}return {};
+   record=next;source=null;lastReadSource=null;checkedRaw='';checkedHash='';void sourceCache.remove(oldAccount).catch(()=>{});forcedReconnect=false;invalidate();try{storage.removeItem(RECOVERY_KEY);}catch{}if(managed){void environment.authorization.disconnect().catch(()=>{});}else try{if(oldToken)identity()?.revoke?.(oldToken,()=>{});}catch{}return {};
   }
   if(!data().connected)throw failure(SPLocale.t('Conecte sua conta Google primeiro.'),'account');
   if(kind==='auto-backup'){if(argument!=='false')throw failure(SPLocale.t('Confira o backup existente antes de ativar os envios automáticos.'),'confirmation');commit({autoBackup:false});return {};}
@@ -381,6 +392,6 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  doc.addEventListener('visibilitychange',onForeground);doc.addEventListener('pointerdown',onUserGesture,true);doc.addEventListener('keydown',onUserGesture,true);win.addEventListener('focus',onForeground);win.addEventListener('online',onForeground);win.addEventListener('storage',onStorage);win.addEventListener('pageshow',onForeground);
  if(data().connected&&record.confirmation){const account=data().email,receipt=record.confirmation;sourceReady=sourceCache.load(account).then(async saved=>{if(!disposed&&data().email===account&&record.confirmation?.id===receipt.id&&saved?.account===account&&saved.id===receipt.id&&typeof saved.state==='string'&&await driveHash(saved.state)===receipt.wireHash&&await backupStateHash(saved.state)===receipt.hash){source=saved;emit('status');}}).catch(()=>{});}
  const timer=interval(()=>{startAuthorization();void automatic();},60000);timer?.unref?.();onForeground();
- return {browserDrive:true,driveResume:onForeground,preloadGis:()=>{void loadGIS();},driveLocalSaved:localSaved,driveRunPending:automatic,driveBackupIndex:()=>JSON.stringify(record.confirmation?{...record.confirmation,uploaded:record.confirmation.id===data().lastUploadedId}:{}),driveRestoreBase:()=>JSON.stringify(source?.account===data().email?source:{}),driveStatus:()=>JSON.stringify(status()),driveAction:(kind,id,argument)=>{void run(kind,id,argument);},driveTakeOffer:()=>{if(!canWrite()||data().offerSeen)return false;try{commit({offerSeen:true});return true;}catch(e){fail(e);return false;}},drivePending:()=>JSON.stringify(record.pending?.account===data().email?record.pending:{}),driveReadBaseline:()=>JSON.stringify(record.baseline?.account===data().email?record.baseline:{}),drivePrepareRestore:()=>{if(!canWrite())return false;try{storage.setItem(RECOVERY_KEY,localRaw());return true;}catch(e){fail(e.code?e:failure(SPLocale.t('Não foi possível guardar sua cópia de recuperação.'),'storage'));return false;}},driveCompleteRead:completeRead,driveAckRead:id=>{try{if(!canWrite()||!data().connected||!validId(id))return false;const match=record.pending?.id===id,before=match&&record.pending.reason==='before-backup';commit({lastReadId:id,lastReadAt:now(),lastReadOutcome:'checked',...(before?{needsReview:false,approvedRemoteId:id}:{})},match?{pending:null}:{});return true;}catch{return false;}},dispose:()=>{disposed=true;invalidate();if(backupTimer!==null)cancelLater(backupTimer);clear(timer);doc.removeEventListener('visibilitychange',onForeground);doc.removeEventListener('pointerdown',onUserGesture,true);doc.removeEventListener('keydown',onUserGesture,true);win.removeEventListener('focus',onForeground);win.removeEventListener('online',onForeground);win.removeEventListener('storage',onStorage);win.removeEventListener('pageshow',onForeground);}};
+ return {browserDrive:true,driveResume:onForeground,driveAuthorizationChanged:()=>{emit('authorization');onForeground();},preloadGis:()=>{void loadGIS();},driveLocalSaved:localSaved,driveRunPending:automatic,driveBackupIndex:()=>JSON.stringify(record.confirmation?{...record.confirmation,uploaded:record.confirmation.id===data().lastUploadedId}:{}),driveRestoreBase:()=>JSON.stringify(source?.account===data().email?source:{}),driveStatus:()=>JSON.stringify(status()),driveAction:(kind,id,argument)=>{void run(kind,id,argument);},driveTakeOffer:()=>{if(!canWrite()||data().offerSeen)return false;try{commit({offerSeen:true});return true;}catch(e){fail(e);return false;}},drivePending:()=>JSON.stringify(record.pending?.account===data().email?record.pending:{}),driveReadBaseline:()=>JSON.stringify(record.baseline?.account===data().email?record.baseline:{}),drivePrepareRestore:()=>{if(!canWrite())return false;try{storage.setItem(RECOVERY_KEY,localRaw());return true;}catch(e){fail(e.code?e:failure(SPLocale.t('Não foi possível guardar sua cópia de recuperação.'),'storage'));return false;}},driveCompleteRead:completeRead,driveAckRead:id=>{try{if(!canWrite()||!data().connected||!validId(id))return false;const match=record.pending?.id===id,before=match&&record.pending.reason==='before-backup';commit({lastReadId:id,lastReadAt:now(),lastReadOutcome:'checked',...(before?{needsReview:false,approvedRemoteId:id}:{})},match?{pending:null}:{});return true;}catch{return false;}},dispose:()=>{disposed=true;invalidate();if(authorizationTimer!==null)cancelLater(authorizationTimer);if(backupTimer!==null)cancelLater(backupTimer);clear(timer);doc.removeEventListener('visibilitychange',onForeground);doc.removeEventListener('pointerdown',onUserGesture,true);doc.removeEventListener('keydown',onUserGesture,true);win.removeEventListener('focus',onForeground);win.removeEventListener('online',onForeground);win.removeEventListener('storage',onStorage);win.removeEventListener('pageshow',onForeground);}};
 }
 

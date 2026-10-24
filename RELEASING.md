@@ -60,3 +60,8 @@ git diff --check
 Em Linux, prepare também as dependências de sistema exigidas pelo WebKit. Os testes
 usam contas e discursos fictícios. WebKit com um perfil de iPhone não substitui a
 verificação do login Google num aparelho físico.
+
+O deploy agora inclui `worker/index.mjs` para a renovação protegida do Drive.
+Configure os dois segredos de execução conforme `worker/README.md`. Os segredos
+nunca entram na compilação nem nos ativos. O empacotamento foi validado com
+`wrangler deploy --dry-run`; a configuração limita o Worker aos caminhos de autorização.
