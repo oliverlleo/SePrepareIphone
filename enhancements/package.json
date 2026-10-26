@@ -1,0 +1,7 @@
+{
+  "name": "seprepare-apple-enhancements",
+  "version": "1.0.62",
+  "private": true,
+  "type": "module",
+  "scripts": {"build": "node build.mjs"}
+}

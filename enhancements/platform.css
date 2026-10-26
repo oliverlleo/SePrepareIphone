@@ -1,0 +1,8 @@
+/* The installed Apple host already sizes #app to visualViewport. Applying the
+   keyboard offset again would lift Find above the usable screen. */
+html[data-seprepare-mode=installed] .editor-shell .editor-find-panel{bottom:calc(38px + env(safe-area-inset-bottom,0px));max-height:calc(var(--ios-viewport-height,100dvh) - 90px)}
+html[data-seprepare-mode=installed][data-seprepare-compact-viewport] .editor-shell.editor-find-open .editor-info{display:none}
+html[data-seprepare-mode=installed][data-seprepare-compact-viewport] .editor-shell.editor-find-open .editor-smart-actions,
+html[data-seprepare-mode=installed][data-seprepare-compact-viewport] .editor-shell.editor-find-open .scope-bar{display:none}
+.settings-detail-dialog .settings-detail-content .notice{margin:0;line-height:1.65}
+.settings-detail-dialog[data-settings-panel=memory] .settings-detail-content>.row{grid-template-columns:1fr}

@@ -1,3 +1,4 @@
+import {modalityAliases} from './modality-labels.js';
 import {catalogs} from './i18n-catalogs.js';
 // UI-only localization. Document content is always an opaque interpolation.
 export const LANGUAGES=Object.freeze(['pt-BR','en','es','ja']);
@@ -7,13 +8,13 @@ try{if(typeof localStorage!=='undefined')language=normalizeLanguage(localStorage
 if(typeof window!=='undefined')window.addEventListener('seprepare:languagechange',event=>{language=normalizeLanguage(event.detail);if(typeof document!=='undefined')document.documentElement.lang=uiLocale();});
 export const uiLocale=()=>({en:'en-US',es:'es-ES',ja:'ja-JP'}[language]||'pt-BR');
 export function setLanguage(value){const previous=language;language=normalizeLanguage(value);if(typeof document!=='undefined')document.documentElement.lang=uiLocale();try{if(typeof localStorage!=='undefined')localStorage.setItem('seprepare-ui-language',language);}catch{}if(previous!==language&&typeof window!=='undefined')window.dispatchEvent(new CustomEvent('seprepare:languagechange',{detail:language}));return language;}
-export const isUntitled=value=>['Discurso sem título','Parte sem título'].some(key=>value===key||Object.values(catalogs).some(catalog=>catalog[key]===value));
+export const isUntitled=value=>['Discurso sem título','Parte sem título','Demonstração sem título'].some(key=>value===key||Object.values(catalogs).some(catalog=>catalog[key]===value));
 const splitWhitespace=value=>{const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(value);return [match[1],match[2],match[3]];};
 const templates=new WeakMap();
 export function t(value){
- const source=String(value??'');if(language==='pt-BR')return source;
- const [before,key,after]=splitWhitespace(source),translated=catalogs[language]?.[key];
- return translated===undefined?source:before+translated+after;
+ const source=String(value??'');
+ const [before,key,after]=splitWhitespace(source),label=modalityAliases[key]||key,translated=language==='pt-BR'?label:catalogs[language]?.[label]??catalogs[language]?.[key];
+ return before+(translated===undefined?label:translated)+after;
 }
 export function tr(strings,...values){
  const source=strings.reduce((all,part,i)=>all+part+(i<values.length?'{'+i+'}':''),'');
@@ -26,7 +27,6 @@ function translatePiece(value){
  return translated.replace(/\{(\d+)\}/g,(match,index)=>index<markers.length?'\uE000'+markers[index]+'\uE001':match);
 }
 export function html(source){
- if(language==='pt-BR')return source;
  return String(source).replace(/\b(title|placeholder|aria-label|alt)="([^"]*)"/g,(_,name,value)=>name+'="'+translatePiece(value)+'"').split(/(<[^>]*>)/g).map(piece=>piece.startsWith('<')?piece:translatePiece(piece)).join('');
 }
 export function h(strings,...values){

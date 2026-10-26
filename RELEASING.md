@@ -44,6 +44,7 @@ node sharing/build.mjs
 node localization/build.mjs
 node protection/build.mjs
 node rhythms/build.mjs
+node enhancements/build.mjs
 ```
 
 O último passo integra o controlador, as telas, a observação de salvamentos e as
@@ -69,6 +70,20 @@ nunca entram na compilação nem nos ativos. O empacotamento foi validado com
 
 ## Ritmos e interface — 1.0.58
 
-`rhythms/` guarda o módulo compartilhado com Android/PC, os estilos e a integração AST ao bundle original do iPhone. Compile os quatro módulos na ordem indicada. O último passo adiciona os recursos sem substituir o gate, a memória, a voz ou a autorização do Drive. Os testes do host removem apenas os hooks identificados antes de conferir os hashes das funções originais.
+`rhythms/` guarda o módulo compartilhado com Android/PC, os estilos e a integração AST ao bundle original do iPhone. Compile os cinco módulos na ordem indicada. O último passo adiciona os recursos sem substituir o gate, a memória, a voz ou a autorização do Drive. Os testes do host removem apenas os hooks identificados antes de conferir os hashes das funções originais.
 
 Os testes novos usam o WebKit isolado, sem conexão externa. Para repetir a migração a partir da versão atual anterior, execute `UPGRADE_BASE=7fbfb9aaa9f63be225e178b33690753a3c0aea2a node protection/verify-iphone-upgrade.mjs` com esse commit disponível.
+
+## Paridade Android 1.0.59 a 1.0.62
+
+O quinto build (`enhancements/build.mjs`) precisa ser executado por último.
+Ele integra busca, ajuda contextual, correções lembradas, destino da formatação
+e Ajustes ao host Apple original. Usa as dependências de `sharing/` e publica
+também `review-worker.js`. O código fonte de `enhancements/` não é um ativo público.
+
+`node protection/verify-all.mjs` compila duas vezes, confere idempotência,
+executa os testes puros e verifica as funções protegidas de memória/persistência.
+Os testes `--ui` legados de 1.0.58 são auxiliares e não substituem o roteiro visual
+da versão nova. O perfil Apple no Chromium não comprova Safari ou aparelho físico.
+Antes de promover, conferir Safari/iOS instalado, teclado, voz, login e sincronização
+com uma conta Google de teste. Não modificar a validação de instalação para testar.

@@ -39,3 +39,75 @@ body.dark .editor-status #estimatedTime[data-tone=near]{color:#e8c474}
 .editor-shell.editor-scrolled .editor-status [data-action=pages]{background:transparent}
 .editor-shell.editor-scrolled .editor-scroll{padding-bottom:12px}.editor-shell.editor-scrolled.editor-footer-hidden .editor-scroll{padding-bottom:12px}
 @media(max-width:430px){.editor-smart-actions .btn{font-size:12px;padding:8px 9px;gap:5px}.editor-smart-actions .btn svg{width:17px;height:17px}.rhythm-dialog .modal-body{padding:18px}.rhythm-time-summary{padding:15px}.rhythm-table th,.rhythm-table td{padding-inline:3px}.rhythm-table th:first-child{max-width:150px}}
+/* Solid surfaces and illustrated pace controls, shared by both rhythm catalogs. */
+.rhythm-catalog-dialog{--rhythm-panel:var(--paper);--rhythm-card:var(--bg);--rhythm-icon:var(--soft);--rhythm-selected:#e2eddf;--rhythm-selected-border:#789d7d;--rhythm-selected-ink:#203d3a;--rhythm-muted:var(--muted);width:calc(100% - 24px);max-width:620px;max-height:min(92dvh,940px);border:1px solid var(--line);border-radius:28px;background:var(--rhythm-panel);color:var(--ink);overflow:hidden;isolation:isolate;box-shadow:0 16px 60px #00000024}
+body.dark .rhythm-catalog-dialog{--rhythm-panel:#132727;--rhythm-card:#1b3030;--rhythm-icon:#142a29;--rhythm-selected:#2c4940;--rhythm-selected-border:#a7d1ae;--rhythm-selected-ink:#edf3e8;--rhythm-muted:#aabbb2;--line:#38504b;--green:#b8dabb;--copper:#ebb477}
+.rhythm-catalog-dialog::before{content:"";width:42px;height:5px;border-radius:9px;background:var(--line);margin:12px auto 3px;flex-shrink:0}
+.rhythm-catalog-dialog .modal-head{padding:15px 24px 8px;gap:16px;align-items:flex-start}
+.rhythm-catalog-dialog .modal-head h2{font-family:Lora,Georgia,serif;font-size:28px;line-height:1.2;letter-spacing:-.65px;padding-top:4px;min-width:0;overflow-wrap:anywhere}
+.rhythm-catalog-dialog .modal-head .icon-btn{height:38px;width:38px;border:1px solid var(--line);border-radius:14px;background:var(--rhythm-card);color:var(--ink)}
+.rhythm-catalog-dialog .modal-head .icon-btn svg{height:23px;width:23px;stroke-width:1.7}
+.rhythm-catalog-dialog .modal-body{padding:0 24px 10px;scrollbar-width:thin;scrollbar-color:var(--line) var(--rhythm-panel)}
+.rhythm-dialog-description{color:var(--rhythm-muted);font-size:13px;line-height:1.6;margin-bottom:20px;max-width:48ch}
+.rhythm-display-question{font-size:13px;font-weight:600;line-height:1.5;margin-bottom:10px}
+.rhythm-catalog-dialog .rhythm-display-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;padding:0;margin:0;border:1px solid var(--line);border-radius:18px;background:var(--rhythm-panel)}
+.rhythm-catalog-dialog .rhythm-display-picker>button{display:grid;grid-template-columns:49px minmax(0,1fr);align-items:center;gap:10px;min-width:0;min-height:104px;padding:12px;text-align:left;border:1px solid transparent;border-radius:17px;color:var(--rhythm-muted);background:var(--rhythm-panel);box-shadow:none;transition:border-color .15s,background-color .15s}
+.rhythm-catalog-dialog .rhythm-display-picker>button[aria-pressed=true]{background:var(--rhythm-selected);border-color:var(--rhythm-selected-border);color:var(--rhythm-selected-ink);box-shadow:inset 0 0 0 1px var(--rhythm-selected-border)}
+.rhythm-display-copy{min-width:0}.rhythm-display-copy strong{display:block;font-size:13px;font-weight:600;line-height:1.35;overflow-wrap:anywhere}
+.rhythm-display-copy small{display:block;font-size:11px;line-height:1.45;font-weight:400;margin-top:5px;color:var(--rhythm-muted)}
+.rhythm-symbol{display:grid;place-items:center;flex-shrink:0;width:66px;height:60px;border:1px solid var(--line);border-radius:15px;background:var(--rhythm-icon);color:var(--rhythm-color,var(--green));overflow:hidden}
+.rhythm-symbol svg{display:block;width:100%;height:auto;max-height:100%;flex-shrink:0}
+.rhythm-symbol-lines,.rhythm-symbol-name-lines{color:var(--line)}
+.rhythm-symbol-letters,.rhythm-symbol-name-lines{display:none}
+.rhythm-symbol-name .rhythm-symbol-bar,.rhythm-symbol-name .rhythm-symbol-lines{display:none}
+.rhythm-symbol-name .rhythm-symbol-letters,.rhythm-symbol-name .rhythm-symbol-name-lines{display:block}
+.rhythm-display-picker .rhythm-symbol{width:49px;height:46px;border-radius:11px}
+.rhythm-display-preview{display:grid;gap:8px;padding:13px 2px 0;min-height:62px;color:var(--rhythm-muted)}
+.rhythm-preview-caption{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.rhythm-preview-line{display:flex;gap:8px;align-items:center;font-size:12px;line-height:1.7;flex-wrap:wrap;color:var(--ink)}
+.rhythm-preview-bar{display:inline-block;width:4px;height:22px;border-radius:4px;background:var(--copper);flex-shrink:0}
+.rhythm-preview-name{font-size:10px;font-weight:600;color:var(--copper);line-height:1.4;max-width:100%;overflow-wrap:anywhere}
+.rhythm-section-label{display:flex;align-items:center;gap:12px;color:var(--rhythm-muted);font-size:10px;font-weight:600;letter-spacing:.11em;line-height:1.4;margin:22px 0 12px}
+.rhythm-section-label::after{content:"";height:1px;flex:1;background:var(--line)}
+.rhythm-catalog-dialog .rhythm-options{gap:10px}
+.rhythm-catalog-dialog .rhythm-choice{display:flex;align-items:center;gap:14px;padding:14px;min-height:99px;width:100%;min-width:0;border:1px solid var(--line);border-radius:20px;background:var(--rhythm-card);color:var(--ink);text-align:left;box-shadow:none;transition:border-color .15s,background-color .15s}
+.rhythm-catalog-dialog .rhythm-choice.selected{background:var(--rhythm-selected);border-color:var(--rhythm-selected-border);box-shadow:inset 0 0 0 1px var(--rhythm-selected-border);color:var(--rhythm-selected-ink)}
+.rhythm-catalog-dialog .rhythm-choice-copy{flex:1;min-width:0}
+.rhythm-catalog-dialog .rhythm-choice-copy strong{display:block;font-size:17px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.rhythm-catalog-dialog .rhythm-choice-copy small{display:block;margin-top:3px;color:var(--rhythm-muted);font-size:12px;line-height:1.5}
+.rhythm-catalog-dialog .rhythm-choice-copy .rhythm-choice-ppm{font-size:13px;font-variant-numeric:tabular-nums;color:var(--green)}
+.rhythm-choice-check{display:grid;place-items:center;flex:0 0 23px;height:23px;width:23px;border-radius:50%;border:1.5px solid var(--rhythm-muted);background:var(--rhythm-panel)}
+.rhythm-choice-check svg{visibility:hidden;width:15px;height:15px;stroke-width:2.5}
+.selected .rhythm-choice-check{border-color:var(--green);background:var(--green);color:var(--paper)}
+body.dark .selected .rhythm-choice-check{color:#153129}
+.selected .rhythm-choice-check svg{visibility:visible}
+.rhythm-choice-chevron{display:grid;place-items:center;flex:0 0 19px;color:var(--green)}
+.rhythm-choice-chevron svg{width:24px;height:24px;stroke-width:2}
+.rhythm-manager-dialog .rhythm-section-label{margin-top:27px}
+.rhythm-manager-dialog .rhythm-manage-choice{border-color:var(--rhythm-color)}
+.rhythm-manager-dialog .rhythm-choice-copy strong{font-family:Lora,Georgia,serif;font-size:19px}
+.rhythm-catalog-dialog .modal-footer{flex-shrink:0;padding:16px 24px 22px;border:0;background:var(--rhythm-panel)}
+.rhythm-catalog-dialog .modal-footer .btn{display:flex;align-items:center;gap:12px;min-height:54px;width:100%;font-size:15px;border-radius:17px;white-space:normal;text-align:center}
+.rhythm-catalog-dialog .modal-footer .btn svg{width:24px;height:24px;stroke-width:1.7}
+.rhythm-menu-dialog .modal-footer .btn{background:var(--rhythm-selected);border:1px solid var(--rhythm-selected-border);color:var(--ink)}
+.rhythm-manager-dialog .modal-footer .btn{background:var(--green);color:var(--paper)}
+body.dark .rhythm-manager-dialog .modal-footer .btn{color:#132b22}
+.rhythm-catalog-dialog button:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+@media(max-width:430px){
+ .rhythm-catalog-dialog{border-radius:25px;width:calc(100% - 20px);max-height:92dvh;margin-bottom:max(10px,env(safe-area-inset-bottom));padding-bottom:0}
+ .rhythm-catalog-dialog .modal-head{padding:12px 18px 8px;gap:10px}.rhythm-catalog-dialog .modal-head h2{font-size:25px}
+ .rhythm-catalog-dialog .modal-head .icon-btn{width:34px;height:34px;border-radius:12px}
+ .rhythm-catalog-dialog .modal-body{padding:0 18px 8px}.rhythm-dialog-description{font-size:12px;margin-bottom:17px;line-height:1.55}
+ .rhythm-display-question{font-size:12px}.rhythm-catalog-dialog .rhythm-display-picker>button{grid-template-columns:39px minmax(0,1fr);gap:8px;padding:10px 8px;min-height:102px}
+ .rhythm-display-picker .rhythm-symbol{width:39px;height:41px;border-radius:10px}.rhythm-display-copy strong{font-size:12px}.rhythm-display-copy small{font-size:10px}
+ .rhythm-catalog-dialog .rhythm-choice{gap:12px;min-height:96px;padding:12px;border-radius:18px}.rhythm-symbol{width:58px;height:55px;border-radius:14px}
+ .rhythm-catalog-dialog .rhythm-choice-copy strong{font-size:16px}.rhythm-catalog-dialog .rhythm-choice-copy small{font-size:11px}.rhythm-catalog-dialog .rhythm-choice-copy .rhythm-choice-ppm{font-size:12px}
+ .rhythm-manager-dialog .rhythm-choice-copy strong{font-size:18px}.rhythm-choice-check{flex-basis:21px;height:21px;width:21px}
+ .rhythm-catalog-dialog .modal-footer{padding:14px 18px 18px}.rhythm-catalog-dialog .modal-footer .btn{min-height:51px;font-size:14px}
+}
+@media(max-height:500px){.rhythm-catalog-dialog{max-height:95dvh;margin-bottom:0}.rhythm-catalog-dialog::before{margin-top:7px}.rhythm-catalog-dialog .modal-head{padding-top:5px}.rhythm-catalog-dialog .modal-footer{padding-block:10px}.rhythm-catalog-dialog .modal-footer .btn{min-height:42px}}
+@media(prefers-reduced-motion:reduce){.rhythm-catalog-dialog .rhythm-choice,.rhythm-catalog-dialog .rhythm-display-picker>button{transition:none}}
+.rhythm-catalog-dialog .rhythm-choice>.rhythm-symbol{flex:0 0 66px;min-width:0}
+.rhythm-catalog-dialog .rhythm-choice>.rhythm-choice-check{flex:0 0 23px;min-width:23px}
+.rhythm-catalog-dialog .rhythm-choice>.rhythm-choice-chevron{flex:0 0 19px;min-width:19px}
+@media(max-width:430px){.rhythm-catalog-dialog .rhythm-choice>.rhythm-symbol{flex-basis:58px}.rhythm-catalog-dialog .rhythm-choice>.rhythm-choice-check{flex-basis:21px;min-width:21px}}

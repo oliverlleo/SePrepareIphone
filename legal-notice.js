@@ -163,6 +163,7 @@
       }
       overlay.querySelector('#seprepareLegalAcknowledge').focus({preventScroll: true});
     }
+    if(document.querySelector('#app .settings-categories'))return;
     const settings = document.querySelector('#app .settings-list');
     if (!settings) return;
     let card = settings.querySelector('.legal-settings-card');
