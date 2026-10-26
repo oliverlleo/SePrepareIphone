@@ -1,0 +1,41 @@
+.editor-smart-actions{flex-wrap:wrap;gap:6px}
+.editor-smart-actions .btn{min-width:0;flex:1 1 auto;padding-inline:10px}
+.rhythm-action{max-width:min(210px,48vw)}.rhythm-action span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rhythm-action.rhythm-active{box-shadow:inset 0 0 0 1px var(--green);background:var(--soft)}
+.rhythm-action.rhythm-active{box-shadow:inset 0 0 0 1px var(--rhythm-color,var(--green))}
+.rhythm-start::before{content:attr(data-rhythm-label);display:inline;vertical-align:super;font:600 10px/0 Inter,Arial,sans-serif;letter-spacing:.015em;color:var(--copper);margin-inline-end:.4em;white-space:nowrap;user-select:none;-webkit-user-select:none;pointer-events:none}
+.reader-text .rhythm-start::before{font-size:11px}
+.editor-status #estimatedTime{background:none;color:inherit;padding:6px 2px;font:inherit;text-align:center;border-radius:7px}
+.editor-status #estimatedTime[data-tone=near]{color:#896312}.editor-status #estimatedTime[data-tone=over]{color:var(--danger)}
+body.dark .editor-status #estimatedTime[data-tone=near]{color:#e8c474}
+.rhythm-dialog{max-width:560px;width:calc(100% - 28px);max-height:min(90dvh,850px)}
+.rhythm-dialog .modal-body{min-height:0;overflow:auto;overscroll-behavior:contain}.rhythm-dialog .modal-footer{flex-wrap:wrap}
+.rhythm-options{display:flex;flex-direction:column;gap:7px}.rhythm-choice{min-height:56px}.rhythm-choice.selected{background:var(--soft);box-shadow:inset 0 0 0 1px var(--line)}
+.rhythm-choice strong{overflow-wrap:anywhere}.rhythm-choice-symbol{display:flex;align-items:center;justify-content:center;color:var(--green)}
+.rhythm-empty{padding:18px 6px;color:var(--muted);font-size:14px}.rhythm-error,.rhythm-time-over{color:var(--danger)}
+.rhythm-time-summary{background:var(--soft);border-radius:15px;padding:18px;display:grid;gap:12px;margin-bottom:22px}
+.rhythm-time-summary>div{display:flex;justify-content:space-between;gap:15px;align-items:center}.rhythm-time-summary>div:first-child strong{font-size:26px;font-weight:600;letter-spacing:-.7px}.rhythm-time-summary span{font-size:13px}.rhythm-time-summary strong{font-variant-numeric:tabular-nums}
+.rhythm-time-summary progress{width:100%;height:5px;accent-color:var(--green);border:0;border-radius:9px;overflow:hidden}
+.rhythm-table-wrap{overflow:auto}.rhythm-table{border-collapse:collapse;width:100%;font-size:13px}.rhythm-table th,.rhythm-table td{padding:11px 6px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;font-variant-numeric:tabular-nums}.rhythm-table th:first-child{text-align:left;overflow-wrap:anywhere;max-width:220px}.rhythm-table thead{color:var(--muted)}.rhythm-table tbody th{font-weight:500}.rhythm-table tfoot{font-weight:600}
+.rhythm-segments{margin-top:22px}.rhythm-segments>summary{cursor:pointer;color:var(--green);padding:9px 0;font-weight:600}.rhythm-segment{padding:13px 0;border-bottom:1px solid var(--line)}.rhythm-segment>div{display:flex;justify-content:space-between;gap:12px;font-size:12px}.rhythm-segment p{margin-top:7px;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.rhythm-incoming{margin:16px 0;font-size:13px}
+.rhythm-display-picker{display:flex;gap:7px;padding:4px;margin-bottom:15px;border-radius:12px;background:var(--soft)}
+.rhythm-display-picker>button{display:flex;justify-content:center;align-items:center;gap:8px;flex:1;min-height:38px;padding:8px 12px;background:transparent;border-radius:9px;color:var(--muted);font-size:13px}
+.rhythm-display-picker>button[aria-pressed=true]{background:var(--paper);color:var(--ink);box-shadow:0 1px 5px #00000009}
+.rhythm-line-example,.rhythm-choice-swatch{display:inline-block;width:4px;height:21px;border-radius:3px;background:var(--rhythm-color,var(--copper));flex-shrink:0}
+.rhythm-name-example{font-size:11px;font-weight:600;color:var(--copper)}
+.rhythm-start::before{color:var(--rhythm-color,var(--copper))}
+.rhythm-start[data-rhythm-display=line]::before{content:"";display:inline-block;font:inherit;width:3px;height:1.15em;vertical-align:-.16em;border-radius:3px;background:var(--rhythm-color,var(--copper));margin-inline-end:.38em;line-height:normal}
+.incoming-options{padding:13px;margin:12px 0 16px;border:1px solid var(--line);border-radius:13px;background:var(--soft);display:grid;gap:12px}
+.incoming-options .field,.incoming-options .share-code-category{margin:0;min-width:0}
+.incoming-options .field>label{font-size:12px}.incoming-options select{min-height:39px;padding-block:8px;background:var(--paper)}
+.incoming-checks{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px 14px}.incoming-checks:empty{display:none}
+.incoming-options .check-label{margin:0;min-width:0;flex:1 1 135px;display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45}
+.incoming-options .check-label input{flex-shrink:0;margin-top:2px}.incoming-options .check-label small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+.editor-shell{position:relative}.editor-status{background:transparent}
+.editor-status #wordCount{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.editor-status #estimatedTime,.editor-status [data-action=pages]{white-space:nowrap;flex-shrink:0}
+.editor-footer-close{background:none;color:var(--muted);flex:0 0 26px;width:26px;height:28px;display:grid;place-items:center;padding:3px;border-radius:8px}.editor-footer-close svg{width:16px;height:16px}
+.editor-shell.editor-scrolled .editor-status{display:flex;position:relative;z-index:1;background:transparent;border:0;padding:8px 12px max(8px,env(safe-area-inset-bottom));gap:8px;text-shadow:0 1px 3px var(--bg)}
+.editor-shell.editor-scrolled .editor-status [data-action=pages]{background:transparent}
+.editor-shell.editor-scrolled .editor-scroll{padding-bottom:12px}.editor-shell.editor-scrolled.editor-footer-hidden .editor-scroll{padding-bottom:12px}
+@media(max-width:430px){.editor-smart-actions .btn{font-size:12px;padding:8px 9px;gap:5px}.editor-smart-actions .btn svg{width:17px;height:17px}.rhythm-dialog .modal-body{padding:18px}.rhythm-time-summary{padding:15px}.rhythm-table th,.rhythm-table td{padding-inline:3px}.rhythm-table th:first-child{max-width:150px}}

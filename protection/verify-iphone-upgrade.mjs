@@ -7,8 +7,9 @@ import {devices} from 'playwright';
 import {isolatedWebKit} from './test-network.mjs';
 import {createServer} from './serve.mjs';
 import {newSpeech,ensureVersions,captureContentVersion} from './core.js';
-const root=fileURLToPath(new URL('..',import.meta.url)),base='4a75aa42cf5384a3833b6e9d9652cbb92a04e577',oldFiles=new Map();
+const root=fileURLToPath(new URL('..',import.meta.url)),base=process.env.UPGRADE_BASE||'4a75aa42cf5384a3833b6e9d9652cbb92a04e577',oldFiles=new Map();
 for(const file of ['index.html','app.js','launch-gate.js','sw.js','drive.css'])oldFiles.set('/'+file,execFileSync('git',['show',base+':'+file],{cwd:root,maxBuffer:5000000}));
+const oldBuild=/data-seprepare-build="([^"]+)/.exec(oldFiles.get('/index.html').toString())[1],newBuild=/data-seprepare-build="([^"]+)/.exec(readFileSync(path.join(root,'index.html'),'utf8'))[1];
 let release='old';const server=createServer({sourceForRequest:({url})=>release==='old'?oldFiles.get(url.pathname==='/'?'/index.html':url.pathname):null});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
 const {browser,close:closeBrowser}=await isolatedWebKit();const context=await browser.newContext({...devices['iPhone 13'],locale:'pt-BR'}),screens=path.join(root,'tests/qa-output/drive-iphone');mkdirSync(screens,{recursive:true});
@@ -27,7 +28,7 @@ try{
   const realFetch=window.fetch.bind(window);window.fetch=async(input,options)=>{const url=new URL(typeof input==='string'?input:input.url,location.href);if(url.hostname!=='www.googleapis.com')return realFetch(input,options);if(url.pathname.endsWith('/userinfo'))return Response.json({email:'pessoa@example.test'});if(url.pathname.endsWith('/about'))return Response.json({user:{emailAddress:'pessoa@example.test'}});return Response.json({files:[]});};
  },{state});
  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));await page.clock.install({time:new Date('2026-10-24T12:00:00Z')});
- await page.goto(origin);await page.waitForFunction(()=>window.orador);assert.equal(await page.locator('html').getAttribute('data-seprepare-build'),'20261022.7');
+ await page.goto(origin);await page.waitForFunction(()=>window.orador);assert.equal(await page.locator('html').getAttribute('data-seprepare-build'),oldBuild);
  await Promise.race([page.evaluate(()=>navigator.serviceWorker.ready),new Promise((_,reject)=>setTimeout(()=>reject(Error('Legacy service worker not ready')),15000))]);
  await page.locator('.speech-card [data-action="edit"]').click();await page.evaluate(()=>window.orador.getEditor().insertText(0,'Última edição antes de atualizar. ','user'));await page.locator('[data-action="save-editor"]').click();
  if(await page.evaluate(()=>['editor','part'].includes(window.orador.getRuntime().view)))await page.locator('[data-action="back"]').first().click();
@@ -38,7 +39,7 @@ try{
  await page.evaluate(()=>{window.dispatchEvent(new Event('online'));window.dispatchEvent(new Event('focus'));});
  let upgraded=false;
  for(let attempt=0;attempt<60;attempt++){
-  try{if(await page.locator('html').getAttribute('data-seprepare-build')==='20261024.1'&&await page.evaluate(()=>!!window.orador)){upgraded=true;break;}await page.clock.fastForward(10000);}catch(error){if(!/destroyed|navigation|context/i.test(error.message))throw error;}
+  try{if(await page.locator('html').getAttribute('data-seprepare-build')===newBuild&&await page.evaluate(()=>!!window.orador)){upgraded=true;break;}await page.clock.fastForward(10000);}catch(error){if(!/destroyed|navigation|context/i.test(error.message))throw error;}
   await new Promise(resolve=>setTimeout(resolve,150));
  }
  if(!upgraded){console.error('UPGRADE DEBUG',JSON.stringify({errors,htmlBuild:await page.locator('html').getAttribute('data-seprepare-build'),body:(await page.locator('body').innerText()).slice(-2000),registrations:await page.evaluate(async()=>(await navigator.serviceWorker.getRegistrations()).map(r=>({active:r.active?.state,installing:r.installing?.state,waiting:r.waiting?.state})))},null,2));throw Error('Automatic installed update did not finish');}
