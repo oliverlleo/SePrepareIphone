@@ -1,16 +1,16 @@
 // SePrepare PWA Service Worker
-// Caches ONLY static application code/assets for offline launch on iPhone/Android.
+// Caches ONLY static application code/assets for offline launch on supported Apple devices.
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261025.1';
+const BUILD_ID = '20261026.1';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
 const CORE_ASSETS = [
   './manifest.webmanifest',
   ...['style.css', 'support.css', 'notes.css', 'drive.css', 'share-code.css', 'legal.css', 'launch-gate.css',
-    'auto-update.js', 'analytics.js', 'launch-gate.js', 'legal-notice.js', 'audio-parity.js', 'audio.css', 'app.js'].map(path => versioned('./' + path))
+    'auto-update.js', 'analytics.js', 'launch-gate.js', 'apple-install-guide.js', 'legal-notice.js', 'audio-parity.js', 'audio.css', 'app.js'].map(path => versioned('./' + path))
 ];
 const CORE_URLS = new Set(CORE_ASSETS.map(path => new URL(path, self.location.href).href));
 const OPTIONAL_ASSETS = [
@@ -41,10 +41,11 @@ const OPTIONAL_ASSETS = [
 ];
 
 const SW_UA = (self.navigator && self.navigator.userAgent) || '';
-const IS_IPHONE = /iPhone|iPod/i.test(SW_UA) && !/Android|Windows|CrOS|Linux|X11|iPad/i.test(SW_UA);
+const IS_APPLE_DEVICE = /iPhone|iPad|iPod|Macintosh/i.test(SW_UA)
+  && !/Android|Windows|CrOS|Linux|X11/i.test(SW_UA);
 
 self.addEventListener('install', event => {
-  if (!IS_IPHONE) return;
+  if (!IS_APPLE_DEVICE) return;
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     // Use canonical / rather than the redirected /index.html, and cache a
@@ -70,7 +71,7 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  if (!IS_IPHONE) {
+  if (!IS_APPLE_DEVICE) {
     event.waitUntil(self.registration.unregister());
     return;
   }
@@ -106,7 +107,7 @@ self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SEPREPARE_GET_BUILD' && event.ports[0]) {
     event.ports[0].postMessage({ type: 'SEPREPARE_BUILD', build: BUILD_ID });
   }
-  if (event.data && event.data.type === 'SEPREPARE_WARM_OFFLINE' && IS_IPHONE) {
+  if (event.data && event.data.type === 'SEPREPARE_WARM_OFFLINE' && IS_APPLE_DEVICE) {
     event.waitUntil((async () => {
       const cache = await caches.open(CACHE_NAME);
       await Promise.allSettled(OPTIONAL_ASSETS.map(async path => {
@@ -200,7 +201,7 @@ function networkFirst(event, fallbackToIndex = false) {
 }
 
 self.addEventListener('fetch', event => {
-  if (!IS_IPHONE) return;
+  if (!IS_APPLE_DEVICE) return;
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
