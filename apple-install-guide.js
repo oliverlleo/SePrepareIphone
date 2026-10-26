@@ -86,14 +86,17 @@
   const labels = languages[locale] || languages['pt-BR'];
   const set = (selector, value) => {
     const element = guide.querySelector(selector);
-    if (element) element.textContent = value;
+    if (!element) return;
+    // Keep the existing icon/badge and other child elements intact.
+    const textNode = Array.from(element.childNodes).find(node => node.nodeType === 3);
+    if (textNode) textNode.textContent = value;
+    else element.appendChild(document.createTextNode(value));
   };
   document.title = labels.title;
   set('.install-top-label', labels.top);
   set('.install-kicker', labels.kicker);
   set('.install-lead', labels.lead);
   set('.install-explain small', labels.explanation);
-  set('.install-steps-head h2', labels.heading);
   set('.install-steps-head > p', labels.intro);
   const cards = guide.querySelectorAll('.install-card');
   labels.steps.forEach(([heading, detail], i) => {
