@@ -111,3 +111,5 @@ body.dark .rhythm-manager-dialog .modal-footer .btn{color:#132b22}
 .rhythm-catalog-dialog .rhythm-choice>.rhythm-choice-check{flex:0 0 23px;min-width:23px}
 .rhythm-catalog-dialog .rhythm-choice>.rhythm-choice-chevron{flex:0 0 19px;min-width:19px}
 @media(max-width:430px){.rhythm-catalog-dialog .rhythm-choice>.rhythm-symbol{flex-basis:58px}.rhythm-catalog-dialog .rhythm-choice>.rhythm-choice-check{flex-basis:21px;min-width:21px}}
+.rhythm-default-after::after{content:attr(data-rhythm-after-label);display:inline;vertical-align:super;font:600 10px/0 Inter,Arial,sans-serif;letter-spacing:.015em;color:var(--rhythm-after-color,var(--muted));margin-inline-start:.25em;margin-inline-end:.4em;white-space:nowrap;user-select:none;-webkit-user-select:none;pointer-events:none}
+.rhythm-default-after[data-rhythm-after-display=line]::after{content:"";display:inline-block;font:inherit;width:3px;height:1.15em;vertical-align:-.16em;border-radius:3px;background:var(--rhythm-after-color,var(--muted));margin-inline-start:.25em;margin-inline-end:.38em;line-height:normal}
