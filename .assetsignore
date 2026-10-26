@@ -15,3 +15,6 @@ wrangler.jsonc
 RELEASING.md
 VALIDACAO-*.md
 .gitignore
+
+rhythms/
+QA-*.json

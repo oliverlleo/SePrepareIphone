@@ -43,6 +43,7 @@ npm ci --prefix protection --ignore-scripts
 node sharing/build.mjs
 node localization/build.mjs
 node protection/build.mjs
+node rhythms/build.mjs
 ```
 
 O último passo integra o controlador, as telas, a observação de salvamentos e as
@@ -65,3 +66,9 @@ O deploy agora inclui `worker/index.mjs` para a renovação protegida do Drive.
 Configure os dois segredos de execução conforme `worker/README.md`. Os segredos
 nunca entram na compilação nem nos ativos. O empacotamento foi validado com
 `wrangler deploy --dry-run`; a configuração limita o Worker aos caminhos de autorização.
+
+## Ritmos e interface — 1.0.58
+
+`rhythms/` guarda o módulo compartilhado com Android/PC, os estilos e a integração AST ao bundle original do iPhone. Compile os quatro módulos na ordem indicada. O último passo adiciona os recursos sem substituir o gate, a memória, a voz ou a autorização do Drive. Os testes do host removem apenas os hooks identificados antes de conferir os hashes das funções originais.
+
+Os testes novos usam o WebKit isolado, sem conexão externa. Para repetir a migração a partir da versão atual anterior, execute `UPGRADE_BASE=7fbfb9aaa9f63be225e178b33690753a3c0aea2a node protection/verify-iphone-upgrade.mjs` com esse commit disponível.

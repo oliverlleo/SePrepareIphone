@@ -1,3 +1,4 @@
+import {parseRhythm,RHYTHM_ATTRIBUTE,validateRhythmCatalog} from '../rhythms/rhythm-core.js';
 import {normalizeNotes,withoutNoteAttributes,noteRanges} from './notes-core.js';
 export const uid=()=>globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,10)}`;
 export const clone=x=>JSON.parse(JSON.stringify(x));
@@ -69,11 +70,13 @@ export function validState(data){
     normalizeVersions(s);
   }
   data.settings={theme:'light',pace:125,rate:1,voice:'',...data.settings};data.vocabulary=Array.isArray(data.vocabulary)?data.vocabulary.slice(0,5000):[];
+  validateRhythmCatalog(data.settings.rhythms);
   return data;
 }
 export function validateDelta(delta){
   if(!Array.isArray(delta?.ops)||delta.ops.length>30000)throw Error('Documento inválido.');
   for(const op of delta.ops){
+    if(op.attributes?.[RHYTHM_ATTRIBUTE]!==undefined&&!parseRhythm(op.attributes[RHYTHM_ATTRIBUTE]))throw Error('Marcação de ritmo inválida.');
     if(typeof op.insert!=='string' && !(op.insert&&op.insert.pagebreak===true))throw Error('O documento contém um elemento não suportado.');
     if(op.attributes && (typeof op.attributes!=='object'||Array.isArray(op.attributes)))throw Error('Formatação inválida.');
   }
