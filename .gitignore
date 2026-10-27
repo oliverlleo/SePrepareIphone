@@ -7,3 +7,4 @@ tests/qa-output/
 .env*
 
 /QA-*.json
+**/QA-*.json

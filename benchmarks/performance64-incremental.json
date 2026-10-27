@@ -1,0 +1,2169 @@
+{
+  "success": true,
+  "date": "2026-10-27T10:49:23.300Z",
+  "runtime": "v24.22.1",
+  "cpu": "AMD Ryzen 5 3500 6-Core Processor              ",
+  "scope": "Node local; CPU e event-loop são proxies. Sem Google/rede/aparelho físico.",
+  "results": [
+    {
+      "platform": "Android",
+      "count": 1,
+      "versions": 3,
+      "bytes": 4449,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 1.9615999999999971,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 1.7006000000000014,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.9615999999999971,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 5.234900000000003,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.01379999999999626,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.009500000000002728,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.01379999999999626,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.026200000000002888,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 0.6969999999999885,
+          "cpuMs": 16,
+          "samples": [
+            {
+              "wallMs": 0.6927000000000021,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.6969999999999885,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 0.9712999999999994,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.010699999999999932,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.005099999999998772,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.010699999999999932,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.18149999999999977,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 2.1448000000000036,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 1.816900000000004,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.1448000000000036,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 6.123599999999996,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.13470000000000937,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.06419999999999959,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.13470000000000937,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.1240000000000094,
+              "cpuMs": 16
+            }
+          ]
+        }
+      },
+      "heapStart": 7982336,
+      "coldCounters": {
+        "hashes": 16,
+        "hits": 0,
+        "parsedVersions": 3,
+        "cacheBytes": 30614,
+        "elapsedMs": 1.6745000000000019
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 30614,
+        "elapsedMs": 0.0030000000000001137
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 6,
+        "parsedVersions": 1,
+        "cacheBytes": 50032,
+        "elapsedMs": 0.6800000000000068
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 677,
+      "eventLoopDelayProxyMs": 0.8169999999999931,
+      "heapEnd": 8723784,
+      "retainedCacheBytes": 50032
+    },
+    {
+      "platform": "Android",
+      "count": 5,
+      "versions": 15,
+      "bytes": 21705,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 6.4561999999999955,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 6.221099999999993,
+              "cpuMs": 15
+            },
+            {
+              "wallMs": 6.4561999999999955,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 6.682600000000008,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0033999999999991815,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.0031000000000034333,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0033999999999991815,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004699999999999704,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 1.0726999999999975,
+          "cpuMs": 16,
+          "samples": [
+            {
+              "wallMs": 0.9620000000000033,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.0726999999999975,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 1.0777000000000072,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.006299999999981765,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.004500000000007276,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.006299999999981765,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.5734999999999957,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 5.725300000000004,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 5.401699999999977,
+              "cpuMs": 30
+            },
+            {
+              "wallMs": 5.725300000000004,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 7.186700000000002,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.1144999999999925,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.10569999999998458,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.1144999999999925,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.27780000000001337,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 9129104,
+      "coldCounters": {
+        "hashes": 68,
+        "hits": 0,
+        "parsedVersions": 15,
+        "cacheBytes": 149046,
+        "elapsedMs": 6.434000000000012
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 149046,
+        "elapsedMs": 0.0002999999999957481
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 14,
+        "parsedVersions": 1,
+        "cacheBytes": 169176,
+        "elapsedMs": 1.0630000000000166
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 1346,
+      "eventLoopDelayProxyMs": 0.65300000000002,
+      "heapEnd": 11920040,
+      "retainedCacheBytes": 169176
+    },
+    {
+      "platform": "Android",
+      "count": 20,
+      "versions": 60,
+      "bytes": 86975,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 19.547200000000004,
+          "cpuMs": 16,
+          "samples": [
+            {
+              "wallMs": 19.276600000000002,
+              "cpuMs": 31
+            },
+            {
+              "wallMs": 19.547200000000004,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 21.447099999999978,
+              "cpuMs": 15
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.005400000000008731,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.003299999999995862,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.005400000000008731,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.013700000000000045,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 2.3063999999999965,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 2.042700000000025,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.3063999999999965,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.4873000000000047,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.006700000000023465,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.006100000000003547,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.006700000000023465,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.902499999999975,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 16.689399999999978,
+          "cpuMs": 31,
+          "samples": [
+            {
+              "wallMs": 16.064300000000003,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 16.689399999999978,
+              "cpuMs": 31
+            },
+            {
+              "wallMs": 21.65980000000002,
+              "cpuMs": 16
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.27389999999996917,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.21119999999996253,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.27389999999996917,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.450300000000027,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 12678072,
+      "coldCounters": {
+        "hashes": 263,
+        "hits": 0,
+        "parsedVersions": 60,
+        "cacheBytes": 596406,
+        "elapsedMs": 19.25200000000001
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 596406,
+        "elapsedMs": 0.00030000000000995897
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 44,
+        "parsedVersions": 1,
+        "cacheBytes": 619442,
+        "elapsedMs": 2.0312000000000126
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 3730,
+      "eventLoopDelayProxyMs": 0.9615999999999758,
+      "heapEnd": 13524648,
+      "retainedCacheBytes": 619442
+    },
+    {
+      "platform": "Android",
+      "count": 100,
+      "versions": 300,
+      "bytes": 436575,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 96.50929999999994,
+          "cpuMs": 79,
+          "samples": [
+            {
+              "wallMs": 95.7362,
+              "cpuMs": 108
+            },
+            {
+              "wallMs": 96.50929999999994,
+              "cpuMs": 79
+            },
+            {
+              "wallMs": 100.15789999999998,
+              "cpuMs": 110
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.003400000000056025,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.00329999999996744,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.003400000000056025,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0061000000000603904,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 8.543800000000033,
+          "cpuMs": 46,
+          "samples": [
+            {
+              "wallMs": 8.074500000000057,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 8.543800000000033,
+              "cpuMs": 46
+            },
+            {
+              "wallMs": 8.610900000000015,
+              "cpuMs": 16
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.004699999999957072,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.003499999999917236,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004699999999957072,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 7.73700000000008,
+              "cpuMs": 16
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 76.65039999999999,
+          "cpuMs": 78,
+          "samples": [
+            {
+              "wallMs": 75.50060000000008,
+              "cpuMs": 78
+            },
+            {
+              "wallMs": 76.65039999999999,
+              "cpuMs": 78
+            },
+            {
+              "wallMs": 95.72919999999999,
+              "cpuMs": 156
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.7018000000000484,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.6507999999998901,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.7018000000000484,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.9130000000000109,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 17080376,
+      "coldCounters": {
+        "hashes": 1303,
+        "hits": 0,
+        "parsedVersions": 300,
+        "cacheBytes": 2990966,
+        "elapsedMs": 96.4819
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 2990966,
+        "elapsedMs": 0.0004000000000132786
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 204,
+        "parsedVersions": 1,
+        "cacheBytes": 3028402,
+        "elapsedMs": 8.523400000000038
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 16044,
+      "eventLoopDelayProxyMs": 3.6113000000000284,
+      "heapEnd": 37498000,
+      "retainedCacheBytes": 3028402
+    },
+    {
+      "platform": "Android",
+      "count": 500,
+      "versions": 1500,
+      "bytes": 2206975,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 451.0866000000001,
+          "cpuMs": 515,
+          "samples": [
+            {
+              "wallMs": 441.7004999999999,
+              "cpuMs": 391
+            },
+            {
+              "wallMs": 451.0866000000001,
+              "cpuMs": 515
+            },
+            {
+              "wallMs": 462.3542,
+              "cpuMs": 594
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0039000000001578883,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.003400000000056025,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0039000000001578883,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.005999999999858119,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 38.84110000000055,
+          "cpuMs": 47,
+          "samples": [
+            {
+              "wallMs": 38.46939999999995,
+              "cpuMs": 47
+            },
+            {
+              "wallMs": 38.84110000000055,
+              "cpuMs": 47
+            },
+            {
+              "wallMs": 39.978399999999965,
+              "cpuMs": 109
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.0052999999998064595,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002900000000408909,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0052999999998064595,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 37.02459999999974,
+              "cpuMs": 31
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 366.28769999999986,
+          "cpuMs": 390,
+          "samples": [
+            {
+              "wallMs": 361.7483000000002,
+              "cpuMs": 406
+            },
+            {
+              "wallMs": 366.28769999999986,
+              "cpuMs": 390
+            },
+            {
+              "wallMs": 433.8185999999996,
+              "cpuMs": 438
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 3.7934000000004744,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 3.4978000000000975,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 3.7934000000004744,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 3.83639999999923,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 55148360,
+      "coldCounters": {
+        "hashes": 6503,
+        "hits": 0,
+        "parsedVersions": 1500,
+        "cacheBytes": 15093366,
+        "elapsedMs": 441.65970000000016
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 15093366,
+        "elapsedMs": 0.0003000000001520675
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 1004,
+        "parsedVersions": 1,
+        "cacheBytes": 15203602,
+        "elapsedMs": 38.80130000000008
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 78984,
+      "eventLoopDelayProxyMs": 26.14889999999923,
+      "heapEnd": 68183992,
+      "retainedCacheBytes": 15203602
+    },
+    {
+      "platform": "Windows",
+      "count": 1,
+      "versions": 3,
+      "bytes": 4449,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 1.739400000000387,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 1.6536999999998443,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.739400000000387,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 3.9074000000000524,
+              "cpuMs": 15
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.006499999999505235,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.006099999999605643,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.006499999999505235,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.012300000000323053,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 0.8263999999999214,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.7845999999999549,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.8263999999999214,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.10779999999977,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.009200000000419095,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.005199999999604188,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.009200000000419095,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.1488999999992302,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 2.613800000000083,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 1.8286000000007334,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.613800000000083,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 6.458999999999833,
+              "cpuMs": 16
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.049200000000382715,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.04359999999996944,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.049200000000382715,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.2103000000006432,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 70751816,
+      "coldCounters": {
+        "hashes": 16,
+        "hits": 0,
+        "parsedVersions": 3,
+        "cacheBytes": 30614,
+        "elapsedMs": 1.6228000000000975
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 30614,
+        "elapsedMs": 0.0027999999992971425
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 6,
+        "parsedVersions": 1,
+        "cacheBytes": 50032,
+        "elapsedMs": 0.814900000000307
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 678,
+      "eventLoopDelayProxyMs": 0.9462000000003172,
+      "heapEnd": 80855384,
+      "retainedCacheBytes": 50032
+    },
+    {
+      "platform": "Windows",
+      "count": 5,
+      "versions": 15,
+      "bytes": 21705,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 5.588799999999537,
+          "cpuMs": 15,
+          "samples": [
+            {
+              "wallMs": 5.09729999999945,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 5.588799999999537,
+              "cpuMs": 15
+            },
+            {
+              "wallMs": 6.698600000000624,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0029999999997016857,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002900000000408909,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0029999999997016857,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.005400000000008731,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 0.9574000000002343,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.930000000000291,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.9574000000002343,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.0362999999997555,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.003899999999703141,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002800000000206637,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.003899999999703141,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.4135000000005675,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 6.2379000000000815,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 5.544100000000071,
+              "cpuMs": 31
+            },
+            {
+              "wallMs": 6.2379000000000815,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 6.6247999999995955,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.10670000000027358,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.06430000000000291,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.10670000000027358,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.24769999999989523,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 81055024,
+      "coldCounters": {
+        "hashes": 68,
+        "hits": 0,
+        "parsedVersions": 15,
+        "cacheBytes": 149046,
+        "elapsedMs": 6.6766999999999825
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 149046,
+        "elapsedMs": 0.00020000000040454324
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 14,
+        "parsedVersions": 1,
+        "cacheBytes": 169176,
+        "elapsedMs": 0.9179999999996653
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 1368,
+      "eventLoopDelayProxyMs": 1.6120999999993728,
+      "heapEnd": 58302544,
+      "retainedCacheBytes": 169176
+    },
+    {
+      "platform": "Windows",
+      "count": 20,
+      "versions": 60,
+      "bytes": 86975,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 20.40810000000056,
+          "cpuMs": 16,
+          "samples": [
+            {
+              "wallMs": 18.744399999999587,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 20.40810000000056,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 21.707099999999627,
+              "cpuMs": 15
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0033000000003085006,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002800000000206637,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0033000000003085006,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0046999999995023245,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 2.378700000000208,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 2.173200000000179,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.378700000000208,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.788499999999658,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.005099999999401916,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.003200000000106229,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.005099999999401916,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.993000000000393,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 17.58850000000075,
+          "cpuMs": 15,
+          "samples": [
+            {
+              "wallMs": 15.82629999999972,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 17.58850000000075,
+              "cpuMs": 15
+            },
+            {
+              "wallMs": 18.998599999999897,
+              "cpuMs": 47
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.20060000000012224,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.18080000000009022,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.20060000000012224,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.323500000000422,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 59097680,
+      "coldCounters": {
+        "hashes": 263,
+        "hits": 0,
+        "parsedVersions": 60,
+        "cacheBytes": 596406,
+        "elapsedMs": 21.68000000000029
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 596406,
+        "elapsedMs": 0.00020000000040454324
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 44,
+        "parsedVersions": 1,
+        "cacheBytes": 619442,
+        "elapsedMs": 2.7454999999999927
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 3721,
+      "eventLoopDelayProxyMs": 0.9234999999998763,
+      "heapEnd": 79144760,
+      "retainedCacheBytes": 619442
+    },
+    {
+      "platform": "Windows",
+      "count": 100,
+      "versions": 300,
+      "bytes": 436575,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 100.09900000000016,
+          "cpuMs": 125,
+          "samples": [
+            {
+              "wallMs": 90.84360000000015,
+              "cpuMs": 109
+            },
+            {
+              "wallMs": 100.09900000000016,
+              "cpuMs": 125
+            },
+            {
+              "wallMs": 107.31940000000031,
+              "cpuMs": 125
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.003100000000813452,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002899999999499414,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.003100000000813452,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004600000000209548,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 7.969299999999748,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 7.946600000000217,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 7.969299999999748,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 8.046699999999873,
+              "cpuMs": 15
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.004999999999199645,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002800000000206637,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004999999999199645,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 7.136199999999917,
+              "cpuMs": 16
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 71.26109999999971,
+          "cpuMs": 94,
+          "samples": [
+            {
+              "wallMs": 70.34840000000077,
+              "cpuMs": 62
+            },
+            {
+              "wallMs": 71.26109999999971,
+              "cpuMs": 94
+            },
+            {
+              "wallMs": 83.06940000000031,
+              "cpuMs": 78
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.7853999999997541,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.7098000000005413,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.7853999999997541,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.7877999999991516,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 82659896,
+      "coldCounters": {
+        "hashes": 1303,
+        "hits": 0,
+        "parsedVersions": 300,
+        "cacheBytes": 2990966,
+        "elapsedMs": 90.8184999999994
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 2990966,
+        "elapsedMs": 0.00020000000040454324
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 204,
+        "parsedVersions": 1,
+        "cacheBytes": 3028402,
+        "elapsedMs": 7.941499999999905
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 15925,
+      "eventLoopDelayProxyMs": 4.45470000000023,
+      "heapEnd": 112255408,
+      "retainedCacheBytes": 3028402
+    },
+    {
+      "platform": "Windows",
+      "count": 500,
+      "versions": 1500,
+      "bytes": 2206975,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 417.2328000000007,
+          "cpuMs": 422,
+          "samples": [
+            {
+              "wallMs": 413.5059999999994,
+              "cpuMs": 421
+            },
+            {
+              "wallMs": 417.2328000000007,
+              "cpuMs": 422
+            },
+            {
+              "wallMs": 470.3829999999998,
+              "cpuMs": 453
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0029000000013184035,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002599999999802094,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0029000000013184035,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.005300000000715954,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 38.279099999999744,
+          "cpuMs": 46,
+          "samples": [
+            {
+              "wallMs": 37.12850000000071,
+              "cpuMs": 32
+            },
+            {
+              "wallMs": 38.279099999999744,
+              "cpuMs": 46
+            },
+            {
+              "wallMs": 38.72829999999885,
+              "cpuMs": 47
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.004899999999906868,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002899999999499414,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004899999999906868,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 36.569799999999304,
+              "cpuMs": 31
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 356.09369999999944,
+          "cpuMs": 422,
+          "samples": [
+            {
+              "wallMs": 354.5118999999995,
+              "cpuMs": 359
+            },
+            {
+              "wallMs": 356.09369999999944,
+              "cpuMs": 422
+            },
+            {
+              "wallMs": 422.15459999999985,
+              "cpuMs": 422
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 3.537399999999252,
+          "cpuMs": 16,
+          "samples": [
+            {
+              "wallMs": 3.515400000000227,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 3.537399999999252,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 3.720100000000457,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 129902624,
+      "coldCounters": {
+        "hashes": 6503,
+        "hits": 0,
+        "parsedVersions": 1500,
+        "cacheBytes": 15093366,
+        "elapsedMs": 470.3320999999996
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 15093366,
+        "elapsedMs": 0.00020000000040454324
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 1004,
+        "parsedVersions": 1,
+        "cacheBytes": 15203602,
+        "elapsedMs": 37.07580000000053
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 79389,
+      "eventLoopDelayProxyMs": 16.31919999999991,
+      "heapEnd": 75266488,
+      "retainedCacheBytes": 15203602
+    },
+    {
+      "platform": "Apple",
+      "count": 1,
+      "versions": 3,
+      "bytes": 4449,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 1.4599999999991269,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 1.3778000000002066,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.4599999999991269,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 3.071700000000419,
+              "cpuMs": 16
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.006699999999909778,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.006099999998696148,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.006699999999909778,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.009799999999813735,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 0.6562000000012631,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.6509999999998399,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.6562000000012631,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.0941000000002532,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.009099999999307329,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.0055000000011204975,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.009099999999307329,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.14459999999962747,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 2.2263999999995576,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 1.9624999999996362,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.2263999999995576,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 5.889099999998507,
+              "cpuMs": 31
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.05010000000038417,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.0385999999998603,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.05010000000038417,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.2736000000004424,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 75987208,
+      "coldCounters": {
+        "hashes": 16,
+        "hits": 0,
+        "parsedVersions": 3,
+        "cacheBytes": 30614,
+        "elapsedMs": 1.3562999999994645
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 30614,
+        "elapsedMs": 0.002800000000206637
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 6,
+        "parsedVersions": 1,
+        "cacheBytes": 50032,
+        "elapsedMs": 0.6403000000009342
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 680,
+      "eventLoopDelayProxyMs": 0.8074000000015076,
+      "heapEnd": 86078208,
+      "retainedCacheBytes": 50032
+    },
+    {
+      "platform": "Apple",
+      "count": 5,
+      "versions": 15,
+      "bytes": 21705,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 5.198099999999613,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 4.564399999999296,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 5.198099999999613,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 5.403599999999642,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0030999999999039574,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002800000000206637,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0030999999999039574,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004600000000209548,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 0.8613000000004831,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.8577000000004773,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.8613000000004831,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.9058999999997468,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.003800000000410364,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002899999999499414,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.003800000000410364,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.40680000000065775,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 5.2840999999989435,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 4.947999999998501,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 5.2840999999989435,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 5.863599999998769,
+              "cpuMs": 16
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.08790000000044529,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.06430000000000291,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.08790000000044529,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.17410000000018044,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 86265576,
+      "coldCounters": {
+        "hashes": 68,
+        "hits": 0,
+        "parsedVersions": 15,
+        "cacheBytes": 149046,
+        "elapsedMs": 5.3814000000002125
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 149046,
+        "elapsedMs": 0.00030000000151630957
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 14,
+        "parsedVersions": 1,
+        "cacheBytes": 169176,
+        "elapsedMs": 0.8501999999989494
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 1355,
+      "eventLoopDelayProxyMs": 0.8004999999993743,
+      "heapEnd": 122871280,
+      "retainedCacheBytes": 169176
+    },
+    {
+      "platform": "Apple",
+      "count": 20,
+      "versions": 60,
+      "bytes": 86975,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 16.92540000000008,
+          "cpuMs": 31,
+          "samples": [
+            {
+              "wallMs": 16.635200000000623,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 16.92540000000008,
+              "cpuMs": 31
+            },
+            {
+              "wallMs": 20.29229999999916,
+              "cpuMs": 78
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0030999999999039574,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.0029000000013184035,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0030999999999039574,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004500000000916771,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 2.030800000000454,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 1.9794999999994616,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.030800000000454,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 2.4632000000001426,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.003800000000410364,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002800000000206637,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.003800000000410364,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 1.5565999999998894,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 16.22570000000087,
+          "cpuMs": 16,
+          "samples": [
+            {
+              "wallMs": 15.85360000000037,
+              "cpuMs": 15
+            },
+            {
+              "wallMs": 16.22570000000087,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 19.23320000000058,
+              "cpuMs": 32
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.20300000000133878,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.1576999999997497,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.20300000000133878,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.25979999999981374,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 123622104,
+      "coldCounters": {
+        "hashes": 263,
+        "hits": 0,
+        "parsedVersions": 60,
+        "cacheBytes": 596406,
+        "elapsedMs": 16.611899999999878
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 596406,
+        "elapsedMs": 0.0005000000001018634
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 44,
+        "parsedVersions": 1,
+        "cacheBytes": 619442,
+        "elapsedMs": 1.9681999999993423
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 3756,
+      "eventLoopDelayProxyMs": 1.0846000000001368,
+      "heapEnd": 91017568,
+      "retainedCacheBytes": 619442
+    },
+    {
+      "platform": "Apple",
+      "count": 100,
+      "versions": 300,
+      "bytes": 436575,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 85.25250000000051,
+          "cpuMs": 93,
+          "samples": [
+            {
+              "wallMs": 85.0668999999998,
+              "cpuMs": 109
+            },
+            {
+              "wallMs": 85.25250000000051,
+              "cpuMs": 93
+            },
+            {
+              "wallMs": 91.69300000000112,
+              "cpuMs": 110
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.0036000000000058208,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.003500000000713044,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.0036000000000058208,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004899999999906868,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 9.157400000000052,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 8.797199999999066,
+              "cpuMs": 63
+            },
+            {
+              "wallMs": 9.157400000000052,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 9.774900000000343,
+              "cpuMs": 15
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.004799999998795101,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.0033000000003085006,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.004799999998795101,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 7.627800000000207,
+              "cpuMs": 15
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 73.31209999999919,
+          "cpuMs": 78,
+          "samples": [
+            {
+              "wallMs": 70.63060000000041,
+              "cpuMs": 79
+            },
+            {
+              "wallMs": 73.31209999999919,
+              "cpuMs": 78
+            },
+            {
+              "wallMs": 86.16690000000017,
+              "cpuMs": 78
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 0.7285000000010768,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.7209999999995489,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.7285000000010768,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.744699999999284,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 94445072,
+      "coldCounters": {
+        "hashes": 1303,
+        "hits": 0,
+        "parsedVersions": 300,
+        "cacheBytes": 2990966,
+        "elapsedMs": 85.04680000000008
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 2990966,
+        "elapsedMs": 0.00029999999969732016
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 204,
+        "parsedVersions": 1,
+        "cacheBytes": 3028402,
+        "elapsedMs": 9.130699999999706
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 16015,
+      "eventLoopDelayProxyMs": 3.5054999999993015,
+      "heapEnd": 128634480,
+      "retainedCacheBytes": 3028402
+    },
+    {
+      "platform": "Apple",
+      "count": 500,
+      "versions": 1500,
+      "bytes": 2206975,
+      "measurements": {
+        "coldHash": {
+          "wallMs": 409.4459000000006,
+          "cpuMs": 390,
+          "samples": [
+            {
+              "wallMs": 408.1900999999998,
+              "cpuMs": 437
+            },
+            {
+              "wallMs": 409.4459000000006,
+              "cpuMs": 390
+            },
+            {
+              "wallMs": 411.0640000000003,
+              "cpuMs": 438
+            }
+          ]
+        },
+        "warmHash": {
+          "wallMs": 0.002699999999094871,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002599999999802094,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.002699999999094871,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.005400000000008731,
+              "cpuMs": 0
+            }
+          ]
+        },
+        "oneVersionHash": {
+          "wallMs": 37.53780000000006,
+          "cpuMs": 47,
+          "samples": [
+            {
+              "wallMs": 36.689399999999296,
+              "cpuMs": 31
+            },
+            {
+              "wallMs": 37.53780000000006,
+              "cpuMs": 47
+            },
+            {
+              "wallMs": 38.000700000000506,
+              "cpuMs": 46
+            }
+          ]
+        },
+        "undoHash": {
+          "wallMs": 0.005000000001018634,
+          "cpuMs": 0,
+          "samples": [
+            {
+              "wallMs": 0.002799999998387648,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 0.005000000001018634,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 36.46969999999965,
+              "cpuMs": 31
+            }
+          ]
+        },
+        "restorePlanChanged": {
+          "wallMs": 353.84869999999864,
+          "cpuMs": 469,
+          "samples": [
+            {
+              "wallMs": 352.1342000000004,
+              "cpuMs": 344
+            },
+            {
+              "wallMs": 353.84869999999864,
+              "cpuMs": 469
+            },
+            {
+              "wallMs": 420.22420000000056,
+              "cpuMs": 453
+            }
+          ]
+        },
+        "gzipLevel1": {
+          "wallMs": 3.62590000000273,
+          "cpuMs": 16,
+          "samples": [
+            {
+              "wallMs": 3.4104000000006636,
+              "cpuMs": 0
+            },
+            {
+              "wallMs": 3.62590000000273,
+              "cpuMs": 16
+            },
+            {
+              "wallMs": 3.676100000000588,
+              "cpuMs": 0
+            }
+          ]
+        }
+      },
+      "heapStart": 145809200,
+      "coldCounters": {
+        "hashes": 6503,
+        "hits": 0,
+        "parsedVersions": 1500,
+        "cacheBytes": 15093366,
+        "elapsedMs": 408.1311999999998
+      },
+      "warmCounters": {
+        "hashes": 0,
+        "hits": 1,
+        "parsedVersions": 0,
+        "cacheBytes": 15093366,
+        "elapsedMs": 0.00020000000040454324
+      },
+      "dirtyCounters": {
+        "hashes": 6,
+        "hits": 1004,
+        "parsedVersions": 1,
+        "cacheBytes": 15203602,
+        "elapsedMs": 36.65030000000115
+      },
+      "undoMatches": true,
+      "changedPlan": 0,
+      "gzipBytes": 79002,
+      "eventLoopDelayProxyMs": 16.056000000000495,
+      "heapEnd": 279060480,
+      "retainedCacheBytes": 15203602
+    }
+  ]
+}

@@ -7,7 +7,8 @@ const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,'
 const marker=(name,text)=>`/* SEPREPARE RHYTHMS ${name} START */${text}/* SEPREPARE RHYTHMS ${name} END */`;
 let source=readFileSync(path.join(root,'app.js'),'utf8').replace(/\/\* SEPREPARE RHYTHMS ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE RHYTHMS \1 END \*\//g,'');
 const nodes=[];
-function walk(node){if(!node||typeof node!=='object')return;if(node.type)nodes.push(node);for(const value of Object.values(node)){if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')walk(value);}}
+const bundleRanges=[...source.matchAll(/\/\* SEPREPARE [A-Z]+ (BUNDLE|CODEC) START \*\/[\s\S]*?\/\* SEPREPARE [A-Z]+ \1 END \*\//g)].map(m=>[m.index,m.index+m[0].length]);
+function walk(node){if(!node||typeof node!=='object'||node.type&&bundleRanges.some(([a,b])=>node.start>=a&&node.end<=b))return;if(node.type)nodes.push(node);for(const value of Object.values(node)){if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')walk(value);}}
 walk(parse(source,{ecmaVersion:'latest'}));
 const only=(rows,label)=>{if(rows.length!==1)throw Error('Integração de ritmos ambígua: '+label+' ('+rows.length+').');return rows[0];};
 const fn=(name,match='')=>only(nodes.filter(n=>n.type==='FunctionDeclaration'&&n.id?.name===name&&source.slice(n.start,n.end).includes(match)),name);

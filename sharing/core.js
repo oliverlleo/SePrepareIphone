@@ -1,3 +1,4 @@
+import {validateDeletionTombstones} from '../protection/sync-deletions.js';
 import {parseRhythm,RHYTHM_ATTRIBUTE,validateRhythmCatalog} from '../rhythms/rhythm-core.js';
 import {normalizeNotes,withoutNoteAttributes,noteRanges} from './notes-core.js';
 export const uid=()=>globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,10)}`;
@@ -52,6 +53,7 @@ export const partNarration=s=>partSegments(s).map(t=>(t.participantId?participan
 export function validState(data){
   if(!data || data.schema!==1 || !Array.isArray(data.speeches) || !Array.isArray(data.categories)) throw Error('Esse arquivo não é um backup válido do SePrepare.');
   if(data.speeches.length>2000 || data.categories.length>300) throw Error('O arquivo ultrapassa o limite de importação.');
+  validateDeletionTombstones(data.deletionTombstones);if(data.deletionTombstones?.some(row=>data.speeches.some(doc=>doc.id===row.id)))throw Error('Registro de exclusões conflitante.');
   const speechIds=new Set(), catIds=new Set();
   for(const c of data.categories){if(typeof c.id!=='string'||typeof c.name!=='string'||catIds.has(c.id))throw Error('Categoria inválida no arquivo.');catIds.add(c.id);c.color=/^#[\da-f]{6}$/i.test(c.color)?c.color:'#61776c';c.icon=typeof c.icon==='string'?c.icon:'BookOpen';}
   for(const s of data.speeches){
@@ -71,6 +73,11 @@ export function validState(data){
   }
   data.settings={theme:'light',pace:125,rate:1,voice:'',...data.settings};data.vocabulary=Array.isArray(data.vocabulary)?data.vocabulary.slice(0,5000):[];
   validateRhythmCatalog(data.settings.rhythms);
+  if(data.editorDrafts!==undefined){
+   if(!Array.isArray(data.editorDrafts)||data.editorDrafts.length>2000)throw Error('Rascunhos inválidos no arquivo.');
+   const drafts=new Set();for(const row of data.editorDrafts){if(!row||typeof row.speechId!=='string'||drafts.has(row.speechId)||row.document?.id!==row.speechId||data.deletionTombstones?.some(t=>t.id===row.speechId))throw Error('Rascunho inválido no arquivo.');drafts.add(row.speechId);validState({schema:1,speeches:[clone(row.document)],categories:clone(data.categories),settings:{},vocabulary:[]});}
+  }
+
   return data;
 }
 export function validateDelta(delta){
@@ -125,7 +132,8 @@ export function projectContentVersion(s,id=s.activeVersionId){
 export function normalizeVersions(s){
  if(s.versionSchema!==undefined&&s.versionSchema!==1)throw Error('As versões usam um formato mais recente. Atualize o aplicativo.');
  if(s.versions===undefined){
-  const v={id:uid(),name:'Versão original',createdAt:s.createdAt||Date.now(),updatedAt:s.updatedAt||Date.now(),revision:1};
+  const legacyId='legacy-'+Array.from(String(s.id)).reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619)>>>0,2166136261).toString(16)+'-'+Math.max(0,Number(s.createdAt)||0).toString(36);
+  const v={id:legacyId,name:'Versão original',createdAt:s.createdAt||0,updatedAt:s.updatedAt||0,revision:1};
   for(const key of versionFields)if(key in s)v[key]=clone(s[key]);s.versions=[v];s.activeVersionId=v.id;
  }else if(!Array.isArray(s.versions)||!s.versions.length||s.versions.length>1000)throw Error('Lista de versões inválida.');
  const seen=new Set();

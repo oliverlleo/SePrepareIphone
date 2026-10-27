@@ -1,3 +1,8 @@
+import {pruneRedundantCheckpoints} from './editor-checkpoints.js';
+import {mergeImportedMetadata} from './import-metadata.js';
+import {editorDelta} from './editor-snapshot.js';
+import {createDeletionLedger} from './sync-deletions.js';
+import {currentChangeOrigin,withChangeOrigin} from './change-origin.js';
 import {createBrowserDrive} from './browser-drive.js';
 import {createDriveUI} from './drive-ui.js';
 import {createIosAuthorization} from './ios-authorization.js';
@@ -32,4 +37,4 @@ export function createUI(config){
  const original=config.icon;
  return createDriveUI({...config,icon:(name,...args)=>paths[name]?'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths[name]+'</svg>':original(name,...args)});
 }
-window.SePrepareDriveProtection={createBridge,createUI};
+window.SePrepareDriveProtection={createBridge,createUI,mergeImportedMetadata,pruneRedundantCheckpoints,createDeletionLedger,currentChangeOrigin,withChangeOrigin,editorDelta};

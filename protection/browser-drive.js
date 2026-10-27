@@ -1,7 +1,7 @@
 import * as SPLocale from './i18n.js';
 import {validState} from './core.js';
 import {driveHash} from './drive-core.js';
-import {backupStateHash,backupDocumentHash} from './drive-backup-state.js';
+import {backupStateHash,backupDocumentHash,backupContentIndex} from './drive-backup-state.js';
 import {DRIVE_REQUEST_GAP,driveRetryDelay,driveBackupDue,retainedDriveCopies,createDriveReceiptCache} from './browser-drive-state.js';
 
 export const BROWSER_DRIVE_CLIENT_ID='4184165315-bjgek38jqbhjb2v8bggfh9ib7f84n33k.apps.googleusercontent.com';
@@ -15,11 +15,13 @@ const query="trashed = false and appProperties has { key='seprepareBackup' and v
 const byteLength=text=>new TextEncoder().encode(text).length;
 const copy=value=>JSON.parse(JSON.stringify(value));
 const validId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(id);
-const defaults=()=>({connected:false,email:'',autoBackup:true,autoRead:true,lastAutoAttemptAt:0,lastChangeAt:0,backupPending:false,pendingSinceAt:0,backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:'',lastConfirmedAt:0,lastConfirmedHash:'',observedHash:'',lastCleanupAttemptAt:0,needsReview:false,hasRemote:false,backupCleanupPending:false,lastBackupAt:0,lastReadAt:0,lastRestoredAt:0,lastReadOutcome:'',lastCheckedAt:0,lastCheckAttemptAt:0,lastReadId:'',lastUploadedId:'',lastUploadHash:'',approvedRemoteId:'',offerSeen:false});
+const defaults=()=>({connected:false,email:'',autoBackup:true,autoRead:true,lastAutoAttemptAt:0,lastChangeAt:0,lastChangeOrigin:'internal',backupPending:false,pendingSinceAt:0,backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:'',lastConfirmedAt:0,lastConfirmedHash:'',observedHash:'',lastCleanupAttemptAt:0,needsReview:false,hasRemote:false,backupCleanupPending:false,lastBackupAt:0,lastReadAt:0,lastRestoredAt:0,lastReadOutcome:'',lastCheckedAt:0,lastCheckAttemptAt:0,lastReadId:'',lastUploadedId:'',lastUploadHash:'',approvedRemoteId:'',offerSeen:false});
 const failure=(message,code='backup')=>Object.assign(new Error(message),{code});
+let lastValidatedRaw=null;
 function validateRaw(raw){
+ if(raw===lastValidatedRaw)return JSON.parse(raw);
  if(typeof raw!=='string'||byteLength(raw)>LIMIT)throw failure('O caderno ultrapassa o tamanho permitido.');
- let state;try{state=JSON.parse(raw);validState(copy(state));}catch{throw failure(SPLocale.t('Este arquivo não é um backup compatível do SePrepare.'));}return state;
+ let state;try{state=JSON.parse(raw);validState(copy(state));lastValidatedRaw=raw;}catch{throw failure(SPLocale.t('Este arquivo não é um backup compatível do SePrepare.'));}return state;
 }
 function snapshot(raw,now){
  const state=validateRaw(raw);
@@ -61,23 +63,23 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  const later=environment.setTimeout||globalThis.setTimeout.bind(globalThis),cancelLater=environment.clearTimeout||globalThis.clearTimeout.bind(globalThis);
  const requestGap=environment.requestGap??DRIVE_REQUEST_GAP,sleep=environment.sleep||(ms=>new Promise(resolve=>setTimeout(resolve,ms)));
  const sourceCache=environment.receiptCache||createDriveReceiptCache(environment.indexedDB||globalThis.indexedDB);
- let source=null,lastReadSource=null,sourceReady=Promise.resolve(),confirmationTask=Promise.resolve(),contentTask=null,contentVersion=0,backupTimer=null,networkQueue=Promise.resolve(),lastRequestAt=0,checkedRaw='',checkedHash='';
+ let source=null,lastReadSource=null,sourceReady=Promise.resolve(),confirmationTask=Promise.resolve(),contentTask=null,contentVersion=0,backupTimer=null,networkQueue=Promise.resolve(),lastRequestAt=0,checkedRaw='',checkedHash='',committedRaw=null,pendingOrigin='internal';
  try{record=loadRecord(storage.getItem(KEY));}catch(e){record={data:defaults(),baseline:null,pending:null,confirmation:null,recentUploads:[]};error=e.message||SPLocale.t('Não foi possível ler as preferências do Drive.');errorCode='storage';}
  const data=()=>record.data;
  const tokenValid=()=>!!token&&now()<expiresAt;
  // Uma página visível pode continuar o backup mesmo quando outra janela recebe o foco.
  const active=()=>!disposed&&!doc.hidden&&canWrite();
  const due=()=>driveBackupDue(data());
- function stateRaw(){const state=getState(),raw=typeof state==='string'?state:JSON.stringify(state);validateRaw(raw);return raw;}
- function localSaved(){contentVersion++;return observe();}
+ function stateRaw(){if(committedRaw!==null)return committedRaw;const state=getState(),raw=typeof state==='string'?state:JSON.stringify(state);if(raw!==checkedRaw)validateRaw(raw);return raw;}
+ function localSaved(origin='user',raw=null){if(typeof raw==='string')committedRaw=raw;pendingOrigin=['user','drive','shared-import','manual-restore','local-configuration','internal','migration'].includes(origin)?origin:'internal';contentVersion++;return observe();}
  function observe(){
   if(!data().connected||disposed||!canWrite())return Promise.resolve();if(contentTask)return contentTask;
   contentTask=(async()=>{
    let changed=false;
-   for(;;){const version=contentVersion,account=data().email,raw=stateRaw(),hash=raw===checkedRaw?checkedHash:await backupStateHash(raw);
+   for(;;){const version=contentVersion,account=data().email,raw=stateRaw(),index=await backupContentIndex(raw),hash=index.stateHash;
     if(disposed||account!==data().email)return;checkedRaw=raw;checkedHash=hash;
-    const pending=!!JSON.parse(raw).speeches.length&&hash!==data().lastConfirmedHash;
-    if(hash!==data().observedHash||pending!==data().backupPending){const since=pending?(data().backupPending?data().pendingSinceAt:now()):0;commit({observedHash:hash,backupPending:pending,pendingSinceAt:since,lastChangeAt:now(),...(!pending?{backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:''}:{})});changed=true;}
+    const pending=index.hasProtectedData&&hash!==data().lastConfirmedHash;
+    if(hash!==data().observedHash||pending!==data().backupPending||pendingOrigin!==data().lastChangeOrigin){const since=pending?(data().backupPending?data().pendingSinceAt:now()):0;commit({observedHash:hash,lastChangeOrigin:pendingOrigin,backupPending:pending,pendingSinceAt:since,lastChangeAt:now(),...(!pending?{backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:''}:{})});changed=true;}
     if(version===contentVersion)break;
    }
    if(changed)emit('status');
@@ -163,12 +165,13 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   const state=envelope.state;if(byteLength(state)>LIMIT||!(/^[a-f0-9]{64}$/.test(envelope.sha256||''))||await driveHash(state)!==envelope.sha256||meta?.appProperties?.hash&&meta.appProperties.hash!==envelope.sha256)throw failure(SPLocale.t('O backup está incompleto ou foi alterado. Seus dados locais foram preservados.'));validateRaw(state);return state;
  }
  function deviceId(){let id=storage.getItem(KEY+'-device');if(!/^[a-f0-9-]{36}$/.test(id||'')){id=crypto.randomUUID();storage.setItem(KEY+'-device',id);}return id;}
- async function remember(id,raw,at,uploaded=false){
-  const account=data().email,hash=await backupStateHash(raw),wireHash=await driveHash(raw),state=validateRaw(raw),documents=Object.create(null);
+ async function remember(id,raw,at,uploaded=false,normalization=null){
+  const account=data().email,index=await backupContentIndex(raw),rawSemanticHash=index.stateHash,wireHash=await driveHash(raw),state=validateRaw(raw);
   const lookup={categories:new Map(state.categories.map(row=>[row.id,row])),drafts:new Map((state.editorDrafts||[]).map(row=>[row.speechId,row]))};
-  await Promise.all(state.speeches.map(async row=>{documents[row.id]=await backupDocumentHash(row,state,lookup);}));
-  const current=await backupStateHash(stateRaw());if(disposed||account!==data().email)return;
-  const confirmation={account,id,at,hash,wireHash,documents,aligned:current===hash};
+
+  const currentRaw=stateRaw(),currentIndex=await backupContentIndex(currentRaw),current=currentIndex.stateHash;if(disposed||account!==data().email)return;
+  const normalized=normalization?.normalizedRemoteHash===current&&normalization?.localStateHash===current,hash=normalized?current:rawSemanticHash,documents=normalized?currentIndex.documents:index.documents,syncDocuments=normalized?currentIndex.syncDocuments:index.syncDocuments;
+  const confirmation={account,id,at,hash,wireHash,documents,syncDocuments,aligned:current===hash,signatureFormat:3,rawSemanticHash,normalizationHash:normalized?current:null,requiresNormalization:!!index.legacy&&!normalized&&!uploaded};
   const recentUploads=uploaded?[{id,hash:wireHash},...record.recentUploads.filter(row=>row.id!==id)].slice(0,16):record.recentUploads;
   commit({lastConfirmedHash:hash,lastConfirmedAt:at,hasRemote:true,observedHash:current,backupPending:current!==hash,pendingSinceAt:current===hash?0:data().pendingSinceAt||now(),backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:'',...(uploaded?{lastBackupAt:at,lastUploadedId:id,lastUploadHash:wireHash,approvedRemoteId:id,needsReview:false,backupCleanupPending:true}:{})},{confirmation,recentUploads,...(uploaded?{pending:null}:{})});
   source={account,id,at,hash,state:raw};void sourceCache.save(source).catch(()=>{});
@@ -181,8 +184,9 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   if(record.recentUploads.some(row=>row.id===latest.id&&wire&&wire!==row.hash))contradicted=true;
   if(origin&&origin===deviceId()&&!contradicted)own=true;if(contradicted)own=false;
   const sameId=receipt?.id===latest.id&&(!wire||receipt.wireHash===wire),sameBytes=receipt&&wire&&receipt.wireHash===wire;
+  if(receipt?.requiresNormalization&&sameId)return false;
   if(!sameId&&!sameBytes&&!own)return false;
-  if(!sameId){await sourceReady;const raw=sameBytes&&source?.id===receipt.id?source.state:await download(latest.id,latest);await remember(latest.id,raw,Number(latest.appProperties?.at)||Date.parse(latest.createdTime)||now());}
+  if(!sameId||receipt?.signatureFormat!==3){await sourceReady;const raw=sameBytes&&source?.id===receipt.id?source.state:await download(latest.id,latest);await remember(latest.id,raw,Number(latest.appProperties?.at)||Date.parse(latest.createdTime)||now());}
   commit({approvedRemoteId:latest.id,lastReadId:latest.id,needsReview:false},{pending:null});return true;
  }
  async function upload(state,reviewed=null){
@@ -362,8 +366,8 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
    commit({lastAutoAttemptAt:now()});const latest=await files(true),head=latest?.id||'';
    if(!active()||!tokenValid())return;
    if(latest&&!await recognized(latest)&&head!==data().approvedRemoteId){payload=await stage(latest,!data().autoRead);return;}
-   const raw=localRaw(),state=snapshot(raw,now()),hash=await backupStateHash(state);
-   if(JSON.parse(state).speeches.length&&(!latest||hash!==data().lastConfirmedHash)){
+   const raw=localRaw(),state=snapshot(raw,now()),index=await backupContentIndex(state),hash=index.stateHash;
+   if(index.hasProtectedData&&(!latest||hash!==data().lastConfirmedHash)){
     const current=await files(true);if(!active()||!tokenValid())return;
     if((current?.id||'')!==head){if(current)payload=await stage(current,!data().autoRead);return;}
     if(raw!==stateRaw())return;await upload(state,current);
@@ -378,7 +382,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   if(!d.connected||receipt.account!==d.email||!validId(receipt.id)||!['restored','current','kept-local'].includes(receipt.outcome))return false;validateIndex(receipt.local);validateIndex(receipt.remote);
   const incoming=record.pending?.id===receipt.id&&record.pending.account===d.email?record.pending:lastReadSource?.id===receipt.id&&lastReadSource.account===d.email?lastReadSource:null;
   commit({lastReadId:receipt.id,lastReadAt:now(),lastReadOutcome:receipt.outcome,...(receipt.outcome==='restored'?{lastRestoredAt:now()}:{}),...(incoming?{needsReview:false,approvedRemoteId:receipt.id}:{})},{baseline:{account:d.email,id:receipt.id,local:receipt.local,remote:receipt.remote},...(incoming?{pending:null}:{})});
-  if(incoming){confirmationTask=remember(incoming.id,incoming.state,incoming.at||now()).then(()=>observe()).catch(fail);}else void observe();return true;
+  if(incoming){confirmationTask=remember(incoming.id,incoming.state,incoming.at||now(),false,receipt).then(()=>observe()).catch(fail);}else void observe();return true;
  }catch(e){fail(e);return false;}}
  const onForeground=()=>{if(active()){startAuthorization();void observe();schedule();void automatic();}else schedule();};
  const onStorage=event=>{
@@ -390,7 +394,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  };
  // Não invalidar o token ao navegar: ele já tem expiração e pode ser reutilizado ao voltar pelo BFCache.
  doc.addEventListener('visibilitychange',onForeground);doc.addEventListener('pointerdown',onUserGesture,true);doc.addEventListener('keydown',onUserGesture,true);win.addEventListener('focus',onForeground);win.addEventListener('online',onForeground);win.addEventListener('storage',onStorage);win.addEventListener('pageshow',onForeground);
- if(data().connected&&record.confirmation){const account=data().email,receipt=record.confirmation;sourceReady=sourceCache.load(account).then(async saved=>{if(!disposed&&data().email===account&&record.confirmation?.id===receipt.id&&saved?.account===account&&saved.id===receipt.id&&typeof saved.state==='string'&&await driveHash(saved.state)===receipt.wireHash&&await backupStateHash(saved.state)===receipt.hash){source=saved;emit('status');}}).catch(()=>{});}
+ if(data().connected&&record.confirmation){const account=data().email,receipt=record.confirmation;sourceReady=sourceCache.load(account).then(async saved=>{if(!disposed&&data().email===account&&record.confirmation?.id===receipt.id&&saved?.account===account&&saved.id===receipt.id&&typeof saved.state==='string'&&await driveHash(saved.state)===receipt.wireHash){if(receipt.signatureFormat!==3)await remember(saved.id,saved.state,saved.at||receipt.at);else if(await backupStateHash(saved.state)===(receipt.rawSemanticHash||receipt.hash)){source=saved;emit('status');}}}).catch(()=>{});}
  const timer=interval(()=>{startAuthorization();void automatic();},60000);timer?.unref?.();onForeground();
  return {browserDrive:true,driveResume:onForeground,driveAuthorizationChanged:()=>{emit('authorization');onForeground();},preloadGis:()=>{void loadGIS();},driveLocalSaved:localSaved,driveRunPending:automatic,driveBackupIndex:()=>JSON.stringify(record.confirmation?{...record.confirmation,uploaded:record.confirmation.id===data().lastUploadedId}:{}),driveRestoreBase:()=>JSON.stringify(source?.account===data().email?source:{}),driveStatus:()=>JSON.stringify(status()),driveAction:(kind,id,argument)=>{void run(kind,id,argument);},driveTakeOffer:()=>{if(!canWrite()||data().offerSeen)return false;try{commit({offerSeen:true});return true;}catch(e){fail(e);return false;}},drivePending:()=>JSON.stringify(record.pending?.account===data().email?record.pending:{}),driveReadBaseline:()=>JSON.stringify(record.baseline?.account===data().email?record.baseline:{}),drivePrepareRestore:()=>{if(!canWrite())return false;try{storage.setItem(RECOVERY_KEY,localRaw());return true;}catch(e){fail(e.code?e:failure(SPLocale.t('Não foi possível guardar sua cópia de recuperação.'),'storage'));return false;}},driveCompleteRead:completeRead,driveAckRead:id=>{try{if(!canWrite()||!data().connected||!validId(id))return false;const match=record.pending?.id===id,before=match&&record.pending.reason==='before-backup';commit({lastReadId:id,lastReadAt:now(),lastReadOutcome:'checked',...(before?{needsReview:false,approvedRemoteId:id}:{})},match?{pending:null}:{});return true;}catch{return false;}},dispose:()=>{disposed=true;invalidate();if(authorizationTimer!==null)cancelLater(authorizationTimer);if(backupTimer!==null)cancelLater(backupTimer);clear(timer);doc.removeEventListener('visibilitychange',onForeground);doc.removeEventListener('pointerdown',onUserGesture,true);doc.removeEventListener('keydown',onUserGesture,true);win.removeEventListener('focus',onForeground);win.removeEventListener('online',onForeground);win.removeEventListener('storage',onStorage);win.removeEventListener('pageshow',onForeground);}};
 }

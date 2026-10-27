@@ -1,3 +1,4 @@
+import {withChangeOrigin} from '../protection/change-origin.js';
 import {t as translateUI,tr as formatUI,h as markupUI,html as htmlUI,uiLocale,setLanguage,normalizeLanguage,systemMessage} from '../localization/shared.js';
 import {encodeShareCode,decodeShareMessage,MAX_SHARED_MESSAGE_LENGTH} from './share-code.js';
 import {SPEECH_MIME,encodeSpeechVersions,shareFilename} from './sharing.js';
@@ -132,7 +133,7 @@ export function createShareCodeUI(c){
    for(const version of speech.versions){version.createdAt=speech.createdAt;version.updatedAt=speech.updatedAt;if(isPart(speech))version.myParticipantId=version.participants.some(person=>person.id===identities[version.id])?identities[version.id]:'';}
    if($('#codeKeepSchedule')&&!$('#codeKeepSchedule').checked){speech.scheduledAt=0;speech.reminders=[];}
    copyDocumentVersions(speech);if(createdCategory)state.categories.push(createdCategory);state.speeches.unshift(speech);
-   if(c.persist(true)===false){adoption?.rollback();state.speeches=state.speeches.filter(item=>item.id!==speech.id);if(createdCategory)state.categories=state.categories.filter(item=>item.id!==createdCategory.id);return;}
+   if(c.withChangeOrigin('shared-import',()=>persist(true))===false){adoption?.rollback();state.speeches=state.speeches.filter(item=>item.id!==speech.id);if(createdCategory)state.categories=state.categories.filter(item=>item.id!==createdCategory.id);return;}
    c.onImported?.(speech);received=null;closeModal();rt.returnTo='home';c.go('reader',speech.id);toast(isPart(speech)?translateUI('Parte importada com todas as versões.'):translateUI('Discurso importado com todas as versões.'));
   }catch(error){toast(errorText(error));}
  }

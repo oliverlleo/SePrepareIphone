@@ -23,14 +23,14 @@ check('Assinatura geral ignora divisão dos blocos do editor',await backupStateH
 remote=clone(base);remote.speeches[0].delta={ops:[{insert:'Mesmo texto.\n',attributes:{bold:false}}]};captureContentVersion(remote.speeches[0]);
 plan=await planDriveRestore(base,remote);check('Formatação explicitamente desligada equivale à ausente',!plan.report.conflicts.length&&!plan.result.changed);
 remote=clone(base);remote.speeches[0].versions[0].id='regenerated-version-id';remote.speeches[0].activeVersionId='regenerated-version-id';
-plan=await planDriveRestore(base,remote);check('Identificador de versão diferente com mesmo nome e conteúdo não é conflito',!plan.report.conflicts.length);
-check('Alias de versão idêntica não cria outra versão nem restaura dados',!plan.result.changed&&plan.result.state.speeches[0].versions.length===1);
+plan=await planDriveRestore(base,remote);check('Identidade independente com nome e conteúdo iguais é preservada sem conflito',!plan.report.conflicts.length);
+check('Identidades independentes não são colapsadas só por nome e texto iguais',plan.result.changed&&plan.result.state.speeches[0].versions.length===2);
 remote=clone(base);remote.speeches[0].versions[0].updatedAt+=99999;remote.speeches[0].updatedAt+=99999;
 plan=await planDriveRestore(base,remote);check('Datas técnicas não provocam recuperação',!plan.report.conflicts.length&&!plan.result.changed);
 remote=clone(base);remote.speeches[0].delta={ops:[{insert:'Mesmo texto.\n',attributes:{bold:true}}]};captureContentVersion(remote.speeches[0]);
 plan=await planDriveRestore(base,remote,ledger);check('Formatação nova somente no Drive é uma mudança real sem conflito',!plan.report.conflicts.length&&plan.result.changed&&plan.documents[document.id]==='cloud');
 remote=clone(base);remote.speeches[0].delta={ops:[{insert:'Texto novo no Drive.\n'}]};captureContentVersion(remote.speeches[0]);
-plan=await planDriveRestore(base,remote,ledger);check('Texto novo somente no Drive é recuperado preservando o anterior',!plan.report.conflicts.length&&plan.result.changed&&plan.result.state.speeches[0].versions.length===2);
+plan=await planDriveRestore(base,remote,ledger);check('Texto novo somente no Drive atualiza a mesma identidade sem criar versão Drive',!plan.report.conflicts.length&&plan.result.changed&&plan.result.state.speeches[0].versions.length===1);
 const local=clone(base);local.speeches[0].delta={ops:[{insert:'Texto novo no aparelho.\n'}]};captureContentVersion(local.speeches[0]);
 plan=await planDriveRestore(local,base,ledger);check('Alteração só no aparelho não restaura cópia antiga',!plan.report.conflicts.length&&!plan.result.changed&&plan.documents[document.id]==='local');
 plan=await planDriveRestore(local,remote,ledger);check('Mudanças reais nos dois lados exigem decisão',plan.report.conflicts.length===1&&plan.result===null);

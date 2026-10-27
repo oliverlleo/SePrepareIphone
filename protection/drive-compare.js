@@ -20,12 +20,12 @@ export function normalizedDelta(delta){
 function notes(list=[]){return list.map(note=>Object.fromEntries(Object.entries(note).filter(([key])=>!['createdAt','updatedAt'].includes(key)))).sort((a,b)=>String(a.id).localeCompare(String(b.id)));}
 export const versionBody=value=>serialize({delta:normalizedDelta(value?.delta),presenterNotes:notes(value?.presenterNotes),participants:value?.participants,partFormat:value?.partFormat});
 export const versionKey=value=>serialize({name:value?.name||'',body:versionBody(value)});
-export const sameVersion=(left,right)=>versionBody(left)===versionBody(right)&&((left.id===right.id||left.driveSourceId===right.id||right.driveSourceId===left.id)||left.name===right.name);
+export const sameVersion=(left,right)=>versionBody(left)===versionBody(right)&&(left.id===right.id||left.driveSourceId===right.id||right.driveSourceId===left.id||left.driveSourceId&&left.driveSourceId===right.driveSourceId);
 export const activeVersion=document=>document.versions?.find(version=>version.id===document.activeVersionId)||document.versions?.[0]||document;
 const general=['title','subtitle','categoryId','targetMinutes','layout','scheduledAt','reminders','pinned','deleted','deletedAt'];
 export const generalValue=(document,key)=>['pinned','deleted'].includes(key)?!!document[key]:key==='deletedAt'&&!document.deleted?null:document[key]??null;
 export function documentKey(document){
- return serialize({type:document.type||'speech',general:Object.fromEntries(general.map(key=>[key,generalValue(document,key)])),active:versionKey(activeVersion(document)),versions:[...new Set((document.versions||[]).map(versionKey))].sort()});
+ return serialize({type:document.type||'speech',general:Object.fromEntries(general.map(key=>[key,generalValue(document,key)])),active:{id:document.activeVersionId,key:versionKey(activeVersion(document))},versions:(document.versions||[]).map(v=>({id:v.id,source:v.driveSourceId||null,key:versionKey(v)})).sort((a,b)=>a.id.localeCompare(b.id))});
 }
 function historyKey(history){return serialize((history||[]).map(entry=>{const value={...entry,delta:normalizedDelta(entry.delta),presenterNotes:notes(entry.presenterNotes)};delete value.versionId;delete value.updatedAt;return value;}));}
 function rehearsalKey(rehearsals){return serialize((rehearsals||[]).map(entry=>{const value={...entry};delete value.versionId;return value;}));}
@@ -53,7 +53,7 @@ export function mergeIndependent(base,local,remote){
  if(structure(base)!==structure(local)||structure(base)!==structure(remote))return null;
  const inactive=value=>serialize(value.versions.filter(version=>version.id!==value.activeVersionId).map(versionKey));
  if(inactive(base)!==inactive(local)||inactive(base)!==inactive(remote))return null;
- const values=document=>Object.fromEntries([...general.map(key=>[key,serialize(generalValue(document,key))]),['content',versionBody(activeVersion(document))]]);
+ const values=document=>Object.fromEntries([...general.map(key=>[key,serialize(generalValue(document,key))]),['content',versionBody(activeVersion(document))],['records',serialize(document.versions.map(v=>({id:v.id,history:historyKey(v.history),rehearsals:rehearsalKey(v.rehearsals)})))]]);
  const original=values(base),here=values(local),there=values(remote),changedHere=Object.keys(here).filter(key=>here[key]!==original[key]),changedThere=Object.keys(there).filter(key=>there[key]!==original[key]);
  if((changedHere.includes('deleted')&&changedThere.length)||(changedThere.includes('deleted')&&changedHere.length))return null;
  if(changedHere.some(key=>changedThere.includes(key)&&here[key]!==there[key]))return null;
@@ -62,5 +62,6 @@ export function mergeIndependent(base,local,remote){
  if(changedHere.includes('content')&&!changedThere.includes('content')){
   const active=activeVersion(local),index=result.versions.findIndex(version=>version.id===active.id);result.versions[index]=JSON.parse(JSON.stringify(active));
  }
+ for(const version of result.versions){const source=(changedHere.includes('records')?local:remote).versions.find(v=>v.id===version.id);if(source){version.history=JSON.parse(JSON.stringify(source.history));version.rehearsals=JSON.parse(JSON.stringify(source.rehearsals));}}
  return result;
 }
