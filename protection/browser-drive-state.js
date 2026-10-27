@@ -1,6 +1,6 @@
-export const DRIVE_REQUEST_GAP=10000;
-export const driveRetryDelay=failures=>Math.min(900000,DRIVE_REQUEST_GAP*2**Math.min(7,Math.max(0,failures-1)));
-export const driveBackupDue=data=>data.backupPending?Math.max(data.pendingSinceAt+DRIVE_REQUEST_GAP,data.lastAutoAttemptAt+DRIVE_REQUEST_GAP,data.backupRetryAt):0;
+export const DRIVE_BACKUP_GAP=10000;
+export const driveRetryDelay=failures=>Math.min(900000,DRIVE_BACKUP_GAP*2**Math.min(7,Math.max(0,failures-1)));
+export const driveBackupDue=data=>data.backupPending?Math.max(data.pendingSinceAt||0,data.lastAutoAttemptAt?data.lastAutoAttemptAt+DRIVE_BACKUP_GAP:0,(data.lastBackupFinishedAt||data.lastBackupAt)?(data.lastBackupFinishedAt||data.lastBackupAt)+DRIVE_BACKUP_GAP:0,data.backupRetryAt||0):0;
 
 // Use Drive's creation times, not an untrusted device clock. Frequent edits must
 // leave useful recovery points instead of replacing the whole history in seconds.
