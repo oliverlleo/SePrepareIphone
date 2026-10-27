@@ -3,7 +3,7 @@ import {IDBFactory} from 'fake-indexeddb';
 import {fixture,until,DRIVE_KEY} from './drive-web-fixture.mjs';
 import {driveIndex} from './drive-core.js';
 import {backupDocumentHash} from './drive-backup-state.js';
-import {createDriveReceiptCache,driveRetryDelay,retainedDriveCopies,DRIVE_REQUEST_GAP} from './browser-drive-state.js';
+import {createDriveReceiptCache,driveRetryDelay,retainedDriveCopies,DRIVE_BACKUP_GAP} from './browser-drive-state.js';
 const checks=[];const pass=name=>{checks.push(name);console.log('PASS',name);};
 {
  const f=fixture();let release;f.hooks.account=()=>new Promise(resolve=>{release=resolve;});const linking=f.action('connect');await until(()=>!!release);
@@ -14,10 +14,10 @@ const checks=[];const pass=name=>{checks.push(name);console.log('PASS',name);};
  pass('Interromper a primeira conexão enquanto o usuário edita não grava uma conta incompleta nem corrompe a próxima abertura');
 }
 {
- const f=fixture();await f.action('connect');assert(f.status().autoBackup&&f.status().autoRead);assert(f.status().backupPending);assert.equal(f.status().nextBackupAt,f.now()+10000);assert.equal(f.oauth.requests[0].options.scope,'https://www.googleapis.com/auth/drive.appdata');assert(!('frequencyDays' in f.status()));
+ const f=fixture();await f.action('connect');assert(f.status().autoBackup&&f.status().autoRead);assert(f.status().backupPending);assert.equal(f.status().nextBackupAt,f.now());assert.equal(f.oauth.requests[0].options.scope,'https://www.googleapis.com/auth/drive.appdata');assert(!('frequencyDays' in f.status()));
  pass('Novo vínculo liga os dois automatismos e pede somente acesso privado do Drive, sem frequência por dias');
- f.advance(9999);assert((await f.run()).skipped);f.advance(1);assert(!(await f.run()).error);assert.equal(f.uploads(),1);assert(!f.status().backupPending);assert.equal(f.status().nextBackupAt,0);
- pass('Primeira cópia automática ocorre após dez segundos, sem botão manual');
+ assert(!(await f.run()).error);assert.equal(f.uploads(),1);assert(!f.status().backupPending);assert.equal(f.status().nextBackupAt,0);
+ pass('Primeira cópia automática não recebe espera artificial de dez segundos');
  const baseline=f.now();f.getState().speeches[0].updatedAt+=300;await f.save();assert(!f.status().backupPending);f.advance(10000);assert((await f.run()).skipped);assert.equal(f.uploads(),1);
  pass('Salvar sem mudança real ou alterar relógios internos não cria cópia duplicada');
  f.getState().speeches[0].title='Título novo';await f.save();const due=f.status().nextBackupAt;f.advance(5000);f.getState().speeches[0].title='Título final';await f.save();assert.equal(f.status().nextBackupAt,due);f.advance(5000);await f.run();assert.equal(f.uploads(),2);assert(!f.status().backupPending);assert(f.now()>baseline);
@@ -57,8 +57,8 @@ const checks=[];const pass=name=>{checks.push(name);console.log('PASS',name);};
  pass('Quando o Google exige interação, o primeiro gesto retoma a conta sem seletor nem repetição de janelas');f.dispose();
 }
 {
- const f=fixture({requestGap:10000});await f.action('connect');await f.send();await f.action('list');assert.equal(DRIVE_REQUEST_GAP,10000);for(let i=1;i<f.calls.length;i++)assert(f.calls[i].at-f.calls[i-1].at>=10000);
- pass('Fila impõe pelo menos dez segundos entre todas as requisições, inclusive consulta e limpeza');f.dispose();
+ const f=fixture();await f.action('connect');const started=f.now();await f.send();await f.action('list');assert.equal(DRIVE_BACKUP_GAP,10000);assert(f.calls.length>=5);assert(f.calls.every(call=>call.at===started));assert.deepEqual(f.waits,[]);
+ pass('Consultas, envio, confirmação e limpeza do mesmo backup não têm pausa fixa');f.dispose();
 }
 {
  const f=fixture();await f.action('connect');await f.send();f.doc.hasFocus=()=>false;f.getState().speeches[0].title='Janela visível sem foco';await f.save();f.advance(10000);await f.run();assert.equal(f.uploads(),2);f.doc.hidden=true;f.getState().speeches[0].title='Aguarda aba visível';await f.save();f.advance(10000);assert((await f.run()).skipped);f.doc.hidden=false;await f.run();assert.equal(f.uploads(),3);

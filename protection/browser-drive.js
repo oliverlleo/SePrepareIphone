@@ -2,7 +2,7 @@ import * as SPLocale from './i18n.js';
 import {validState} from './core.js';
 import {driveHash} from './drive-core.js';
 import {backupStateHash,backupDocumentHash,backupContentIndex} from './drive-backup-state.js';
-import {DRIVE_REQUEST_GAP,driveRetryDelay,driveBackupDue,retainedDriveCopies,createDriveReceiptCache} from './browser-drive-state.js';
+import {DRIVE_BACKUP_GAP,driveRetryDelay,driveBackupDue,retainedDriveCopies,createDriveReceiptCache} from './browser-drive-state.js';
 
 export const BROWSER_DRIVE_CLIENT_ID='4184165315-bjgek38jqbhjb2v8bggfh9ib7f84n33k.apps.googleusercontent.com';
 const SCOPE='https://www.googleapis.com/auth/drive.appdata';
@@ -15,7 +15,7 @@ const query="trashed = false and appProperties has { key='seprepareBackup' and v
 const byteLength=text=>new TextEncoder().encode(text).length;
 const copy=value=>JSON.parse(JSON.stringify(value));
 const validId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(id);
-const defaults=()=>({connected:false,email:'',autoBackup:true,autoRead:true,lastAutoAttemptAt:0,lastChangeAt:0,lastChangeOrigin:'internal',backupPending:false,pendingSinceAt:0,backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:'',lastConfirmedAt:0,lastConfirmedHash:'',observedHash:'',lastCleanupAttemptAt:0,needsReview:false,hasRemote:false,backupCleanupPending:false,lastBackupAt:0,lastReadAt:0,lastRestoredAt:0,lastReadOutcome:'',lastCheckedAt:0,lastCheckAttemptAt:0,lastReadId:'',lastUploadedId:'',lastUploadHash:'',approvedRemoteId:'',offerSeen:false});
+const defaults=()=>({connected:false,email:'',autoBackup:true,autoRead:true,lastAutoAttemptAt:0,lastBackupFinishedAt:0,lastChangeAt:0,lastChangeOrigin:'internal',backupPending:false,pendingSinceAt:0,backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:'',lastConfirmedAt:0,lastConfirmedHash:'',observedHash:'',lastCleanupAttemptAt:0,needsReview:false,hasRemote:false,backupCleanupPending:false,lastBackupAt:0,lastReadAt:0,lastRestoredAt:0,lastReadOutcome:'',lastCheckedAt:0,lastCheckAttemptAt:0,lastReadId:'',lastUploadedId:'',lastUploadHash:'',approvedRemoteId:'',offerSeen:false});
 const failure=(message,code='backup')=>Object.assign(new Error(message),{code});
 let lastValidatedRaw=null;
 function validateRaw(raw){
@@ -61,9 +61,9 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  let resuming=false,resumeTask=null,silentTried=false,gestureTried=false,forcedReconnect=false,authorizationVersion=0;
  let authorizationRetryAt=0,authorizationFailures=0,authorizationTimer=null;
  const later=environment.setTimeout||globalThis.setTimeout.bind(globalThis),cancelLater=environment.clearTimeout||globalThis.clearTimeout.bind(globalThis);
- const requestGap=environment.requestGap??DRIVE_REQUEST_GAP,sleep=environment.sleep||(ms=>new Promise(resolve=>setTimeout(resolve,ms)));
+ const sleep=environment.sleep||(ms=>new Promise(resolve=>setTimeout(resolve,ms)));
  const sourceCache=environment.receiptCache||createDriveReceiptCache(environment.indexedDB||globalThis.indexedDB);
- let source=null,lastReadSource=null,sourceReady=Promise.resolve(),confirmationTask=Promise.resolve(),contentTask=null,contentVersion=0,backupTimer=null,networkQueue=Promise.resolve(),lastRequestAt=0,checkedRaw='',checkedHash='',committedRaw=null,pendingOrigin='internal';
+ let source=null,lastReadSource=null,sourceReady=Promise.resolve(),confirmationTask=Promise.resolve(),contentTask=null,contentVersion=0,backupTimer=null,networkQueue=Promise.resolve(),checkedRaw='',checkedHash='',committedRaw=null,pendingOrigin='internal';
  try{record=loadRecord(storage.getItem(KEY));}catch(e){record={data:defaults(),baseline:null,pending:null,confirmation:null,recentUploads:[]};error=e.message||SPLocale.t('Não foi possível ler as preferências do Drive.');errorCode='storage';}
  const data=()=>record.data;
  const tokenValid=()=>!!token&&now()<expiresAt;
@@ -116,10 +116,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  }
  async function queuedRequest(url,options,account=data().email){
   const execute=async()=>{
-   let shared=0;try{shared=Number(storage.getItem(KEY+'-last-request'))||0;}catch{}
-   const elapsed=now()-Math.max(lastRequestAt,shared),wait=elapsed>=0?Math.max(0,requestGap-elapsed):0;
-   if(wait)await sleep(wait);if(disposed)throw failure('Operação do Drive interrompida.');if(account!==data().email)throw failure('A conta mudou durante a operação.','account');
-   lastRequestAt=now();try{storage.setItem(KEY+'-last-request',String(lastRequestAt));}catch{}
+   if(disposed)throw failure('Operação do Drive interrompida.');if(account!==data().email)throw failure('A conta mudou durante a operação.','account');
    return rawRequest(url,options);
   };
   const work=()=>win.navigator?.locks?.request?win.navigator.locks.request('seprepare-drive-http',execute):execute();
@@ -173,7 +170,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   const normalized=normalization?.normalizedRemoteHash===current&&normalization?.localStateHash===current,hash=normalized?current:rawSemanticHash,documents=normalized?currentIndex.documents:index.documents,syncDocuments=normalized?currentIndex.syncDocuments:index.syncDocuments;
   const confirmation={account,id,at,hash,wireHash,documents,syncDocuments,aligned:current===hash,signatureFormat:3,rawSemanticHash,normalizationHash:normalized?current:null,requiresNormalization:!!index.legacy&&!normalized&&!uploaded};
   const recentUploads=uploaded?[{id,hash:wireHash},...record.recentUploads.filter(row=>row.id!==id)].slice(0,16):record.recentUploads;
-  commit({lastConfirmedHash:hash,lastConfirmedAt:at,hasRemote:true,observedHash:current,backupPending:current!==hash,pendingSinceAt:current===hash?0:data().pendingSinceAt||now(),backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:'',...(uploaded?{lastBackupAt:at,lastUploadedId:id,lastUploadHash:wireHash,approvedRemoteId:id,needsReview:false,backupCleanupPending:true}:{})},{confirmation,recentUploads,...(uploaded?{pending:null}:{})});
+  commit({lastConfirmedHash:hash,lastConfirmedAt:at,hasRemote:true,observedHash:current,backupPending:current!==hash,pendingSinceAt:current===hash?0:data().pendingSinceAt||now(),backupRetryAt:0,backupFailures:0,backupBlocked:false,blockedReason:'',...(uploaded?{lastBackupAt:at,lastBackupFinishedAt:now(),lastUploadedId:id,lastUploadHash:wireHash,approvedRemoteId:id,needsReview:false,backupCleanupPending:true}:{})},{confirmation,recentUploads,...(uploaded?{pending:null}:{})});
   source={account,id,at,hash,state:raw};void sourceCache.save(source).catch(()=>{});
   emit('backup-confirmed');
  }
@@ -208,7 +205,6 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
     if(disposed||generation!==authorizationVersion)throw failure('A conta mudou durante a operação.','account');
     const seconds=Number(response?.expires_in);if(!response?.access_token||!Number.isFinite(seconds)||seconds<=0||!SCOPES.every(scope=>String(response.scope||'').split(' ').includes(scope)))throw failure('Autorize o acesso à área privada do Drive para continuar.','authorization');
     token=response.access_token;expiresAt=now()+Math.min(seconds,86400)*1000-1000;
-    if(response.drive_request_at){lastRequestAt=now();try{storage.setItem(KEY+'-last-request',String(lastRequestAt));}catch{}}
    });
   }
   const oauth=identity();if(!oauth?.initTokenClient){void loadGIS();return Promise.reject(failure(SPLocale.t('A conexão Google ainda está carregando. Verifique a internet e toque em Conectar novamente.'),'configuration'));}
@@ -300,7 +296,12 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   const latest=await files(true);if((latest?.id||'')!==t.head)return preflight(latest,t.enable);
   if(raw!==localRaw())throw failure(SPLocale.t('O caderno mudou. Confira o backup novamente antes de enviar.'));
   const state=snapshot(raw,now()),empty=!JSON.parse(state).speeches.length;if(empty&&!t.enable&&!consent.emptyApproved)throw failure(SPLocale.t('Confirme primeiro se deseja guardar um caderno vazio.'));
-  ticket=null;let saved;if(empty&&t.enable)saved={empty:true};else if(latest&&(latest.appProperties?.hash===await driveHash(state)||t.remoteState&&await backupStateHash(t.remoteState)===await backupStateHash(state))){saved={unchanged:true};await remember(latest.id,t.remoteState||state,Number(latest.appProperties?.at)||now());commit({},{cleanupAnchor:{receiptId:latest.id,id:latest.id,createdTime:latest.createdTime||''}});await cleanupBackups(latest.id);}else saved=await upload(state,latest);
+  const unchanged=latest&&(latest.appProperties?.hash===await driveHash(state)||t.remoteState&&await backupStateHash(t.remoteState)===await backupStateHash(state));
+  if(!(empty&&t.enable)&&!unchanged){
+   const completed=data().lastBackupFinishedAt||data().lastBackupAt||0,wait=completed?Math.max(0,completed+DRIVE_BACKUP_GAP-now()):0;
+   if(wait){await sleep(wait);if(disposed)throw failure('Operação do Drive interrompida.');if(t.account!==data().email)throw failure('A conta mudou durante a operação.','account');return confirm(argument);}
+  }
+  ticket=null;let saved;if(empty&&t.enable)saved={empty:true};else if(unchanged){saved={unchanged:true};await remember(latest.id,t.remoteState||state,Number(latest.appProperties?.at)||now());commit({},{cleanupAnchor:{receiptId:latest.id,id:latest.id,createdTime:latest.createdTime||''}});await cleanupBackups(latest.id);}else saved=await upload(state,latest);
   commit({approvedRemoteId:saved.id||latest?.id||'',needsReview:false,...(t.enable?{autoBackup:true}:{})},{pending:null});await observe();return {saved,enabled:t.enable};
  }
  async function perform(kind,argument){

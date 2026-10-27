@@ -1,7 +1,7 @@
 {id:'backup',symbol:'ShieldCheck',title:SPLocale.t('Guardar uma cópia e recuperar textos'),detail:SPLocale.t('Backup, restauração e lixeira'),steps:[
  SPLocale.t('Em Ajustes → Backup e recuperação, conecte sua conta Google. A tela mostra a proteção e a última cópia concluída. As nuvens dos cards indicam a cópia confirmada de cada preparação.'),
  SPLocale.t('Backup e recuperação automáticos vêm ligados nas novas preferências. Em Opções avançadas, você pode controlá-los separadamente, salvar uma cópia agora, recuperar discursos ou exportar e importar um arquivo.'),
- SPLocale.t('Alterações reais são reunidas em uma cópia, com pelo menos 10 segundos entre requisições ao Drive. Salvar o mesmo conteúdo não cria outra cópia. Sem internet, o envio aguarda e tenta novamente. Mantenha o aplicativo aberto.'),
+ SPLocale.t('Alterações reais são reunidas em uma cópia, com pelo menos 10 segundos entre a confirmação de um backup e o próximo envio. As etapas do mesmo backup não têm essa pausa. Salvar o mesmo conteúdo não cria outra cópia. Sem internet, o envio aguarda e tenta novamente. Mantenha o aplicativo aberto.'),
  SPLocale.t('A recuperação confere o Drive ao abrir ou voltar ao aplicativo, com pelo menos 15 minutos entre tentativas. Cópias idênticas e enviadas por este iPhone não são restauradas novamente.'),
  SPLocale.t('Se houver conflito real, confira os campos e os textos diferentes. Manter as duas versões preserva os textos no mesmo item. Outras escolhas permitem continuar com os dados deste aparelho ou usar os dados do Drive.'),
  SPLocale.t('Quatro pontos de recuperação são mantidos. A nuvem muda assim que a cópia é confirmada, sem aguardar a limpeza do histórico. A lixeira continua disponível para recuperar itens excluídos.')

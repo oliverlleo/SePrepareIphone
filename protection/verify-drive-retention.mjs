@@ -52,7 +52,7 @@ async function fixture(count=0){
   return Response.json(result);
  };
  const identity={hasGrantedAllScopes:()=>true,initTokenClient:options=>({requestAccessToken:()=>queueMicrotask(()=>options.callback({access_token:'TOKEN_SOMENTE_MEMORIA',expires_in:86400,scope:options.scope}))})};
- const drive=createBrowserDrive({getState:()=>structuredClone(state),saveState:()=>true,environment:{requestGap:0,window:win,document:doc,storage,fetch,identity,now:()=>now,setInterval:fn=>{callbacks.push(fn);return {unref(){}};},clearInterval(){}}});
+ const drive=createBrowserDrive({getState:()=>structuredClone(state),saveState:()=>true,environment:{window:win,document:doc,storage,fetch,identity,now:()=>now,sleep:async ms=>{now+=ms;},setTimeout:()=>({unref(){}}),clearTimeout(){},setInterval:fn=>{callbacks.push(fn);return {unref(){}};},clearInterval(){}}});
  const action=(kind,argument='')=>new Promise(resolve=>{const id=String(++requestId),listener=e=>{if(e.detail.kind===kind&&e.detail.requestId===id){win.removeEventListener('nativeDrive',listener);resolve(e.detail);}};win.addEventListener('nativeDrive',listener);drive.driveAction(kind,id,argument);});
  const send=async(enable=false)=>{const preview=await action('prepare-backup',enable?' {"enable":true}':'');assert(!preview.error,preview.error);return action('backup-confirm',JSON.stringify({ticket:preview.payload.ticket,localHash:await driveHash(JSON.stringify(state))}));};
  const automatic=()=>new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('Automatic send did not complete')),2000),listener=e=>{if(e.detail.kind==='automatic'){clearTimeout(timeout);win.removeEventListener('nativeDrive',listener);resolve(e.detail);}};win.addEventListener('nativeDrive',listener);callbacks[0]();});
