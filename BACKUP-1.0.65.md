@@ -12,13 +12,13 @@ As descrições de recuperação foram corrigidas no modal e os textos do interv
 
 ## Verificação
 
-- Sete novos cenários de tempo em Windows/Web e Apple: operação sem pausa HTTP; upload que demora 25 segundos seguido de novo envio; manual; conteúdo idêntico; edição durante espera; cópia concorrente durante espera; reabertura.
+- Oito novos cenários de tempo em Windows/Web e Apple: operação sem pausa HTTP; upload que demora 25 segundos seguido de novo envio; manual; conteúdo idêntico; edição durante espera; cópia concorrente durante espera; reabertura.
 - Seis cenários de descrição e comportamento nas três plataformas, verificando os textos traduzidos e executando as três escolhas reais de recuperação.
 - Java real, com HttpURLConnection e servidor de teste local: 20 verificações do cliente e da política de tempo. Quatro requisições passaram pela fila sem pausas artificiais. O verificador usa o mesmo caminho de transporte da produção, sem um parâmetro especial para desativar a espera apenas em testes.
 - Controlador Android real com interfaces Android/Google simuladas: 80 verificações, incluindo confirmação durável e janela manual.
 - Android: 279 verificações existentes e 37 regressões incrementais da 1.0.64, mais os seis cenários de escolhas.
 - Windows: build completo e `npm test`, incluindo persistência, autorização simulada, fila, falhas, retenção, recursos offline, editor, ritmos e novos cenários.
-- Apple: agregador com 335 verificações, contrato das funções protegidas preservado e build idempotente. Autenticação, memória, gate e adaptações Apple conservadas.
+- Apple: agregador com 336 verificações, contrato das funções protegidas preservado e build idempotente. Autenticação, memória, gate e adaptações Apple conservadas.
 - Compilação oficial Android de release, versão 1.0.65 e código 66; certificado original conferido, com pacote `br.com.orador.app` e sem modo de depuração. Conferência de recursos finais e modelo local no relatório do APK.
 
 Os cenários de tempo web usam relógio controlado e HTTP simulado; os de transporte Java usam um servidor local. Não representam medição de velocidade da internet ou Google Drive real. Não houve nova validação visual nem instalação em aparelho físico. Nenhuma ação reiniciou ou encerrou o computador ou programas do usuário.
