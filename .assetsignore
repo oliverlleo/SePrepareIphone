@@ -20,3 +20,6 @@ rhythms/
 QA-*.json
 
 enhancements/
+.github/
+benchmarks/
+PERFORMANCE-*.md

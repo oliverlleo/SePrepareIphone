@@ -33,6 +33,7 @@ SePrepare\u306E\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u30FB\u30A2\u30AF\u30BB\u30B
 
 
 
+
 /* SePrepare iPhone: inicia o editor somente no modo PWA instalado.
  * Sem parâmetros de URL, cookies ou atalhos alternativos para liberar.
  */

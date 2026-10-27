@@ -1,0 +1,24 @@
+name: Verificar integridade do SePrepare Apple
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            sharing/package-lock.json
+            localization/package-lock.json
+            protection/package-lock.json
+      - run: npm ci --prefix sharing --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix localization --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix protection --ignore-scripts --no-audit --no-fund
+      - run: node protection/verify-all.mjs

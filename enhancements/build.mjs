@@ -47,5 +47,5 @@ const bundled=await build({absWorkingDir:here,entryPoints:['entry.js'],bundle:tr
 const end='/* SEPREPARE LOCALE END */',at=source.indexOf(end)+end.length;if(at<end.length)throw Error('Runtime de idioma ausente.');source=source.slice(0,at)+marker('BUNDLE',bundled.outputFiles[0].text)+source.slice(at);
 source=source.replace(/(\/\* SEPREPARE SHARE CODEC END \*\/)[\r\n]+/,'$1\n');
 parse(source,{ecmaVersion:'latest'});writeFileSync(path.join(root,'app.js'),source);
-await build({absWorkingDir:here,entryPoints:['review-worker.js'],outfile:path.join(root,'review-worker.js'),bundle:true,minify:true,format:'iife',target:['safari15.4'],external:['./spell/dist/Hunspell.js'],loader:{'.aff':'text','.dic':'text'},legalComments:'eof'});
+await build({absWorkingDir:here,entryPoints:['review-worker.js'],outfile:path.join(root,'review-worker.js'),bundle:true,minify:true,format:'iife',target:['safari15.4'],external:['./spell/dist/Hunspell.js'],loader:{'.aff':'text','.dic':'text'},plugins:[{name:'portable-dictionary-lines',setup(build){build.onLoad({filter:/\.(?:aff|dic)$/},args=>({contents:readFileSync(args.path,'utf8').replace(/\r\n/g,'\n'),loader:'text'}));}}],legalComments:'eof'});
 console.log('Paridade 1.0.59–1.0.62 integrada ao host Apple, sem substituir memória ou gestos.');

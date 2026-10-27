@@ -9,7 +9,8 @@ const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,'
 const marker=(name,text)=>`/* SEPREPARE SHARE ${name} START */${text}/* SEPREPARE SHARE ${name} END */`;
 let source=readFileSync(path.join(root,'app.js'),'utf8').replace(/\/\* SEPREPARE SHARE ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE SHARE \1 END \*\//g,'');
 const ast=parse(source,{ecmaVersion:'latest'}),nodes=[];
-function walk(node){if(!node||typeof node!=='object')return;if(node.type)nodes.push(node);for(const [key,value]of Object.entries(node))if(key!=='start'&&key!=='end'){if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')walk(value);}}
+const bundleRanges=[...source.matchAll(/\/\* SEPREPARE [A-Z]+ (BUNDLE|CODEC) START \*\/[\s\S]*?\/\* SEPREPARE [A-Z]+ \1 END \*\//g)].map(m=>[m.index,m.index+m[0].length]);
+function walk(node){if(!node||typeof node!=='object'||node.type&&bundleRanges.some(([a,b])=>node.start>=a&&node.end<=b))return;if(node.type)nodes.push(node);for(const [key,value]of Object.entries(node))if(key!=='start'&&key!=='end'){if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')walk(value);}}
 walk(ast);
 const only=(items,label)=>{if(items.length!==1)throw Error('Integração ambígua: '+label+' ('+items.length+'). Preserve a base e revise antes de publicar.');return items[0];};
 const edits=[],edit=(start,end,text)=>edits.push({start,end,text});
@@ -23,7 +24,7 @@ const importing=only(actions.cases.filter(node=>node.test?.value==='import'),'im
 const start=fn('aI'),startup=only(nodes.filter(node=>node.type==='CallExpression'&&node.callee?.name==='aI'&&node.start>start.end),'inicialização');
 edit(startup.start,startup.start,marker('BRIDGE',`var SPShareCodes=window.SePrepareSharedCode.createShareCodeUI({rhythms:window.SePrepareRhythmsUI,getState:()=>B,rt:d,$:L,icon:te,btn:oe,option:Me,esc:P,native:fe,openModal:Te,closeModal:he,toast:ae,syncCurrent:_r,persist:le,importFile:KM,exportFile:ps,documentHTML:jp,refreshContrast:vo,go:gt,onImported(speech){for(const version of speech.versions)_t.set(za(speech,version.id),vn({...speech,...version,activeVersionId:version.id}));}});`));
 for(const node of nodes.filter(node=>node.type==='CallExpression'&&node.callee?.name==='Ge'&&node.arguments[0]?.value==='import'&&node.arguments[1]?.value==='FileUp'))edit(node.arguments[2].start,node.arguments[2].end,JSON.stringify('Importar preparação'));
-const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id?.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.62"');
+const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id?.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.64"');
 const guide=object('share');edit(guide.start,guide.end,readFileSync(path.join(here,'share-guide.txt'),'utf8').trim());
 const tip=property(object('notes'),'tip'),tipText=tip.type==='CallExpression'?tip.arguments[0]?.value:tip.value;
 if(typeof tipText!=='string')throw Error('Revise o texto de ajuda das anotações antes de compilar.');

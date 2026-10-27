@@ -1,6 +1,7 @@
+import {withChangeOrigin} from './change-origin.js';
 import {t as translateUI,tr as formatUI,h as markupUI,html as htmlUI,uiLocale,setLanguage,normalizeLanguage,systemMessage} from './i18n.js';
 import {mergeDriveBackup,inspectDriveBackup,driveHash,driveIndex,planDriveRestore} from './drive-core.js';
-import {backupDocumentHash} from './drive-backup-state.js';
+import {backupDocumentHash,backupContentIndex} from './drive-backup-state.js';
 import {contentDifferences,documentKey} from './drive-compare.js';
 export function createDriveUI(c){
  const {native,rt,$,icon,btn,esc,openModal,closeModal,toast}=c;
@@ -41,13 +42,14 @@ export function createDriveUI(c){
  async function refreshCards(){
   const generation=++cardGeneration,nodes=[...document.querySelectorAll('[data-drive-document]')];if(!nodes.length)return;
   const account=info.email;let saved={};try{saved=JSON.parse(native?.driveBackupIndex?.()||'{}');}catch{}
-  const state=JSON.parse(JSON.stringify(c.getState())),documents=new Map(state.speeches.map(doc=>[doc.id,doc])),lookup={categories:new Map(state.categories.map(category=>[category.id,category])),drafts:new Map((state.editorDrafts||[]).map(draft=>[draft.speechId,draft]))};
+  const state=c.getState(),documents=new Map(state.speeches.map(doc=>[doc.id,doc])),lookup={categories:new Map(state.categories.map(category=>[category.id,category])),drafts:new Map((state.editorDrafts||[]).map(draft=>[draft.speechId,draft]))};
+  const contentIndex=supported()&&info.connected&&saved.account===account&&saved.documents?await backupContentIndex(state):null;
   await Promise.all(nodes.map(async node=>{
    const doc=documents.get(node.dataset.driveDocument);if(!doc)return;
    let tone='pending',symbol='CloudUpload',label=translateUI('Alterações ainda não salvas no Drive');
    if(!supported()||!info.connected){tone='neutral';symbol='CloudOff';label=translateUI('Google Drive não conectado');}
    else if(info.needsReconnect){tone='warning';symbol='CloudAlert';label=translateUI('Autorize o acesso para atualizar esta cópia');}
-   else if(saved.account===account&&saved.documents?.[doc.id]){try{const draft=lookup.drafts.get(doc.id),key=JSON.stringify([doc,lookup.categories.get(doc.categoryId),draft,draft&&lookup.categories.get(draft.document?.categoryId)]),cached=cardHashes.get(doc.id);const hash=cached?.key===key?cached.hash:await backupDocumentHash(doc,state,lookup);cardHashes.set(doc.id,{key,hash});if(saved.documents[doc.id]===hash){tone='saved';symbol='CloudCheck';label=translateUI('Esta versão está salva no Google Drive');}}catch{label=translateUI('Não foi possível conferir a cópia deste conteúdo');}}
+   else if(saved.account===account&&saved.documents?.[doc.id]){try{const hash=contentIndex.documents[doc.id];if(saved.documents[doc.id]===hash){tone='saved';symbol='CloudCheck';label=translateUI('Esta versão está salva no Google Drive');}}catch{label=translateUI('Não foi possível conferir a cópia deste conteúdo');}}
    if(tone==='pending'&&info.backupError){tone='warning';symbol='CloudAlert';label=translateUI('O envio desta alteração está pendente. Veja Backup e recuperação nos Ajustes.');}
    if(generation!==cardGeneration||account!==info.email||!node.isConnected)return;
    node.className='drive-card-status drive-card-status-'+tone;node.innerHTML=icon(symbol);node.setAttribute('aria-label',label);node.title=label;
@@ -91,7 +93,7 @@ export function createDriveUI(c){
   try{
    const modal=rt.modal,plan=payload.state?(prepared?.report?prepared:await planDriveRestore(c.getState(),payload.state,await baseline())):null;
    if(payload.account&&payload.account!==info.email||rt.modal!==modal)return;
-   if(plan&&mode==='restore'&&!payload.automatic){const conflicts=[];for(const remote of plan.report.incoming.speeches){const local=c.getState().speeches.find(item=>item.id===remote.id);if(local&&documentKey(local)!==documentKey(remote))conflicts.push({kind:'speech',id:remote.id,title:local.title||remote.title,newer:'unknown',localAt:local.updatedAt||0,cloudAt:remote.updatedAt||0,...contentDifferences(local,remote)});}plan.report={...plan.report,conflicts:[...conflicts,...plan.report.conflicts.filter(row=>row.kind==='category')]};if(plan.report.conflicts.length)plan.result=null;}
+   if(plan&&mode==='restore'&&!payload.automatic){const conflicts=[];for(const remote of plan.report.incoming.speeches){const local=c.getState().speeches.find(item=>item.id===remote.id);if(local&&documentKey(local)!==documentKey(remote))conflicts.push({kind:'speech',id:remote.id,title:local.title||remote.title,newer:'unknown',localAt:local.updatedAt||0,cloudAt:remote.updatedAt||0,...contentDifferences(local,remote)});}plan.report={...plan.report,conflicts:[...conflicts,...plan.report.conflicts.filter(row=>row.kind!=='speech'||row.fields?.includes('Rascunho não confirmado'))]};if(plan.report.conflicts.length)plan.result=null;}
    const report=plan?.report||null,backup=mode==='backup',beforeBackup=payload.reason==='before-backup',empty=!c.getState().speeches.length;
    preview={...payload,mode,plan};if(payload.automatic){shownPending=pendingKey(payload);if(pending&&pending.id===payload.id)pending.requiresDecision=!!(report?.conflicts.length||!info.autoRead&&plan?.result?.changed);}
    if(backup&&!payload.id&&!empty){void applyChoice('both');return;}
@@ -114,13 +116,13 @@ export function createDriveUI(c){
    if(!c.persist(true))throw Error(translateUI('Não foi possível salvar o caderno atual.'));const before=JSON.stringify(c.getState());
    if(plan&&plan.snapshot!==before)plan=await planDriveRestore(c.getState(),payload.state,await baseline());
    if(automatic&&plan?.report.conflicts.length){merging=false;void showDecision(payload,'read',plan);return;}
-   const result=plan?.result&&policy==='both'&&plan.snapshot===before?plan.result:payload.state?await mergeDriveBackup(c.getState(),payload.state,{manual:!automatic,policy,...(automatic&&plan?{documentPolicies:plan.documents,categoryPolicies:plan.categories}:{})}):{changed:false,state:c.getState()};
+   const result=plan?.result&&policy==='both'&&plan.snapshot===before?plan.result:payload.state?await mergeDriveBackup(c.getState(),payload.state,{manual:!automatic,policy,...(automatic&&plan?{documentPolicies:plan.documents,categoryPolicies:plan.categories,draftPolicies:plan.draftPolicies,globalPolicies:plan.globalPolicies}:{})}):{changed:false,state:c.getState()};
    if(before!==JSON.stringify(c.getState()))throw Error(translateUI('O caderno mudou durante a leitura. Confira novamente para preservar suas alterações.'));
    if(account!==info.email||!info.connected||payload.account&&payload.account!==info.email)return;
    if(automatic&&(!eligible(payload)||!safe()||pending!==payload))return;
    if(!automatic&&rt.modal!==modal)return;
    if(result.changed&&!native.drivePrepareRestore())throw Error(translateUI('Não foi possível guardar sua cópia de recuperação.'));
-   if(result.changed&&!c.commitRestore(result.state))throw Error(translateUI('Não foi possível salvar a restauração. Seu caderno foi preservado.'));
+   if(result.changed&&!withChangeOrigin(automatic?'drive':'manual-restore',()=>c.commitRestore(result.state)))throw Error(translateUI('Não foi possível salvar a restauração. Seu caderno foi preservado.'));
    if(backup){
     if(!c.persist(true))throw Error(translateUI('Não foi possível salvar antes do envio.'));const raw=JSON.stringify(c.getState()),localHash=await driveHash(raw);
     if(account!==info.email||rt.modal!==modal)return;if(raw!==JSON.stringify(c.getState()))throw Error(translateUI('O caderno mudou. Confira o backup novamente antes de enviar.'));
@@ -128,9 +130,9 @@ export function createDriveUI(c){
    }
    const applied=JSON.parse(JSON.stringify(c.getState())),appliedIndex=!result.changed&&plan?JSON.parse(JSON.stringify(plan.localIndex)):await driveIndex(applied),remoteIndex=plan?.remoteIndex||await driveIndex(payload.state);
    if(account!==info.email)return;
-   if(automatic&&plan?.dirtyLocal){Object.assign(appliedIndex.documents,plan.dirtyLocal.documents);Object.assign(appliedIndex.categories,plan.dirtyLocal.categories);}
+   if(automatic&&plan?.dirtyLocal){Object.assign(appliedIndex.documents,plan.dirtyLocal.documents);Object.assign(appliedIndex.categories,plan.dirtyLocal.categories);if(plan.dirtyLocal.drafts)Object.assign(appliedIndex.drafts||=(Object.create(null)),plan.dirtyLocal.drafts);}
    const outcome=policy==='local'?'kept-local':result.changed?'restored':'current';
-   const receipt={id:payload.id,account,outcome,local:appliedIndex,remote:remoteIndex};
+   const receipt={id:payload.id,account,outcome,local:appliedIndex,remote:remoteIndex,localStateHash:appliedIndex.stateHash,normalizedRemoteHash:remoteIndex.stateHash};
    if(!(native.driveCompleteRead?native.driveCompleteRead(JSON.stringify(receipt)):native.driveAckRead(payload.id)))throw Error(translateUI('Seu conteúdo foi salvo, mas não foi possível concluir a conferência. Tente novamente.'));if(pending?.id===payload.id&&pending.state===payload.state)pending=null;preview=null;info.needsReview=false;refreshEntry(true);
    if(!automatic){closeModal();settings();}else if(rt.modal==='drive-settings'){connectionNotice=result.changed?translateUI('Seu caderno foi atualizado com o backup do Drive.'):translateUI('Seu caderno já está atualizado com este backup.');settings();}if(result.changed)toast(result.alternatives?translateUI('Conteúdo preservado. Textos diferentes ficaram como versões no mesmo item.'):translateUI('Preparações recuperadas do Google Drive.'));else if(!automatic)toast(policy==='local'?translateUI('Conteúdo deste aparelho mantido.'):translateUI('Seu caderno já contém este backup.'));
   }catch(e){if(automatic){if(!pending||pending===payload)pending=payload;shownPending=pendingKey(payload);}toast(e.message||translateUI('Não foi possível concluir. Seu caderno foi preservado.'));}
@@ -139,11 +141,11 @@ export function createDriveUI(c){
  let baselineCache=null;
  async function baseline(){
   let saved={},meta={};try{saved=JSON.parse(native.driveReadBaseline?.()||'{}');meta=JSON.parse(native.driveBackupIndex?.()||'{}');}catch{}
-  if(meta.account===info.email&&(meta.uploaded||meta.aligned)&&(saved.id!==meta.id||saved.local?.format!==2)){
+  if(meta.account===info.email&&(meta.uploaded||meta.aligned)&&(saved.id!==meta.id||saved.local?.format!==3)){
    if(baselineCache?.account===info.email&&baselineCache.id===meta.id)return baselineCache;
    try{const source=JSON.parse(native.driveRestoreBase?.()||'{}');if(source.account===info.email&&source.id===meta.id&&source.state){const index=await driveIndex(source.state);baselineCache={account:info.email,id:meta.id,local:index,remote:index,state:source.state};return baselineCache;}}catch{}
   }
-  return saved.account===info.email?saved:null;
+  if(saved.account===info.email){try{const source=JSON.parse(native.driveRestoreBase?.()||'{}');if(source.account===info.email&&source.id===saved.id&&source.state)saved.state=source.state;}catch{}return saved;}return null;
  }
  async function drain(){
   if(planning||merging||!eligible(pending)||!safe()||shownPending===pendingKey(pending))return;
