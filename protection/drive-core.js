@@ -188,11 +188,18 @@ export async function planDriveRestore(local,raw,baseline=null){
  for(const id of draftIds){
   const lhs=localIndex.drafts?.[id]||null,rhs=remoteIndex.drafts?.[id]||null,oldLocal=baseline?.local?.drafts?.[id]||null,oldRemote=baseline?.remote?.drafts?.[id]||null;
   if(lhs===rhs){draftPolicies[id]='local';continue;}
-  if(!lhs&&!oldLocal){draftPolicies[id]='cloud';continue;}
-  if(!rhs&&!oldRemote){draftPolicies[id]='local';continue;}
-  if(baseline){
-   if(rhs===oldRemote){draftPolicies[id]='local';if(lhs!==oldLocal&&oldLocal)(dirtyLocal.drafts||=(Object.create(null)))[id]=oldLocal;continue;}
-   if(lhs===oldLocal){draftPolicies[id]='cloud';continue;}
+  if(baseline?.local?.drafts&&baseline?.remote?.drafts){
+   const changedHere=lhs!==oldLocal,changedThere=rhs!==oldRemote;
+   const localDocumentChanged=localIndex.documents[id]!==baseline.local.documents?.[id],remoteDocumentChanged=remoteIndex.documents[id]!==baseline.remote.documents?.[id];
+   // A working draft and a confirmed edit of that document share one conflict
+   // boundary. Never reopen an unchanged stale draft over a newer confirmation.
+   if(!(changedHere&&remoteDocumentChanged||changedThere&&localDocumentChanged)){
+    if(!changedHere){draftPolicies[id]='cloud';continue;}
+    if(!changedThere){draftPolicies[id]='local';if(oldLocal)(dirtyLocal.drafts||=(Object.create(null)))[id]=oldLocal;continue;}
+   }
+  }else{
+   if(!lhs&&!oldLocal){draftPolicies[id]='cloud';continue;}
+   if(!rhs&&!oldRemote){draftPolicies[id]='local';continue;}
   }
   const original=local.speeches.find(d=>d.id===id)||report.incoming.speeches.find(d=>d.id===id);
   if(!conflicts.some(row=>row.kind==='speech'&&row.id===id))conflicts.push({kind:'speech',id,title:original?.title||'',newer:'unknown',localAt:0,cloudAt:0,fields:['Rascunho não confirmado']});
