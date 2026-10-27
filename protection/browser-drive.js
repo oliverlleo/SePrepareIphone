@@ -71,7 +71,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  const active=()=>!disposed&&!doc.hidden&&canWrite();
  const due=()=>driveBackupDue(data());
  function stateRaw(){if(committedRaw!==null)return committedRaw;const state=getState(),raw=typeof state==='string'?state:JSON.stringify(state);if(raw!==checkedRaw)validateRaw(raw);return raw;}
- function localSaved(origin='user',raw=null){if(typeof raw==='string')committedRaw=raw;pendingOrigin=['user','drive','shared-import','manual-restore','local-configuration','internal','migration'].includes(origin)?origin:'internal';contentVersion++;return observe();}
+ function localSaved(origin='user',raw=null){committedRaw=typeof raw==='string'?raw:null;pendingOrigin=['user','drive','shared-import','manual-restore','local-configuration','internal','migration'].includes(origin)?origin:'internal';contentVersion++;return observe();}
  function observe(){
   if(!data().connected||disposed||!canWrite())return Promise.resolve();if(contentTask)return contentTask;
   contentTask=(async()=>{
@@ -385,7 +385,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   commit({lastReadId:receipt.id,lastReadAt:now(),lastReadOutcome:receipt.outcome,...(receipt.outcome==='restored'?{lastRestoredAt:now()}:{}),...(incoming?{needsReview:false,approvedRemoteId:receipt.id}:{})},{baseline:{account:d.email,id:receipt.id,local:receipt.local,remote:receipt.remote},...(incoming?{pending:null}:{})});
   if(incoming){confirmationTask=remember(incoming.id,incoming.state,incoming.at||now(),false,receipt).then(()=>observe()).catch(fail);}else void observe();return true;
  }catch(e){fail(e);return false;}}
- const onForeground=()=>{if(active()){startAuthorization();void observe();schedule();void automatic();}else schedule();};
+ const onForeground=()=>{committedRaw=null;if(active()){startAuthorization();void observe();schedule();void automatic();}else schedule();};
  const onStorage=event=>{
   if(event.key!==KEY||event.storageArea&&event.storageArea!==storage)return;
   try{const next=loadRecord(event.newValue),changedAccount=next.data.email!==data().email;
