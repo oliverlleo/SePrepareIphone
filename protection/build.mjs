@@ -37,7 +37,7 @@ const render=only(nodes.filter(node=>node.type==='FunctionDeclaration'&&node.id.
 edit(render.body.end-1,render.body.end-1,marker('CARDS',';void Ml?.refreshCards?.();'));
 const card=fn('fM'),cardText=source.slice(card.start,card.end);
 if(!cardText.includes('Ml.cardIndicator(t)')){const token='${bn(t)}';const at=source.indexOf(token,card.start);if(at<0||at>=card.end)throw Error('Linha de tipo do card ausente.');edit(at,at+token.length,'<div class="drive-card-type-row">${bn(t)}${Ml.cardIndicator(t)}</div>');}
-const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.66"');
+const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.72"');
 const guide=only(nodes.filter(node=>node.type==='ObjectExpression'&&node.properties.some(property=>property.key?.name==='id'&&property.value?.value==='backup')),'guia de backup');
 edit(guide.start,guide.end,readFileSync(path.join(here,'backup-guide.txt'),'utf8').trim());
 const heading='<section class="setting-card"><h3>${te("ShieldCheck")}Seu caderno fica com voc\\xEA</h3>';

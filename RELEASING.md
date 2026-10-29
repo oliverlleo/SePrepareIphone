@@ -87,3 +87,13 @@ Os testes `--ui` legados de 1.0.58 são auxiliares e não substituem o roteiro v
 da versão nova. O perfil Apple no Chromium não comprova Safari ou aparelho físico.
 Antes de promover, conferir Safari/iOS instalado, teclado, voz, login e sincronização
 com uma conta Google de teste. Não modificar a validação de instalação para testar.
+
+## Paridade Android 1.0.67 a 1.0.70
+
+Execute `node timing/build.mjs` depois dos cinco módulos anteriores. Este sexto passo registra os atributos de tempo, integra o cronômetro e os controles ao host Apple existente e embute seus módulos e estilos no app.js. Não substitui armazenamento, instalação, autorização ou voz. O build é idempotente e o contrato de memória original continua verificado.
+
+Instale também `npm ci --prefix qa/time-dom --ignore-scripts` para os testes do aplicativo em DOM isolado. `node protection/verify-all.mjs` inclui a nova verificação. As fixtures de geometria não substituem Safari/iOS físico nem conferência visual de dispositivos. O build PWA desta versão é 20261028.70 em index.html e sw.js.
+
+## Paridade final até 1.0.72
+
+Incluídas as correções de distribuição/centralização e a ajuda contextual. Consulte PARIDADE-1.0.72.md. O identificador PWA final é 20261028.72; execute os seis builds pelo verificador.

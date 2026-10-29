@@ -27,17 +27,7 @@
 .reader-text .presenter-inline-label{margin-bottom:2px;color:var(--copper);font-size:.75em;font-weight:700;letter-spacing:.7px;text-transform:uppercase}
 .reader-text .presenter-inline-body{margin:0;font:inherit;white-space:pre-wrap;overflow-wrap:anywhere}
 .reader-text .presenter-inline-body+.presenter-inline-body{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
-.reader-controls .reader-subtools{display:grid;grid-template-columns:minmax(64px,1fr) 36px 36px minmax(58px,1fr);align-items:stretch;gap:6px;min-width:0}
-.reader-controls .reader-subtools .btn{min-width:0;padding:8px 5px;font-size:11px;line-height:1.2;gap:3px;white-space:nowrap}
-.reader-controls .reader-subtools .btn svg{width:15px;height:15px}
-.reader-controls .reader-subtools .icon-btn{width:36px;min-width:36px;height:auto;min-height:44px;align-self:stretch}
 .reader-controls .reader-notes-toggle[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--paper)}
-@media(min-width:751px){
- .reader-controls .reader-subtools{grid-template-columns:minmax(64px,1fr) 44px 44px minmax(72px,1fr);gap:8px}
- .reader-controls .reader-subtools .btn{padding:10px 8px;font-size:12px;gap:5px}
- .reader-controls .reader-subtools .btn svg{width:17px;height:17px}
- .reader-controls .reader-subtools .icon-btn{width:44px;min-width:44px;min-height:56px}
-}
 .note-privacy{display:flex;align-items:center;gap:7px;color:var(--green);font-size:11px;line-height:1.6;margin-bottom:15px}
 .note-privacy svg{width:16px;height:16px}
 .note-excerpt{margin:0 0 19px;padding:12px 14px;border-left:3px solid var(--copper);border-radius:0 10px 10px 0;background:var(--soft);color:var(--muted);font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}

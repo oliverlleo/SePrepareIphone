@@ -23,3 +23,7 @@ enhancements/
 .github/
 benchmarks/
 PERFORMANCE-*.md
+
+timing/
+qa/
+PARIDADE-1.0.70.md

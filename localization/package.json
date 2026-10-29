@@ -2,7 +2,7 @@
   "name": "seprepare-iphone-localization",
   "private": true,
   "type": "module",
-  "version": "1.0.65",
+  "version": "1.0.72",
   "scripts": {
     "build": "node build.mjs"
   },
