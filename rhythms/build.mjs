@@ -33,7 +33,7 @@ replaceEditor('<span id="estimatedTime"></span>','<button type="button" id="esti
 // AST locations identify the existing note action and page label without
 // depending on translated minified literals or a whole replacement editor.
 const note=only(nodes.filter(n=>n.type==='CallExpression'&&n.start>editor.start&&n.end<editor.end&&n.callee?.name==='oe'&&n.arguments[0]?.value==='notes-list'),'Anotar');
-replaceEditor('${'+text(note)+'}', '${'+text(note)+'}${oe("rhythm-menu",SPLocale.t("Ritmo"),"Music","small soft rhythm-action",\'id="rhythmAction"\')}');
+if(!editorSource.includes('id="rhythmAction"'))replaceEditor('${'+text(note)+'}', '${'+text(note)+'}${oe("rhythm-menu",SPLocale.t("Ritmo"),"Music","small soft rhythm-action",\'id="rhythmAction"\')}');
 if(!editorSource.includes('SPLocale.t("Página")')){const page=only(nodes.filter(n=>n.type==='ConditionalExpression'&&n.start>editor.start&&n.end<editor.end&&text(n).startsWith('t.layout===')),'Página');replaceEditor(text(page),'SPLocale.t("Página")');}
 replaceEditor('</button></footer>','</button><button type="button" class="editor-footer-close" data-action="editor-footer-close" aria-label="Ocultar rodapé" title="Ocultar rodapé" hidden>${te("X")}</button></footer>');
 for(const [action,label]of [['review','Revisar'],['auto-format','Formatar']]){const call=only(nodes.filter(n=>n.type==='CallExpression'&&n.start>editor.start&&n.end<editor.end&&n.callee?.name==='oe'&&n.arguments[0]?.value===action),action);replaceEditor(text(call.arguments[1]),'SPLocale.t('+JSON.stringify(label)+')');}
@@ -48,7 +48,7 @@ const settings=only(nodes.filter(n=>n.type==='FunctionDeclaration'&&text(n).incl
 const pace=only(nodes.filter(n=>n.type==='CallExpression'&&n.start>settings.start&&n.end<settings.end&&n.callee?.name==='oe'&&n.arguments[0]?.value==='save-pace'),'Salvar ritmo');
 if(!text(settings).includes('"rhythm-manager"'))edit(pace.end+1,pace.end+1,'<div class="divider"></div>${oe("rhythm-manager",SPLocale.t("Gerenciar ritmos"),"Music","small soft")}');
 const reading=only(nodes.filter(n=>n.type==='FunctionDeclaration'&&text(n).includes('id="readHighlights"')),'Ajustes de leitura');
-const notes=only(nodes.filter(n=>n.type==='CallExpression'&&n.start>reading.start&&n.end<reading.end&&text(n)==='Sr.readingOptions()'),'opções de notas');if(!text(reading).includes('SPR.readingOptions()'))edit(notes.end+1,notes.end+1,'${SPR.readingOptions()}');
+const notes=only(nodes.filter(n=>n.type==='CallExpression'&&n.start>reading.start&&n.end<reading.end&&text(n)==='Sr.readingOptions()'),'opções de notas');if(!text(reading).includes('SPR.readingOptions()')&&!source.includes('id="readerRhythmToggle"'))edit(notes.end+1,notes.end+1,'${SPR.readingOptions()}');
 hook(reading,'READING',';L("#showRhythms")?.addEventListener("change",e=>SPR.setReaderVisibility(e.target.checked));',true);
 const actions=only(nodes.filter(n=>n.type==='SwitchStatement'&&n.discriminant?.name==='r'&&n.cases.some(c=>c.test?.value==='share-text')),'ações');edit(actions.start,actions.start,marker('ACTIONS','if(SPR.handle(r,a))return;'));
 const pointer=only(nodes.filter(n=>n.type==='Literal'&&typeof n.value==='string'&&n.value.includes('.toolbar button,.part-assignment-bar button,.note-action,')),'foco do editor');if(!pointer.value.includes('.rhythm-action'))edit(pointer.start,pointer.end,JSON.stringify(pointer.value.replace('.note-action,','.note-action,.rhythm-action,#estimatedTime,.editor-footer-close,')));

@@ -1,3 +1,4 @@
+import {TIME_MARK_ATTRIBUTE,TIME_POINT_ATTRIBUTE,parseTimeMark} from '../timing/time-mark-core.js';
 import {RHYTHM_ATTRIBUTE,parseRhythm,rhythmValue} from '../rhythms/rhythm-core.js';
 import {newSpeech,plain,validateDelta,validState,isPart,partNarration} from './core.js';
 export const SPEECH_MIME='application/vnd.seprepare.speech+json';
@@ -6,6 +7,7 @@ const sizes=new Set(['12px','14px','16px','18px','20px','22px','24px','26px','28
 function cleanAttributes(source){
   const result={};
   for(const [key,value]of Object.entries(source||{})){
+    if([TIME_MARK_ATTRIBUTE,TIME_POINT_ATTRIBUTE].includes(key)&&parseTimeMark(value)!==null){result[key]=value;continue;}
     if(key===RHYTHM_ATTRIBUTE&&parseRhythm(value))result[key]=rhythmValue(parseRhythm(value));
     else if(key==='speaker'&&typeof value==='string'&&value.length<=100)result[key]=value;
     else if(['bold','italic','underline','strike','blockquote'].includes(key)&&value===true)result[key]=true;
@@ -28,7 +30,7 @@ export function portableContent(source){
   if(source.type!==undefined&&!['speech','part'].includes(source.type))throw Error('Tipo de conteúdo não reconhecido.');
   const delta=cleanDelta(source.delta);
   const speech=newSpeech();speech.title=source.title.trim().slice(0,400)||'Discurso sem título';speech.subtitle=typeof source.subtitle==='string'?source.subtitle.slice(0,1000):'';speech.delta=delta;speech.targetMinutes=source.targetMinutes;speech.layout=source.layout==='pages'?'pages':'flow';
-  const read=source.read&&typeof source.read==='object'?source.read:{};speech.read={fontSize:read.fontSize,zoom:read.zoom,line:read.line,font:fonts.has(read.font)?read.font:'',highlights:read.highlights!==false,...(read.showRhythms===true?{showRhythms:true}:{})};
+  const read=source.read&&typeof source.read==='object'?source.read:{};speech.read={fontSize:read.fontSize,zoom:read.zoom,line:read.line,font:fonts.has(read.font)?read.font:'',highlights:read.highlights!==false,showTimeMarks:read.showTimeMarks!==false,...(read.showRhythms===true?{showRhythms:true}:{})};
   speech.type=source.type||'speech';
   if(isPart(speech)){
     if(!Array.isArray(source.participants)||source.participants.length>50)throw Error('Participantes inválidos.');

@@ -1,3 +1,4 @@
+import {TIME_MARK_ATTRIBUTE,TIME_POINT_ATTRIBUTE,parseTimeMark} from '../timing/time-mark-core.js';
 import {validateDeletionTombstones} from '../protection/sync-deletions.js';
 import {parseRhythm,RHYTHM_ATTRIBUTE,validateRhythmCatalog} from '../rhythms/rhythm-core.js';
 import {normalizeNotes,withoutNoteAttributes,noteRanges} from './notes-core.js';
@@ -83,6 +84,8 @@ export function validState(data){
 export function validateDelta(delta){
   if(!Array.isArray(delta?.ops)||delta.ops.length>30000)throw Error('Documento inválido.');
   for(const op of delta.ops){
+    if(op.attributes?.[TIME_POINT_ATTRIBUTE]!==undefined&&(parseTimeMark(op.attributes[TIME_POINT_ATTRIBUTE])===null||typeof op.insert!=='string'))throw Error('Marcação de tempo inválida.');
+    if(op.attributes?.[TIME_MARK_ATTRIBUTE]!==undefined&&(parseTimeMark(op.attributes[TIME_MARK_ATTRIBUTE])===null||typeof op.insert!=='string'||!op.insert.includes('\n')))throw Error('Marcação de tempo inválida.');
     if(op.attributes?.[RHYTHM_ATTRIBUTE]!==undefined&&!parseRhythm(op.attributes[RHYTHM_ATTRIBUTE]))throw Error('Marcação de ritmo inválida.');
     if(typeof op.insert!=='string' && !(op.insert&&op.insert.pagebreak===true))throw Error('O documento contém um elemento não suportado.');
     if(op.attributes && (typeof op.attributes!=='object'||Array.isArray(op.attributes)))throw Error('Formatação inválida.');

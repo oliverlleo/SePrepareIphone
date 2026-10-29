@@ -1847,7 +1847,16 @@ export const catalogs = {
     "Não foi possível conferir a autorização do Drive.": "The Drive authorization could not be verified.",
     "Aguarde a conclusão da desconexão para conectar outra conta.": "Wait for disconnection to finish before connecting another account.",
     "A conexão está sendo preparada. Toque em Conectar novamente.": "The connection is being prepared. Tap Connect again.",
-    "A conexão Google ainda está carregando. Toque em Conectar novamente.": "The Google connection is still loading. Tap Connect again."
+    "A conexão Google ainda está carregando. Toque em Conectar novamente.": "The Google connection is still loading. Tap Connect again.",
+    "Mostrar tempo": "Show time",
+    "Ocultar tempo": "Hide time",
+    "Mostrar ritmo": "Show rhythm",
+    "Ocultar ritmo": "Hide rhythm",
+    "Marcar tempo": "Mark time",
+    "Remover tempo": "Remove time",
+    "Desformatar": "Remove formatting",
+    "Voz": "Voice",
+    "Tempo": "Time"
   },
   "es": {
     "Quebra de página": "Salto de página",
@@ -2878,7 +2887,7 @@ export const catalogs = {
     "Consultar {0} anotações privadas deste trecho": "Consultar {0} notas privadas de este fragmento",
     "Anotação privada do apresentador": "Nota privada del presentador",
     "Anotação": "Nota",
-    "Anotações": "Notas",
+    "Anotações": "Anotaciones",
     "Mostrar anotações": "Mostrar notas",
     "Ocultar anotações": "Ocultar notas",
     "Esta versão não tem anotações vinculadas": "Esta versión no tiene notas vinculadas",
@@ -3697,7 +3706,16 @@ export const catalogs = {
     "Não foi possível conferir a autorização do Drive.": "No se pudo verificar la autorización de Drive.",
     "Aguarde a conclusão da desconexão para conectar outra conta.": "Espera a que termine la desconexión antes de conectar otra cuenta.",
     "A conexão está sendo preparada. Toque em Conectar novamente.": "Se está preparando la conexión. Toca Conectar de nuevo.",
-    "A conexão Google ainda está carregando. Toque em Conectar novamente.": "La conexión de Google aún se está cargando. Toca Conectar de nuevo."
+    "A conexão Google ainda está carregando. Toque em Conectar novamente.": "La conexión de Google aún se está cargando. Toca Conectar de nuevo.",
+    "Mostrar tempo": "Mostrar tiempo",
+    "Ocultar tempo": "Ocultar tiempo",
+    "Mostrar ritmo": "Mostrar ritmo",
+    "Ocultar ritmo": "Ocultar ritmo",
+    "Marcar tempo": "Marcar tiempo",
+    "Remover tempo": "Quitar tiempo",
+    "Desformatar": "Quitar formato",
+    "Voz": "Voz",
+    "Tempo": "Tiempo"
   },
   "ja": {
     "Quebra de página": "改ページ",
@@ -5547,7 +5565,16 @@ export const catalogs = {
     "Não foi possível conferir a autorização do Drive.": "Driveの許可を確認できませんでした。",
     "Aguarde a conclusão da desconexão para conectar outra conta.": "別のアカウントに接続する前に、切断が完了するまでお待ちください。",
     "A conexão está sendo preparada. Toque em Conectar novamente.": "接続を準備しています。もう一度「接続」をタップしてください。",
-    "A conexão Google ainda está carregando. Toque em Conectar novamente.": "Googleへの接続を読み込んでいます。もう一度「接続」をタップしてください。"
+    "A conexão Google ainda está carregando. Toque em Conectar novamente.": "Googleへの接続を読み込んでいます。もう一度「接続」をタップしてください。",
+    "Mostrar tempo": "時間を表示",
+    "Ocultar tempo": "時間を非表示",
+    "Mostrar ritmo": "リズムを表示",
+    "Ocultar ritmo": "リズムを非表示",
+    "Marcar tempo": "時間をマーク",
+    "Remover tempo": "時間マークを削除",
+    "Desformatar": "書式を解除",
+    "Voz": "音声",
+    "Tempo": "時間"
   }
 };
 
