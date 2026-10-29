@@ -257,7 +257,44 @@ function makeThreeSpeakerPart(myId = 'p1') {
   check('Modo Automático aguarda início real da fala, respeita silêncio configurado e cai para Manual sem perder turno');
 }
 
-// 9. Compiled Apple host bundle checks
+// 9. Fallback constraint check + Apple _headers / CSP verification
+{
+  let calls = 0;
+  const fallbackVad = createRehearsalVad({
+    setTimeoutFn: fn => { fn(); return 1; },
+    mediaDevices: {
+      async getUserMedia(c) {
+        calls += 1;
+        if (typeof c?.audio === 'object') {
+          const e = new Error('Could not start audio source');
+          e.name = 'NotReadableError';
+          throw e;
+        }
+        const tr = { enabled: true, readyState: 'live', stop() { this.readyState = 'ended'; }, addEventListener() {}, removeEventListener() {} };
+        return { getAudioTracks: () => [tr], getTracks: () => [tr] };
+      }
+    },
+    AudioContextClass: class {
+      constructor() { this.state = 'suspended'; this.destination = {}; }
+      async resume() { this.state = 'running'; }
+      createMediaStreamSource() { return { connect() {}, disconnect() {} }; }
+      createAnalyser() { return { fftSize: 256, smoothingTimeConstant: 0.25, connect() {}, disconnect() {}, getFloatTimeDomainData(b) { b.fill(0); } }; }
+      createGain() { return { gain: { value: 1 }, connect() {}, disconnect() {} }; }
+      async close() { this.state = 'closed'; }
+    }
+  });
+  const prep = await fallbackVad.ensureSession();
+  assert.equal(prep.ok, true);
+  assert.equal(calls, 2);
+  fallbackVad.release();
+  const headersTxt = fs.readFileSync(new URL('../_headers', import.meta.url), 'utf8');
+  assert(headersTxt.includes('Permissions-Policy: microphone=(self)'));
+  const htmlTxt = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert(htmlTxt.includes("media-src 'self' blob:"));
+  check('Fallback de constraints getUserMedia e políticas de microfone Apple verificadas');
+}
+
+// 10. Compiled Apple host bundle checks
 const appJs = fs.readFileSync(new URL('../app.js', import.meta.url), 'utf8');
 assert(appJs.includes('SEPREPARE REHEARSAL BUNDLE START'));
 assert(appJs.includes('SePrepareRehearsalRuntime'));
