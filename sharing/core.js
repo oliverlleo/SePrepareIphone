@@ -181,14 +181,16 @@ export function toggleVersionTimer(s){
  else{if(!t.elapsedMs){t.contentKey=v.contentKey;t.contentRevision=v.revision;t.sessionStartedAt=Date.now();delete t.legacy;delete t.contentChanged;}else if(t.contentKey&&t.contentKey!==v.contentKey)t.contentChanged=true;t.running=true;t.startedAt=Date.now();}
  t.active=true;captureContentVersion(s);
 }
-export function finishVersionRehearsal(s){
+export function finishVersionRehearsal(s,options={}){
  const v=captureContentVersion(s),t=s.timer,elapsed=versionTimerElapsed(s);if(!elapsed&&!t.running)return null;
- if(elapsed>0)s.rehearsals.push({at:Date.now(),duration:elapsed,versionId:v.id,versionName:v.name,contentRevision:t.contentRevision??null,contentKey:t.contentKey||null,...(t.legacy?{legacy:true}:{}),...(t.contentChanged?{contentChanged:true}:{})});
+ const interactiveMeta=options?.mode==='interactive'?{rehearsalMode:'interactive',interactionMode:options.interactionMode==='auto'?'auto':'manual'}:{};
+ if(elapsed>0)s.rehearsals.push({at:Date.now(),duration:elapsed,versionId:v.id,versionName:v.name,contentRevision:t.contentRevision??null,contentKey:t.contentKey||null,...interactiveMeta,...(t.legacy?{legacy:true}:{}),...(t.contentChanged?{contentChanged:true}:{})});
  s.timer={active:false,running:false,elapsedMs:0,startedAt:0,versionId:v.id};captureContentVersion(s);return {duration:elapsed};
 }
 export function rehearsalContentLabel(record,version){
- if(record.contentChanged)return 'Texto alterado durante o ensaio';if(record.legacy||!record.contentKey)return 'Registro anterior à atualização';
- return record.contentKey===version.contentKey?'Texto atual':`Texto anterior · revisão ${record.contentRevision||1}`;
+ const prefix=record?.rehearsalMode==='interactive'?'Ensaio interativo · ':'';
+ if(record.contentChanged)return prefix+'Texto alterado durante o ensaio';if(record.legacy||!record.contentKey)return prefix+'Registro anterior à atualização';
+ return prefix+(record.contentKey===version.contentKey?'Texto atual':`Texto anterior · revisão ${record.contentRevision||1}`);
 }
 export function copyDocumentVersions(s){
  ensureVersions(s);const active=s.activeVersionId;

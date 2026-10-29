@@ -11,6 +11,7 @@
 .settings-option-icon{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border-radius:10px;background:var(--soft);color:var(--green)}.settings-option-icon svg{width:18px;height:18px}
 .settings-option-copy{flex:1;min-width:0}.settings-option-copy strong{display:block;font-size:13px;font-weight:500;line-height:1.45;overflow-wrap:anywhere}.settings-option-copy small{display:block;font-size:11px;color:var(--muted);margin-top:2px;line-height:1.45}.settings-option>svg{flex:0 0 16px;width:16px;height:16px;color:var(--muted)}
 .settings-empty{column-span:all;text-align:center;padding:30px 15px;color:var(--muted)}.settings-empty>svg{width:28px;height:28px;margin-bottom:10px}.settings-empty h3{font-size:16px;color:var(--ink);margin-bottom:7px}.settings-empty p{font-size:12px}
+.settings-version-footer{text-align:center;font-size:11px;color:var(--muted);margin:4px 0 18px;letter-spacing:.2px}
 /* A single surface, with deliberate spacing instead of a card inside a dialog. */
 .settings-detail-backdrop{align-items:center;padding:24px}
 .settings-detail-dialog{width:100%;max-width:520px;max-height:calc(100dvh - 48px);border-radius:22px;padding-bottom:0;background:var(--bg)}

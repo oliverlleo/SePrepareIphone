@@ -17,7 +17,7 @@
     const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'');
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
-    let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null;
+    let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null,activeSegment=null,externalInterrupt=null;
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
     const t=i => (translations[lang()] || translations.pt)[i];
     const locale=() => normalized(o.getSettings().language);
@@ -106,7 +106,171 @@
       s.rate=clamp(Number(document.getElementById('voiceRate')?.value||s.rate||1),.5,1.8);
       return s;
     }
+    function stopActiveSegment(notifyInterrupt=false) {
+      const seg=activeSegment;
+      if(!seg)return;
+      activeSegment=null;
+      clearTimeout(seg.startupTimer);
+      request++;
+      cancelActiveSpeech();
+      if(notifyInterrupt && typeof externalInterrupt==='function') externalInterrupt('audio-player');
+    }
+    function setExternalInterruptHandler(fn) {
+      externalInterrupt=typeof fn==='function' ? fn : null;
+    }
+    function getAvailableVoices(preferredLocale) {
+      if(!candidates.length) refreshVoices();
+      const loc=preferredLocale || locale();
+      const prefix=String(loc||'pt-BR').split(/[-_]/)[0].toLowerCase();
+      const all=candidates.filter(v=>!failedVoices.has(voiceKey(v))).map(v=>({
+        name:v.name,
+        locale:v.lang,
+        offline:v.localService!==false,
+        default:!!v.default,
+        label:normalizedName(v.name)+' ? '+v.lang
+      }));
+      const matching=all.filter(v=>String(v.locale||'').split(/[-_]/)[0].toLowerCase()===prefix);
+      return {status:synth?'ready':'unavailable',locale:loc,voices:matching.length?matching:all,allVoices:all};
+    }
+    function speakSegment(spec={}) {
+      const {text='',offset=0,voice='',locale:preferredLocale='',rate=1,onStart,onBoundary,onEnd,onError}=spec;
+      if(previewing) stopPreview();
+      if(audio.state==='playing'||audio.state==='starting') {
+        request++;cancelActiveSpeech();
+        activeUtterance=null;audio.state='paused';update();dispatch();
+      }
+      stopActiveSegment(false);
+      if(!synth||typeof global.SpeechSynthesisUtterance!=='function') {
+        if(typeof onError==='function') onError({code:'synthesis-unavailable',message:t(17)});
+        return null;
+      }
+      if(!candidates.length) refreshVoices();
+      const loc=preferredLocale || locale();
+      let chosen=null;
+      if(voice) {
+        const candidate=exactVoice(voice,preferredLocale) || exactVoice(voice,'');
+        if(candidate && !failedVoices.has(voiceKey(candidate))) chosen=candidate;
+      }
+      if(!chosen) {
+        if(!(isIOS && !failedSystemLocales.has(loc.toLowerCase()))) chosen=automaticVoice(loc);
+      }
+      if(!chosen && !isIOS && candidates.length>0) {
+        if(typeof onError==='function') onError({code:'language-unavailable',message:t(16)});
+        return null;
+      }
+      request++;
+      const id=request, reqId='rehearsal-'+id;
+      cancelActiveSpeech();
+      const fullText=String(text||'');
+      const startAt=clamp(Number(offset)||0,0,fullText.length);
+      const cleanRate=clamp(Number(rate)||Number(o.getSettings().rate)||1,.5,1.8);
+      const seg={requestId:reqId,id,started:false,startupTimer:0};
+      const attempted=new Set();
+      let fallbackCount=0,currentVoice=chosen;
+      const sameLanguage=v=>v && v.lang && v.lang.split('-')[0].toLowerCase()===loc.split('-')[0].toLowerCase();
+      activeSegment=seg;
+      function fallbackSegmentVoice() {
+        if(fallbackCount>=2)return false;
+        attempted.add(voiceKey(currentVoice));
+        refreshVoices();
+        const alternatives=candidates.filter(v=>sameLanguage(v)&&!failedVoices.has(voiceKey(v))&&!attempted.has(voiceKey(v)))
+          .sort((a,b)=>Number(b.localService!==false)-Number(a.localService!==false));
+        const alternate=alternatives[0]||(!attempted.has('system-default')?null:undefined);
+        if(alternate===undefined)return false;
+        currentVoice=alternate;
+        fallbackCount++;
+        return true;
+      }
+      function failSegment(code,at) {
+        if(activeSegment!==seg || id!==request) return;
+        clearTimeout(seg.startupTimer);
+        const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout'].includes(code);
+        if(isIOS && retryable) {
+          if(currentVoice) failedVoices.add(voiceKey(currentVoice));
+          else failedSystemLocales.add(loc.toLowerCase());
+        } else if(retryable && fallbackSegmentVoice()) {
+          cancelActiveSpeech();
+          nextChunk(at);
+          return;
+        }
+        activeSegment=null;
+        if(typeof onError==='function') onError({code:code||'synthesis-failed',message:speechErrorMessage(code||'synthesis-failed')});
+      }
+      function nextChunk(at) {
+        if(activeSegment!==seg || id!==request) return;
+        const remaining=fullText.slice(at);
+        if(!remaining.length) {
+          clearTimeout(seg.startupTimer);
+          activeSegment=null;
+          if(typeof onEnd==='function') onEnd();
+          return;
+        }
+        let length=Math.min(220,remaining.length);
+        if(remaining.length>length) {
+          const punctuation=remaining.slice(0,length).search(/[.!?;:][ \n]/);
+          const wordsEnd=remaining.slice(0,length).lastIndexOf(' ');
+          if(punctuation>50) length=punctuation+1;
+          else if(wordsEnd>100) length=wordsEnd+1;
+        }
+        const chunk=remaining.slice(0,length);
+        const utterance=new global.SpeechSynthesisUtterance(chunk);
+        utterance.lang=currentVoice?.lang || loc;
+        if(currentVoice) utterance.voice=currentVoice;
+        utterance.rate=cleanRate;
+        let chunkStarted=false;
+        clearTimeout(seg.startupTimer);
+        utterance.onstart=()=>{
+          if(activeSegment!==seg || id!==request) return;
+          chunkStarted=true;
+          clearTimeout(seg.startupTimer);
+          if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
+        };
+        utterance.onboundary=ev=>{
+          if(activeSegment!==seg || id!==request) return;
+          chunkStarted=true;
+          clearTimeout(seg.startupTimer);
+          if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
+          const pos=clamp(at+(Number(ev.charIndex)||0),0,fullText.length);
+          if(typeof onBoundary==='function') onBoundary({offset:pos,end:pos});
+        };
+        utterance.onend=()=>{
+          if(activeSegment!==seg || id!==request) return;
+          clearTimeout(seg.startupTimer);
+          if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
+          const end=at+chunk.length;
+          if(end<fullText.length) setTimeout(()=>nextChunk(end),0);
+          else {activeSegment=null;if(typeof onEnd==='function')onEnd();}
+        };
+        utterance.onerror=ev=>{
+          if(activeSegment!==seg || id!==request) return;
+          clearTimeout(seg.startupTimer);
+          const errCode=String(ev?.error||'');
+          if(errCode==='canceled'||errCode==='interrupted') return;
+          failSegment(errCode||'synthesis-failed',at);
+        };
+        try {
+          synth.speak(utterance);
+          if(!chunkStarted && activeSegment===seg && id===request) {
+            seg.startupTimer=setTimeout(()=>{
+              if(activeSegment!==seg || id!==request || chunkStarted) return;
+              cancelActiveSpeech();
+              failSegment('startup-timeout',at);
+            },4500);
+          }
+        } catch {
+          clearTimeout(seg.startupTimer);
+          failSegment('synthesis-failed',at);
+        }
+      }
+      nextChunk(startAt);
+      return reqId;
+    }
+    function cancelSegment(reqId) {
+      if(!activeSegment || (reqId && activeSegment.requestId!==reqId)) return;
+      stopActiveSegment(false);
+    }
     function applyLanguageChange() {
+      stopActiveSegment(true);
       stopPreview(); pause();
       const s=o.getSettings();s.voice='';s.audioLanguage='';
       audio.offset=0;audio.text='';audio.speechId=null;audio.state='idle';
@@ -273,6 +437,7 @@
       return true;
     }
     function play() {
+      stopActiveSegment(true);
       if(audio.state==='playing'||audio.state==='starting'){pause();return;}
       stopPreview();
       o.sync();
@@ -305,6 +470,7 @@
       else {update();dispatch();}
     }
     function preview() {
+      stopActiveSegment(true);
       if(previewing){stopPreview();return;}
       pause();
       const field=document.getElementById('voicePreviewText');
@@ -366,9 +532,13 @@
     global.addEventListener('focus',refreshVoices);
     // Reset a suspended iOS playback session but keep speech text/position.
     document.addEventListener('visibilitychange',()=>{
-      if(document.hidden&&(audio.state==='playing'||audio.state==='starting'||previewing))pause();
+      if(document.hidden){
+        if(activeSegment)stopActiveSegment(false);
+        if(audio.state==='playing'||audio.state==='starting'||previewing)pause();
+      }
     });
     global.addEventListener('pagehide',()=>{
+      if(activeSegment)stopActiveSegment(false);
       if(audio.state==='playing'||audio.state==='starting'||previewing)pause();
     });
     if(synth)synth.addEventListener('voiceschanged',refreshVoices);
@@ -379,7 +549,7 @@
     });
     document.addEventListener('change',event=>{if(event.target?.id==='audioSeek')seek(event.target.value);});
     refreshVoices();ensureFloating();
-    return {refreshVoices,settingsHTML,bindSettings,saveSettings,applyLanguageChange,play,pause,preview,stopPreview,seek,update,progressHTML};
+    return {refreshVoices,settingsHTML,bindSettings,saveSettings,applyLanguageChange,play,pause,preview,stopPreview,seek,update,progressHTML,getAvailableVoices,speakSegment,cancelSegment,setExternalInterruptHandler};
   }
   global.SePrepareAudio={create};
 })(window);

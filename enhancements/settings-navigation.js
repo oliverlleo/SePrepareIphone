@@ -15,7 +15,8 @@ export function settingsCatalog(){
   entry('guide','Guia do SePrepare',4,'BookOpen',{action:'guide',concepts:['help']}),
   entry('support','Apoiar o desenvolvedor',4,'HandHeart',{action:'support-donation',concepts:['support']}),
   entry('privacy','Privacidade',4,'ShieldCheck',{panel:'privacy',concepts:['privacy']}),
-  entry('about','Sobre o SePrepare',4,'Info',{action:'about',concepts:['about']}),
+  entry('about','Sobre o SePrepare',4,'Info',{action:'about',concepts:['about'],keywords:'versão version 1.0.73 atualização sobre'}),
+  entry('interactive-rehearsal-guide','Ensaio interativo',4,'Mic',{parent:'guide',parentTitle:t('Guia do SePrepare'),action:'guide',concepts:['help','voice'],keywords:'ensaio interativo demonstração participantes manual automático microfone sua vez'}),
   entry('dictionary','Meu dicionário',1,'BookMarked',{parent:'review',parentTitle:t('Revisão de português'),action:'dictionary',concepts:['spelling'],keywords:'palavras pessoais correções lembradas personal dictionary remembered corrections diccionario 辞書'}),
   entry('online-review','Revisão online',1,'Globe',{parent:'review',parentTitle:t('Revisão de português'),panel:'review',focus:'#onlineReview',concepts:['spelling'],keywords:'LanguageTool internet corretor servidor endpoint'}),
   entry('review-address','Endereço do corretor',1,'Globe',{parent:'review',parentTitle:t('Revisão de português'),panel:'review',focus:'#reviewEndpoint',concepts:['spelling'],keywords:'URL LanguageTool HTTPS servidor endpoint'}),
@@ -38,7 +39,7 @@ export function mountSettingsNavigation(c){
  const host=c.host,stash=document.createElement('div');stash.className='settings-panel-stash';stash.hidden=true;
  const panels={language:host.querySelector('#appLanguage')?.closest('.setting-card'),review:host.querySelector('#onlineReview')?.closest('.setting-card'),notifications:host.querySelector('#permissionsSummary')?.closest('.setting-card'),privacy:host.querySelector('.legal-settings-card')};
  while(host.firstChild)stash.append(host.firstChild);
- Object.assign(panels,c.panels||{});const entries=[...settingsCatalog().filter(c.filterEntry||(()=>true)),...(c.extraEntries||[])];host.innerHTML=h`<div class="settings-search-sticky"><label class="settings-search-field">${c.icon('Search')}<input type="search" id="settingsSearch" autocomplete="off" placeholder="Pesquisar ajustes…" aria-label="Pesquisar ajustes"><button type="button" id="clearSettingsSearch" aria-label="Limpar busca" hidden>${c.icon('X')}</button></label><p class="settings-search-status" id="settingsSearchStatus" role="status" aria-live="polite"></p></div><div class="settings-categories" id="settingsCategories"></div>`;host.append(stash);
+ Object.assign(panels,c.panels||{});const entries=[...settingsCatalog().filter(c.filterEntry||(()=>true)),...(c.extraEntries||[])],verNote=c.version?`${t('Versão')} ${c.version}`:'';host.innerHTML=h`<div class="settings-search-sticky"><label class="settings-search-field">${c.icon('Search')}<input type="search" id="settingsSearch" autocomplete="off" placeholder="Pesquisar ajustes…" aria-label="Pesquisar ajustes"><button type="button" id="clearSettingsSearch" aria-label="Limpar busca" hidden>${c.icon('X')}</button></label><p class="settings-search-status" id="settingsSearchStatus" role="status" aria-live="polite"></p></div><div class="settings-categories" id="settingsCategories"></div>${verNote?h`<p class="settings-version-footer" id="settingsVersionFooter">SePrepare · ${c.escape(verNote)}</p>`:''}`;host.append(stash);
  let active=null,frame=0;
  const input=host.querySelector('#settingsSearch'),results=host.querySelector('#settingsCategories'),status=host.querySelector('#settingsSearchStatus');input.value=c.query||'';
  function release(){if(active){stash.append(active);active=null;}}
@@ -47,7 +48,7 @@ export function mountSettingsNavigation(c){
   if(entry.panel==='appearance'){c.appearance();return;}
   const panel=panels[entry.panel];if(!panel)return;c.openModal(entry.parentTitle||entry.title,'');styleSettingsDialog(entry.panel);panel.classList.add('settings-detail-content');document.querySelector('.modal-body').append(panel);active=panel;c.mark();focusTarget(entry.focus);
  }
- function row(entry,searching){return h`<button type="button" class="settings-option" data-settings-id="${entry.id}" ${entry.action?`data-action="${entry.action}"`:''}><span class="settings-option-icon" aria-hidden="true">${c.icon(entry.icon)}</span><span class="settings-option-copy"><strong>${c.escape(entry.title)}</strong>${searching&&entry.parent?h`<small>${c.escape(entry.parentTitle)}</small>`:''}</span>${c.icon('ChevronRight')}</button>`;}
+ function row(entry,searching){const sub=searching&&entry.parent?entry.parentTitle:entry.id==='about'&&verNote?verNote:'';return h`<button type="button" class="settings-option" data-settings-id="${entry.id}" ${entry.action?`data-action="${entry.action}"`:''}><span class="settings-option-icon" aria-hidden="true">${c.icon(entry.icon)}</span><span class="settings-option-copy"><strong>${c.escape(entry.title)}</strong>${sub?h`<small>${c.escape(sub)}</small>`:''}</span>${c.icon('ChevronRight')}</button>`;}
  function render(){
   const query=input.value.trim(),found=searchSettings(entries,query),searching=!!query;
   c.onQuery(input.value);host.querySelector('#clearSettingsSearch').hidden=!query;
