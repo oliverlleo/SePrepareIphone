@@ -1,0 +1,7 @@
+# Keep verified voice assets byte-stable on Windows (core.autocrlf) and CI.
+rehearsal/voice/** text eol=lf
+voice/** text eol=lf
+rehearsal/voice/*.wasm -text
+rehearsal/voice/*.onnx -text
+voice/**/*.wasm -text
+voice/**/*.onnx -text
