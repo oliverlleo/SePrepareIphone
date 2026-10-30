@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import {createHash} from 'node:crypto';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '../sharing/node_modules/acorn/dist/acorn.mjs';
@@ -210,4 +211,14 @@ source = source.slice(0, at) + marker('BUNDLE', bundled.outputFiles[0].text) + s
 source = source.replace(/(\/\* SEPREPARE SHARE CODEC END \*\/)[\r\n]+/, '$1\n');
 parse(source, { ecmaVersion: 'latest' });
 writeFileSync(path.join(root, 'app.js'), source);
-console.log('Ensaio interativo 1.0.73 integrado ao host Apple preservado.');
+console.log('Ensaio interativo 1.0.74 integrado ao host Apple preservado.');
+
+const voiceDir=path.join(root,'voice/v1.0.74');mkdirSync(voiceDir,{recursive:true});
+const voiceMeta=JSON.parse(readFileSync(path.join(here,'voice/upstream.json'),'utf8'));
+for(const [name,expected] of Object.entries(voiceMeta.files)) {
+ const bytes=readFileSync(path.join(here,'voice',name));
+ if(createHash('sha256').update(bytes).digest('hex')!==expected)throw Error('Voice asset integrity: '+name);
+ copyFileSync(path.join(here,'voice',name),path.join(voiceDir,name));
+}
+for(const name of ['pcm-resampler.js','pcm-capture-worklet.js','upstream.json'])copyFileSync(path.join(here,'voice',name),path.join(voiceDir,name));
+await build({absWorkingDir:here,entryPoints:['voice/worker-entry.js'],outfile:path.join(voiceDir,'speech-worker.js'),bundle:true,minify:true,format:'iife',target:'safari15.4',legalComments:'eof'});

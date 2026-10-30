@@ -203,6 +203,7 @@ function makeThreeSpeakerPart(myId = 'p1') {
 {
   let fakeNow = 1000;
   let currentAmplitude = 0.004;
+  let classifiedResult = null;
   let intervalCb = null;
   let endedListener = null;
   const fakeTrack = {
@@ -213,12 +214,15 @@ function makeThreeSpeakerPart(myId = 'p1') {
     removeEventListener(ev, fn) { if (ev === 'ended' && endedListener === fn) endedListener = null; }
   };
   const vad = createRehearsalVad({
+  createClassifier: () => ({ensure:async()=>{},startTurn:async(token,result)=>{classifiedResult=result;},push(){},stopTurn(){classifiedResult=null;},release(){classifiedResult=null;}}),
     now: () => fakeNow,
     setIntervalFn: fn => { intervalCb = fn; return 99; },
     clearIntervalFn: () => { intervalCb = null; },
     mediaDevices: { async getUserMedia() { fakeTrack.readyState = 'live'; return { getAudioTracks: () => [fakeTrack], getTracks: () => [fakeTrack] }; } },
     AudioContextClass: class {
-      constructor() { this.state = 'running'; }
+      constructor() { this.state = 'running'; this.sampleRate=16000; this.destination={}; }
+    createGain(){return {gain:{value:0},connect(){},disconnect(){}};}
+    createScriptProcessor(){return {connect(){},disconnect(){}};}
       createMediaStreamSource() { return { connect() {}, disconnect() {} }; }
       createAnalyser() { return { fftSize: 256, smoothingTimeConstant: 0.25, disconnect() {}, getFloatTimeDomainData(buf) { buf.fill(currentAmplitude); } }; }
       async close() { this.state = 'closed'; }
@@ -227,7 +231,7 @@ function makeThreeSpeakerPart(myId = 'p1') {
   const advanceMs = (ms, amp) => {
     currentAmplitude = amp;
     const steps = Math.round(ms / 60);
-    for (let i = 0; i < steps; i += 1) { fakeNow += 60; intervalCb?.(); }
+    for (let i = 0; i < steps; i += 1) { fakeNow += 60; classifiedResult?.(amp > .02 ? .95 : .01); classifiedResult?.(amp > .02 ? .95 : .01); intervalCb?.(); }
   };
   const fakePlayer = createFakePlayer();
   const audio = createRehearsalAudio({ player: fakePlayer, getSettings: () => ({ language: 'pt-BR', rate: 1 }) });
@@ -261,6 +265,7 @@ function makeThreeSpeakerPart(myId = 'p1') {
 {
   let calls = 0;
   const fallbackVad = createRehearsalVad({
+    createClassifier:()=>({ensure:async()=>{},release(){},stopTurn(){}}),
     setTimeoutFn: fn => { fn(); return 1; },
     mediaDevices: {
       async getUserMedia(c) {
@@ -285,7 +290,7 @@ function makeThreeSpeakerPart(myId = 'p1') {
   });
   const prep = await fallbackVad.ensureSession();
   assert.equal(prep.ok, true);
-  assert.equal(calls, 2);
+  assert.equal(calls, 3);
   fallbackVad.release();
   const headersTxt = fs.readFileSync(new URL('../_headers', import.meta.url), 'utf8');
   assert(headersTxt.includes('Permissions-Policy: microphone=(self)'));
@@ -298,5 +303,5 @@ function makeThreeSpeakerPart(myId = 'p1') {
 const appJs = fs.readFileSync(new URL('../app.js', import.meta.url), 'utf8');
 assert(appJs.includes('SEPREPARE REHEARSAL BUNDLE START'));
 assert(appJs.includes('SePrepareRehearsalRuntime'));
-assert(appJs.includes('1.0.73'));
-check('Host Apple compilado inclui Ensaio interativo 1.0.73 preservando contratos do PWA');
+assert(appJs.includes('1.0.74'));
+check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contratos do PWA');

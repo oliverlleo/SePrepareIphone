@@ -15,7 +15,7 @@ export function settingsCatalog(){
   entry('guide','Guia do SePrepare',4,'BookOpen',{action:'guide',concepts:['help']}),
   entry('support','Apoiar o desenvolvedor',4,'HandHeart',{action:'support-donation',concepts:['support']}),
   entry('privacy','Privacidade',4,'ShieldCheck',{panel:'privacy',concepts:['privacy']}),
-  entry('about','Sobre o SePrepare',4,'Info',{action:'about',concepts:['about'],keywords:'versão version 1.0.73 atualização sobre'}),
+  entry('about','Sobre o SePrepare',4,'Info',{action:'about',concepts:['about'],keywords:'versão version 1.0.74 atualização sobre'}),
   entry('interactive-rehearsal-guide','Ensaio interativo',4,'Mic',{parent:'guide',parentTitle:t('Guia do SePrepare'),action:'guide',concepts:['help','voice'],keywords:'ensaio interativo demonstração participantes manual automático microfone sua vez'}),
   entry('dictionary','Meu dicionário',1,'BookMarked',{parent:'review',parentTitle:t('Revisão de português'),action:'dictionary',concepts:['spelling'],keywords:'palavras pessoais correções lembradas personal dictionary remembered corrections diccionario 辞書'}),
   entry('online-review','Revisão online',1,'Globe',{parent:'review',parentTitle:t('Revisão de português'),panel:'review',focus:'#onlineReview',concepts:['spelling'],keywords:'LanguageTool internet corretor servidor endpoint'}),

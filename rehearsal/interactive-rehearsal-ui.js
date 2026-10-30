@@ -446,8 +446,8 @@ export function createInteractiveRehearsalUI({
     const autoSectionHTML = draft.mode === 'auto'
       ? `
         <div class="field" id="rehearsalAutoOptions">
-          <label>${esc(t('Tempo de silêncio para concluir sua fala'))}</label>
-          <div class="rehearsal-silence-group" role="group" aria-label="${esc(t('Tempo de silêncio'))}">
+          <label>${esc(t('Pausa na fala para avançar'))}</label>
+          <div class="rehearsal-silence-group" role="group" aria-label="${esc(t('Pausa na fala'))}">
             ${SILENCE_OPTIONS.map(
               sec => `
                 <button type="button" class="rehearsal-silence-pill" data-action="rehearsal-select-silence" data-seconds="${sec}" aria-pressed="${draft.silenceSeconds === sec}">
@@ -459,7 +459,7 @@ export function createInteractiveRehearsalUI({
           </div>
           <div class="rehearsal-privacy-note" style="margin-top:8px">
             ${icon('ShieldCheck')}
-            <span>${esc(t('O microfone é usado localmente apenas na sua vez para perceber o silêncio após a fala. Nenhum áudio é gravado ou enviado.'))}</span>
+            <span>${esc(t('A detecção local de fala usa o microfone apenas na sua vez. Ruídos de fundo não precisam desaparecer para avançar. Nenhum áudio é gravado ou enviado.'))}</span>
           </div>
         </div>
       `
