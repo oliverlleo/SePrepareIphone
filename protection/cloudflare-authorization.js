@@ -17,6 +17,7 @@ export function createCloudflareAuthorization({window:win=window,onChange=()=>{}
    if(name==='config'&&response.status===404)return {enabled:false};
    const raw=await response.text();if(raw.length>32768)throw fault('Não foi possível conferir a autorização do Drive.','network');let result;try{result=JSON.parse(raw);}catch{throw fault('Não foi possível conferir a autorização do Drive.','network');}
    if(!response.ok){
+    if(result.error==='request_rejected')throw fault('A conexão do Drive precisa ser reaberta neste navegador. Toque em Conectar novamente.','authorization');
     if(result.error==='reauthorize'){if(config)config.hasSession=false;onChange();throw fault(messages.reauthorize,'authorization');}
     if(result.error==='account')throw fault(messages.account,'account');
     if(['offline_permission_required','permission'].includes(result.error))throw fault(messages[result.error],'authorization');

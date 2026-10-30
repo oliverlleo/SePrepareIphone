@@ -28,8 +28,20 @@ async function body(request){
  try{const value=JSON.parse(decoder.decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw Error();return value;}catch{throw fail(400,'invalid_request');}
 }
 function csrf(request,origin){
- if(request.headers.get('Origin')!==origin||request.headers.get('X-SePrepare-Request')!=='drive-v1'||request.headers.get('Content-Type')?.split(';')[0].trim()!=='application/json')throw fail(403,'request_rejected');
- const site=request.headers.get('Sec-Fetch-Site');if(site&&site!=='same-origin'&&site!=='none')throw fail(403,'request_rejected');
+ if(request.headers.get('X-SePrepare-Request')!=='drive-v1'||request.headers.get('Content-Type')?.split(';')[0].trim()!=='application/json')throw fail(403,'request_rejected');
+ const sentOrigin=request.headers.get('Origin');
+ if(sentOrigin!==null){
+  // A present Origin is authoritative. Never accept opaque/null or foreign origins.
+  if(sentOrigin!==origin)throw fail(403,'request_rejected');
+ }else{
+  // Older standalone WebKit requests can omit Origin. Require an exact HTTPS
+  // Referer origin instead, in addition to JSON and the application-only header.
+  let refererOrigin;try{refererOrigin=new URL(request.headers.get('Referer')).origin;}catch{}
+  if(refererOrigin!==origin)throw fail(403,'request_rejected');
+ }
+ // Fetch metadata is additional evidence, not a replacement for the verified origin.
+ // same-site alone never authorizes a sibling domain because it must pass above.
+ const site=request.headers.get('Sec-Fetch-Site');if(site&&!['same-origin','same-site','none'].includes(site))throw fail(403,'request_rejected');
 }
 export function createDriveAuth({fetcher=globalThis.fetch,now=Date.now,crypto=globalThis.crypto}={}){
  const json=(value,status=200,cookie='')=>{const h=headers();if(cookie)h.set('Set-Cookie',cookie);return new Response(JSON.stringify(value),{status,headers:h});};
