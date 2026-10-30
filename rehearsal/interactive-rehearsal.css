@@ -1,0 +1,614 @@
+/* Ensaio interativo — integrado à identidade visual do SePrepare 1.0.73 */
+
+.reader-identity {
+  flex-wrap: wrap;
+}
+
+.reader-identity > span {
+  min-width: 140px;
+}
+
+.reader-identity-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.reader-identity .rehearsal-entry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 7px 11px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--green) 28%, var(--line));
+  background: var(--soft);
+  color: var(--green);
+}
+
+.dark .reader-identity .rehearsal-entry-btn {
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.reader-identity .rehearsal-entry-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.reader-identity .rehearsal-entry-btn[data-active="true"] {
+  background: var(--green);
+  color: var(--paper);
+  border-color: var(--green);
+}
+
+.dark .reader-identity .rehearsal-entry-btn[data-active="true"] {
+  color: #18302b;
+}
+
+@media (max-width: 520px) {
+  .reader-identity {
+    margin: 0 16px 16px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .reader-identity > span {
+    flex: 1 1 100%;
+  }
+  .reader-identity-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Barra compacta do Ensaio interativo durante a apresentação */
+.rehearsal-bar {
+  position: sticky;
+  top: max(8px, env(safe-area-inset-top, 0px));
+  z-index: 26;
+  margin: 0 24px 16px;
+  padding: 10px 12px;
+  border-radius: 15px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 95%, var(--bg));
+  box-shadow: 0 8px 24px rgba(24, 48, 43, 0.11);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: grid;
+  gap: 8px;
+}
+
+.rehearsal-bar[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 520px) {
+  .rehearsal-bar {
+    margin: 0 12px 12px;
+    padding: 8px 10px;
+    border-radius: 13px;
+    gap: 7px;
+  }
+}
+
+@media (min-width: 751px) {
+  .rehearsal-bar {
+    margin: 0 0 16px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .reader-sidebar .reader-identity .rehearsal-entry-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  body:not(.focus-mode) .rehearsal-bar {
+    top: 76px;
+    max-width: 1060px;
+    margin-inline: auto;
+    margin-bottom: 16px;
+  }
+}
+
+.focus-mode .rehearsal-bar {
+  max-width: 1060px;
+  margin-inline: auto;
+  margin-bottom: 14px;
+  top: max(10px, env(safe-area-inset-top, 0px));
+}
+
+@media (max-width: 750px) {
+  .focus-mode .rehearsal-bar {
+    margin-inline: 10px;
+  }
+}
+
+.rehearsal-bar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rehearsal-status-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+
+.rehearsal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  background: var(--soft);
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+.rehearsal-badge svg {
+  width: 13px;
+  height: 13px;
+}
+
+.rehearsal-badge.is-user {
+  background: var(--green);
+  color: var(--paper);
+}
+
+.dark .rehearsal-badge.is-user {
+  color: #18302b;
+}
+
+.rehearsal-badge.is-narrating {
+  background: color-mix(in srgb, var(--copper) 18%, var(--soft));
+  color: var(--copper);
+}
+
+.rehearsal-badge.is-listening {
+  background: color-mix(in srgb, var(--green) 20%, var(--soft));
+  color: var(--green);
+}
+
+.dark .rehearsal-badge.is-listening {
+  color: var(--ink);
+}
+
+.rehearsal-speaker-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.rehearsal-turn-counter {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Indicador discreto de escuta no modo Automático */
+.rehearsal-mic-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 9px;
+  border-radius: 9px;
+  background: var(--soft);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.rehearsal-mic-status[hidden] {
+  display: none !important;
+}
+
+.rehearsal-mic-meter {
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.rehearsal-mic-meter-fill {
+  display: block;
+  height: 100%;
+  width: 8%;
+  border-radius: 999px;
+  background: var(--green);
+  transition: width 120ms linear;
+}
+
+.rehearsal-notice-inline {
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 6px 9px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--copper) 14%, var(--soft));
+  color: var(--ink);
+}
+
+.rehearsal-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  position: relative;
+}
+
+.rehearsal-primary-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 12px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--green);
+  color: var(--paper);
+  border: 1px solid transparent;
+}
+
+.dark .rehearsal-primary-btn {
+  color: #18302b;
+}
+
+.rehearsal-primary-btn.secondary {
+  background: var(--soft);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.rehearsal-primary-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.rehearsal-primary-btn span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rehearsal-icon-action {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.rehearsal-icon-action svg {
+  width: 16px;
+  height: 16px;
+}
+
+.rehearsal-icon-action[disabled] {
+  opacity: 0.42;
+}
+
+.rehearsal-desktop-only {
+  display: none;
+}
+
+@media (min-width: 720px) {
+  .rehearsal-desktop-only {
+    display: inline-flex;
+  }
+  .rehearsal-primary-btn {
+    flex: 0 1 auto;
+    padding-inline: 14px;
+  }
+  .rehearsal-actions-spacer {
+    flex: 1 1 auto;
+  }
+}
+
+/* Menu contextual secundário compacto */
+.rehearsal-more-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 35;
+  min-width: min(250px, calc(100vw - 32px));
+  padding: 6px;
+  border-radius: 13px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: 0 12px 30px rgba(20, 38, 35, 0.18);
+  display: grid;
+  gap: 3px;
+}
+
+.rehearsal-more-menu[hidden] {
+  display: none !important;
+}
+
+.rehearsal-menu-item {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rehearsal-menu-item:hover,
+.rehearsal-menu-item:focus-visible {
+  background: var(--soft);
+}
+
+.rehearsal-menu-item.danger {
+  color: #a34943;
+}
+
+.dark .rehearsal-menu-item.danger {
+  color: #e48f88;
+}
+
+.rehearsal-menu-item svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* Destaque discreto no texto da apresentação */
+#readerText .reading-turn.is-rehearsal-current {
+  border-left-width: 4px;
+  border-radius: 0 14px 14px 0;
+  padding: 0.7em 0.75em 0.25em;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+#readerText .reading-turn.is-rehearsal-other {
+  background: color-mix(in srgb, var(--copper) 9%, var(--paper));
+  border-left-color: var(--copper);
+}
+
+#readerText .reading-turn.is-rehearsal-mine {
+  background: color-mix(in srgb, var(--green) 11%, var(--soft));
+  border-left-color: var(--green);
+  box-shadow: 0 2px 12px rgba(32, 61, 58, 0.06);
+}
+
+#readerText .reading-turn .rehearsal-turn-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--copper);
+  color: #ffffff;
+}
+
+#readerText .reading-turn.is-rehearsal-mine .rehearsal-turn-tag {
+  background: var(--green);
+  color: var(--paper);
+}
+
+.dark #readerText .reading-turn.is-rehearsal-mine .rehearsal-turn-tag {
+  color: #18302b;
+}
+
+/* Ocultação temporária para memorização (não altera o documento nem onlyMine) */
+#readerText .reading-turn-body.is-memorization-hidden {
+  display: none;
+}
+
+.rehearsal-memorization-box {
+  margin: 0.2em 0 0.75em;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--line);
+  background: color-mix(in srgb, var(--paper) 75%, var(--soft));
+  font-family: Inter, Arial, sans-serif;
+}
+
+.rehearsal-memorization-note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.rehearsal-hint-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--copper);
+  margin-bottom: 5px;
+}
+
+.rehearsal-hint-excerpt {
+  margin: 0;
+  font-family: var(--speech-font, Inter, sans-serif);
+  font-size: calc(var(--speech-size, 24px) * 0.88);
+  line-height: var(--speech-line, 1.6);
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.rehearsal-inline-hint-btn {
+  margin-top: 9px;
+}
+
+/* Modal de configuração inicial e vozes por participante */
+.rehearsal-mode-cards {
+  display: grid;
+  gap: 8px;
+}
+
+.rehearsal-mode-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.rehearsal-mode-card input[type="radio"] {
+  margin-top: 3px;
+  accent-color: var(--green);
+}
+
+.rehearsal-mode-card.is-selected {
+  border-color: var(--green);
+  background: var(--soft);
+}
+
+.rehearsal-mode-card strong {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.rehearsal-mode-card small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.rehearsal-silence-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.rehearsal-silence-pill {
+  min-height: 40px;
+  padding: 7px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.rehearsal-silence-pill[aria-pressed="true"] {
+  border-color: var(--green);
+  background: var(--green);
+  color: var(--paper);
+}
+
+.dark .rehearsal-silence-pill[aria-pressed="true"] {
+  color: #18302b;
+}
+
+.rehearsal-silence-pill small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.rehearsal-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 11px;
+  border-radius: 11px;
+  background: var(--soft);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.rehearsal-privacy-note svg {
+  width: 15px;
+  height: 15px;
+  color: var(--green);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.rehearsal-warning-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--copper) 45%, var(--line));
+  background: color-mix(in srgb, var(--copper) 11%, var(--soft));
+  display: grid;
+  gap: 8px;
+}
+
+.rehearsal-warning-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.rehearsal-voices-list {
+  display: grid;
+  gap: 10px;
+}
+
+.rehearsal-voice-card {
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  display: grid;
+  gap: 8px;
+}
+
+.rehearsal-voice-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rehearsal-voice-head strong {
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* Rodapé discreto de versão em Ajustes */
+.settings-version-footer {
+  margin: 18px auto 6px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+}

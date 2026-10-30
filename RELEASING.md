@@ -94,6 +94,6 @@ Execute `node timing/build.mjs` depois dos cinco módulos anteriores. Este sexto
 
 Instale também `npm ci --prefix qa/time-dom --ignore-scripts` para os testes do aplicativo em DOM isolado. `node protection/verify-all.mjs` inclui a nova verificação. As fixtures de geometria não substituem Safari/iOS físico nem conferência visual de dispositivos. O build PWA desta versão é 20261028.70 em index.html e sw.js.
 
-## Paridade final até 1.0.72
+## Paridade final até 1.0.73
 
-Incluídas as correções de distribuição/centralização e a ajuda contextual. Consulte PARIDADE-1.0.72.md. O identificador PWA final é 20261028.72; execute os seis builds pelo verificador.
+Incluídas as correções de distribuição/centralização e a ajuda contextual. Consulte PARIDADE-1.0.73.md. O identificador PWA final é 20261029.73; execute os seis builds pelo verificador.

@@ -1,0 +1,9 @@
+{
+  "name": "seprepare-apple-rehearsal",
+  "version": "1.0.74",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}

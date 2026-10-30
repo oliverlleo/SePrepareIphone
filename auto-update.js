@@ -32,6 +32,7 @@
     if (document.querySelector('.modal-backdrop')) return false;
     if (runtime.audio && String(runtime.audio.state).includes('playing')) return false;
     if (typeof app.isBusyForUpdate === 'function' && app.isBusyForUpdate()) return false;
+    if (window.SePrepareRehearsalRuntime?.isActive?.()) return false;
     const focused = document.activeElement;
     if (focused && focused.matches('input,textarea,select,[contenteditable="true"]')) return false;
     return !app.getState().speeches.some(item =>
