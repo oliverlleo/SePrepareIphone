@@ -34,7 +34,7 @@ autorizações de aplicativos externos em teste podem ter validade reduzida.
 
 - Cookie cifrado, autenticação AES-GCM, nonce aleatório, chave somente na Cloudflare.
 - Credencial vinculada à origem, ao cliente OAuth e à conta confirmada pelo Drive.
-- POST exige origem exata, JSON e cabeçalho próprio. Não há CORS de terceiros.
+- POST exige JSON e cabeçalho próprio, com origem exata verificada por Origin ou, somente quando esse cabeçalho está ausente, pelo Referer HTTPS. Origin estrangeiro/"null", referenciador estrangeiro e metadados cross-site continuam rejeitados. same-site só é aceito após a prova da origem exata. Não há CORS de terceiros.
 - Respostas privadas com `no-store`; o service worker não intercepta esses caminhos.
 - Sem credenciais em URLs, mensagens de erro, logs, localStorage ou IndexedDB.
 - Limites de corpo, tamanho de resposta, validade e tempo das chamadas ao Google.
