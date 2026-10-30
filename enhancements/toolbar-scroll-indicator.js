@@ -1,6 +1,6 @@
 export function mountToolbarIndicator(toolbar){
  const track=document.createElement('div');track.className='toolbar-scroll-indicator';track.hidden=true;track.setAttribute('role','scrollbar');track.setAttribute('aria-orientation','horizontal');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','100');track.setAttribute('aria-label',toolbar.getAttribute('aria-label'));track.tabIndex=0;
- const thumb=document.createElement('span');thumb.className='toolbar-scroll-thumb';track.append(thumb);toolbar.parentElement.after(track);
+ const thumb=document.createElement('span');thumb.className='toolbar-scroll-thumb';track.append(thumb);toolbar.after(track);
  let frame=0,drag=null;
  function update(){frame=0;const max=toolbar.scrollWidth-toolbar.clientWidth;track.hidden=max<=1;if(track.hidden)return;const width=track.clientWidth,size=Math.min(width,Math.max(24,width*toolbar.clientWidth/toolbar.scrollWidth)),left=Math.max(0,Math.min(max,toolbar.scrollLeft))/max*(width-size);thumb.style.width=size+'px';thumb.style.transform='translateX('+left+'px)';track.setAttribute('aria-valuenow',String(Math.round(Math.max(0,toolbar.scrollLeft)/max*100)));}
  const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};
