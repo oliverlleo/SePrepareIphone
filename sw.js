@@ -3,7 +3,7 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261030.75';
+const BUILD_ID = '20261030.77';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
@@ -11,7 +11,7 @@ const CORE_ASSETS = [
   './manifest.webmanifest',
   ...['speech-worker.js','pcm-capture-worklet.js','pcm-resampler.js','ort.wasm.min.js','ort-wasm.wasm','silero_vad.onnx'].map(name=>'./voice/v1.0.74/'+name),
   ...['style.css', 'support.css', 'notes.css', 'drive.css', 'share-code.css', 'legal.css', 'launch-gate.css',
-    'auto-update.js', 'analytics.js', 'launch-gate.js', 'apple-install-guide.js', 'legal-notice.js', 'audio-parity.js', 'audio.css', 'app.js', 'content-index-worker.js'].map(path => versioned('./' + path))
+    'auto-update.js', 'analytics.js', 'launch-gate.js', 'apple-install-guide.js', 'legal-notice.js', 'audio-parity.js', 'audio.css', 'app.js', 'semantic-worker.js', 'content-index-worker.js'].map(path => versioned('./' + path))
 ];
 const CORE_URLS = new Set(CORE_ASSETS.map(path => new URL(path, self.location.href).href));
 const OPTIONAL_ASSETS = [

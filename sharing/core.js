@@ -1,3 +1,4 @@
+import {validateMemorization,copyMemorization} from '../memorization/memorization-data.js';
 import {TIME_MARK_ATTRIBUTE,TIME_POINT_ATTRIBUTE,parseTimeMark} from '../timing/time-mark-core.js';
 import {validateDeletionTombstones} from '../protection/sync-deletions.js';
 import {parseRhythm,RHYTHM_ATTRIBUTE,validateRhythmCatalog} from '../rhythms/rhythm-core.js';
@@ -151,6 +152,7 @@ export function normalizeVersions(s){
   v.timer=normalizeTimer(v.timer);v.timer.versionId=v.id;
   if((v.timer.running||v.timer.elapsedMs)&&!v.timer.contentKey)v.timer.legacy=true;
   v.revision=Math.max(1,Math.floor(Number(v.revision)||1));v.contentKey=versionContentKey(v);
+  if(v.memorization!==undefined)validateMemorization(v.memorization);
  }
  s.versionSchema=1;if(!seen.has(s.activeVersionId))s.activeVersionId=s.versions[0].id;
  projectContentVersion(s);return s;
@@ -167,6 +169,7 @@ export function createContentVersion(s,name,copy=false){
  const source=captureContentVersion(s),now=Date.now(),v={id:uid(),name:String(name).trim().slice(0,80),createdAt:now,updatedAt:now,revision:1,presenterNotes:copy?clone(source.presenterNotes||[]):[],delta:copy?clone(source.delta):{ops:[{insert:'\n'}]},history:[],rehearsals:[],timer:normalizeTimer()};
  if(!v.name)throw Error('Dê um nome à versão.');if(s.versions.length>=1000)throw Error('Esta preparação atingiu o limite de versões.');
  if(isPart(s)){v.partFormat=2;v.participants=clone(source.participants);v.myParticipantId=source.myParticipantId||'';}
+ if(copy&&source.memorization)v.memorization=copyMemorization(source.memorization,{reviews:true});
  v.contentKey=versionContentKey(v);v.timer.versionId=v.id;s.versions.push(v);projectContentVersion(s,v.id);return v;
 }
 export function deleteContentVersion(s,id){
@@ -194,7 +197,7 @@ export function rehearsalContentLabel(record,version){
 }
 export function copyDocumentVersions(s){
  ensureVersions(s);const active=s.activeVersionId;
- for(const v of s.versions){const old=v.id;v.id=uid();if(old===active)s.activeVersionId=v.id;v.history=[];v.rehearsals=[];v.timer={active:false,running:false,elapsedMs:0,startedAt:0,versionId:v.id};}
+ for(const v of s.versions){const old=v.id;v.id=uid();if(old===active)s.activeVersionId=v.id;v.history=[];v.rehearsals=[];if(v.memorization)v.memorization=copyMemorization(v.memorization);v.timer={active:false,running:false,elapsedMs:0,startedAt:0,versionId:v.id};}
  projectContentVersion(s);
 }
 export function pauseAllVersionTimers(s){

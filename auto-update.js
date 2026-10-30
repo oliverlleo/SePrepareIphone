@@ -28,7 +28,7 @@
     if (!app || typeof app.flushForUpdate !== 'function' || document.hidden || navigator.onLine === false) return false;
     if (Date.now() - lastInteraction < 3000) return false;
     const runtime = app.getRuntime();
-    if (!runtime || ['editor', 'part', 'reader'].includes(runtime.view) || runtime.q || runtime.modal) return false;
+    if (!runtime || ['editor', 'part', 'reader', 'memorization'].includes(runtime.view) || runtime.q || runtime.modal) return false;
     if (document.querySelector('.modal-backdrop')) return false;
     if (runtime.audio && String(runtime.audio.state).includes('playing')) return false;
     if (typeof app.isBusyForUpdate === 'function' && app.isBusyForUpdate()) return false;
