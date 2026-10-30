@@ -3,7 +3,7 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261030.74.1';
+const BUILD_ID = '20261030.75';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
@@ -150,6 +150,16 @@ async function cachedResponse(request) {
   const current = await cache.match(request);
   if (current) return current;
   const url = new URL(typeof request === 'string' ? request : request.url, self.location.href);
+  // Runtime workers can be requested without the HTML's version query. Use
+  // this release's precached copy before trying any older executable asset.
+  if (url.origin === self.location.origin && !url.search) {
+    const releaseUrl = new URL(url);
+    releaseUrl.searchParams.set('v', BUILD_ID);
+    if (CORE_URLS.has(releaseUrl.href)) {
+      const releaseAsset = await cache.match(releaseUrl.href);
+      if (releaseAsset) return releaseAsset;
+    }
+  }
   if (/(?:^|\/)(?:app|launch-gate|auto-update|sw)\.js$/i.test(url.pathname)
       || url.searchParams.has('v') || url.searchParams.has('seprepare-check')) return;
   for (const name of await caches.keys()) {

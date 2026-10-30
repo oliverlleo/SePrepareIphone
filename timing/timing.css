@@ -39,3 +39,9 @@ html[data-seprepare-mode=installed][data-seprepare-compact-viewport] .editor-she
 .reader-subtools.icon-only-audio>[data-action="speak"]>span{position:fixed;left:-10000px;top:0;visibility:hidden;white-space:nowrap}
 @media(max-width:359px){.reader-controls{padding-inline:12px}.reader-controls .reader-subtools{gap:3px}}
 @media(min-width:800px){.reader-controls{grid-template-columns:minmax(0,272px) minmax(0,var(--reader-tools-width,1fr));justify-content:center;gap:10px;padding-inline:24px}}
+
+/* Wide editor actions keep their natural text width. Phone portrait stays compact. */
+@media(min-width:601px){
+ .editor-shell .editor-tools .editor-smart-actions .btn{flex:0 0 auto;white-space:nowrap;padding-inline:9px}
+ .editor-shell .editor-tools .editor-smart-actions .btn span{white-space:nowrap;overflow-wrap:normal;max-width:none}
+}
