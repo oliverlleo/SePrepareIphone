@@ -107,7 +107,7 @@ export function segmentIdeaCards(delta,{demonstration=false,vectors=new Map()}={
  const grouped=[];for(const u of units){const prev=grouped.at(-1);if(prev&&prev.speakerId===u.speakerId&&(!demonstration||prev.turnStart===u.turnStart)&&prev.heading===u.heading&&u.end-prev.start<=650&&relatedIdeas(prev,u,vectors)){prev.end=u.end;prev.text=parsed.text.slice(prev.start,prev.end);prev.bold=[...(prev.bold||[]),...(u.bold||[])];}else grouped.push({...u});}
  return{...parsed,units:grouped};
 }
-export function ideaTitle(card,text){if(card.idea||card.type==='manual')return card.theme||card.keywords.slice(0,2).join(' · ');return card.theme||card.keywords.slice(0,2).join(' · ')||text.slice(card.anchor.start,card.anchor.end).split(/[.!?\n]/u)[0].slice(0,100);}
+export function ideaTitle(card,text){return conciseIdea(card,text);}
 export function generateIdeaCards(delta,{existing,demonstration=false,vectors=new Map(),now=Date.now()}={}){
  const {text,blocks,units}=segmentIdeaCards(delta,{demonstration,vectors}),frequency=new Map();
  for(const u of units)for(const key of ideaTerms(u.text))frequency.set(key,(frequency.get(key)||0)+1);
@@ -122,9 +122,72 @@ export function generateIdeaCards(delta,{existing,demonstration=false,vectors=ne
  const next=existing?JSON.parse(JSON.stringify(existing)):freshDeck(text,[],now),byId=new Map(next.cards.map(c=>[c.id,c]));
  for(const c of selected.sort((a,b)=>a.anchor.start-b.anchor.start)){delete c.score;if(!byId.has(c.id)&&byId.size<MAX_CARDS)byId.set(c.id,c);}
  next.cards=[...byId.values()].map(c=>{if(!isLiveCard(c))return c;const found=resolveAnchor(text,c.anchor,blocks);const changedSpeaker=found&&demonstration&&c.speakerId!==undefined&&blocks.some(b=>b.start<found.end&&b.end>found.start&&b.speakerId!==c.speakerId);return found?{...c,anchor:makeAnchor(text,found.start,found.end),needsReview:!!changedSpeaker}:{...c,needsReview:true};});
+ next.ideaBank=selected.map(c=>c.id).filter(id=>byId.has(id));next.ideaEngine=2;
  next.sourceHash=textHash(text);next.sourceRawHash=memoryHash(text);next.ideaSource=ideaSourceKey(delta,demonstration);next.updatedAt=now;return next;
 }
 export function ideaCardsForScope(deck,delta,{demonstration=false,scope=[]}={}){
  const blocks=memoryIdeaBlocks(delta,demonstration).blocks,allowed=new Set(scope);
- const all=orderedMemoryCards(deck),hasIdeas=all.some(c=>c.idea);const cards=all.filter(c=>c.idea||c.type==='manual'||!hasIdeas);return cards.filter(c=>{if(!demonstration)return true;const covered=blocks.filter(b=>b.start<c.anchor.end&&b.end>c.anchor.start);return covered.length>0&&covered.every(b=>allowed.has(b.speakerId)&&(c.speakerId===undefined||c.speakerId===b.speakerId));});
+ const all=orderedMemoryCards(deck),active=deck.ideaBank?.length?new Set(deck.ideaBank):null,hasIdeas=all.some(c=>c.idea);const cards=all.filter(c=>c.type==='manual'||c.id.startsWith('manual-')||(active?active.has(c.id):c.idea||!hasIdeas));return cards.filter(c=>{if(!demonstration)return true;const covered=blocks.filter(b=>b.start<c.anchor.end&&b.end>c.anchor.start);return covered.length>0&&covered.every(b=>allowed.has(b.speakerId)&&(c.speakerId===undefined||c.speakerId===b.speakerId));});
+}
+
+// Evidence-based cue extraction. MiniLM assists segmentation, never invents prose.
+const cueVerbs=new Set('é são foi era eram será serão tem têm tinha recebeu recebe receber deu dar faz fazer seja pode deve permite ajuda envolve exige aumenta reduz fortalece facilita compreender perceber identificar ajustar manter explicar desenvolver orienta reúne apresenta consiste significa pertencem pertence fizeram feito praticar preparar ensaiar organizar usar falar lembrar tomar is are was were has have helps allows means es son fue permite ayuda tiene'.split(' '));
+const cueWords=s=>tokens(String(s));
+const cueClean=s=>String(s).replace(/^[\s“”"'«»]+|[\s“”"'«».,;:!?]+$/gu,'').replace(/^(?:a|o|as|os|um|uma|the|el|la|los|las)\s+/iu,'').trim();
+const cueValid=s=>{const w=cueWords(s);return w.length>0&&w.length<=4&&s.length<=80&&w.some(x=>!stop.has(normalized(x.text)))&&!w.some(x=>cueVerbs.has(x.text.toLocaleLowerCase()))&&!/[.!?;,·\n]/u.test(s)&&!/^(?:nesta|neste|nessa|nesse|esse|essa|esta|este|isso|this part|o assunto)\s/iu.test(s);};
+export function conciseIdea(card,text){
+ const raw=text.slice(card.anchor.start,card.anchor.end),candidates=[],add=(value,score)=>{const s=cueClean(value);if(cueValid(s))candidates.push({text:s,score});};
+ if(card.type==='manual'||card.id.startsWith('manual-')){const own=cueClean(card.theme||'');if(cueValid(own))return own;}
+ const heading=cueClean(card.theme||''),hw=cueWords(heading);if(hw.length>0&&hw.length<=4&&!/[.!?;,·\n]/u.test(heading)&&hw.some(w=>!stop.has(normalized(w.text)))&&!hw.some(w=>cueVerbs.has(w.text.toLocaleLowerCase())&&!/(?:ar|er|ir)$/iu.test(w.text)))candidates.push({text:heading,score:20});
+ // Complete nominal subjects, quantified concepts and emphasized spans carry more
+ // meaning than truncating the first words of a sentence.
+ for(const match of raw.matchAll(/(?:^|[.!?]\s+)([^.!?\n]{2,70}?)\s+(?:é|são|significa|consiste|permite|ajuda|fortalece|reduz|aumenta|is|means|es|son)(?=\s|[.,;:]|$)/giu))add(match[1],17);
+ for(const match of raw.matchAll(/\b(?:tod[oa]s?|nenhum[a]?|cada)\s+(?:(?:a|o|as|os)\s+)?[\p{L}][\p{L}\p{M}-]*(?:\s+(?:de|do|da)\s+[\p{L}][\p{L}\p{M}-]*)?/giu))add(match[0],18);
+ for(const k of card.keywords||[])add(k,5);
+ const words=cueWords(raw),counts=new Map();for(const w of words){const n=normalized(w.text);counts.set(n,(counts.get(n)||0)+1);}
+ for(let i=0;i<words.length;i++){
+  const w=words[i],key=normalized(w.text);if(stop.has(key)||cueVerbs.has(w.text.toLocaleLowerCase())||w.text.length<3||/^\d+$/u.test(w.text))continue;
+  // Infinitives and adverbs usually describe an action, not its central concept.
+  const nominal=/[çc][aã]o$|[çc][oõ]es$|dade$|dades$|mento$|mentos$|ncia$|ncias$|ança$|tude$|tudes$|logia$|ismo$/iu.test(w.text),base=(counts.get(key)||1)*1.5+(nominal?4:0)-(/(?:ar|er|ir|mente)$/iu.test(w.text)&&!nominal?4:0)+(i<8?1:0);
+  add(w.text,base);
+  for(let n=2;n<=4&&i+n<=words.length;n++){const end=words[i+n-1],part=raw.slice(w.offset,end.offset+end.text.length);if(/[.!?;,:\n]/u.test(part)||stop.has(normalized(end.text)))continue;const meaningful=words.slice(i,i+n).filter(x=>!stop.has(normalized(x.text)));if(meaningful.length>2)continue;add(part,base+.5*meaningful.length-(n>2&&meaningful.length===n?3:0));}
+ }
+ candidates.sort((a,b)=>b.score-a.score||a.text.length-b.text.length||raw.indexOf(a.text)-raw.indexOf(b.text));
+ return candidates[0]?.text||cueWords(raw).find(w=>!stop.has(normalized(w.text)))?.text||cueWords(raw)[0]?.text||'Ideia';
+}
+const hintPatterns=[
+ ['contrast',/\b(?:mas|porém|entretanto|enquanto|diferente|contrário|não significa|não é|but|whereas|pero|sin embargo)(?=\s|[.,;:]|$)/iu],
+ ['cause',/\b(?:porque|por isso|por causa|consequência|portanto|resulta|permite|ajuda|aumenta|reduz|because|therefore|allows|porque|por eso)\b/iu],
+ ['example',/\b(?:por exemplo|imagine|pense em|como se|comparação|for example|imagine|por ejemplo)\b/iu],
+ ['steps',/\b(?:primeiro|segundo|depois|etapas|passos|por fim|first|next|steps|primero|después)\b/iu],
+ ['definition',/(?:^|\s)(?:é|significa|consiste|refere-se|is|means|es|significa)(?=\s|[.,;:]|$)/iu]
+];
+const hintTemplates={
+ contrast:['Lembre dos dois lados que o trecho coloca em contraste.','Que diferença faz a ligação entre esses dois lados?'],
+ cause:['Pense na relação entre o que acontece e o seu motivo ou resultado.','Retome mentalmente: o que leva a quê nesta parte?'],
+ example:['Lembre da situação usada para tornar a ideia mais concreta.','Como essa situação ajuda a explicar o assunto?'],
+ steps:['Reconstrua a ordem do raciocínio: começo, desenvolvimento e chegada.','Qual passo prepara o seguinte nesta parte?'],
+ definition:['Pense no significado do conceito, sem tentar repetir a frase.','Como você explicaria esse conceito a alguém que não o conhece?'],
+ idea:['Lembre da função desta parte na sequência do discurso.','Que pensamento ela desenvolve e como se liga ao que vem depois?']
+};
+export function memoryIdeaHint(card,text,{step=0,t=s=>s}={}){
+ const raw=text.slice(card.anchor.start,card.anchor.end),kind=hintPatterns.find(([,re])=>re.test(raw))?.[0]||'idea';
+ // A relational retrieval prompt, never a substring, cloze answer or paraphrased
+ // conclusion. Reject coincidental substantial quotations from short sources.
+ const choices=[...hintTemplates[kind],...hintTemplates.idea];let chosen=t(choices[Math.min(step,1)]);
+ // More specific retrieval frames require explicit evidence. A transfer is not a
+ // definition, and a practical example should evoke its setting, not its conclusion.
+ if(/\b(?:recebeu|receber|recebe|concedeu|concedido|dado|delegou|received|recibió)(?=\s|[.,;:]|$)/iu.test(raw))chosen=t(step===0?'Lembre da relação entre quem recebe e quem concede.':'O fato de receber algo ajuda a distinguir quais papéis nesta parte?');
+ else if(/\b(?:ensaiar|ensaio|prática|praticar|rehearsal|practice|ensayo)(?=\s|[.,;:]|$)/iu.test(raw)&&kind==='cause'&&!/ensaio|prática|rehearsal|practice|ensayo/iu.test(ideaTitle(card,text)))chosen=t(step===0?'Lembre do efeito da prática sobre o assunto deste trecho.':'Pense no que muda depois de praticar e na razão dessa mudança.');
+ else if(kind==='example'){
+  const cue=new Set(cueWords(normalized(ideaTitle(card,text))).map(w=>w.text)),context=raw.match(/\b(?:empresa|família|escola|viagem|ponte|casa|semente|árvore|caminho|corpo|jardim|company|school|family|garden)(?=\s|[.,;:]|$)/iu)?.[0];
+  if(context&&!cue.has(normalized(context)))chosen=t(step===0?'Relembre o cenário do exemplo: {context}.':'Qual ligação existe entre {context} e o assunto desta parte?').replace('{context}',context);
+ }
+ const copied=s=>{const a=cueWords(normalized(s)).map(w=>w.text),b=' '+cueWords(normalized(raw)).map(w=>w.text).join(' ')+' ';return a.some((_,i)=>a.length-i>=4&&b.includes(' '+a.slice(i,i+4).join(' ')+' '));};
+ if(copied(chosen))chosen=t('Faça uma pausa e reconstrua mentalmente a ligação desta parte com o discurso.');
+ return {kind,text:chosen};
+}
+export function memorySplitPoints(card,text){const raw=text.slice(card.anchor.start,card.anchor.end),points=new Set(sentenceSpans(raw).map(s=>s.offset+s.length));for(const m of raw.matchAll(/\n+/gu))points.add(m.index+m[0].length);return [...points].filter(n=>raw.slice(0,n).trim().length>=8&&raw.slice(n).trim().length>=8).sort((a,b)=>a-b);}
+export function ideaTrainingSections(cards,blocks){
+ const map=new Map();let bi=0,heading=null,ordinal=0;for(const card of [...cards].sort((a,b)=>a.anchor.start-b.anchor.start)){while(bi<blocks.length&&blocks[bi].start<=card.anchor.start){if(blocks[bi].attrs.header)heading=blocks[bi];bi++;}const evidence=blocks.filter(b=>!b.attrs.header&&b.start<card.anchor.end&&b.end>card.anchor.start).map(b=>b.text).join(' ');map.set(card.id,{id:(heading?'heading-'+heading.start:'section-'+Math.floor(ordinal/3))+'|'+(card.speakerId||''),title:heading?.text||'',start:heading?.start||0,terms:[...ideaTerms(evidence)].slice(0,80)});ordinal++;}return map;
 }
