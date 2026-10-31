@@ -1,3 +1,5 @@
+import {generateMemoryCards} from '../memorization/memorization-generator.js';
+import {addMemoryReview} from '../memorization/memorization-data.js';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
@@ -14,7 +16,7 @@ let release='old';const server=createServer({sourceForRequest:({url})=>release==
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
 const {browser,close:closeBrowser}=await isolatedWebKit();const context=await browser.newContext({...devices['iPhone 13'],locale:'pt-BR'}),screens=path.join(root,'tests/qa-output/drive-iphone');mkdirSync(screens,{recursive:true});
 const checks=[],errors=[];let success=false;
-const document=newSpeech();document.id='legacy-real-upgrade';document.title='Meu discurso antes da atualização';document.delta={ops:[{insert:'Texto preservado da instalação anterior.\n',attributes:{bold:true}}]};ensureVersions(document);captureContentVersion(document);
+const document=newSpeech();document.id='legacy-real-upgrade';document.title='Meu discurso antes da atualização';document.delta={ops:[{insert:'Texto preservado da instalação anterior.\n',attributes:{bold:true}}]};ensureVersions(document);captureContentVersion(document);document.versions[0].memorization=generateMemoryCards(document.delta);const legacyDeck=document.versions[0].memorization;if(legacyDeck.cards.length)addMemoryReview(legacyDeck,legacyDeck.cards[0],2);
 const state={schema:1,contentVersion:2,speeches:[document],categories:[],settings:{theme:'light',language:'pt-BR'},vocabulary:['SePrepare']};
 const check=message=>{checks.push(message);console.log('PASS',message);};
 try{
@@ -48,6 +50,7 @@ try{
  const uploads=await page.evaluate(()=>navigator.serviceWorker.getRegistrations());assert(uploads.length);await context.setOffline(true);await page.reload();await page.waitForFunction(()=>window.orador);assert.deepEqual((await page.evaluate(()=>window.orador.getState())).speeches,before.speeches);assert.equal(await page.locator('[data-drive-document]').count(),1);await page.screenshot({path:path.join(screens,'upgrade-preserved-offline.png')});check('Após atualizar, a nova versão reabre offline com o caderno e a nuvem no card.');
  const offlineWorker=await page.evaluate(async()=>{const response=await fetch('./content-index-worker.js');return {status:response.status,type:response.headers.get('Content-Type')};});
  assert.equal(offlineWorker.status,200);assert.match(offlineWorker.type,/javascript/);check('Worker de indexação sem query de versão usa o código da versão atual também offline.');
+ await page.clock.resume();await page.locator('.speech-card [data-action="speech-menu"]').click();await page.locator('[data-action="memory-open"]').click();await page.waitForSelector('.memory-idea-card',{timeout:25000});assert((await page.evaluate(()=>window.orador.getState())).speeches[0].versions[0].memorization.reviews.length>=1);await page.locator('[data-action="memory-mark-remember"]').click();assert.equal(await page.evaluate(()=>window.orador.flushForUpdate()),true);await page.reload();await page.waitForFunction(()=>window.orador);assert((await page.evaluate(()=>window.orador.getState())).speeches[0].versions[0].memorization.ideaRounds.some(r=>r.answers.length));check('PWA atualizado gera ideias offline, conserva avaliações antigas e persiste a nova rodada após reabrir.');
  assert.deepEqual(errors,[]);success=true;
 }finally{
  writeFileSync(path.join(root,'QA-drive-iphone-upgrade-1.0.56.json'),JSON.stringify({success,checks,errors,engine:'WebKit',realIPhone:false,realServiceWorker:true,googleServices:'simulated'},null,2));await closeBrowser();await new Promise(resolve=>server.close(resolve));
