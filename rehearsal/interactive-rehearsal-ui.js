@@ -866,7 +866,7 @@ export function createInteractiveRehearsalUI({
     if (!controller.isActive()) return;
     const s = getActive?.();
     if (
-      rt.view !== 'reader' ||
+      (rt.view !== 'reader' && !(rt.view === 'memorization' && controller.getSnapshot().state === 'paused')) ||
       !s ||
       s.id !== trackedSpeechId ||
       String(s.activeVersionId || 'default') !== trackedVersionId ||

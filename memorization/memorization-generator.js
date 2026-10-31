@@ -83,3 +83,48 @@ export function generateMemoryCards(delta,{existing,t=s=>s,vectors=new Map(),now
  if(next.order){const ids=orderedMemoryCards(next,{includeUnlinked:true}).map(c=>c.id);next.order={ids,at:now,id:'order-'+memoryHash(ids.join(':')+now)};}
  return next;
 }
+
+// Idea-card flow: no automatic question templates. Original passages remain the evidence.
+export function memoryIdeaBlocks(delta,demonstration=false){
+ const parsed=memoryBlocks(delta);if(!demonstration)return{...parsed,blocks:parsed.blocks.map(b=>({...b,speakerId:''}))};
+ const ranges=[];let offset=0;
+ for(const op of delta?.ops||[]){const value=typeof op.insert==='string'?op.insert:'\n';let speakerId=op.attributes?.speaker||'';if(!speakerId&&ranges.length&&!value.trim())speakerId=ranges.at(-1).speakerId;const last=ranges.at(-1);if(last?.speakerId===speakerId)last.end+=value.length;else ranges.push({start:offset,end:offset+value.length,speakerId});offset+=value.length;}
+ const blocks=[];let cursor=0;for(const b of parsed.blocks){while(cursor<ranges.length&&ranges[cursor].end<=b.start)cursor++;for(let ri=cursor;ri<ranges.length;ri++){const r=ranges[ri];if(r.end<=b.start)continue;if(r.start>=b.end)break;let start=Math.max(b.start,r.start),end=Math.min(b.end,r.end);while(start<end&&/\s/u.test(parsed.text[start]))start++;while(end>start&&/\s/u.test(parsed.text[end-1]))end--;if(end>start)blocks.push({...b,start,end,text:parsed.text.slice(start,end),hash:textHash(parsed.text.slice(start,end)),speakerId:r.speakerId,turnStart:r.start});}}
+ return{...parsed,blocks};
+}
+export function ideaSourceKey(delta,demonstration=false){const parsed=memoryIdeaBlocks(delta,demonstration);return demonstration?memoryHash(JSON.stringify([parsed.text,parsed.blocks.map(b=>[b.start,b.end,b.speakerId])])):memoryHash(parsed.text);}
+const ideaTerms=s=>new Set(tokens(s).filter(w=>w.text.length>2&&!stop.has(normalized(w.text))).map(w=>normalized(w.text)));
+function relatedIdeas(a,b,vectors){const left=ideaTerms(a.text),right=ideaTerms(b.text),common=[...right].filter(w=>left.has(w)).length;
+ return common>=2||/^(?:isso|essa|esse|esta|este|portanto|por isso|assim|this|therefore|esto|por eso|そのため)/iu.test(b.text)||a.heading&&a.heading===b.heading||vectors.get(a.start)&&vectors.get(b.start)&&cosine(vectors.get(a.start),vectors.get(b.start))>.68;
+}
+export function segmentIdeaCards(delta,{demonstration=false,vectors=new Map()}={}){
+ const parsed=memoryIdeaBlocks(delta,demonstration),units=[];
+ for(const b of parsed.blocks){if(b.attrs.header||courtesy(b.text)||tokens(b.text).length<2)continue;
+  // Keep reasoning together. Only very long paragraphs need sentence-boundary chunks.
+  const sentences=safeSentences(b);let chunk=null;
+  for(const sentence of sentences){if(chunk&&sentence.end-chunk.start<=650){chunk.end=sentence.end;chunk.text=parsed.text.slice(chunk.start,chunk.end);}else{if(chunk)units.push(chunk);chunk={...b,...sentence};}}if(chunk)units.push(chunk);
+ }
+ const grouped=[];for(const u of units){const prev=grouped.at(-1);if(prev&&prev.speakerId===u.speakerId&&(!demonstration||prev.turnStart===u.turnStart)&&prev.heading===u.heading&&u.end-prev.start<=650&&relatedIdeas(prev,u,vectors)){prev.end=u.end;prev.text=parsed.text.slice(prev.start,prev.end);prev.bold=[...(prev.bold||[]),...(u.bold||[])];}else grouped.push({...u});}
+ return{...parsed,units:grouped};
+}
+export function ideaTitle(card,text){if(card.idea||card.type==='manual')return card.theme||card.keywords.slice(0,2).join(' · ');return card.theme||card.keywords.slice(0,2).join(' · ')||text.slice(card.anchor.start,card.anchor.end).split(/[.!?\n]/u)[0].slice(0,100);}
+export function generateIdeaCards(delta,{existing,demonstration=false,vectors=new Map(),now=Date.now()}={}){
+ const {text,blocks,units}=segmentIdeaCards(delta,{demonstration,vectors}),frequency=new Map();
+ for(const u of units)for(const key of ideaTerms(u.text))frequency.set(key,(frequency.get(key)||0)+1);
+ const pool=[],seen=new Set();for(const unit of units){const keys=memoryKeywords(unit,frequency).slice(0,3);if(!keys.length)continue;const anchor=makeAnchor(text,unit.start,unit.end),id='idea-'+memoryHash((unit.speakerId||'')+':'+anchor.hash);if(seen.has(id))continue;seen.add(id);
+  const theme=(unit.heading||keys.slice(0,2).join(' · ')).slice(0,140),score=keys.reduce((n,k)=>n+(frequency.get(normalized(k))||1),0)+(unit.bold?.length?2:0)+(/^(?:portanto|em resumo|in conclusion|en resumen|まとめ)/iu.test(unit.text)?3:0);
+  pool.push({id,type:'idea',idea:true,question:'',theme,keywords:keys,hints:[],anchor,speakerId:unit.speakerId||'',updatedAt:now,score});
+ }
+ // Bound a reusable bank, balancing sections and the full range instead of taking its beginning.
+ const sections=new Map();for(const c of pool){const key=c.speakerId+'|'+c.theme;if(!sections.has(key))sections.set(key,[]);sections.get(key).push(c);}
+ const selected=pool.length<=48?pool:[];
+ if(pool.length>48)for(let i=0;i<48;i++){const start=Math.floor(i*pool.length/48),end=Math.floor((i+1)*pool.length/48);selected.push(pool.slice(start,end).sort((a,b)=>b.score-a.score||a.anchor.start-b.anchor.start)[0]);}
+ const next=existing?JSON.parse(JSON.stringify(existing)):freshDeck(text,[],now),byId=new Map(next.cards.map(c=>[c.id,c]));
+ for(const c of selected.sort((a,b)=>a.anchor.start-b.anchor.start)){delete c.score;if(!byId.has(c.id)&&byId.size<MAX_CARDS)byId.set(c.id,c);}
+ next.cards=[...byId.values()].map(c=>{if(!isLiveCard(c))return c;const found=resolveAnchor(text,c.anchor,blocks);const changedSpeaker=found&&demonstration&&c.speakerId!==undefined&&blocks.some(b=>b.start<found.end&&b.end>found.start&&b.speakerId!==c.speakerId);return found?{...c,anchor:makeAnchor(text,found.start,found.end),needsReview:!!changedSpeaker}:{...c,needsReview:true};});
+ next.sourceHash=textHash(text);next.sourceRawHash=memoryHash(text);next.ideaSource=ideaSourceKey(delta,demonstration);next.updatedAt=now;return next;
+}
+export function ideaCardsForScope(deck,delta,{demonstration=false,scope=[]}={}){
+ const blocks=memoryIdeaBlocks(delta,demonstration).blocks,allowed=new Set(scope);
+ const all=orderedMemoryCards(deck),hasIdeas=all.some(c=>c.idea);const cards=all.filter(c=>c.idea||c.type==='manual'||!hasIdeas);return cards.filter(c=>{if(!demonstration)return true;const covered=blocks.filter(b=>b.start<c.anchor.end&&b.end>c.anchor.start);return covered.length>0&&covered.every(b=>allowed.has(b.speakerId)&&(c.speakerId===undefined||c.speakerId===b.speakerId));});
+}
