@@ -28,6 +28,8 @@ export function validateMemorization(deck){
  if(deck.order!==undefined)require(deck.order&&Array.isArray(deck.order.ids)&&deck.order.ids.length<=MAX_CARDS&&deck.order.ids.every(validId)&&stamp(deck.order.at)&&validId(deck.order.id));
  if(deck.session!==undefined){const s=deck.session;require(s&&validId(s.id)&&stamp(s.updatedAt)&&['normal','difficult'].includes(s.mode)&&Array.isArray(s.queue)&&s.queue.length<=MAX_CARDS*3&&s.queue.every(validId)&&Number.isSafeInteger(s.position)&&s.position>=0&&s.position<=s.queue.length&&Array.isArray(s.answers)&&s.answers.length<=MAX_CARDS*3&&s.answers.every(validId));}
  if(deck.ideaSource!==undefined)require(digest(deck.ideaSource));
+ if(deck.ideaEngine!==undefined)require(deck.ideaEngine===2);
+ if(deck.ideaBank!==undefined)require(Array.isArray(deck.ideaBank)&&deck.ideaBank.length<=MAX_CARDS&&deck.ideaBank.every(validId)&&new Set(deck.ideaBank).size===deck.ideaBank.length);
  if(deck.ideaRounds!==undefined){require(Array.isArray(deck.ideaRounds)&&deck.ideaRounds.length<=10000);const rounds=new Set();for(const r of deck.ideaRounds){validateIdeaRound(r);require(!rounds.has(r.id));rounds.add(r.id);}}
  return deck;
 }
@@ -70,6 +72,7 @@ export function mergeMemorization(left,right){
  const order=winner(left.order,right.order,'at');if(order)result.order=clone(order);
  const session=winner(left.session,right.session);if(session)result.session=clone(session);
  const source=winner(left.ideaSource?left:null,right.ideaSource?right:null);if(source)result.ideaSource=source.ideaSource;
+ const bank=winner(left.ideaBank?left:null,right.ideaBank?right:null);if(bank){result.ideaBank=clone(bank.ideaBank);result.ideaEngine=2;}
  if(left.ideaRounds||right.ideaRounds){const rounds=new Map();for(const r of [...left.ideaRounds||[],...right.ideaRounds||[]])rounds.set(r.id,mergeIdeaRound(rounds.get(r.id),r));result.ideaRounds=[...rounds.values()].sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
  validateMemorization(result);return result;
 }
@@ -100,16 +103,18 @@ export function copyMemorization(deck,{reviews=false}={}){if(!deck)return undefi
 // New rounds are additive. Legacy cards, sessions and review events are retained.
 export function validateIdeaRound(r){
  require(r&&validId(r.id)&&stamp(r.at)&&stamp(r.updatedAt)&&digest(r.sourceHash)&&Array.isArray(r.scope)&&r.scope.length<=50&&r.scope.every(id=>string(id,100))&&new Set(r.scope).size===r.scope.length);
- require(Array.isArray(r.entries)&&r.entries.length>0&&r.entries.length<=12&&r.entries.every(e=>e&&validId(e.cardId)&&digest(e.anchorHash))&&new Set(r.entries.map(e=>e.cardId)).size===r.entries.length);
- require(Array.isArray(r.answers)&&r.answers.length<=2000);const ids=new Set();for(const a of r.answers){require(a&&validId(a.id)&&!ids.has(a.id)&&stamp(a.at)&&Number.isInteger(a.index)&&a.index>=0&&a.index<r.entries.length&&[0,2].includes(a.rating));ids.add(a.id);}
- require(r.cursor&&validId(r.cursor.id)&&stamp(r.cursor.at)&&Number.isInteger(r.cursor.index)&&r.cursor.index>=0&&r.cursor.index<r.entries.length);require(r.finishedAt===undefined||stamp(r.finishedAt));return r;
+ require(Array.isArray(r.entries)&&r.entries.length>0&&r.entries.length<=(r.training===2?MAX_CARDS:12)&&r.entries.every(e=>e&&validId(e.cardId)&&digest(e.anchorHash))&&new Set(r.entries.map(e=>e.cardId)).size===r.entries.length);
+ require(Array.isArray(r.answers)&&r.answers.length<=6000);const ids=new Set();for(const a of r.answers){require(a&&validId(a.id)&&!ids.has(a.id)&&stamp(a.at)&&Number.isInteger(a.index)&&a.index>=0&&a.index<r.entries.length&&(r.training===2?[0,1,2]:[0,2]).includes(a.rating));ids.add(a.id);}
+ require(r.cursor&&validId(r.cursor.id)&&stamp(r.cursor.at)&&Number.isInteger(r.cursor.index)&&r.cursor.index>=0&&r.cursor.index<(r.training===2?r.groups?.length:r.entries.length));require(r.finishedAt===undefined||stamp(r.finishedAt));
+ if(r.training!==undefined){require(r.training===2&&[1,2,3,4].includes(r.level)&&Array.isArray(r.groups)&&r.groups.length>0&&r.groups.length<=MAX_CARDS);const flat=r.groups.flat();require(r.groups.every(g=>Array.isArray(g)&&g.length>0&&g.every(i=>Number.isInteger(i)&&i>=0&&i<r.entries.length))&&flat.length===r.entries.length&&new Set(flat).size===flat.length&&flat.every((v,i)=>v===i));require(Array.isArray(r.signals)&&r.signals.length<=12000);const seen=new Set();for(const s of r.signals){require(s&&validId(s.id)&&!seen.has(s.id)&&stamp(s.at)&&Number.isInteger(s.index)&&s.index>=0&&s.index<r.entries.length&&['hint','reveal','difficult'].includes(s.kind));seen.add(s.id);}}
+ return r;
 }
 export function mergeIdeaRound(a,b){
  if(!a)return clone(validateIdeaRound(b));validateIdeaRound(a);validateIdeaRound(b);
  // An ID denotes one immutable selection. Conflicting payloads must not silently mix answers.
- require(memoryStable([a.scope,a.entries,a.sourceHash,a.at])===memoryStable([b.scope,b.entries,b.sourceHash,b.at]));
+ require(memoryStable([a.scope,a.entries,a.sourceHash,a.at,a.training,a.level,a.groups])===memoryStable([b.scope,b.entries,b.sourceHash,b.at,b.training,b.level,b.groups]));
  const next=clone(winner(a,b)),answers=new Map();for(const answer of [...a.answers,...b.answers])answers.set(answer.id,winner(answers.get(answer.id),answer,'at'));
- next.answers=[...answers.values()].map(clone).sort((x,y)=>x.at-y.at||x.id.localeCompare(y.id));next.cursor=clone(winner(a.cursor,b.cursor,'at'));const finished=Math.max(a.finishedAt||0,b.finishedAt||0);if(finished)next.finishedAt=finished;next.updatedAt=Math.max(a.updatedAt,b.updatedAt);return validateIdeaRound(next);
+ next.answers=[...answers.values()].map(clone).sort((x,y)=>x.at-y.at||x.id.localeCompare(y.id));if(a.training===2){const signals=new Map();for(const s of [...a.signals,...b.signals])signals.set(s.id,winner(signals.get(s.id),s,'at'));next.signals=[...signals.values()].map(clone).sort((x,y)=>x.at-y.at||x.id.localeCompare(y.id));}next.cursor=clone(winner(a.cursor,b.cursor,'at'));const finished=Math.max(a.finishedAt||0,b.finishedAt||0);if(finished)next.finishedAt=finished;next.updatedAt=Math.max(a.updatedAt,b.updatedAt);return validateIdeaRound(next);
 }
 export const ideaScopeKey=scope=>JSON.stringify([...scope].sort());
 export function ideaRoundResult(round){
@@ -138,4 +143,61 @@ export function recordIdeaAnswer(deck,round,index,rating,at=Date.now()){
  if(![0,2].includes(rating)||!round.entries[index])throw Error('Avaliação inválida.');if(round.answers.length>=2000)throw Error('Esta rodada atingiu o limite de avaliações.');
  const entry=round.entries[index],card=deck.cards.find(c=>c.id===entry.cardId);if(!card||card.anchor.hash!==entry.anchorHash)throw Error('O trecho mudou. Inicie uma nova rodada.');
  const review=addMemoryReview(deck,card,rating,at);round.answers.push({id:review.id,at,index,rating});round.updatedAt=at;return review;
+}
+
+export const trainingGroup=(r,index=r.cursor.index)=>r.training===2?r.groups[index]:[index];
+export function trainingResult(r){
+ const latest=ideaRoundResult(r).answers,signalSets={hint:new Set(),reveal:new Set(),difficult:new Set()};
+ for(const s of r.signals||[])signalSets[s.kind]?.add(s.index);
+ const assisted=new Set([...signalSets.hint,...signalSets.reveal]),difficult=new Set([...signalSets.difficult,...[...latest].filter(([,a])=>a.rating===0).map(([i])=>i)]);
+ const independent=[...latest].filter(([i,a])=>a.rating===2&&!assisted.has(i)&&!difficult.has(i)).length;
+ const independentPercent=latest.size?Math.round(100*independent/latest.size):null;
+ return{...ideaRoundResult(r),...(r.training===2?{percent:independentPercent,remembered:independent}:{}),independent,hinted:signalSets.hint.size,consulted:signalSets.reveal.size,difficult:difficult.size,assisted:assisted.size,independentPercent};
+}
+export function recordTrainingSignal(deck,r,kind,at=Date.now()){
+ if(r.training!==2||!['hint','reveal','difficult'].includes(kind))throw Error('Treino inválido.');
+ const indices=trainingGroup(r),existing=new Set(r.signals.filter(s=>s.kind===kind).map(s=>s.index));if(r.signals.length+indices.filter(i=>!existing.has(i)).length>12000)throw Error('Limite de registros deste treino.');
+ for(const index of indices)if(!existing.has(index))r.signals.push({id:memoryId(),at,index,kind});
+ r.updatedAt=Math.max(at,r.updatedAt);deck.updatedAt=Math.max(at,deck.updatedAt+1);
+}
+export function completeTrainingGroup(deck,r,at=Date.now()){
+ const stats=trainingResult(r),cards=new Map(deck.cards.map(c=>[c.id,c])),signalsByIndex=new Map();for(const s of r.signals){if(!signalsByIndex.has(s.index))signalsByIndex.set(s.index,[]);signalsByIndex.get(s.index).push(s);}
+ for(const index of trainingGroup(r)){
+  const entry=r.entries[index],card=cards.get(entry.cardId);if(!card||card.anchor.hash!==entry.anchorHash||!isLiveCard(card)||card.needsReview)continue;
+  const old=stats.answers.get(index);if(old)continue; // Navigation/back cannot manufacture extra successful reviews.
+  const signals=signalsByIndex.get(index)||[],rating=signals.some(s=>s.kind==='difficult')?0:signals.length?1:2;
+  if(r.answers.length>=6000)throw Error('Limite de avaliações deste treino.');const review=addMemoryReview(deck,card,rating,at);r.answers.push({id:review.id,at,index,rating});
+ }r.updatedAt=at;
+}
+export function adaptiveTrainingLevel(deck,pool,scope){
+ const valid=new Map(pool.map(c=>[c.id,c.anchor.hash])),rows=(deck.ideaRounds||[]).filter(r=>r.training===2&&r.finishedAt&&ideaScopeKey(r.scope)===ideaScopeKey(scope)&&r.entries.every(e=>valid.get(e.cardId)===e.anchorHash)).sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));
+ let level=1;const successes=new Map(),coverage=new Set();
+ for(const r of rows){const result=trainingResult(r);if(r.level!==level)continue;
+  if(result.independentPercent>=80&&result.answered===result.total&&!result.difficult){successes.set(level,(successes.get(level)||0)+1);for(const e of r.entries)coverage.add(e.cardId);if(successes.get(level)>=2&&coverage.size>=Math.ceil(pool.length*.7)){level=Math.min(4,level+1);coverage.clear();}}
+  else if(result.difficult>result.total/2){level=Math.max(1,level-1);successes.delete(level);coverage.clear();}
+ }
+ return pool.length<2?1:level;
+}
+export function selectAdaptiveRound(deck,pool,scope=[],sections=new Map(),now=Date.now()){
+ const unique=[...new Map(pool.filter(c=>isLiveCard(c)&&!c.needsReview).map(c=>[c.id,c])).values()];if(!unique.length)return null;
+ const level=adaptiveTrainingLevel(deck,unique,scope),base=selectIdeaRound(deck,unique,scope,now),seed=memoryId(),scoped=(deck.ideaRounds||[]).filter(r=>ideaScopeKey(r.scope)===ideaScopeKey(scope)),used=new Map(),help=new Map();
+ for(const r of scoped){for(const e of r.entries)used.set(e.cardId,(used.get(e.cardId)||0)+1);if(r.training===2)for(const s of r.signals){const e=r.entries[s.index];if(e)help.set(e.cardId,Math.max(help.get(e.cardId)||0,s.at));}}
+ const rows=unique.map(c=>{const schedule=cardSchedule(deck,c,now),recentHelp=(help.get(c.id)||0)>now-86400000*3;return {c,schedule,priority:(schedule.difficult?100:0)+(recentHelp?40:0)+(schedule.dueNow?20:0)+(schedule.count?0:15),tie:memoryHash(c.id+seed)};}).sort((a,b)=>b.priority-a.priority||(used.get(a.c.id)||0)-(used.get(b.c.id)||0)||a.tie.localeCompare(b.tie));
+ let selected;
+ if(level===4)selected=[...unique];
+ else{
+  const size=Math.min(8,unique.length>2?Math.max(2,Math.ceil(unique.length*.6)):unique.length),prioritySlots=Math.max(1,Math.floor(size*.7));selected=rows.slice(0,prioritySlots).map(x=>x.c);
+  // Always reserve coverage for other parts; already-mastered introductions still recur.
+  const coverage=rows.filter(x=>!selected.includes(x.c)).sort((a,b)=>(used.get(a.c.id)||0)-(used.get(b.c.id)||0)||a.tie.localeCompare(b.tie));for(const x of coverage){if(selected.length===size)break;selected.push(x.c);}
+  if(level<=2&&selected.length<unique.length){const signature=list=>list.map(c=>c.id).sort().join('|'),past=new Set(scoped.map(r=>r.entries.map(e=>e.cardId).sort().join('|')));if(past.has(signature(selected))){let found=false;for(const item of rows.filter(x=>!selected.includes(x.c))){for(let i=selected.length-1;i>=prioritySlots;i--){const trial=selected.slice();trial[i]=item.c;if(!past.has(signature(trial))){selected=trial;found=true;break;}}if(found)break;}}}
+  if(level===3){const ids=new Set(selected.map(c=>sections.get(c.id)?.id||c.id));selected=unique.filter(c=>ids.has(sections.get(c.id)?.id||c.id));}
+ }
+ // Study order follows the discourse, even when difficulty decides what is selected.
+ selected.sort((a,b)=>a.anchor.start-b.anchor.start||a.id.localeCompare(b.id));
+ const entries=selected.map(c=>({cardId:c.id,anchorHash:c.anchor.hash})),groups=[];
+ for(let i=0;i<selected.length;i++){
+  const prev=groups.at(-1),a=prev&&selected[prev.at(-1)],b=selected[i],same=!!a&&(sections.get(a.id)?.id||a.id)===(sections.get(b.id)?.id||b.id),left=new Set(sections.get(a?.id)?.terms||[]),overlap=(sections.get(b.id)?.terms||[]).filter(w=>left.has(w)).length,connected=!!a&&(same||overlap>=2)&&a.speakerId===b.speakerId&&b.anchor.start-a.anchor.end<500;
+  if(prev&&(level===4||level===3&&same||level===2&&prev.length<2&&connected))prev.push(i);else groups.push([i]);
+ }
+ return validateIdeaRound({...base,training:2,level,entries,groups,signals:[],cursor:{id:memoryId(),at:now,index:0}});
 }
