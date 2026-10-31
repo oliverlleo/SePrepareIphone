@@ -1,5 +1,6 @@
 **/node_modules/
 tests/qa-output/
+/qa-output/
 *.log
 
 /QA-drive-*.json

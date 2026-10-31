@@ -1,0 +1,8 @@
+SePrepare — análise gramatical contextual
+
+As tabelas e os pesos de memorization-tagger-model.json foram derivados dos corpora Universal Dependencies Portuguese-Bosque, English-EWT, Spanish-GSD e Japanese-GSD, sob CC BY-SA 4.0. Derivação: treinamento de um classificador perceptron contextual e estatísticas morfológicas, em 31/10/2026. Os dados de treinamento não incluem os casos de qualidade do aplicativo.
+
+Os pesos e tabelas derivados são distribuídos sob CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/
+Os READMEs originais acompanham este aviso com os autores e demais créditos dos corpora. Os arquivos de licença originais também acompanham a distribuição. A derivação e a seleção dos atributos foram realizadas para o SePrepare.
+
+A seleção semântica utiliza comparação de embeddings e diversidade, conforme a abordagem de extração contextual discutida no projeto KeyBERT: https://github.com/MaartenGr/KeyBERT . Não foi incorporada uma instalação Python nem uma API ao aplicativo. O modelo MiniLM e suas licenças permanecem os já distribuídos.

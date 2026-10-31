@@ -1,6 +1,7 @@
 import {sentenceSpans,cosine} from './memorization-semantic-core.js';
 import {memoryEvidencePhrases} from './memorization-semantic-analysis.js';
 import {memoryText,textHash,memoryHash,makeAnchor,freshDeck,orderedMemoryCards,MAX_CARDS,isLiveCard,resolveAnchor} from './memorization-data.js';
+import{prepareContext,finishContext}from'./memorization-context.js';
 
 const normalized=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const stop=new Set('a o as os um uma uns umas de da do das dos e ou em no na nos nas que se ao aos para por com sem mais menos como quando onde porque mas pois este esta isso isto voce voces ele ela eles elas nos meu minha seu sua ser estar ter sao foi era tem muito todos todas todo toda ja nao sim tambem pode deve vai aqui agora entao apenas mesmo assim sobre entre the a an and or of to in on for with without is are was be this that it its we you they he she have has can will would do does not el la los las un una unos unas de del y o en por para con sin es son fue ser este esta esto eso que como cuando donde porque pero no si tambien puede debe las sus nuestro nuestra'.split(' '));
@@ -107,8 +108,9 @@ export function segmentIdeaCards(delta,{demonstration=false,vectors=new Map()}={
  const grouped=[];for(const u of units){const prev=grouped.at(-1);if(prev&&prev.speakerId===u.speakerId&&(!demonstration||prev.turnStart===u.turnStart)&&prev.heading===u.heading&&u.end-prev.start<=650&&relatedIdeas(prev,u,vectors)){prev.end=u.end;prev.text=parsed.text.slice(prev.start,prev.end);prev.bold=[...(prev.bold||[]),...(u.bold||[])];}else grouped.push({...u});}
  return{...parsed,units:grouped};
 }
-export function ideaTitle(card,text){return conciseIdea(card,text);}
-export function generateIdeaCards(delta,{existing,demonstration=false,vectors=new Map(),now=Date.now()}={}){
+export function ideaTitle(card,text){return card.concepts?.length?card.concepts.join(', '):conciseIdea(card,text);}
+export function generateIdeaCards(delta,{existing,demonstration=false,vectors=new Map(),now=Date.now(),analysis}={}){
+ if(analysis)return generateContextCards(delta,{existing,demonstration,now,analysis});
  const {text,blocks,units}=segmentIdeaCards(delta,{demonstration,vectors}),frequency=new Map();
  for(const u of units)for(const key of ideaTerms(u.text))frequency.set(key,(frequency.get(key)||0)+1);
  const pool=[],seen=new Set();for(const unit of units){const keys=memoryKeywords(unit,frequency).slice(0,3);if(!keys.length)continue;const anchor=makeAnchor(text,unit.start,unit.end),id='idea-'+memoryHash((unit.speakerId||'')+':'+anchor.hash);if(seen.has(id))continue;seen.add(id);
@@ -127,7 +129,7 @@ export function generateIdeaCards(delta,{existing,demonstration=false,vectors=ne
 }
 export function ideaCardsForScope(deck,delta,{demonstration=false,scope=[]}={}){
  const blocks=memoryIdeaBlocks(delta,demonstration).blocks,allowed=new Set(scope);
- const all=orderedMemoryCards(deck),active=deck.ideaBank?.length?new Set(deck.ideaBank):null,hasIdeas=all.some(c=>c.idea);const cards=all.filter(c=>c.type==='manual'||c.id.startsWith('manual-')||(active?active.has(c.id):c.idea||!hasIdeas));return cards.filter(c=>{if(!demonstration)return true;const covered=blocks.filter(b=>b.start<c.anchor.end&&b.end>c.anchor.start);return covered.length>0&&covered.every(b=>allowed.has(b.speakerId)&&(c.speakerId===undefined||c.speakerId===b.speakerId));});
+ const all=orderedMemoryCards(deck),active=deck.contextEngine===3?new Set(deck.ideaBank||[]):deck.ideaBank?.length?new Set(deck.ideaBank):null,hasIdeas=all.some(c=>c.idea);const cards=all.filter(c=>c.type==='manual'||c.id.startsWith('manual-')||(active?active.has(c.id):c.idea||!hasIdeas));return cards.filter(c=>{if(!demonstration)return true;const covered=blocks.filter(b=>b.start<c.anchor.end&&b.end>c.anchor.start);return covered.length>0&&covered.every(b=>allowed.has(b.speakerId)&&(c.speakerId===undefined||c.speakerId===b.speakerId));});
 }
 
 // Evidence-based cue extraction. MiniLM assists segmentation, never invents prose.
@@ -171,6 +173,7 @@ const hintTemplates={
  idea:['Lembre da função desta parte na sequência do discurso.','Que pensamento ela desenvolve e como se liga ao que vem depois?']
 };
 export function memoryIdeaHint(card,text,{step=0,t=s=>s}={}){
+ if(card.concepts?.length&&card.retrievalClue){const questions={contrast:'Como “{context}” participa da diferença apresentada?',cause:'Que motivo ou resultado do trecho envolve “{context}”?',example:'Qual é o papel de “{context}” no exemplo?',steps:'Como “{context}” se encaixa na sequência?',definition:'Como o conceito se relaciona com “{context}”?',idea:'Lembre da ligação desta parte com “{context}”.'},question=step===0?questions[card.contextRelation]||questions.idea:'Que ligação entre as ideias do trecho ajuda a explicar “{context}”?';return{kind:card.contextRelation||'idea',text:t(question).replace('{context}',card.retrievalClue)};}
  const raw=text.slice(card.anchor.start,card.anchor.end),kind=hintPatterns.find(([,re])=>re.test(raw))?.[0]||'idea';
  // A relational retrieval prompt, never a substring, cloze answer or paraphrased
  // conclusion. Reject coincidental substantial quotations from short sources.
@@ -190,4 +193,25 @@ export function memoryIdeaHint(card,text,{step=0,t=s=>s}={}){
 export function memorySplitPoints(card,text){const raw=text.slice(card.anchor.start,card.anchor.end),points=new Set(sentenceSpans(raw).map(s=>s.offset+s.length));for(const m of raw.matchAll(/\n+/gu))points.add(m.index+m[0].length);return [...points].filter(n=>raw.slice(0,n).trim().length>=8&&raw.slice(n).trim().length>=8).sort((a,b)=>a-b);}
 export function ideaTrainingSections(cards,blocks){
  const map=new Map();let bi=0,heading=null,ordinal=0;for(const card of [...cards].sort((a,b)=>a.anchor.start-b.anchor.start)){while(bi<blocks.length&&blocks[bi].start<=card.anchor.start){if(blocks[bi].attrs.header)heading=blocks[bi];bi++;}const evidence=blocks.filter(b=>!b.attrs.header&&b.start<card.anchor.end&&b.end>card.anchor.start).map(b=>b.text).join(' ');map.set(card.id,{id:(heading?'heading-'+heading.start:'section-'+Math.floor(ordinal/3))+'|'+(card.speakerId||''),title:heading?.text||'',start:heading?.start||0,terms:[...ideaTerms(evidence)].slice(0,80)});ordinal++;}return map;
+}
+
+// New contextual bank, with exact-span migration and no paragraph-as-title fallback.
+export function generateContextCards(delta,{existing,demonstration=false,now=Date.now(),analysis}={}){
+ const parsed=memoryIdeaBlocks(delta,demonstration),{text,blocks}=parsed;
+ analysis||=finishContext(prepareContext(parsed));
+ const next=existing?JSON.parse(JSON.stringify(existing)):freshDeck(text,[],now),byId=new Map(next.cards.map(c=>[c.id,c])),oldByEvidence=new Map();
+ for(const c of next.cards){const key=(c.speakerId||'')+'|'+c.anchor.hash;if(!oldByEvidence.has(key))oldByEvidence.set(key,[]);oldByEvidence.get(key).push(c);}
+ const pool=[],seen=new Set();for(const u of analysis.units){
+  if(!u.concepts?.length||text.slice(u.start,u.end)!==u.text||u.concepts.some(k=>!u.text.includes(k)))continue;
+  const anchor=makeAnchor(text,u.start,u.end),key=(u.speakerId||'')+'|'+anchor.hash,previous=(oldByEvidence.get(key)||[]).filter(c=>c.type!=='manual'&&!c.id.startsWith('manual-')),exact=previous.filter(c=>c.anchor.start===anchor.start&&c.anchor.end===anchor.end),old=exact.length===1?exact[0]:previous.length===1?previous[0]:null,id=old?.id||'ctx-'+memoryHash(key);
+  if(seen.has(id))continue;seen.add(id);
+  const c={...old,id,type:old?.type||'idea',idea:true,question:old?.question||'',theme:old?.theme||u.concepts.join(', ').slice(0,140),keywords:old?.keywords||u.concepts.filter(k=>k.length<=80).slice(0,5),hints:old?.hints||[],anchor,speakerId:u.speakerId||'',concepts:old?.conceptsEdited?old.concepts:u.concepts,conceptConfidence:u.confidence||0,needsConceptReview:old?.conceptsEdited?false:!!u.needsConceptReview,contextRelation:u.relation||'idea',retrievalClue:u.retrievalClue||'',updatedAt:now};
+  pool.push(c);
+ }
+ // A reusable bank covers the whole source, with bounded study-selection cost.
+ const selected=pool.length<=48?pool:Array.from({length:48},(_,i)=>pool[Math.floor(i*(pool.length-1)/47)]);
+ for(const c of selected)if(byId.has(c.id)||byId.size<MAX_CARDS)byId.set(c.id,c);
+ next.cards=[...byId.values()].map(c=>{if(!isLiveCard(c))return c;const found=resolveAnchor(text,c.anchor,blocks),changedSpeaker=found&&demonstration&&c.speakerId!==undefined&&blocks.some(b=>b.start<found.end&&b.end>found.start&&b.speakerId!==c.speakerId);return found?{...c,anchor:makeAnchor(text,found.start,found.end),needsReview:!!changedSpeaker}:{...c,needsReview:true};});
+ next.ideaBank=selected.map(c=>c.id).filter(id=>byId.has(id));if(selected.length&&!next.ideaBank.length)throw Error('Este conjunto atingiu o limite de cartões. Gerencie os cartões antes de gerar novas ideias.');next.ideaEngine=2;next.contextEngine=3;next.analysisInfo={semantic:!!analysis.semantic,excluded:analysis.excluded?.length||0,review:next.cards.filter(c=>next.ideaBank.includes(c.id)&&c.needsConceptReview).length};
+ next.sourceHash=textHash(text);next.sourceRawHash=memoryHash(text);next.ideaSource=ideaSourceKey(delta,demonstration);next.updatedAt=now;return next;
 }
