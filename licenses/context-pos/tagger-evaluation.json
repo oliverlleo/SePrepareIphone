@@ -1,0 +1,30 @@
+[
+  {
+    "language": "pt",
+    "trainingSentences": 7018,
+    "devTokens": 24539,
+    "accuracy": 0.9527690614939484,
+    "features": 26987
+  },
+  {
+    "language": "en",
+    "trainingSentences": 12458,
+    "devTokens": 21933,
+    "accuracy": 0.9304244745360871,
+    "features": 29927
+  },
+  {
+    "language": "es",
+    "trainingSentences": 14186,
+    "devTokens": 32789,
+    "accuracy": 0.9601695690627955,
+    "features": 43765
+  },
+  {
+    "language": "ja",
+    "trainingSentences": 7050,
+    "devTokens": 11043,
+    "accuracy": 0.9567146608711401,
+    "features": 21660
+  }
+]

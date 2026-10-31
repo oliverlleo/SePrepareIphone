@@ -1,0 +1,46 @@
+[
+  {
+    "language": "pt",
+    "repository": "https://github.com/UniversalDependencies/UD_Portuguese-Bosque",
+    "trainSHA256": "b56d7124af821e2968302c38298904ec67af342304a33ae8a9dc4fa57df89648",
+    "devSHA256": "f8a67abae12fbab85a3995204a6459d1958c11065062d4ea5349d6b914e78f81",
+    "sentences": 7018,
+    "tokens": 148768,
+    "license": [
+      "CC BY-SA 4.0"
+    ]
+  },
+  {
+    "language": "en",
+    "repository": "https://github.com/UniversalDependencies/UD_English-EWT",
+    "trainSHA256": "d68e06122a702464c613076523d56740f047e5bbe89dd90ec32737e04d952143",
+    "devSHA256": "39239e0a60db3ae68f4b7036189f11b6692741d10ff8240dd91f74f2760d90f8",
+    "sentences": 12458,
+    "tokens": 179836,
+    "license": [
+      "CC BY-SA 4.0"
+    ]
+  },
+  {
+    "language": "es",
+    "repository": "https://github.com/UniversalDependencies/UD_Spanish-GSD",
+    "trainSHA256": "9e527de0e45dca4a8ef00105a3ebd102da941964b35f01916a6baa6288130f7b",
+    "devSHA256": "704fb19afc0a34cff476e1a70351b7026c4364f862e8e8388b02873852567c22",
+    "sentences": 14186,
+    "tokens": 337099,
+    "license": [
+      "CC BY-SA 4.0"
+    ]
+  },
+  {
+    "language": "ja",
+    "repository": "https://github.com/UniversalDependencies/UD_Japanese-GSD",
+    "trainSHA256": "99f67fd88257e7cfe81d81c4b8ee98aff85fc22bb525d907475a2856c8cfa9f3",
+    "devSHA256": "18d266e29336ef619787a928d89d20f2e64188be70d5b37829e3aadc5bb6b841",
+    "sentences": 7050,
+    "tokens": 150404,
+    "license": [
+      "CC BY-SA 4.0"
+    ]
+  }
+]

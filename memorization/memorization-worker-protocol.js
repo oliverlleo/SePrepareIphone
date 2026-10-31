@@ -1,8 +1,11 @@
-// Embeddings only. The MiniLM model never writes questions or answers.
-export function installMemorizationProtocol(model){
+import{createContextProcessor}from'./memorization-context-worker.js';
+// The encoder supplies evidence for concepts. It never generates invented prose.
+export function installMemorizationProtocol(model,options={}){
  const legacy=self.onmessage,cancelled=new Set();let queue=Promise.resolve();
+ const context=createContextProcessor(model,options);
  self.onmessage=event=>{
   const p=event.data||{};if(p.type==='memorization-cancel'){cancelled.add(p.token);return;}
+  if(p.type==='memorization-context'){queue=queue.catch(()=>{}).then(async()=>{try{if(p.protocol!==2)throw Error('Invalid context protocol');const result=await context(p.parsed,{token:p.token,cancelled:()=>cancelled.has(p.token),progress:(label,value)=>{if(!cancelled.has(p.token))self.postMessage({type:'memorization-progress',token:p.token,label,value});}});if(!cancelled.has(p.token))self.postMessage({type:'memorization-context-result',protocol:2,token:p.token,result});}catch(error){if(!cancelled.has(p.token))self.postMessage({type:'memorization-context-error',protocol:2,token:p.token,message:error.message==='MEMORIZATION_CANCELLED'?'MEMORIZATION_CANCELLED':'Contextual analysis unavailable'});}finally{cancelled.delete(p.token);}});return;}
   if(p.type!=='memorization-embeddings'){legacy?.(event);return;}
   queue=queue.catch(()=>{}).then(async()=>{try{
    if(p.protocol!==1||!Array.isArray(p.inputs)||p.inputs.length>128||p.inputs.some(s=>typeof s!=='string'||s.length>12000))throw Error('Invalid memorization embedding input');

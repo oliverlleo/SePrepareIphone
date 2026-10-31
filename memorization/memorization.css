@@ -49,6 +49,7 @@
 
 /* Retrieval practice: short cue first, assistance only when requested. */
 .memory-recall-card>h2::first-letter{text-transform:uppercase}
+.memory-concept-review{font-size:11px;line-height:1.6;color:var(--copper);margin:0 auto 15px;max-width:500px}
 .memory-training .memory-study-meta>strong{flex:1;min-width:0}.memory-training-scope{width:34px;min-width:34px;padding:6px!important;border-color:transparent!important}.memory-training-scope>span{display:none}.memory-training-scope>svg{width:18px;height:18px}
 .memory-training{max-width:1000px}.memory-training .memory-top{margin-bottom:20px}.memory-training .memory-heading{padding:0 0 22px}.memory-training .memory-heading>.eyebrow,.memory-training .memory-heading>h1{display:none}.memory-training .memory-speech-title{font-size:17px;max-width:none}.memory-training .memory-version{margin-top:8px}.memory-training .memory-study-meta{max-width:800px;margin:0 auto 16px;align-items:center;font-size:16px}.memory-training .memory-study-meta>strong{font-weight:600;color:var(--green)}.memory-training .memory-study-meta>span{color:var(--muted);font-size:14px}
 .memory-training-progress{display:flex;gap:7px;max-width:800px;margin:0 auto 24px}.memory-training-progress>i{height:8px;min-width:0;flex:1;border-radius:8px;background:var(--soft)}.memory-training-progress>i.on{background:var(--green)}

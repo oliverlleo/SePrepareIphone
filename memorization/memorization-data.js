@@ -23,12 +23,17 @@ export function validateMemorization(deck){
   const a=c.anchor;require(a&&Number.isSafeInteger(a.start)&&a.start>=0&&Number.isSafeInteger(a.end)&&a.end>a.start&&a.end<=600001&&digest(a.hash)&&string(a.prefix,32)&&string(a.suffix,32)&&string(a.before,48)&&string(a.after,48));
   require(c.deletedAt===undefined||stamp(c.deletedAt)&&c.deleted===true);require(c.deleted===undefined||typeof c.deleted==='boolean');require(c.needsReview===undefined||typeof c.needsReview==='boolean');require(c.cloze===undefined||string(c.cloze,80));
   require(c.idea===undefined||typeof c.idea==='boolean');require(c.speakerId===undefined||string(c.speakerId,100));
+  if(c.concepts!==undefined)require(Array.isArray(c.concepts)&&c.concepts.length>0&&c.concepts.length<=12&&c.concepts.every(k=>string(k,160)&&k.trim().length>0));
+  require(c.retrievalClue===undefined||string(c.retrievalClue,160));
+  require(c.conceptsEdited===undefined||typeof c.conceptsEdited==='boolean');require(c.needsConceptReview===undefined||typeof c.needsConceptReview==='boolean');require(c.conceptConfidence===undefined||Number.isFinite(c.conceptConfidence)&&c.conceptConfidence>=0&&c.conceptConfidence<=2);require(c.contextRelation===undefined||['idea','definition','contrast','cause','steps','example'].includes(c.contextRelation));
  }
  const events=new Set();for(const r of deck.reviews){require(r&&validId(r.id)&&!events.has(r.id)&&validId(r.cardId)&&digest(r.anchorHash)&&stamp(r.at)&&[0,1,2].includes(r.rating));events.add(r.id);}
  if(deck.order!==undefined)require(deck.order&&Array.isArray(deck.order.ids)&&deck.order.ids.length<=MAX_CARDS&&deck.order.ids.every(validId)&&stamp(deck.order.at)&&validId(deck.order.id));
  if(deck.session!==undefined){const s=deck.session;require(s&&validId(s.id)&&stamp(s.updatedAt)&&['normal','difficult'].includes(s.mode)&&Array.isArray(s.queue)&&s.queue.length<=MAX_CARDS*3&&s.queue.every(validId)&&Number.isSafeInteger(s.position)&&s.position>=0&&s.position<=s.queue.length&&Array.isArray(s.answers)&&s.answers.length<=MAX_CARDS*3&&s.answers.every(validId));}
  if(deck.ideaSource!==undefined)require(digest(deck.ideaSource));
  if(deck.ideaEngine!==undefined)require(deck.ideaEngine===2);
+ if(deck.contextEngine!==undefined)require(deck.contextEngine===3);
+ if(deck.analysisInfo!==undefined)require(deck.analysisInfo&&typeof deck.analysisInfo.semantic==='boolean'&&Number.isInteger(deck.analysisInfo.excluded)&&deck.analysisInfo.excluded>=0&&Number.isInteger(deck.analysisInfo.review)&&deck.analysisInfo.review>=0);
  if(deck.ideaBank!==undefined)require(Array.isArray(deck.ideaBank)&&deck.ideaBank.length<=MAX_CARDS&&deck.ideaBank.every(validId)&&new Set(deck.ideaBank).size===deck.ideaBank.length);
  if(deck.ideaRounds!==undefined){require(Array.isArray(deck.ideaRounds)&&deck.ideaRounds.length<=10000);const rounds=new Set();for(const r of deck.ideaRounds){validateIdeaRound(r);require(!rounds.has(r.id));rounds.add(r.id);}}
  return deck;
@@ -73,6 +78,7 @@ export function mergeMemorization(left,right){
  const session=winner(left.session,right.session);if(session)result.session=clone(session);
  const source=winner(left.ideaSource?left:null,right.ideaSource?right:null);if(source)result.ideaSource=source.ideaSource;
  const bank=winner(left.ideaBank?left:null,right.ideaBank?right:null);if(bank){result.ideaBank=clone(bank.ideaBank);result.ideaEngine=2;}
+ const context=winner(left.contextEngine?left:null,right.contextEngine?right:null);if(context){result.contextEngine=context.contextEngine;if(context.analysisInfo)result.analysisInfo=clone(context.analysisInfo);}
  if(left.ideaRounds||right.ideaRounds){const rounds=new Map();for(const r of [...left.ideaRounds||[],...right.ideaRounds||[]])rounds.set(r.id,mergeIdeaRound(rounds.get(r.id),r));result.ideaRounds=[...rounds.values()].sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
  validateMemorization(result);return result;
 }
