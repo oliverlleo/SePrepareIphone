@@ -198,20 +198,20 @@ export function ideaTrainingSections(cards,blocks){
 // New contextual bank, with exact-span migration and no paragraph-as-title fallback.
 export function generateContextCards(delta,{existing,demonstration=false,now=Date.now(),analysis}={}){
  const parsed=memoryIdeaBlocks(delta,demonstration),{text,blocks}=parsed;
- analysis||=finishContext(prepareContext(parsed));
+ analysis||=finishContext(prepareContext(parsed));if(analysis.units.length&&analysis.coverage?.some(row=>row.kind==='content'&&!row.covered))throw Error('Não foi possível associar todas as ideias. Revise a divisão dos cartões.');
  const next=existing?JSON.parse(JSON.stringify(existing)):freshDeck(text,[],now),byId=new Map(next.cards.map(c=>[c.id,c])),oldByEvidence=new Map();
  for(const c of next.cards){const key=(c.speakerId||'')+'|'+c.anchor.hash;if(!oldByEvidence.has(key))oldByEvidence.set(key,[]);oldByEvidence.get(key).push(c);}
- const pool=[],seen=new Set();for(const u of analysis.units){
+ const occurrences=new Map();for(const u of analysis.units){const key=(u.speakerId||'')+'|'+textHash(u.text);occurrences.set(key,(occurrences.get(key)||0)+1);}const pool=[],seen=new Set();for(const u of analysis.units){
   if(!u.concepts?.length||text.slice(u.start,u.end)!==u.text||u.concepts.some(k=>!u.text.includes(k)))continue;
-  const anchor=makeAnchor(text,u.start,u.end),key=(u.speakerId||'')+'|'+anchor.hash,previous=(oldByEvidence.get(key)||[]).filter(c=>c.type!=='manual'&&!c.id.startsWith('manual-')),exact=previous.filter(c=>c.anchor.start===anchor.start&&c.anchor.end===anchor.end),old=exact.length===1?exact[0]:previous.length===1?previous[0]:null,id=old?.id||'ctx-'+memoryHash(key);
+  const anchor=makeAnchor(text,u.start,u.end),key=(u.speakerId||'')+'|'+anchor.hash,repeated=(occurrences.get(key)||0)>1,previous=(oldByEvidence.get(key)||[]).filter(c=>c.type!=='manual'&&!c.id.startsWith('manual-')),exact=previous.filter(c=>c.anchor.start===anchor.start&&c.anchor.end===anchor.end),old=exact.length===1?exact[0]:!repeated&&previous.length===1?previous[0]:null,id=old?.id||'ctx-'+memoryHash(key+(repeated?'|'+u.start:''));
   if(seen.has(id))continue;seen.add(id);
   const c={...old,id,type:old?.type||'idea',idea:true,question:old?.question||'',theme:old?.theme||u.concepts.join(', ').slice(0,140),keywords:old?.keywords||u.concepts.filter(k=>k.length<=80).slice(0,5),hints:old?.hints||[],anchor,speakerId:u.speakerId||'',concepts:old?.conceptsEdited?old.concepts:u.concepts,conceptConfidence:u.confidence||0,needsConceptReview:old?.conceptsEdited?false:!!u.needsConceptReview,contextRelation:u.relation||'idea',retrievalClue:u.retrievalClue||'',updatedAt:now};
   pool.push(c);
  }
  // A reusable bank covers the whole source, with bounded study-selection cost.
- const selected=pool.length<=48?pool:Array.from({length:48},(_,i)=>pool[Math.floor(i*(pool.length-1)/47)]);
+ const selected=pool;if(selected.length>MAX_CARDS||byId.size+selected.filter(c=>!byId.has(c.id)).length>MAX_CARDS)throw Error('Este conjunto atingiu o limite de cartões. Gerencie os cartões antes de gerar novas ideias.');
  for(const c of selected)if(byId.has(c.id)||byId.size<MAX_CARDS)byId.set(c.id,c);
  next.cards=[...byId.values()].map(c=>{if(!isLiveCard(c))return c;const found=resolveAnchor(text,c.anchor,blocks),changedSpeaker=found&&demonstration&&c.speakerId!==undefined&&blocks.some(b=>b.start<found.end&&b.end>found.start&&b.speakerId!==c.speakerId);return found?{...c,anchor:makeAnchor(text,found.start,found.end),needsReview:!!changedSpeaker}:{...c,needsReview:true};});
- next.ideaBank=selected.map(c=>c.id).filter(id=>byId.has(id));if(selected.length&&!next.ideaBank.length)throw Error('Este conjunto atingiu o limite de cartões. Gerencie os cartões antes de gerar novas ideias.');next.ideaEngine=2;next.contextEngine=3;next.contextRevision=1;next.analysisInfo={semantic:!!analysis.semantic,excluded:analysis.excluded?.length||0,review:next.cards.filter(c=>next.ideaBank.includes(c.id)&&c.needsConceptReview).length};
+ next.ideaBank=selected.map(c=>c.id).filter(id=>byId.has(id));if(selected.length&&!next.ideaBank.length)throw Error('Este conjunto atingiu o limite de cartões. Gerencie os cartões antes de gerar novas ideias.');next.ideaEngine=2;next.contextEngine=3;next.contextRevision=1;next.coverageRevision=1;next.analysisInfo={semantic:!!analysis.semantic,excluded:analysis.excluded?.length||0,review:next.cards.filter(c=>next.ideaBank.includes(c.id)&&c.needsConceptReview).length};
  next.sourceHash=textHash(text);next.sourceRawHash=memoryHash(text);next.ideaSource=ideaSourceKey(delta,demonstration);next.updatedAt=now;return next;
 }
