@@ -32,6 +32,7 @@ export function validateMemorization(deck){
  if(deck.session!==undefined){const s=deck.session;require(s&&validId(s.id)&&stamp(s.updatedAt)&&['normal','difficult'].includes(s.mode)&&Array.isArray(s.queue)&&s.queue.length<=MAX_CARDS*3&&s.queue.every(validId)&&Number.isSafeInteger(s.position)&&s.position>=0&&s.position<=s.queue.length&&Array.isArray(s.answers)&&s.answers.length<=MAX_CARDS*3&&s.answers.every(validId));}
  if(deck.ideaSource!==undefined)require(digest(deck.ideaSource));
  if(deck.ideaEngine!==undefined)require(deck.ideaEngine===2);
+ if(deck.contextRevision!==undefined)require(deck.contextRevision===1);
  if(deck.contextEngine!==undefined)require(deck.contextEngine===3);
  if(deck.analysisInfo!==undefined)require(deck.analysisInfo&&typeof deck.analysisInfo.semantic==='boolean'&&Number.isInteger(deck.analysisInfo.excluded)&&deck.analysisInfo.excluded>=0&&Number.isInteger(deck.analysisInfo.review)&&deck.analysisInfo.review>=0);
  if(deck.ideaBank!==undefined)require(Array.isArray(deck.ideaBank)&&deck.ideaBank.length<=MAX_CARDS&&deck.ideaBank.every(validId)&&new Set(deck.ideaBank).size===deck.ideaBank.length);
@@ -78,7 +79,7 @@ export function mergeMemorization(left,right){
  const session=winner(left.session,right.session);if(session)result.session=clone(session);
  const source=winner(left.ideaSource?left:null,right.ideaSource?right:null);if(source)result.ideaSource=source.ideaSource;
  const bank=winner(left.ideaBank?left:null,right.ideaBank?right:null);if(bank){result.ideaBank=clone(bank.ideaBank);result.ideaEngine=2;}
- const context=winner(left.contextEngine?left:null,right.contextEngine?right:null);if(context){result.contextEngine=context.contextEngine;if(context.analysisInfo)result.analysisInfo=clone(context.analysisInfo);}
+ const context=winner(left.contextEngine?left:null,right.contextEngine?right:null);if(context){result.contextEngine=context.contextEngine;if(context.contextRevision)result.contextRevision=context.contextRevision;if(context.analysisInfo)result.analysisInfo=clone(context.analysisInfo);}
  if(left.ideaRounds||right.ideaRounds){const rounds=new Map();for(const r of [...left.ideaRounds||[],...right.ideaRounds||[]])rounds.set(r.id,mergeIdeaRound(rounds.get(r.id),r));result.ideaRounds=[...rounds.values()].sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
  validateMemorization(result);return result;
 }
