@@ -1,7 +1,8 @@
+import{mergeDocumentTeleprompter}from'../memorization/teleprompter-data.js';
 import {mergeDocumentMemorization} from '../memorization/memorization-data.js';
 import {mergeDeletionTombstones} from './sync-deletions.js';
 export function mergeImportedMetadata(state,incoming,ids,categories,newId){
- for(const source of incoming.speeches||[]){const target=state.speeches.find(d=>d.id===(ids.get(source.id)||source.id));if(target)mergeDocumentMemorization(source,target);}
+ for(const source of incoming.speeches||[]){const target=state.speeches.find(d=>d.id===(ids.get(source.id)||source.id));if(target){mergeDocumentMemorization(source,target);mergeDocumentTeleprompter(source,target);}}
  const copy=x=>JSON.parse(JSON.stringify(x)),drafts=new Map((state.editorDrafts||[]).map(row=>[row.speechId,row]));
  for(const source of incoming.editorDrafts||[]){let id=ids.get(source.speechId)||source.speechId,row=copy(source);const existing=drafts.get(id);
   if(existing&&JSON.stringify(existing.document)!==JSON.stringify(source.document)){

@@ -1,3 +1,4 @@
+import{mergeTeleprompter,mergeDocumentTeleprompter}from'../memorization/teleprompter-data.js';
 import {mergeMemorization,mergeDocumentMemorization} from '../memorization/memorization-data.js';
 import {parseRhythm,rhythmValue,visitRhythmOps} from './rhythm-core.js';
 import {protectedGlobals,applyProtectedGlobal} from './sync-globals.js';
@@ -36,7 +37,7 @@ export async function mergeDriveBackup(local,raw,{manual=false,policy='both',doc
  if(before===remoteHash)return {state:local,changed:false,added,alternatives};
  const incoming=parsed(raw);
  if(policy==='cloud'&&manual&&!Object.keys(documentPolicies).length&&!Object.keys(categoryPolicies).length){
-  const state=clone(incoming);for(const doc of state.speeches){mergeDocumentMemorization(local.speeches.find(d=>d.id===doc.id),doc);pauseAllVersionTimers(doc);}
+  const state=clone(incoming);for(const doc of state.speeches){mergeDocumentMemorization(local.speeches.find(d=>d.id===doc.id),doc);mergeDocumentTeleprompter(local.speeches.find(d=>d.id===doc.id),doc);pauseAllVersionTimers(doc);}
   return {state,changed:stable(local)!==stable(state),added:state.speeches.filter(d=>!local.speeches.some(l=>l.id===d.id)).length,alternatives:0};
  }
  const next={...local,speeches:local.speeches.slice(),categories:local.categories.slice(),vocabulary:local.vocabulary.slice(),settings:clone(local.settings)};
@@ -67,7 +68,7 @@ export async function mergeDriveBackup(local,raw,{manual=false,policy='both',doc
   if(choice==='cloud'){
    const read=clone(target.read),person=target.myParticipantId;
    for(const version of remote.versions){const existing=target.versions.find(v=>v.id===version.id);if(existing?.timer)version.timer=clone(existing.timer);if(version.participants)version.myParticipantId=version.participants.some(p=>p.id===person)?person:'';}
-   mergeDocumentMemorization(target,remote);remote.read=read;projectContentVersion(remote);next.speeches[next.speeches.indexOf(target)]=remote;continue;
+   mergeDocumentMemorization(target,remote);mergeDocumentTeleprompter(target,remote);remote.read=read;projectContentVersion(remote);next.speeches[next.speeches.indexOf(target)]=remote;continue;
   }
   if(manual&&target.deleted&&!remote.deleted){target.deleted=false;delete target.deletedAt;}
   captureContentVersion(target);const localPerson=target.myParticipantId,ids=new Map();
@@ -77,6 +78,7 @@ export async function mergeDriveBackup(local,raw,{manual=false,policy='both',doc
     if(choice==='cloud')equivalent.name=version.name;
     ids.set(version.id,equivalent.id);const history=version.history.map(h=>({...h,versionId:equivalent.id})),rehearsals=version.rehearsals.map(r=>({...r,versionId:equivalent.id}));
     if(equivalent.memorization||version.memorization)equivalent.memorization=mergeMemorization(equivalent.memorization,version.memorization);
+    if(equivalent.teleprompter||version.teleprompter)equivalent.teleprompter=mergeTeleprompter(equivalent.teleprompter,version.teleprompter);
     equivalent.history=union(equivalent.history,history).slice(-15);equivalent.rehearsals=union(equivalent.rehearsals,rehearsals);continue;
    }
    if(target.versions.length>=1000)throw Error('Uma preparação atingiu o limite de versões. Libere espaço antes de continuar.');
