@@ -1,3 +1,4 @@
+import{mergeDocumentTeleprompter}from'../memorization/teleprompter-data.js';
 import {mergeDocumentMemorization} from '../memorization/memorization-data.js';
 // Compare the data a person can recover, independent of Quill's internal blocks,
 // generated revision clocks and aliases of the same named content version.
@@ -31,7 +32,7 @@ export function documentKey(document){
 function historyKey(history){return serialize((history||[]).map(entry=>{const value={...entry,delta:normalizedDelta(entry.delta),presenterNotes:notes(entry.presenterNotes)};delete value.versionId;delete value.updatedAt;return value;}));}
 function rehearsalKey(rehearsals){return serialize((rehearsals||[]).map(entry=>{const value={...entry};delete value.versionId;return value;}));}
 export function restoreKey(state){
- return serialize({documents:state.speeches.map(document=>({id:document.id,content:documentKey(document),versions:document.versions.map(version=>({key:versionKey(version),history:historyKey(version.history),rehearsals:rehearsalKey(version.rehearsals),memorization:version.memorization})).sort((a,b)=>serialize(a).localeCompare(serialize(b)))})).sort((a,b)=>a.id.localeCompare(b.id)),categories:state.categories,vocabulary:[...(state.vocabulary||[])].sort(),settings:state.settings});
+ return serialize({documents:state.speeches.map(document=>({id:document.id,content:documentKey(document),versions:document.versions.map(version=>({key:versionKey(version),history:historyKey(version.history),rehearsals:rehearsalKey(version.rehearsals),memorization:version.memorization,teleprompter:version.teleprompter})).sort((a,b)=>serialize(a).localeCompare(serialize(b)))})).sort((a,b)=>a.id.localeCompare(b.id)),categories:state.categories,vocabulary:[...(state.vocabulary||[])].sort(),settings:state.settings});
 }
 export function contentDifferences(local,remote){
  const left=activeVersion(local),right=activeVersion(remote),fields=[];
@@ -64,5 +65,5 @@ export function mergeIndependent(base,local,remote){
   const active=activeVersion(local),index=result.versions.findIndex(version=>version.id===active.id);result.versions[index]=JSON.parse(JSON.stringify(active));
  }
  for(const version of result.versions){const source=(changedHere.includes('records')?local:remote).versions.find(v=>v.id===version.id);if(source){version.history=JSON.parse(JSON.stringify(source.history));version.rehearsals=JSON.parse(JSON.stringify(source.rehearsals));}}
- return mergeDocumentMemorization(remote,mergeDocumentMemorization(local,result));
+ return mergeDocumentTeleprompter(remote,mergeDocumentMemorization(remote,mergeDocumentTeleprompter(local,mergeDocumentMemorization(local,result))));
 }
