@@ -1,0 +1,14 @@
+[
+ {"id":"lab-passive-contrast","text":"A pesquisadora não afirmou apenas que havia uma autorização, mas que ela lhe foi concedida.","cue":"concedida","rejectOnly":"pesquisadora"},
+ {"id":"budget-negative","text":"A diretora explicou que a proposta não foi aprovada.","cue":"não foi aprovada","rejectOnly":"diretora"},
+ {"id":"copular-comparison","text":"A resistência do segundo material é maior do que a do primeiro.","cue":"resistência|é maior","rejectOnly":"material"},
+ {"id":"colon-quote","text":"A pesquisadora concluiu:\n“A coleta precisa ser repetida porque a amostra não representa toda a população.”","joined":"concluiu:[\\s\\S]+população","cue":"coleta|repetida|amostra","rejectOnly":"pesquisadora"},
+ {"id":"dangling-determiner","text":"O relatório mostrou os\nresultados da pesquisa e explicou suas limitações.","joined":"mostrou os[\\s\\S]+limitações","cue":"pesquisa|limitações|resultados"},
+ {"id":"unclosed-quotation","text":"A mensagem dizia: “Precisamos confirmar os dados.\nUma amostra pequena pode esconder diferenças.\nPor isso, repetiremos a medição.”","joined":"mensagem[\\s\\S]+medição","cue":"dados|amostra|medição"},
+ {"id":"ellipsis-answer","text":"Quem pode autorizar a compra?\nA diretoria, depois de avaliar o orçamento.","joined":"Quem[\\s\\S]+orçamento","cue":"diretoria|compra|orçamento"},
+ {"id":"distinct-domains","text":"A irrigação conserva a umidade do solo.\nA inflação reduz o poder de compra.","minUnits":2,"cue":"irrigação|inflação"},
+ {"id":"clitic-passive","text":"O gerente disse:\n“Foi-nos concedida a licença para operar o equipamento.”","joined":"gerente[\\s\\S]+equipamento","cue":"concedida|licença","rejectOnly":"gerente"},
+ {"id":"en-passive","text":"The manager explained: “The proposal was not approved because the evidence was incomplete.”","cue":"not approved|incomplete|evidence|proposal","rejectOnly":"manager"},
+ {"id":"es-contrast","text":"La investigadora no dijo que la decisión fuera definitiva, sino que debía ser revisada.","cue":"revisada|definitiva|decisión","rejectOnly":"investigadora"},
+ {"id":"productive-infinitive","text":"A equipe recebeu autonomia para organizá-las sem comprometer a segurança das tarefas.","cue":"autonomia|segurança","unwanted":"^organizá-las$"}
+]

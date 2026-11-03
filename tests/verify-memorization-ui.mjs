@@ -41,5 +41,5 @@ try{
  results.push({profile,success:true,checks});
 
 }catch(error){if(page){await page.waitForTimeout(300);await page.screenshot({path:path.join(out,profile.id+'-failure.png'),fullPage:true});console.log('FAILURE',profile.id,error.message,(await page.locator('body').innerText()).slice(0,900));}results.push({profile,success:false,checks,errors,message:error.message});throw error;}finally{await browser.close();}
-}}finally{await fs.writeFile(path.join(task,process.env.QA_REPORT||'QA-memory-ui-1.0.83.json'),JSON.stringify({success:results.length===profiles.length&&results.every(r=>r.success),results,physicalDevices:false,googleServices:'not used',model:'UI protocol simulation; real worker tested separately'},null,2));await new Promise(r=>server.close(r));}
+}}finally{await fs.writeFile(path.join(task,process.env.QA_REPORT||'QA-memory-ui-1.0.84.json'),JSON.stringify({success:results.length===profiles.length&&results.every(r=>r.success),results,physicalDevices:false,googleServices:'not used',model:'UI protocol simulation; real worker tested separately'},null,2));await new Promise(r=>server.close(r));}
 function memoryTextFor(delta){return delta.ops.map(o=>typeof o.insert==='string'?o.insert:'\n').join('');}

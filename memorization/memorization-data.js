@@ -33,6 +33,7 @@ export function validateMemorization(deck){
  if(deck.ideaSource!==undefined)require(digest(deck.ideaSource));
  if(deck.ideaEngine!==undefined)require(deck.ideaEngine===2);
  if(deck.coverageRevision!==undefined)require(deck.coverageRevision===1);
+ if(deck.reasoningRevision!==undefined)require(deck.reasoningRevision===1);
  if(deck.contextRevision!==undefined)require(deck.contextRevision===1);
  if(deck.contextEngine!==undefined)require(deck.contextEngine===3);
  if(deck.analysisInfo!==undefined)require(deck.analysisInfo&&typeof deck.analysisInfo.semantic==='boolean'&&Number.isInteger(deck.analysisInfo.excluded)&&deck.analysisInfo.excluded>=0&&Number.isInteger(deck.analysisInfo.review)&&deck.analysisInfo.review>=0);
@@ -80,7 +81,7 @@ export function mergeMemorization(left,right){
  const session=winner(left.session,right.session);if(session)result.session=clone(session);
  const source=winner(left.ideaSource?left:null,right.ideaSource?right:null);if(source)result.ideaSource=source.ideaSource;
  const bank=winner(left.ideaBank?left:null,right.ideaBank?right:null);if(bank){result.ideaBank=clone(bank.ideaBank);result.ideaEngine=2;}
- const context=winner(left.contextEngine?left:null,right.contextEngine?right:null);if(context){result.contextEngine=context.contextEngine;if(context.contextRevision)result.contextRevision=context.contextRevision;if(context.coverageRevision)result.coverageRevision=context.coverageRevision;if(context.analysisInfo)result.analysisInfo=clone(context.analysisInfo);}
+ const context=winner(left.contextEngine?left:null,right.contextEngine?right:null);if(context){result.contextEngine=context.contextEngine;if(context.contextRevision)result.contextRevision=context.contextRevision;if(context.coverageRevision)result.coverageRevision=context.coverageRevision;if(context.reasoningRevision)result.reasoningRevision=context.reasoningRevision;if(context.analysisInfo)result.analysisInfo=clone(context.analysisInfo);}
  if(left.ideaRounds||right.ideaRounds){const rounds=new Map();for(const r of [...left.ideaRounds||[],...right.ideaRounds||[]])rounds.set(r.id,mergeIdeaRound(rounds.get(r.id),r));result.ideaRounds=[...rounds.values()].sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
  validateMemorization(result);return result;
 }

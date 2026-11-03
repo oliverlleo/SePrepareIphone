@@ -44,15 +44,38 @@ function sentences(block){
  let spans;
  if(globalThis.Intl?.Segmenter)spans=[...new Intl.Segmenter('und',{granularity:'sentence'}).segment(block.text)].map(s=>({text:s.segment,offset:s.index}));
  else spans=sentenceSpans(block.text);
- const out=[];for(const s of spans){const raw=s.text;let from=0;for(const m of raw.matchAll(/[;；]|\n+/gu)){const end=m.index+m[0].length;if(raw.slice(from,end).trim())out.push({start:block.start+s.offset+from,end:block.start+s.offset+end});from=end;}if(raw.slice(from).trim())out.push({start:block.start+s.offset+from,end:block.start+s.offset+raw.length});}
+ // A semicolon belongs to the argument. Splitting it unconditionally breaks
+ // comparisons and enumerations, especially inside quotations.
+ const out=[];for(const s of spans){const raw=s.text;let from=0;for(const m of raw.matchAll(/\n+/gu)){const end=m.index+m[0].length;if(raw.slice(from,end).trim())out.push({start:block.start+s.offset+from,end:block.start+s.offset+end});from=end;}if(raw.slice(from).trim())out.push({start:block.start+s.offset+from,end:block.start+s.offset+raw.length});}
  return out.map(r=>{while(r.start<r.end&&/\s/u.test(block.text[r.start-block.start]))r.start++;while(r.end>r.start&&/\s/u.test(block.text[r.end-block.start-1]))r.end--;return{...block,...r,text:block.text.slice(r.start-block.start,r.end-block.start)};}).filter(r=>contextualWords(r.text).length);
 }
-export function conceptCandidates(atom,{isVerb=(w)=>finiteFallback.test(w),tagWords}={}){
- const ws=contextualWords(atom.text),out=[],seen=new Set(),add=(start,end,terms,bonus=0)=>{const text=atom.text.slice(start,end).trim(),key=normalize(text);if(!text||text.length>120||/[.!?。！？;；\n]/u.test(text)||seen.has(key)||!terms.length)return;seen.add(key);out.push({text,key,start:atom.start+start,end:atom.start+end,terms:[...new Set(terms)],bonus});};
+function scanStructure(text,stack=[]){
+ const pairs={'“':'”','‘':'’','«':'»','(' :')','[':']','「':'」','『':'』'};
+ for(let i=0;i<text.length;i++){const c=text[i];if((c==='’'||c==="'")&&/\p{L}/u.test(text[i-1]||'')&&/\p{L}/u.test(text[i+1]||''))continue;if(stack.at(-1)===c){stack.pop();continue;}if(pairs[c])stack.push(pairs[c]);else if(c==='"')stack.push(c);}
+ return stack;
+}
+function unfinished(atom,tagWords){
+ if(atom.delimiters?.length||/[:：,，]\s*$/u.test(atom.text))return true;
+ if(/[.!?。！？][”’»"')\]]*\s*$/u.test(atom.text))return false;
+ const words=contextualWords(atom.text),tags=tagWords?.(words);return !!tags?.length&&['DET','ADP','CCONJ','SCONJ','AUX'].includes(tags.at(-1));
+}
+function reasoningSpans(parsed,tagWords){
+ const spans=[];let section=0;
+ for(const block of parsed.blocks){if(block.attrs.header)section++;
+  for(const atom of sentences(block)){atom.section=section;const prev=spans.at(-1),same=prev&&prev.section===atom.section&&prev.speakerId===atom.speakerId&&prev.turnStart===atom.turnStart&&!block.attrs.list;
+   if(same&&unfinished(prev,tagWords)){prev.end=atom.end;prev.text=parsed.text.slice(prev.start,prev.end);scanStructure(atom.text,prev.delimiters);prev.bold.push(...atom.bold||[]);}else spans.push({...atom,delimiters:scanStructure(atom.text),bold:[...atom.bold||[]]});
+  }
+ }
+ return spans;
+}
+export function conceptCandidates(atom,{isVerb=(w)=>finiteFallback.test(w),tagWords,isClitic=()=>false,isParticiple=()=>false}={}){
+ const ws=contextualWords(atom.text),out=[],seen=new Set(),add=(start,end,terms,bonus=0,kind='nominal',essential=false)=>{const text=atom.text.slice(start,end).trim(),key=normalize(text);if(!text||text.length>120||/[.!?。！？;；\n]/u.test(text)||seen.has(key)||!terms.length)return;seen.add(key);out.push({text,key,start:atom.start+start,end:atom.start+end,terms:[...new Set(terms)],bonus,kind,essential});};
  const tags=tagWords?.(ws)||null;atom.tags=tags;atom.sourceReferences=citationSpans(atom.text,ws,tags);const predicate=tags?.findIndex(x=>x==='VERB'||x==='AUX')??-1,comma=predicate>=0?atom.text.lastIndexOf(',',ws[predicate].offset):-1;
  const eligible=(w,i)=>!atom.sourceReferences.some(r=>w.offset<r.end&&w.offset+w.length>r.start)&&/\p{L}/u.test(w.text)&&!closed.has(w.key)&&!discourse.has(w.key)&&(tags?['NOUN','PROPN'].includes(tags[i]):!finiteFallback.test(w.text)&&!isVerb(w.text,ws[i-1]?.text||'')&&!/mente$/u.test(w.key));
+ const colon=atom.text.search(/[:：](?!\d)/u),contrast=ws.findLastIndex(w=>/^(?:mas|porem|but|pero|sino)$/u.test(w.key));
+ atom.assertionStart=colon>=0?colon+1:0;atom.contrastStart=contrast>=0?ws[contrast].offset+ws[contrast].length:0;
  for(let i=0;i<ws.length;i++){
-  if(!eligible(ws[i],i))continue;const a=ws[i],subject=predicate>i&&a.offset>comma?.20:a.offset<comma?-.20:0;add(a.offset,a.offset+a.length,[a.key],subject);
+  if(!eligible(ws[i],i))continue;const a=ws[i],subject=predicate>i&&a.offset>comma?.08:a.offset<comma?-.20:0,frame=colon>=0&&a.offset<colon?-.32:0;add(a.offset,a.offset+a.length,[a.key],subject+frame);
   // Nominal links and adjacent modifiers are candidates; there is no target word count.
   let terms=[a.key],j=i+1,linked=false;for(;j<ws.length;j++){
    const gap=atom.text.slice(ws[j-1].offset+ws[j-1].length,ws[j].offset);if(/[^\s-]/u.test(gap))break;
@@ -60,19 +83,45 @@ export function conceptCandidates(atom,{isVerb=(w)=>finiteFallback.test(w),tagWo
    if(tags){if(linked&&tags[j]==='ADJ')continue;if(!eligible(ws[j],j)&&tags[j]!=='ADJ')break;if(!linked&&['NOUN','PROPN'].includes(tags[j])&&tags[j-1]!=='PROPN')break;}else if(!eligible(ws[j],j))break;
    const nominalSuffix=/(?:[çc][aã]o|[çc][oõ]es|dade|mento|ncia|ança|tude|logia|ismo)s?$/u;
    if(!linked&&nominalSuffix.test(ws[j].key)&&nominalSuffix.test(ws[j-1].key))break;
-   terms.push(ws[j].key);add(a.offset,ws[j].offset+ws[j].length,terms,subject+(linked?.08:.02));linked=false;
+   terms.push(ws[j].key);add(a.offset,ws[j].offset+ws[j].length,terms,subject+frame+(linked?.08:.02));linked=false;
   }
+ }
+ // A central idea can be an action, state or relation, not just an entity.
+ // Generate complete predicates with their auxiliaries/negation/clitics; the
+ // existing contextual representation ranks them in the same inference pass.
+ if(tags&&ws.some(eligible))for(let i=0;i<ws.length;i++){
+  if(!['VERB','AUX','INF'].includes(tags[i]))continue;
+  const gap=(a,b)=>!/[\n.!?;:，。！？“”"«»]/u.test(atom.text.slice(ws[a].offset+ws[a].length,ws[b].offset));
+  let begin=i,end=i;while(begin>0&&gap(begin-1,begin)&&(['AUX','PART'].includes(tags[begin-1])||tags[begin-1]==='PRON'&&isClitic(ws[begin-1].text)||/^(?:não|nunca|jamais|sem|not|never|without|no|sin)$/iu.test(ws[begin-1].text)))begin--;
+  while(end+1<ws.length&&gap(end,end+1)&&['VERB','AUX','INF','PRON','PART','ADV','ADJ'].includes(tags[end+1]))end++;
+  // Avoid a bare auxiliary or speech act. Copular complements and verbal
+  // arguments provide the substance, while pronouns alone do not.
+  const substantive=tags.slice(i,end+1).some(t=>['VERB','INF','ADJ'].includes(t));
+  const relation=tags[i]==='AUX'||tags.slice(begin,end+1).includes('AUX')||tags.slice(i,end+1).includes('ADJ');
+  const terms=(a,b)=>ws.slice(a,b+1).filter((w,j)=>!closed.has(w.key)&&!['PRON','PART','AUX','DET','ADP'].includes(tags[a+j])).map(w=>w.key);
+  const focus=ws[i].offset>=atom.contrastStart&&atom.contrastStart? .30:0;
+  const essential=focus>0||ws.slice(begin,end+1).some(w=>isParticiple(w.text)||/^(?:não|nunca|jamais|sem|not|never|without|no|sin)$/iu.test(w.text))||tags[end]==='ADJ';
+  const referenceTail=atom.sourceReferences.some(r=>r.start>ws[end].offset&& !ws.some((w,j)=>w.offset>ws[end].offset&&w.offset<r.start&&eligible(w,j)));
+  if(substantive&&relation&&tags[end]!=='AUX'&&terms(begin,end).length&&!referenceTail)add(ws[begin].offset,ws[end].offset+ws[end].length,terms(begin,end),.14+focus,'predicate',essential);
+  // An ordinary verb gains a cue only together with an actual object, never
+  // a solitary instruction such as "look" or "read".
+  let next=end+1;if(tags[next]==='ADP')next++;while(tags[next]==='DET')next++;
+  if(next<ws.length&&eligible(ws[next],next)&&gap(end,next)){
+   let tail=next;while(tail+1<ws.length){if(tags[tail+1]==='ADJ'&&gap(tail,tail+1)){tail++;continue;}let link=tail+1;if(tags[link]!=='ADP'||!join.has(ws[link].key))break;link++;while(tags[link]==='DET')link++;if(link<ws.length&&eligible(ws[link],link)&&gap(tail,link)){tail=link;continue;}break;}
+   add(ws[begin].offset,ws[tail].offset+ws[tail].length,terms(begin,tail),.06+focus,'predicate',essential||tags[i]==='AUX');
+  }
+  i=end;
  }
  for(const b of atom.bold||[]){const start=Math.max(0,b.start-atom.start),end=Math.min(atom.text.length,b.end-atom.start),selected=ws.filter(w=>w.offset>=start&&w.offset+w.length<=end);if(selected.length&&selected.every(w=>eligible(w,ws.indexOf(w))||join.has(w.key)))add(start,end,selected.filter(w=>!join.has(w.key)).map(w=>w.key),.25);}
  // Bound work by salience rather than truncating a phrase to fit a word quota.
  return out.sort((a,b)=>b.bonus-a.bonus||a.start-b.start||a.text.length-b.text.length).slice(0,32);
 }
-export function prepareContext(parsed,{isVerb,tagWords,wordFrequency=()=>0,wordObliqueness=()=>0}={}){
- const atoms=[];let section=0;for(const block of parsed.blocks){if(block.attrs.header)section++;for(const atom of sentences(block)){atom.section=section;atom.candidates=conceptCandidates(atom,{isVerb,tagWords});atom.reference=referenceOnly(atom.text)||!!atom.sourceReferences?.length&&!atom.candidates.length;atom.heading=!!block.attrs.header&&!atom.tags?.some(tag=>['VERB','AUX'].includes(tag));if(atom.reference||atom.heading)atom.candidates=[];atoms.push(atom);}}
+export function prepareContext(parsed,{isVerb,tagWords,isClitic,isParticiple,wordFrequency=()=>0,wordObliqueness=()=>0}={}){
+ const atoms=reasoningSpans(parsed,tagWords);for(const atom of atoms){atom.candidates=conceptCandidates(atom,{isVerb,tagWords,isClitic,isParticiple});atom.reference=referenceOnly(atom.text)||!!atom.sourceReferences?.length&&!atom.candidates.length;atom.heading=!!atom.attrs.header&&!atom.tags?.some(tag=>['VERB','AUX'].includes(tag));if(atom.reference||atom.heading)atom.candidates=[];}
  const df=new Map();for(const a of atoms)for(const term of new Set(a.candidates.flatMap(c=>c.terms)))df.set(term,(df.get(term)||0)+1);
  for(const a of atoms){for(const c of a.candidates){if(c.bonus>.15)c.bonus/=1+Math.log1p(wordFrequency(c.terms[0]))/4;c.lexical=c.terms.reduce((n,k)=>n+Math.log(1+atoms.length/(df.get(k)||1))+.12*Math.log(1000/(1+wordFrequency(k))),0)/c.terms.length+c.bonus;c.specificity=c.terms.reduce((sum,k)=>sum+Math.max(0,Math.min(1,Math.log(5000/(1+wordFrequency(k)))/Math.log(5000))),0)/c.terms.length;c.obliquePenalty=c.terms.reduce((sum,k,i)=>sum+(i===0&&c.bonus>0?0:wordObliqueness(k)*.25),0);}
   // Keep candidates from the whole sentence, including its tail and emphasized spans.
-  const ranked=[...a.candidates].sort((x,y)=>y.lexical-x.lexical||x.text.length-y.text.length),picked=[];for(const c of ranked){if(picked.some(p=>p.key===c.key))continue;picked.push(c);if(picked.length===12)break;}a.candidates=picked;
+  const ranked=[...a.candidates].sort((x,y)=>y.lexical-x.lexical||x.text.length-y.text.length),picked=[];for(const kind of ['predicate','nominal'])for(const c of ranked.filter(c=>c.kind===kind).slice(0,6))picked.push(c);for(const c of ranked){if(picked.some(p=>p.key===c.key))continue;picked.push(c);if(picked.length>=12)break;}a.candidates=picked;
  }
  return{...parsed,atoms,df};
 }
@@ -93,7 +142,8 @@ export function partitionContext(prepared,vectors=new Map(),roleVectors={}){
  for(const atom of prepared.atoms){const vector=vectors.get(atom.start),role=contextualRole(atom,vector,roleVectors);atom.role=role;
   if(role.kind!=='content'||!atom.candidates.length){excluded.push({start:atom.start,end:atom.end,kind:role.kind==='content'?'uncertain':role.kind});previous=null;continue;}
   const prev=units.at(-1),same=prev&&previous&&prev.section===atom.section&&prev.speakerId===atom.speakerId&&prev.turnStart===atom.turnStart,sim=previous&&vector&&vectors.get(previous.start)?cosine(vectors.get(previous.start),vector):0,overlap=previous?shared(previous,atom):0;
-  const follows=same&&(dependent(atom.text)&&(sim>.20||overlap>0)||sim>.74&&overlap>0||!vector&&overlap>=2&&dependent(atom.text));
+  const question=previous&&/[?？][”’"')\]]*\s*$/u.test(previous.text),elliptical=question&&!atom.tags?.some(tag=>['VERB','AUX'].includes(tag)),answer=question&&sim>.38&&overlap>0;
+  const follows=same&&(elliptical||answer||dependent(atom.text)&&(sim>.20||overlap>0)||sim>.74&&overlap>0||!vector&&overlap>=2&&dependent(atom.text));
   if(follows&&prev.atoms.length<8){prev.end=atom.end;prev.text=prepared.text.slice(prev.start,prev.end);prev.atoms.push(atom);prev.bold.push(...atom.bold||[]);}else units.push({...atom,atoms:[atom],bold:[...atom.bold||[]]});previous=atom;
  }
  const contextual=new Set(excluded.map(e=>e.start+':'+e.end)),bounds=new Map(units.map(u=>[u,{start:u.start,end:u.end}]));for(const atom of prepared.atoms){if(!contextual.has(atom.start+':'+atom.end))continue;const same=u=>u.speakerId===atom.speakerId&&u.turnStart===atom.turnStart;const target=units.find(u=>same(u)&&u.start>=atom.end)||[...units].reverse().find(u=>same(u)&&u.end<=atom.start);if(target){const bound=bounds.get(target);bound.start=Math.min(bound.start,atom.start);bound.end=Math.max(bound.end,atom.end);}}for(const u of units){Object.assign(u,bounds.get(u));u.text=prepared.text.slice(u.start,u.end);}
@@ -106,9 +156,15 @@ export function rankContextConcepts(unit,prepared,{vectors=new Map(),candidateVe
   const vector=candidateVectors.get(c.start+':'+c.end)||candidateVectors.get(c.key),semantic=vector&&unitVector.length?cosine(vector,unitVector):0,context=vector&&documentVector.length?cosine(vector,documentVector):0;
   const evidence=unit.atoms.filter(a=>c.terms.some(k=>a.candidates.some(p=>p.terms.includes(k)))).length/unit.atoms.length;
   // Longer wording earns nothing by itself. Extra terms must improve coverage.
-  return{...c,vector,score:.62*semantic+.08*context+.18*Math.min(1,c.lexical/4)+.16*evidence+.18*(c.specificity||0)+c.bonus-.07*Math.max(0,c.terms.length-1)-(c.obliquePenalty||0)};
+  const predicates=c.atom.candidates.filter(p=>p.kind==='predicate'),focused=predicates.some(p=>p.bonus>=.30),focusPenalty=focused&&c.kind!=='predicate'&&c.start-c.atom.start<c.atom.contrastStart?.28:0;
+  const localIndex=contextualWords(c.atom.text).findIndex(w=>w.offset+c.atom.start===c.start),properActor=c.terms.length===1&&c.atom.tags?.[localIndex]==='PROPN'&&predicates.length>0,actorPenalty=properActor?.20:0;
+  // A longer span naturally resembles its source more closely. Counter that
+  // copying bias; keep predicates whose polarity, state or relation carries the
+  // point. Ordinary actions still compete but must add more than their wording.
+  const copyPenalty=c.kind==='predicate'&&!c.essential?.28+.10*c.text.length/Math.max(1,c.atom.text.length):0;
+  return{...c,vector,score:.62*semantic+.08*context+.18*Math.min(1,c.lexical/4)+.16*evidence+.18*(c.specificity||0)+c.bonus-.07*Math.max(0,c.terms.length-1)-(c.obliquePenalty||0)-focusPenalty-actorPenalty-copyPenalty};
  }).sort((a,b)=>b.score-a.score||a.text.length-b.text.length||a.start-b.start);
- const compact=ranked.filter(c=>!ranked.some(p=>p!==c&&p.text.length<c.text.length&&c.key.includes(p.key)&&p.score>=c.score-.09));
+ const compact=ranked.filter(c=>!ranked.some(p=>p!==c&&p.text.length<c.text.length&&c.key.includes(p.key)&&p.score>=c.score-.09&&!(c.kind==='predicate'&&p.kind!=='predicate')));
  const chosen=[];for(const c of compact){
   if(chosen.some(p=>p.key.includes(c.key)||c.key.includes(p.key)))continue;
   const redundancy=chosen.length?Math.max(...chosen.map(p=>c.vector&&p.vector?cosine(c.vector,p.vector):c.terms.filter(x=>p.terms.includes(x)).length/Math.max(1,c.terms.length))):0;
