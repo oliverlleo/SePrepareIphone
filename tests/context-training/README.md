@@ -9,3 +9,7 @@ Esta etapa é opcional e separada da compilação do aplicativo. O build comum u
 5. Para alterar os pesos do produto, substitua o arquivo no módulo de memorização, atualize `weights-sha256.txt` e execute as regressões de contexto e os testes com o modelo real antes de compilar.
 
 As amostras de qualidade do SePrepare não participam do treinamento. Os dados e pesos derivados permanecem sob CC BY-SA 4.0; a pasta de licenças contém créditos e licenças dos corpora. Fontes: UniversalDependencies/UD_Portuguese-Bosque, UD_English-EWT, UD_Spanish-GSD, UD_Japanese-GSD.
+
+## Morfologia de superfície (1.0.84)
+
+Após os passos acima, execute `python enrich-reasoning.py --corpora training --model shared/memorization-tagger-model.json`. Esta etapa deriva formas verbais e clíticos das mesmas divisões de treino UD, sem usar discursos de usuários. Não adiciona um modelo neural nem uma dependência de execução.

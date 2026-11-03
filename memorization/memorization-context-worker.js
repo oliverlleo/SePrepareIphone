@@ -1,16 +1,16 @@
 import{prepareContext,finishContext,ROLE_SEEDS,pooledSpan}from'./memorization-context.js';
 import{modelWindows,center}from'./memorization-semantic-core.js';
 import{memoryHash}from'./memorization-data.js';
-import{tagContextWords,detectContextLanguage,contextWordFrequency,contextWordObliqueness}from'./memorization-pos.js';
+import{tagContextWords,detectContextLanguage,contextWordFrequency,contextWordObliqueness,contextObjectClitic,contextParticiple}from'./memorization-pos.js';
 export function createContextProcessor(model,{isVerb}={}){
  const atomsCache=new Map(),results=new Map();let roles;
  const save=(map,key,value,max)=>{map.delete(key);map.set(key,value);while(map.size>max)map.delete(map.keys().next().value);return value;};
  return async function process(parsed,{token,cancelled=()=>false,progress=()=>{}}={}){
   const check=()=>{if(cancelled())throw Error('MEMORIZATION_CANCELLED');};
   if(!parsed||typeof parsed.text!=='string'||parsed.text.length>600001||!Array.isArray(parsed.blocks)||parsed.blocks.length>20000||parsed.blocks.some(b=>!Number.isInteger(b.start)||!Number.isInteger(b.end)||b.start<0||b.end>b.start+parsed.text.length||b.end>parsed.text.length||b.end<=b.start||parsed.text.slice(b.start,b.end)!==b.text))throw Error('Invalid contextual source');
-  const key=memoryHash(JSON.stringify([parsed.text,parsed.blocks.map(b=>[b.start,b.end,b.attrs.header,b.attrs.list,b.speakerId,b.turnStart])]))+':3';
+  const key=memoryHash(JSON.stringify([parsed.text,parsed.blocks.map(b=>[b.start,b.end,b.attrs.header,b.attrs.list,b.speakerId,b.turnStart])]))+':3-reasoning-1';
   if(results.has(key))return{...results.get(key),cacheHit:true};
-  const language=detectContextLanguage(parsed.text),prepared=prepareContext(parsed,{isVerb,tagWords:ws=>tagContextWords(ws,language),wordFrequency:w=>contextWordFrequency(w,language),wordObliqueness:w=>contextWordObliqueness(w,language)});check();progress('Identificando conteúdo e orientações',10);
+  const language=detectContextLanguage(parsed.text),prepared=prepareContext(parsed,{isVerb,tagWords:ws=>tagContextWords(ws,language),isClitic:w=>contextObjectClitic(w,language),isParticiple:w=>contextParticiple(w,language),wordFrequency:w=>contextWordFrequency(w,language),wordObliqueness:w=>contextWordObliqueness(w,language)});check();progress('Identificando conteúdo e orientações',10);
   if(!prepared.atoms.some(a=>!a.reference&&a.candidates.length))return save(results,key,finishContext(prepared),3);
   // Missing optional model files must not trigger failed module/model requests offline.
   // Android assets use file: and remain locally available without Cache Storage.
