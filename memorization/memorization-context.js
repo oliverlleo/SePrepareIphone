@@ -8,6 +8,7 @@ const discourse=new Set(normalize('portanto contudo entretanto todavia porém en
 const finiteFallback=/^(?:é|são|foi|era|eram|tem|têm|seja|sejam|há|está|estão|será|serão|pode|podem|deve|devem|vamos|vejam|leiam|observem|is|are|was|were|has|have|can|will|should|es|son|fue|tiene)$/iu;
 export const ROLE_SEEDS={
  content:['A coragem permite agir apesar do medo.','A energia solar reduz a dependência de combustíveis.','O narrador reconheceu seu erro e pediu perdão.','Trust makes cooperation possible.','La paciencia permite comprender al otro.','O processo tem três etapas: coletar amostras, registrar e comparar os resultados.','Primeiro reunimos as evidências. Depois verificamos sua origem.','O primeiro argumento explica a relação entre a causa e o efeito.','A pessoa encontrou uma solução para o problema.','Uma comparação mostra como essas situações se relacionam.'],
+ illustration:['Pense em um barco que enfrenta ondas fortes. Essa situação ilustra a necessidade de preparo.','Suponha que um agricultor perca a colheita; esse cenário ajuda a explicar a importância da prevenção.','Considere uma família que precisa escolher entre gastos imediatos e planos futuros.','Uma situação imaginada ou uma comparação pode introduzir um argumento do discurso.','Consider a traveler who loses the map: this imagined situation introduces the importance of guidance.','Imagina un jardín que necesita cuidados. La comparación explica el valor de la constancia.'],
  instruction:['Peça ao participante que leia a próxima passagem.','Abra a imagem e aponte para o detalhe indicado.','Faça uma pausa e aguarde a resposta da assistência.','Read the next passage aloud.','Muestre la imagen al público.','Uma orientação de palco para quem apresenta: controlar slides, conduzir a participação ou fazer uma pausa.','Stage directions for the presenter: control slides or invite audience participation.','Instrucciones para quien presenta: dirigir la participación o manejar las diapositivas.'],
  reference:['João 3:16; página 25, parágrafo 4.','Referência: capítulo 2, versos 3 a 5.','Fonte: artigo 12, edição de outubro.','See chapter 4, page 18.','Referencia: página 22, párrafo 6.'],
  transition:['Vamos passar agora ao próximo assunto.','Até aqui consideramos a primeira parte.','Antes de continuar, retomemos a pergunta.','Let us move to the next topic.','Pasemos ahora al siguiente punto.'],
@@ -18,6 +19,24 @@ export function contextualWords(text){
  return wordTokens(text);
 }
 const normVector=xs=>{const norm=Math.hypot(...xs);return norm?xs.map(x=>x/norm):xs.map(()=>0);};
+// Source references are identified by their numeric structure and grammatical context,
+// not by a list of book names or presentation phrases.
+export function citationSpans(text,words=contextualWords(text),tags){
+ const spans=[];
+ for(const number of text.matchAll(/\d{1,3}\s*[:：]\s*\d{1,3}(?:\s*[-–,]\s*\d{1,3})*/gu)){
+  let i=words.length-1;while(i>=0&&words[i].offset+words[i].length>number.index)i--;if(i<0)continue;
+  const last=words[i];if(!/\p{L}/u.test(last.text)||closed.has(last.key)||finiteFallback.test(last.text)||tags&&!['NOUN','PROPN'].includes(tags[i])||/[^\s]/u.test(text.slice(last.offset+last.length,number.index)))continue;
+  let start=last.offset,j=i-1,linked=false;
+  while(j>=0){const word=words[j],gap=text.slice(word.offset+word.length,start);if(/[^\s]/u.test(gap))break;
+   if(/^\d+$/u.test(word.text)){start=word.offset;break;}
+   if(join.has(word.key)){if(j>0&&(!tags||['NOUN','PROPN'].includes(tags[j-1]))&&/^\p{Lu}/u.test(words[j-1].text)){start=word.offset;linked=true;j--;continue;}break;}
+   if(tags?.[j]==='PROPN'&&tags[i]==='PROPN'||linked&&(!tags||['NOUN','PROPN'].includes(tags[j]))){start=word.offset;linked=false;j--;continue;}break;
+  }
+  spans.push({start,end:number.index+number[0].length});
+ }
+ return spans;
+}
+
 export function referenceOnly(text){
  const value=text.trim().replace(/^\[|\]$/gu,''),fields=value.replace(/^(?:refer[eê]ncia|reference|fonte|source)\s*[:：]\s*/iu,'');return /^(?:(?:ler|leia[m]?|leitura|read|leer|lectura|参照|読む)\s*[:：-]?\s*)?(?:[1-3]\s*)?[\p{L}][\p{L} .’'-]{0,55}\s+\d{1,3}\s*[:：]\s*\d{1,3}(?:\s*[-–,;]\s*\d{1,3})*[.!]?$/iu.test(value)||/^(?:(?:p[aá]g(?:ina)?\.?|page|cap[ií]tulo|chapter|vers[ií]culo|par[aá]grafo|paragraph|figura|figure)\s*[:：]?\s*\d[\d\s:.,;–-]*)+$/iu.test(fields);
 }
@@ -30,8 +49,8 @@ function sentences(block){
 }
 export function conceptCandidates(atom,{isVerb=(w)=>finiteFallback.test(w),tagWords}={}){
  const ws=contextualWords(atom.text),out=[],seen=new Set(),add=(start,end,terms,bonus=0)=>{const text=atom.text.slice(start,end).trim(),key=normalize(text);if(!text||text.length>120||/[.!?。！？;；\n]/u.test(text)||seen.has(key)||!terms.length)return;seen.add(key);out.push({text,key,start:atom.start+start,end:atom.start+end,terms:[...new Set(terms)],bonus});};
- const tags=tagWords?.(ws)||null;atom.tags=tags;const predicate=tags?.findIndex(x=>x==='VERB'||x==='AUX')??-1,comma=predicate>=0?atom.text.lastIndexOf(',',ws[predicate].offset):-1;
- const eligible=(w,i)=>/\p{L}/u.test(w.text)&&!closed.has(w.key)&&!discourse.has(w.key)&&(tags?['NOUN','PROPN'].includes(tags[i]):!finiteFallback.test(w.text)&&!isVerb(w.text,ws[i-1]?.text||'')&&!/mente$/u.test(w.key));
+ const tags=tagWords?.(ws)||null;atom.tags=tags;atom.sourceReferences=citationSpans(atom.text,ws,tags);const predicate=tags?.findIndex(x=>x==='VERB'||x==='AUX')??-1,comma=predicate>=0?atom.text.lastIndexOf(',',ws[predicate].offset):-1;
+ const eligible=(w,i)=>!atom.sourceReferences.some(r=>w.offset<r.end&&w.offset+w.length>r.start)&&/\p{L}/u.test(w.text)&&!closed.has(w.key)&&!discourse.has(w.key)&&(tags?['NOUN','PROPN'].includes(tags[i]):!finiteFallback.test(w.text)&&!isVerb(w.text,ws[i-1]?.text||'')&&!/mente$/u.test(w.key));
  for(let i=0;i<ws.length;i++){
   if(!eligible(ws[i],i))continue;const a=ws[i],subject=predicate>i&&a.offset>comma?.20:a.offset<comma?-.20:0;add(a.offset,a.offset+a.length,[a.key],subject);
   // Nominal links and adjacent modifiers are candidates; there is no target word count.
@@ -49,7 +68,7 @@ export function conceptCandidates(atom,{isVerb=(w)=>finiteFallback.test(w),tagWo
  return out.sort((a,b)=>b.bonus-a.bonus||a.start-b.start||a.text.length-b.text.length).slice(0,32);
 }
 export function prepareContext(parsed,{isVerb,tagWords,wordFrequency=()=>0,wordObliqueness=()=>0}={}){
- const atoms=[];let section=0;for(const block of parsed.blocks){if(block.attrs.header){section++;continue;}for(const atom of sentences(block)){atom.section=section;atom.reference=referenceOnly(atom.text);atom.candidates=atom.reference?[]:conceptCandidates(atom,{isVerb,tagWords});atoms.push(atom);}}
+ const atoms=[];let section=0;for(const block of parsed.blocks){if(block.attrs.header)section++;for(const atom of sentences(block)){atom.section=section;atom.candidates=conceptCandidates(atom,{isVerb,tagWords});atom.reference=referenceOnly(atom.text)||!!atom.sourceReferences?.length&&!atom.candidates.length;atom.heading=!!block.attrs.header&&!atom.tags?.some(tag=>['VERB','AUX'].includes(tag));if(atom.reference||atom.heading)atom.candidates=[];atoms.push(atom);}}
  const df=new Map();for(const a of atoms)for(const term of new Set(a.candidates.flatMap(c=>c.terms)))df.set(term,(df.get(term)||0)+1);
  for(const a of atoms){for(const c of a.candidates){if(c.bonus>.15)c.bonus/=1+Math.log1p(wordFrequency(c.terms[0]))/4;c.lexical=c.terms.reduce((n,k)=>n+Math.log(1+atoms.length/(df.get(k)||1))+.12*Math.log(1000/(1+wordFrequency(k))),0)/c.terms.length+c.bonus;c.specificity=c.terms.reduce((sum,k)=>sum+Math.max(0,Math.min(1,Math.log(5000/(1+wordFrequency(k)))/Math.log(5000))),0)/c.terms.length;c.obliquePenalty=c.terms.reduce((sum,k,i)=>sum+(i===0&&c.bonus>0?0:wordObliqueness(k)*.25),0);}
   // Keep candidates from the whole sentence, including its tail and emphasized spans.
@@ -58,11 +77,12 @@ export function prepareContext(parsed,{isVerb,tagWords,wordFrequency=()=>0,wordO
  return{...parsed,atoms,df};
 }
 export function contextualRole(atom,vector,roleVectors={}){
- if(atom.reference)return{kind:'reference',confidence:1};
+ if(atom.reference)return{kind:'reference',confidence:1};if(atom.heading)return{kind:'heading',confidence:1};
  const finite=atom.tags?.findIndex(x=>['VERB','AUX'].includes(x))??-1,predicate=finite>=0?finite:atom.tags?.findIndex(x=>x==='INF')??-1,hasSubject=predicate>0&&atom.tags.slice(0,predicate).some(x=>['NOUN','PROPN','PRON','INF'].includes(x)),startsAction=predicate>=0&&!hasSubject;
- const ranking=Object.entries(roleVectors).map(([kind,v])=>({kind,score:(v.examples?.length?.7*Math.max(...v.examples.map(x=>cosine(vector||[],x)))+.3*cosine(vector||[],v.centroid):cosine(vector||[],v))+(kind==='content'&&hasSubject?.18:kind==='instruction'&&startsAction?.18:0)})).sort((a,b)=>b.score-a.score),top=ranking[0],margin=top?top.score-(ranking[1]?.score||0):0;
+ const ranking=Object.entries(roleVectors).map(([kind,v])=>({kind,score:(v.examples?.length?.7*Math.max(...v.examples.map(x=>cosine(vector||[],x)))+.3*cosine(vector||[],v.centroid):cosine(vector||[],v))+(kind==='content'&&hasSubject?.18:kind==='instruction'&&startsAction?.18:kind==='illustration'&&startsAction&&atom.tags?.filter(tag=>['VERB','AUX'].includes(tag)).length>1?.18:0)})).sort((a,b)=>b.score-a.score),top=ranking[0],margin=top?top.score-(ranking[1]?.score||0):0;
+ if(top?.kind==='illustration')return{kind:'content',confidence:Math.min(.99,.5+margin)};
  const substantive=atom.tags?.some(x=>x==='NOUN'||x==='PROPN')&&atom.tags?.some(x=>x==='VERB'||x==='AUX'||x==='INF');
- if(top?.kind==='instruction'&&hasSubject&&!/^\s*[[(]/u.test(atom.text))return{kind:'content',confidence:.5,uncertain:true};
+ if(top&&top.kind!=='content'&&top.kind!=='greeting'&&hasSubject&&substantive&&!/^\s*[[(]/u.test(atom.text))return{kind:'content',confidence:.5,uncertain:true};
  if(top&&top.kind!=='content'&&top.score>.40&&margin>.065&&!(top.kind==='transition'&&substantive&&margin<.14))return{kind:top.kind,confidence:Math.min(.99,.5+margin)};
  return{kind:'content',confidence:top?.kind==='content'?Math.min(.99,.5+margin):.5};
 }
@@ -76,6 +96,7 @@ export function partitionContext(prepared,vectors=new Map(),roleVectors={}){
   const follows=same&&(dependent(atom.text)&&(sim>.20||overlap>0)||sim>.74&&overlap>0||!vector&&overlap>=2&&dependent(atom.text));
   if(follows&&prev.atoms.length<8){prev.end=atom.end;prev.text=prepared.text.slice(prev.start,prev.end);prev.atoms.push(atom);prev.bold.push(...atom.bold||[]);}else units.push({...atom,atoms:[atom],bold:[...atom.bold||[]]});previous=atom;
  }
+ const contextual=new Set(excluded.map(e=>e.start+':'+e.end)),bounds=new Map(units.map(u=>[u,{start:u.start,end:u.end}]));for(const atom of prepared.atoms){if(!contextual.has(atom.start+':'+atom.end))continue;const same=u=>u.speakerId===atom.speakerId&&u.turnStart===atom.turnStart;const target=units.find(u=>same(u)&&u.start>=atom.end)||[...units].reverse().find(u=>same(u)&&u.end<=atom.start);if(target){const bound=bounds.get(target);bound.start=Math.min(bound.start,atom.start);bound.end=Math.max(bound.end,atom.end);}}for(const u of units){Object.assign(u,bounds.get(u));u.text=prepared.text.slice(u.start,u.end);}
  return{...prepared,units,excluded};
 }
 export function rankContextConcepts(unit,prepared,{vectors=new Map(),candidateVectors=new Map(),documentVector=[]}={}){
@@ -100,7 +121,7 @@ export function rankContextConcepts(unit,prepared,{vectors=new Map(),candidateVe
  return{concepts,confidence:sentenceVectors.length?(compact[0]?.score||0):.35,needsConceptReview:!concepts.length||!sentenceVectors.length||unit.atoms.some(a=>a.role?.uncertain),relation:contextRelation(unit.text),retrievalClue:clue,sourceHash:memoryHash(unit.text)};
 }
 export function contextRelation(text){const n=normalize(text);if(/\b(?:mas|porem|no entanto|enquanto|em vez de|but|whereas|pero)\b/u.test(n))return'contrast';if(/\b(?:porque|por isso|consequencia|permite|reduz|aumenta|because|therefore|allows|por eso)\b/u.test(n))return'cause';if(/\b(?:por exemplo|imagine|for example|por ejemplo)\b/u.test(n))return'example';if(/\b(?:primeiro|depois|etapas|passos|first|next|primero)\b/u.test(n))return'steps';if(/(?:^|\s)(?:e|significa|consiste|is|means|es)(?:\s|$)/u.test(n))return'definition';return'idea';}
-export function finishContext(prepared,options={}){const partitioned=partitionContext(prepared,options.vectors,options.roleVectors),documentVector=center([...options.vectors?.values()||[]]);return{units:partitioned.units.map(u=>({...u,...rankContextConcepts(u,prepared,{...options,documentVector}),atoms:undefined,candidates:undefined,role:undefined})),excluded:partitioned.excluded,engine:CONTEXT_ENGINE,semantic:!!options.vectors?.size};}
+export function finishContext(prepared,options={}){const partitioned=partitionContext(prepared,options.vectors,options.roleVectors),documentVector=center([...options.vectors?.values()||[]]);return{units:partitioned.units.map(u=>({...u,...rankContextConcepts(u,prepared,{...options,documentVector}),atoms:undefined,candidates:undefined,role:undefined})),excluded:partitioned.excluded,engine:CONTEXT_ENGINE,semantic:!!options.vectors?.size,coverage:prepared.atoms.map(a=>({start:a.start,end:a.end,kind:a.role?.kind||'content',covered:partitioned.units.some(u=>u.start<=a.start&&u.end>=a.end)}))};}
 export function pooledSpan(rows,ids,needle){
  const found=[];for(let i=0;i+needle.length<=ids.length;i++){if(needle.every((v,j)=>ids[i+j]===v)){found.push(...rows.slice(i,i+needle.length));i+=needle.length-1;}}
  return found.length?normVector(found.reduce((sum,row)=>sum.map((v,j)=>v+row[j]),new Array(rows[0].length).fill(0))):null;

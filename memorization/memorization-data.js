@@ -32,6 +32,7 @@ export function validateMemorization(deck){
  if(deck.session!==undefined){const s=deck.session;require(s&&validId(s.id)&&stamp(s.updatedAt)&&['normal','difficult'].includes(s.mode)&&Array.isArray(s.queue)&&s.queue.length<=MAX_CARDS*3&&s.queue.every(validId)&&Number.isSafeInteger(s.position)&&s.position>=0&&s.position<=s.queue.length&&Array.isArray(s.answers)&&s.answers.length<=MAX_CARDS*3&&s.answers.every(validId));}
  if(deck.ideaSource!==undefined)require(digest(deck.ideaSource));
  if(deck.ideaEngine!==undefined)require(deck.ideaEngine===2);
+ if(deck.coverageRevision!==undefined)require(deck.coverageRevision===1);
  if(deck.contextRevision!==undefined)require(deck.contextRevision===1);
  if(deck.contextEngine!==undefined)require(deck.contextEngine===3);
  if(deck.analysisInfo!==undefined)require(deck.analysisInfo&&typeof deck.analysisInfo.semantic==='boolean'&&Number.isInteger(deck.analysisInfo.excluded)&&deck.analysisInfo.excluded>=0&&Number.isInteger(deck.analysisInfo.review)&&deck.analysisInfo.review>=0);
@@ -79,7 +80,7 @@ export function mergeMemorization(left,right){
  const session=winner(left.session,right.session);if(session)result.session=clone(session);
  const source=winner(left.ideaSource?left:null,right.ideaSource?right:null);if(source)result.ideaSource=source.ideaSource;
  const bank=winner(left.ideaBank?left:null,right.ideaBank?right:null);if(bank){result.ideaBank=clone(bank.ideaBank);result.ideaEngine=2;}
- const context=winner(left.contextEngine?left:null,right.contextEngine?right:null);if(context){result.contextEngine=context.contextEngine;if(context.contextRevision)result.contextRevision=context.contextRevision;if(context.analysisInfo)result.analysisInfo=clone(context.analysisInfo);}
+ const context=winner(left.contextEngine?left:null,right.contextEngine?right:null);if(context){result.contextEngine=context.contextEngine;if(context.contextRevision)result.contextRevision=context.contextRevision;if(context.coverageRevision)result.coverageRevision=context.coverageRevision;if(context.analysisInfo)result.analysisInfo=clone(context.analysisInfo);}
  if(left.ideaRounds||right.ideaRounds){const rounds=new Map();for(const r of [...left.ideaRounds||[],...right.ideaRounds||[]])rounds.set(r.id,mergeIdeaRound(rounds.get(r.id),r));result.ideaRounds=[...rounds.values()].sort((a,b)=>a.at-b.at||a.id.localeCompare(b.id));}
  validateMemorization(result);return result;
 }
@@ -129,22 +130,8 @@ export function ideaRoundResult(round){
  return{total:round.entries.length,answered:values.length,remembered,review:values.length-remembered,unrated:round.entries.length-values.length,percent:values.length?Math.round(100*remembered/values.length):null,answers:latest};
 }
 export function selectIdeaRound(deck,pool,scope=[],now=Date.now()){
- const rounds=(deck.ideaRounds||[]).filter(r=>ideaScopeKey(r.scope)===ideaScopeKey(scope)),previous=rounds.at(-1),used=new Map(),lastUsed=new Map();
- for(const r of rounds)for(const e of r.entries){used.set(e.cardId,(used.get(e.cardId)||0)+1);lastUsed.set(e.cardId,r.at);}
- const unique=[...new Map(pool.filter(c=>isLiveCard(c)&&!c.needsReview).map(c=>[c.id,c])).values()];if(!unique.length)return null;
- // Small rounds, balanced over the whole speech. A different selection is guaranteed
- // when the available bank has more cards than the round; order remains chronological.
- const size=Math.min(8,unique.length>2?Math.max(2,Math.ceil(unique.length*.6)):unique.length),seed=memoryHash(memoryId());
- const previousIds=new Set(previous?.entries.map(e=>e.cardId)||[]),rank=c=>(used.get(c.id)||0)*10+(previousIds.has(c.id)?5:0);
- const ranked=unique.map(c=>({c,rank:rank(c),tie:memoryHash(c.id+seed)})).sort((a,b)=>a.rank-b.rank||a.tie.localeCompare(b.tie));
- const selected=[],sections=new Set();
- for(const item of ranked){const section=item.c.speakerId||item.c.theme;if(sections.has(section))continue;selected.push(item.c);sections.add(section);if(selected.length===size)break;}
- for(const item of ranked){if(selected.length===size)break;if(!selected.includes(item.c))selected.push(item.c);}
- if(previous&&selected.length<unique.length&&selected.every(c=>previousIds.has(c.id))){const fresh=ranked.find(x=>!previousIds.has(x.c.id));if(fresh)selected[selected.length-1]=fresh.c;}
- const signature=list=>list.map(c=>c.id).sort().join('|'),past=new Set(rounds.map(r=>r.entries.map(e=>e.cardId).sort().join('|')));
- if(selected.length<unique.length&&past.has(signature(selected))){let found=false;for(const item of ranked.filter(x=>!selected.includes(x.c))){for(let i=selected.length-1;i>=0;i--){const trial=selected.slice();trial[i]=item.c;if(!past.has(signature(trial))){selected.splice(0,selected.length,...trial);found=true;break;}}if(found)break;}}
- const order=new Map((deck.order?.ids||[]).map((id,i)=>[id,i]));selected.sort((a,b)=>(order.get(a.id)??1e8)-(order.get(b.id)??1e8)||a.anchor.start-b.anchor.start||a.id.localeCompare(b.id));
- return validateIdeaRound({id:'round-'+memoryId(),at:now,updatedAt:now,scope:[...scope].sort(),sourceHash:deck.ideaSource||deck.sourceHash,entries:selected.map(c=>({cardId:c.id,anchorHash:c.anchor.hash})),answers:[],cursor:{id:memoryId(),at:now,index:0}});
+ const selected=[...new Map(pool.filter(c=>isLiveCard(c)&&!c.needsReview).map(c=>[c.id,c])).values()].sort((a,b)=>a.anchor.start-b.anchor.start||a.id.localeCompare(b.id));if(!selected.length)return null;
+ return validateIdeaRound({id:'round-'+memoryId(),at:now,updatedAt:now,scope:[...scope].sort(),sourceHash:deck.ideaSource||deck.sourceHash,training:2,level:1,groups:selected.map((_,i)=>[i]),signals:[],entries:selected.map(c=>({cardId:c.id,anchorHash:c.anchor.hash})),answers:[],cursor:{id:memoryId(),at:now,index:0}});
 }
 export function recordIdeaAnswer(deck,round,index,rating,at=Date.now()){
  if(![0,2].includes(rating)||!round.entries[index])throw Error('Avaliação inválida.');if(round.answers.length>=2000)throw Error('Esta rodada atingiu o limite de avaliações.');
@@ -186,25 +173,11 @@ export function adaptiveTrainingLevel(deck,pool,scope){
  return pool.length<2?1:level;
 }
 export function selectAdaptiveRound(deck,pool,scope=[],sections=new Map(),now=Date.now()){
- const unique=[...new Map(pool.filter(c=>isLiveCard(c)&&!c.needsReview).map(c=>[c.id,c])).values()];if(!unique.length)return null;
- const level=adaptiveTrainingLevel(deck,unique,scope),base=selectIdeaRound(deck,unique,scope,now),seed=memoryId(),scoped=(deck.ideaRounds||[]).filter(r=>ideaScopeKey(r.scope)===ideaScopeKey(scope)),used=new Map(),help=new Map();
- for(const r of scoped){for(const e of r.entries)used.set(e.cardId,(used.get(e.cardId)||0)+1);if(r.training===2)for(const s of r.signals){const e=r.entries[s.index];if(e)help.set(e.cardId,Math.max(help.get(e.cardId)||0,s.at));}}
- const rows=unique.map(c=>{const schedule=cardSchedule(deck,c,now),recentHelp=(help.get(c.id)||0)>now-86400000*3;return {c,schedule,priority:(schedule.difficult?100:0)+(recentHelp?40:0)+(schedule.dueNow?20:0)+(schedule.count?0:15),tie:memoryHash(c.id+seed)};}).sort((a,b)=>b.priority-a.priority||(used.get(a.c.id)||0)-(used.get(b.c.id)||0)||a.tie.localeCompare(b.tie));
- let selected;
- if(level===4)selected=[...unique];
- else{
-  const size=Math.min(8,unique.length>2?Math.max(2,Math.ceil(unique.length*.6)):unique.length),prioritySlots=Math.max(1,Math.floor(size*.7));selected=rows.slice(0,prioritySlots).map(x=>x.c);
-  // Always reserve coverage for other parts; already-mastered introductions still recur.
-  const coverage=rows.filter(x=>!selected.includes(x.c)).sort((a,b)=>(used.get(a.c.id)||0)-(used.get(b.c.id)||0)||a.tie.localeCompare(b.tie));for(const x of coverage){if(selected.length===size)break;selected.push(x.c);}
-  if(level<=2&&selected.length<unique.length){const signature=list=>list.map(c=>c.id).sort().join('|'),past=new Set(scoped.map(r=>r.entries.map(e=>e.cardId).sort().join('|')));if(past.has(signature(selected))){let found=false;for(const item of rows.filter(x=>!selected.includes(x.c))){for(let i=selected.length-1;i>=prioritySlots;i--){const trial=selected.slice();trial[i]=item.c;if(!past.has(signature(trial))){selected=trial;found=true;break;}}if(found)break;}}}
-  if(level===3){const ids=new Set(selected.map(c=>sections.get(c.id)?.id||c.id));selected=unique.filter(c=>ids.has(sections.get(c.id)?.id||c.id));}
- }
- // Study order follows the discourse, even when difficulty decides what is selected.
- selected.sort((a,b)=>a.anchor.start-b.anchor.start||a.id.localeCompare(b.id));
- const entries=selected.map(c=>({cardId:c.id,anchorHash:c.anchor.hash})),groups=[];
+ const selected=[...new Map(pool.filter(c=>isLiveCard(c)&&!c.needsReview).map(c=>[c.id,c])).values()].sort((a,b)=>a.anchor.start-b.anchor.start||a.id.localeCompare(b.id));if(!selected.length)return null;
+ const level=adaptiveTrainingLevel(deck,selected,scope),entries=selected.map(c=>({cardId:c.id,anchorHash:c.anchor.hash})),groups=[];
  for(let i=0;i<selected.length;i++){
   const prev=groups.at(-1),a=prev&&selected[prev.at(-1)],b=selected[i],same=!!a&&(sections.get(a.id)?.id||a.id)===(sections.get(b.id)?.id||b.id),left=new Set(sections.get(a?.id)?.terms||[]),overlap=(sections.get(b.id)?.terms||[]).filter(w=>left.has(w)).length,connected=!!a&&(same||overlap>=2)&&a.speakerId===b.speakerId&&b.anchor.start-a.anchor.end<500;
   if(prev&&(level===4||level===3&&same||level===2&&prev.length<2&&connected))prev.push(i);else groups.push([i]);
  }
- return validateIdeaRound({...base,training:2,level,entries,groups,signals:[],cursor:{id:memoryId(),at:now,index:0}});
+ return validateIdeaRound({id:'round-'+memoryId(),at:now,updatedAt:now,scope:[...scope].sort(),sourceHash:deck.ideaSource||deck.sourceHash,training:2,level,entries,groups,signals:[],answers:[],cursor:{id:memoryId(),at:now,index:0}});
 }
