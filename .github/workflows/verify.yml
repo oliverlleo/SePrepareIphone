@@ -19,9 +19,11 @@ jobs:
             localization/package-lock.json
             protection/package-lock.json
             pdf/package-lock.json
+            review/package-lock.json
       - run: npm ci --prefix sharing --ignore-scripts --no-audit --no-fund
       - run: npm ci --prefix localization --ignore-scripts --no-audit --no-fund
       - run: npm ci --prefix protection --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix review --ignore-scripts --no-audit --no-fund
       - run: npm ci --prefix pdf --ignore-scripts --no-audit --no-fund
       - run: npm ci --prefix qa/time-dom --ignore-scripts --no-audit --no-fund
       - run: node protection/verify-all.mjs

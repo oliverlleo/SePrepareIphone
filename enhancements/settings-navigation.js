@@ -6,7 +6,7 @@ export function settingsCatalog(){
  return [
   entry('language','Idioma do aplicativo',0,'Languages',{panel:'language',concepts:['language'],keywords:'interface menu português English español 日本語'}),
   entry('appearance','Aparência',0,'Sun',{panel:'appearance',concepts:['appearance']}),
-  entry('review','Revisão de português',1,'SpellCheck',{panel:'review',concepts:['spelling'],keywords:'Hunspell VERO LanguageTool corretor offline online'}),
+  entry('review','Revisão de português',1,'SpellCheck',{panel:'review',concepts:['spelling'],keywords:'Hunspell VERO LanguageTool corretor offline online inglês English espanhol español japonês 日本語 baixar dicionário pacote download'}),
   entry('pace','Ritmos de apresentação',1,'Music',{action:'rhythm-manager',concepts:['speed'],keywords:'gerenciar criar editar personalizado leitura tempo estimativa palavras por minuto'}),
   entry('voice','Voz e áudio',1,'Volume2',{action:'audio-settings',concepts:['voice','speed'],keywords:'leitura som locutor offline aparelho velocidade'}),
   entry('notifications','Notificações',2,'Bell',{panel:'notifications',concepts:['notification']}),

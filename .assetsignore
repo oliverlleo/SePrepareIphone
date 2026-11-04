@@ -31,3 +31,6 @@ rehearsal/
 PARIDADE-*.md
 
 memorization/
+
+review/
+inspect-idempotence.mjs

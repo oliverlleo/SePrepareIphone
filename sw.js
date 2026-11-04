@@ -3,11 +3,12 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261104.87';
+const BUILD_ID = '20261104.88';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
 const CORE_ASSETS = [
+  /* REVIEW ASSETS */ versioned('./review-international-worker.js'), './review-runtime/ja-b68697745c12d84c.js',
   './manifest.webmanifest',
   ...['export-worker.js','preview.js','pdf.worker.js'].map(name=>versioned('./pdf/'+name)),
   ...['logo-light.png','logo-dark.png'].map(name=>'./branding/'+name),
@@ -215,6 +216,7 @@ function networkFirst(event, fallbackToIndex = false) {
 }
 
 self.addEventListener('fetch', event => {
+  /* REVIEW DATA BYPASS */ if(new URL(event.request.url).pathname.startsWith('/review-packs/'))return;
   if (!IS_APPLE_DEVICE) return;
   const req = event.request;
   if (req.method !== 'GET') return;
