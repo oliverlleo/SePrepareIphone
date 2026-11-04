@@ -1,0 +1,7 @@
+function sp86Colors(kind='highlight'){
+ if(!d.q)return;const r=sp82Range(),fmt=d.q.getFormat(r.index,r.length),text=kind==='text',attribute=text?'color':'background',value=fmt[attribute];
+ const swatches=text?['#203d3a','#234c48','#9c6945','#a34943','#335d84','#764f8a','#6b7f40','#111111']:['#f8e4a1','#cfe5ce','#cce4f5','#edcde1','#f4c7b6','#ded1ef','#d9e5ae','#e3e6e5'];
+ const input=text?'textColor':'highlightColor',selected=/^#[\da-f]{6}$/i.test(value)?value:swatches[0];
+ Te(SPLocale.t(text?'Cor da letra':'Marca-texto'),SPLocale.h`<p class="help">${sp82Description()}</p><div class="stack"><div class="field"><label for="${input}">${SPLocale.t(text?'Cor da letra':'Cor do marca-texto')}</label><div class="swatches" role="group" aria-label="${SPLocale.t('Cores disponíveis')}">${swatches.map(c=>SPLocale.h`<button type="button" class="swatch" style="--swatch:${c}" data-action="swatch" data-target="${input}" data-color="${c}" aria-label="${SPLocale.t('Cor')} ${c}" aria-pressed="${c===selected}"></button>`).join('')}</div><input id="${input}" type="color" value="${selected}"></div>${oe(text?'clear-color':'clear-highlight',SPLocale.t(text?'Usar cor padrão':'Remover marca-texto'),'X','soft small')}</div>`,oe(text?'apply-color':'apply-highlight',SPLocale.t(text?'Aplicar cor':'Destacar'),text?'Type':'Highlighter'));
+ const picker=L('#'+input);picker.addEventListener('input',()=>$t('.modal .swatch').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.color===picker.value))));
+}

@@ -1,3 +1,4 @@
+import {reviewKey,renderReviewDialog,rebaseReviewMatches} from './review-position.js';
 import{mountEditorFind}from'./editor-find-ui.js';
 import{mountToolbarIndicator}from'./toolbar-scroll-indicator.js';
 import{mountContextHelp}from'./editor-context-help.js';
@@ -8,4 +9,4 @@ import editorCss from'./editor-improvements.css';
 import settingsCss from'./settings-navigation.css';
 import platformCss from'./platform.css';
 const style=document.createElement('style');style.id='seprepare-enhancements-style';style.textContent=editorCss+'\n'+settingsCss+'\n'+platformCss;document.head.append(style);
-window.SePrepareEnhancements={mountEditorFind,mountToolbarIndicator,mountContextHelp,mountSettingsNavigation,styleSettingsDialog,semanticEdit,formatNewVersion,...personal};
+window.SePrepareEnhancements={reviewKey,renderReviewDialog,rebaseReviewMatches,mountEditorFind,mountToolbarIndicator,mountContextHelp,mountSettingsNavigation,styleSettingsDialog,semanticEdit,formatNewVersion,...personal};
