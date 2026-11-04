@@ -1,0 +1,3 @@
+import {getDocument,GlobalWorkerOptions} from 'pdfjs-dist/legacy/build/pdf.mjs';
+const url=new URL('pdf/pdf.worker.js',document.baseURI);if(document.documentElement.dataset.seprepareBuild)url.searchParams.set('v',document.documentElement.dataset.seprepareBuild);GlobalWorkerOptions.workerSrc=url.href;
+export async function openPreview(bytes){const task=getDocument({data:new Uint8Array(bytes),isEvalSupported:false,useSystemFonts:false,disableFontFace:false,useWasm:false,isOffscreenCanvasSupported:false,enableXfa:false});const doc=await task.promise;return {numPages:doc.numPages,getPage:number=>doc.getPage(number),destroy:()=>task.destroy()};}
