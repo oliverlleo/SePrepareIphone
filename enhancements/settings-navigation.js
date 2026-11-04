@@ -1,12 +1,12 @@
 import {t,h} from './i18n.js';
 import {searchSettings} from './settings-search-core.js';
 export const settingsGroups=['GERAL','ESCRITA E APRESENTAÇÃO','AGENDA','DADOS E SEGURANÇA','AJUDA E INFORMAÇÕES'];
-export function settingsCatalog(){
+export function settingsCatalog(reviewTitle=t('Revisão de português')){
  const entry=(id,title,group,icon,options={})=>({id,title:t(title),category:t(settingsGroups[group]),group,icon,...options});
  return [
   entry('language','Idioma do aplicativo',0,'Languages',{panel:'language',concepts:['language'],keywords:'interface menu português English español 日本語'}),
   entry('appearance','Aparência',0,'Sun',{panel:'appearance',concepts:['appearance']}),
-  entry('review','Revisão de português',1,'SpellCheck',{panel:'review',concepts:['spelling'],keywords:'Hunspell VERO LanguageTool corretor offline online inglês English espanhol español japonês 日本語 baixar dicionário pacote download'}),
+  entry('review',reviewTitle,1,'SpellCheck',{panel:'review',concepts:['spelling'],keywords:'Hunspell VERO LanguageTool corretor offline online inglês English espanhol español japonês 日本語 baixar dicionário pacote download'}),
   entry('pace','Ritmos de apresentação',1,'Music',{action:'rhythm-manager',concepts:['speed'],keywords:'gerenciar criar editar personalizado leitura tempo estimativa palavras por minuto'}),
   entry('voice','Voz e áudio',1,'Volume2',{action:'audio-settings',concepts:['voice','speed'],keywords:'leitura som locutor offline aparelho velocidade'}),
   entry('notifications','Notificações',2,'Bell',{panel:'notifications',concepts:['notification']}),
@@ -17,9 +17,9 @@ export function settingsCatalog(){
   entry('privacy','Privacidade',4,'ShieldCheck',{panel:'privacy',concepts:['privacy']}),
   entry('about','Sobre o SePrepare',4,'Info',{action:'about',concepts:['about'],keywords:'versão version 1.0.74 atualização sobre'}),
   entry('interactive-rehearsal-guide','Ensaio interativo',4,'Mic',{parent:'guide',parentTitle:t('Guia do SePrepare'),action:'guide',concepts:['help','voice'],keywords:'ensaio interativo demonstração participantes manual automático microfone sua vez'}),
-  entry('dictionary','Meu dicionário',1,'BookMarked',{parent:'review',parentTitle:t('Revisão de português'),action:'dictionary',concepts:['spelling'],keywords:'palavras pessoais correções lembradas personal dictionary remembered corrections diccionario 辞書'}),
-  entry('online-review','Revisão online',1,'Globe',{parent:'review',parentTitle:t('Revisão de português'),panel:'review',focus:'#onlineReview',concepts:['spelling'],keywords:'LanguageTool internet corretor servidor endpoint'}),
-  entry('review-address','Endereço do corretor',1,'Globe',{parent:'review',parentTitle:t('Revisão de português'),panel:'review',focus:'#reviewEndpoint',concepts:['spelling'],keywords:'URL LanguageTool HTTPS servidor endpoint'}),
+  entry('dictionary','Meu dicionário',1,'BookMarked',{parent:'review',parentTitle:reviewTitle,action:'dictionary',concepts:['spelling'],keywords:'palavras pessoais correções lembradas personal dictionary remembered corrections diccionario 辞書'}),
+  entry('online-review','Revisão online',1,'Globe',{parent:'review',parentTitle:reviewTitle,panel:'review',focus:'#onlineReview',concepts:['spelling'],keywords:'LanguageTool internet corretor servidor endpoint'}),
+  entry('review-address','Endereço do corretor',1,'Globe',{parent:'review',parentTitle:reviewTitle,panel:'review',focus:'#reviewEndpoint',concepts:['spelling'],keywords:'URL LanguageTool HTTPS servidor endpoint'}),
   entry('default-pace','Palavras por minuto',1,'Timer',{parent:'pace',parentTitle:t('Ritmos de apresentação'),action:'rhythm-default',focus:'#rhythmDefaultPpm',concepts:['speed'],keywords:'velocidade leitura PPM padrão default predeterminado 標準'}),
   entry('manage-paces','Gerenciar ritmos',1,'Music',{parent:'pace',parentTitle:t('Ritmos de apresentação'),action:'rhythm-manager',concepts:['speed'],keywords:'criar editar excluir personalizado ritmo nome barra colorida custom'}),
   entry('voice-name','Escolher voz',1,'Headphones',{parent:'voice',parentTitle:t('Voz e áudio'),action:'audio-settings',focus:'#voiceName',concepts:['voice','language'],keywords:'offline voz padrão aparelho Voice 1 Voz 1 音声'}),
@@ -39,7 +39,7 @@ export function mountSettingsNavigation(c){
  const host=c.host,stash=document.createElement('div');stash.className='settings-panel-stash';stash.hidden=true;
  const panels={language:host.querySelector('#appLanguage')?.closest('.setting-card'),review:host.querySelector('#onlineReview')?.closest('.setting-card'),notifications:host.querySelector('#permissionsSummary')?.closest('.setting-card'),privacy:host.querySelector('.legal-settings-card')};
  while(host.firstChild)stash.append(host.firstChild);
- Object.assign(panels,c.panels||{});const entries=[...settingsCatalog().filter(c.filterEntry||(()=>true)),...(c.extraEntries||[])],verNote=c.version?`${t('Versão')} ${c.version}`:'';host.innerHTML=h`<div class="settings-search-sticky"><label class="settings-search-field">${c.icon('Search')}<input type="search" id="settingsSearch" autocomplete="off" placeholder="Pesquisar ajustes…" aria-label="Pesquisar ajustes"><button type="button" id="clearSettingsSearch" aria-label="Limpar busca" hidden>${c.icon('X')}</button></label><p class="settings-search-status" id="settingsSearchStatus" role="status" aria-live="polite"></p></div><div class="settings-categories" id="settingsCategories"></div>${verNote?h`<p class="settings-version-footer" id="settingsVersionFooter">SePrepare · ${c.escape(verNote)}</p>`:''}`;host.append(stash);
+ Object.assign(panels,c.panels||{});const entries=[...settingsCatalog(c.reviewTitle?.()).filter(c.filterEntry||(()=>true)),...(c.extraEntries||[])],verNote=c.version?`${t('Versão')} ${c.version}`:'';host.innerHTML=h`<div class="settings-search-sticky"><label class="settings-search-field">${c.icon('Search')}<input type="search" id="settingsSearch" autocomplete="off" placeholder="Pesquisar ajustes…" aria-label="Pesquisar ajustes"><button type="button" id="clearSettingsSearch" aria-label="Limpar busca" hidden>${c.icon('X')}</button></label><p class="settings-search-status" id="settingsSearchStatus" role="status" aria-live="polite"></p></div><div class="settings-categories" id="settingsCategories"></div>${verNote?h`<p class="settings-version-footer" id="settingsVersionFooter">SePrepare · ${c.escape(verNote)}</p>`:''}`;host.append(stash);
  let active=null,frame=0;
  const input=host.querySelector('#settingsSearch'),results=host.querySelector('#settingsCategories'),status=host.querySelector('#settingsSearchStatus');input.value=c.query||'';
  function release(){if(active){stash.append(active);active=null;}}
@@ -50,14 +50,16 @@ export function mountSettingsNavigation(c){
  }
  function row(entry,searching){const sub=searching&&entry.parent?entry.parentTitle:entry.id==='about'&&verNote?verNote:'';return h`<button type="button" class="settings-option" data-settings-id="${entry.id}" ${entry.action?`data-action="${entry.action}"`:''}><span class="settings-option-icon" aria-hidden="true">${c.icon(entry.icon)}</span><span class="settings-option-copy"><strong>${c.escape(entry.title)}</strong>${sub?h`<small>${c.escape(sub)}</small>`:''}</span>${c.icon('ChevronRight')}</button>`;}
  function render(){
-  const query=input.value.trim(),found=searchSettings(entries,query),searching=!!query;
+  const query=input.value.trim(),found=searchSettings(entries.filter(entry=>!['online-review','review-address'].includes(entry.id)||!c.reviewLanguage||c.reviewLanguage()==='pt-BR'),query),searching=!!query;
   c.onQuery(input.value);host.querySelector('#clearSettingsSearch').hidden=!query;
   status.textContent=searching?(found.length?c.count(found.length):c.empty()):'';
   results.innerHTML=found.length?settingsGroups.map((group,index)=>{const rows=found.filter(entry=>entry.group===index);return rows.length?h`<section class="settings-category" aria-labelledby="settingsGroup${index}"><h3 id="settingsGroup${index}">${c.escape(t(group))}</h3><div class="settings-option-list">${rows.map(entry=>row(entry,searching)).join('')}</div></section>`:'';}).join(''):h`<div class="settings-empty">${c.icon('Search')}<h3>Nenhum ajuste encontrado</h3><p>Experimente outra palavra.</p></div>`;
  }
+ const refreshReviewTitle=()=>{const title=c.reviewTitle?.();if(!title)return;for(const entry of entries){if(entry.id==='review')entry.title=title;if(entry.parent==='review')entry.parentTitle=title;}render();};
+ window.addEventListener('seprepare-review-language-change',refreshReviewTitle);
  const onClick=event=>{const button=event.target.closest('[data-settings-id]');if(!button)return;const entry=entries.find(item=>item.id===button.dataset.settingsId);if(!entry)return;if(entry.panel){event.preventDefault();event.stopPropagation();openPanel(entry);}else focusTarget(entry.focus);};
  host.addEventListener('click',onClick);input.addEventListener('input',render);host.querySelector('#clearSettingsSearch').addEventListener('click',()=>{input.value='';render();input.focus();});
- render();return {release,destroy(){release();host.removeEventListener('click',onClick);cancelAnimationFrame(frame);}};
+ render();return {release,destroy(){window.removeEventListener('seprepare-review-language-change',refreshReviewTitle);release();host.removeEventListener('click',onClick);cancelAnimationFrame(frame);}};
 }
 export function styleSettingsDialog(panel){
  const modal=document.querySelector('.modal');if(!modal)return;

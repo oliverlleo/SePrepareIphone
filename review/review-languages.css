@@ -3,3 +3,5 @@
 .review-language-field select{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-family:inherit;box-shadow:none}
 
 @media(max-width:520px){.review-language-field select{font-size:16px;min-height:42px}}
+
+.review-selection-controls{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin:12px 0 16px}.review-selection-primary{display:flex;flex-wrap:wrap;gap:8px;width:100%}.review-selection-primary .btn{flex:1 1 130px;min-height:40px;white-space:nowrap;padding:8px 10px;font-size:12px}.review-selection-controls>.btn{padding:6px 0;white-space:normal;text-align:left;font-size:11px;min-height:32px}
