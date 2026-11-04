@@ -1,0 +1,1 @@
+PDF generation: pdfmake 0.3.13 (MIT), PDF.js 6.5.438 (Apache-2.0). Fonts: Roboto (SIL Open Font License), Lora (SIL Open Font License). Generated locally; no document content sent to external services.

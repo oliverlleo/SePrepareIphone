@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "pdfmake": "0.3.13",
+    "pdfjs-dist": "6.5.438",
+    "esbuild": "^0.25.0"
+  }
+}

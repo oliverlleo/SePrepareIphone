@@ -3,12 +3,15 @@
 // User data (discursos, partes, versões, categorias, notas, ensaios) is NEVER stored
 // in Cache Storage; it is persisted in the device's internal memory (OPFS + IndexedDB).
 
-const BUILD_ID = '20261104.86';
+const BUILD_ID = '20261104.87';
 const CACHE_PREFIX = 'seprepare-app-shell-';
 const CACHE_NAME = CACHE_PREFIX + BUILD_ID;
 const versioned = path => `${path}?v=${BUILD_ID}`;
 const CORE_ASSETS = [
   './manifest.webmanifest',
+  ...['export-worker.js','preview.js','pdf.worker.js'].map(name=>versioned('./pdf/'+name)),
+  ...['logo-light.png','logo-dark.png'].map(name=>'./branding/'+name),
+  ...['inter-latin-400-normal.woff2','inter-latin-500-normal.woff2','inter-latin-600-normal.woff2','inter-latin-700-normal.woff2','lora-latin-400-normal.woff2','lora-latin-500-normal.woff2','lora-latin-600-normal.woff2'].map(name=>'./fonts/'+name),
   ...['speech-worker.js','pcm-capture-worklet.js','pcm-resampler.js','ort.wasm.min.js','ort-wasm.wasm','silero_vad.onnx'].map(name=>'./voice/v1.0.74/'+name),
   ...['style.css', 'support.css', 'notes.css', 'drive.css', 'share-code.css', 'legal.css', 'launch-gate.css',
     'auto-update.js', 'analytics.js', 'launch-gate.js', 'apple-install-guide.js', 'legal-notice.js', 'audio-parity.js', 'audio.css', 'app.js', 'semantic-worker.js', 'content-index-worker.js'].map(path => versioned('./' + path))
