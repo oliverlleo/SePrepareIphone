@@ -22,7 +22,7 @@ for(const{node:n}of collect(ui).filter(({node:n})=>n.type==='FunctionDeclaration
  const old=fn(map[n.id.name]);edit(old.start,old.end,code);
 }
 const appearance=only(collect(ui).map(x=>x.node).filter(n=>n.type==='FunctionDeclaration'&&n.id?.name==='appearanceSettings'),'aparência');
-const registry='var {reviewKey,renderReviewDialog,rebaseReviewMatches,mountEditorFind,mountToolbarIndicator,mountContextHelp,mountSettingsNavigation,styleSettingsDialog,dictionaryWords,correctionRecords,rememberedCorrections,rememberCorrection,forgetCorrection,rememberedMatches,semanticEdit,formatNewVersion}=window.SePrepareEnhancements;var sp62Settings=null,sp62Find=null,sp62Toolbar=()=>{},sp62Help=mountContextHelp();';
+const registry='var {reviewKey,renderReviewDialog,rebaseReviewMatches,mountEditorFind,mountToolbarIndicator,mountContextHelp,mountSettingsNavigation,styleSettingsDialog,dictionaryWords,correctionRecords,rememberedCorrections,rememberCorrection,forgetCorrection,rememberedMatches,rememberWord,replaceDictionaryWords,semanticEdit,formatNewVersion}=window.SePrepareEnhancements;var sp62Settings=null,sp62Find=null,sp62Toolbar=()=>{},sp62Help=mountContextHelp();';
 const mount=`function sp62MountSettings(){
  const host=L('#viewContent'),cards=[...host.querySelectorAll('.settings-list>.setting-card')],memory=cards.find(c=>c.querySelector('[data-action="pwa-memory-vault"]')),notifications=cards.find(c=>c.querySelector('h3')?.textContent.trim()===SPLocale.t('Notificações no iPhone'));
  if(!memory||!notifications)throw Error('Os controles do aparelho precisam permanecer disponíveis.');
