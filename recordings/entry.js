@@ -1,0 +1,1 @@
+import {createRecordingUI} from './recording-ui.js';import css from './recording.css';const style=document.createElement('style');style.textContent=css;document.head.append(style);window.SePrepareRecordingFactory=createRecordingUI;

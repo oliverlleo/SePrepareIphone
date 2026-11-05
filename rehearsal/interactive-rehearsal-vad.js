@@ -1,10 +1,11 @@
+import {sharedMicrophone} from '../recordings/shared-microphone.js';
 import { createClassifiedSpeechGate } from './rehearsal-speech-gate.js';
 import { createWebSpeechClassifier } from './rehearsal-web-classifier.js';
 import { PcmFrameResampler } from './voice/pcm-resampler.js';
 
 export function createRehearsalVad(options = {}) {
   const {
-    mediaDevices = globalThis.navigator?.mediaDevices,
+    mediaDevices = sharedMicrophone,
     AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext,
     AudioWorkletNodeClass = globalThis.AudioWorkletNode,
     createClassifier = () => createWebSpeechClassifier(),
