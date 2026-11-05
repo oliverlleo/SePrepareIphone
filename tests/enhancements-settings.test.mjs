@@ -9,7 +9,7 @@ globalThis.window={SPLocale:locale,dispatchEvent(){}};
 const checks=[];const check=(name,fn)=>{fn();checks.push(name);console.log('PASS '+name);};
 const ids=q=>searchSettings(settingsCatalog(),q).map(e=>e.id);
 setLanguage('pt-BR');
-check('Categorias e 12 opções principais na ordem solicitada',()=>{assert.equal(settingsGroups.length,5);assert.deepEqual(ids(''),['language','appearance','review','pace','voice','notifications','backup','trash','guide','support','privacy','about']);});
+check('Categorias e 13 opções principais na ordem solicitada',()=>{assert.equal(settingsGroups.length,5);assert.deepEqual(ids(''),['language','appearance','review','pace','voice','notifications','backup','recordings','trash','guide','support','privacy','about']);});
 check('Ritmos abre o gerenciamento diretamente; busca PPM continua acessando Padrão',()=>{const catalog=settingsCatalog(),pace=catalog.find(e=>e.id==='pace'),ppm=catalog.find(e=>e.id==='default-pace');assert.equal(pace.action,'rhythm-manager');assert(!pace.panel);assert.equal(ppm.action,'rhythm-default');});
 for(const word of ['recuperar','restaurar','restauração','recovery','restore','復元'])check('Recuperação por significado: '+word,()=>{assert(ids(word).includes('backup'));assert(ids(word).includes('trash'));});
 for(const word of ['velocidade','speed','velocidad','速度'])check('Velocidade encontra ritmos e áudio: '+word,()=>{assert(ids(word).includes('pace'));assert(ids(word).includes('voice'));assert(ids(word).includes('voice-speed'));});
@@ -20,7 +20,7 @@ check('Dicionário e correções são encontráveis',()=>assert(ids('dicionario'
 check('Consulta específica prioriza o controle',()=>assert.equal(ids('velocidade da voz')[0],'voice-speed'));
 check('Palavra sem correspondência retorna vazio',()=>assert.deepEqual(ids('inexistente987'),[]));
 check('Sinônimo com palavra desconhecida não produz falso resultado',()=>assert.deepEqual(ids('voz inexistente987'),[]));
-check('Consultas vazias não exibem subopções duplicadas',()=>assert.equal(ids(' \n ').length,12));
+check('Consultas vazias não exibem subopções duplicadas',()=>assert.equal(ids(' \n ').length,13));
 check('Cada resultado interno aponta para ação ou formulário e controle existente',()=>{for(const e of settingsCatalog()){assert(e.action||e.panel);if(e.parent)assert(e.parentTitle);}});
 for(const language of ['en','es','ja'])check('Categorias e controles traduzidos: '+language,()=>{setLanguage(language);for(const key of [...settingsGroups,'Pesquisar ajustes…','Aparência','Voz e áudio','Nenhum ajuste encontrado','Velocidade da voz'])assert(catalogs[language][key]);const catalog=settingsCatalog();assert.equal(searchSettings(catalog,catalog[0].title)[0].id,'language');});
 setLanguage('pt-BR');

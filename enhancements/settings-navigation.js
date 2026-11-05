@@ -1,4 +1,5 @@
-import {t,h} from './i18n.js';
+import {createRecordingText} from '../recordings/recording-i18n.js';
+import {t,h,uiLocale} from './i18n.js';
 import {searchSettings} from './settings-search-core.js';
 export const settingsGroups=['GERAL','ESCRITA E APRESENTAÇÃO','AGENDA','DADOS E SEGURANÇA','AJUDA E INFORMAÇÕES'];
 export function settingsCatalog(reviewTitle=t('Revisão de português')){
@@ -11,6 +12,7 @@ export function settingsCatalog(reviewTitle=t('Revisão de português')){
   entry('voice','Voz e áudio',1,'Volume2',{action:'audio-settings',concepts:['voice','speed'],keywords:'leitura som locutor offline aparelho velocidade'}),
   entry('notifications','Notificações',2,'Bell',{panel:'notifications',concepts:['notification']}),
   entry('backup','Backup e recuperação',3,'Cloud',{action:'drive-settings',concepts:['recover'],keywords:'Google Drive dados proteger segurança recuperar restaurar importar exportar'}),
+  entry('recordings',createRecordingText(()=>uiLocale().startsWith('pt')?'pt-BR':uiLocale().split('-')[0])('manage'),3,'Mic',{action:'recording-manager',keywords:'gravação áudio ensaio recording rehearsal grabación 録音',concepts:['voice']}),
   entry('trash','Lixeira',3,'Archive',{action:'trash',concepts:['recover','trash'],keywords:'recuperar restaurar apagado excluído 30 dias'}),
   entry('guide','Guia do SePrepare',4,'BookOpen',{action:'guide',concepts:['help']}),
   entry('support','Apoiar o desenvolvedor',4,'HandHeart',{action:'support-donation',concepts:['support']}),
