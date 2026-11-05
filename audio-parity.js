@@ -17,6 +17,7 @@
     const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'');
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
+    let missingVoiceHandler=options.onMissingVoice;
     let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null,activeSegment=null,externalInterrupt=null;
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
     const t=i => (translations[lang()] || translations.pt)[i];
@@ -363,6 +364,7 @@
         o.toast(isIOS&&retryable ? retryText[lang()]||retryText.pt : speechErrorMessage(code));
         console.warn('SePrepare: speech synthesis failed',code,{language:preferredLocale,preview:isPreview,voice:currentVoice?.name||'system'});
         update();dispatch();
+        if(!isPreview&&['voice-unavailable','language-unavailable'].includes(code))missingVoiceHandler?.();
       }
       function nextChunk(at) {
         if(!valid())return;
@@ -549,7 +551,7 @@
     });
     document.addEventListener('change',event=>{if(event.target?.id==='audioSeek')seek(event.target.value);});
     refreshVoices();ensureFloating();
-    return {refreshVoices,settingsHTML,bindSettings,saveSettings,applyLanguageChange,play,pause,preview,stopPreview,seek,update,progressHTML,getAvailableVoices,speakSegment,cancelSegment,setExternalInterruptHandler};
+    return {setMissingVoiceHandler:fn=>{missingVoiceHandler=fn;},refreshVoices,settingsHTML,bindSettings,saveSettings,applyLanguageChange,play,pause,preview,stopPreview,seek,update,progressHTML,getAvailableVoices,speakSegment,cancelSegment,setExternalInterruptHandler};
   }
   global.SePrepareAudio={create};
 })(window);
