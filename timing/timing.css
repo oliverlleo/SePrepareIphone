@@ -49,3 +49,7 @@ html[data-seprepare-mode=installed][data-seprepare-compact-viewport] .editor-she
 /* Prefer a readable Rhythm label when the compact row has room. */
 .reader-controls .reader-subtools.show-rhythm-name>[data-action="toggle-reader-rhythms"]{flex:0 0 auto;width:auto;padding-inline:10px}
 .reader-subtools.show-rhythm-name [data-action="toggle-reader-rhythms"] .reader-tool-label{position:static;visibility:visible}
+
+.reader-controls .reader-subtools>.btn[data-action="speak"]{padding-inline:8px}
+.reader-controls .reader-subtools.show-tool-names>.icon-btn,.reader-controls .reader-subtools.show-rhythm-name>[data-action="toggle-reader-rhythms"],.reader-controls .reader-subtools.show-note-name>[data-action="toggle-presenter-notes"]{flex:0 0 auto;width:auto;padding-inline:8px}
+.reader-subtools.show-note-name [data-action="toggle-presenter-notes"] .reader-tool-label{position:static;visibility:visible}
