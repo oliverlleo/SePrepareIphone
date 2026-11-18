@@ -48,6 +48,21 @@ autorizações de aplicativos externos em teste podem ter validade reduzida.
 Testes locais usam somente credenciais fictícias. O certificado HTTPS de teste
 fica em `tests/qa-output/`, não é instalado no computador e não é publicado.
 
+## Compatibilidade de rede do Worker
+
+As chamadas ao Google usam `redirect: 'manual'` e rejeitam qualquer resposta 3xx
+antes de ler seu conteúdo. Workers não implementa `redirect: 'error'`: esse modo
+lança `TypeError` antes da chamada de rede e impedia troca de código e renovação,
+embora os testes com fetch simulado em Node passassem. Nenhuma credencial pode ser
+encaminhada a um endereço de redirecionamento.
+
+Execute `npm run test:worker-runtime --prefix protection` para verificar o fluxo
+no runtime workerd, com respostas Google interceptadas e fictícias. O teste inclui
+troca, renovação, rejeição de redirects e revogação. Ele informa quando a versão
+local de workerd suporta uma data anterior à configuração publicada, sem alterar
+a data de produção. Não substitui a confirmação em conta Google/iPhone real.
+
 Referências: [modelo por código do Google](https://developers.google.com/identity/oauth2/web/guides/use-code-model),
 [OAuth para aplicativos Web](https://developers.google.com/identity/protocols/oauth2/web-server) e
-[Worker com ativos estáticos](https://developers.cloudflare.com/workers/static-assets/).
+[Worker com ativos estáticos](https://developers.cloudflare.com/workers/static-assets/) e
+[modos de redirect em Workers](https://developers.cloudflare.com/workers/runtime-apis/request/).

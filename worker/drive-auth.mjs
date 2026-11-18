@@ -72,7 +72,10 @@ export function createDriveAuth({fetcher=globalThis.fetch,now=Date.now,crypto=gl
  async function google(url,options){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
   try{
-   const response=await fetcher(url,{...options,redirect:'error',signal:controller.signal});
+   // Workers does not implement redirect:'error'. Reject redirects explicitly
+   // without forwarding OAuth credentials to a different endpoint.
+   const response=await fetcher(url,{...options,redirect:'manual',signal:controller.signal});
+   if(response.status>=300&&response.status<400)throw fail(502,'invalid_google_response');
    if(Number(response.headers.get('Content-Length'))>32768)throw fail(502,'invalid_google_response');
    const raw=await response.text();if(encoder.encode(raw).length>32768)throw fail(502,'invalid_google_response');let value;try{value=JSON.parse(raw);}catch{throw fail(502,'invalid_google_response');}
    if(!response.ok){if(value?.error==='invalid_grant')throw fail(401,'reauthorize');if(value?.error==='invalid_client'||value?.error==='unauthorized_client')throw fail(503,'configuration');if(response.status===401||response.status===403)throw fail(403,'permission');throw fail(503,'temporarily_unavailable');}
