@@ -31,7 +31,7 @@
       shareHint: 'Safari · Compartilhar', shareAlt: 'ou ••• → Compartilhar',
       addTitle: 'Adicione à Tela de Início', addText: 'Na lista que abrir, selecione “Adicionar à Tela de Início”.',
       addVisual: 'Adicionar à Tela de Início',
-      confirmTitle: 'Confirme a instalação', confirmText: 'Mantenha “Abrir como App” ativado, se aparecer, e toque em Adicionar.',
+      confirmTitle: 'Confirme e abra o SePrepare', confirmText: 'Mantenha “Abrir como App” ativado, se aparecer. Toque em Adicionar e depois abra o SePrepare pelo ícone na Tela de Início.',
       confirmVisual: 'Abrir como App', addButton: 'Adicionar',
       launchTitle: 'Abra o SePrepare', launchText: 'Volte à Tela de Início e toque no ícone do SePrepare para usar o editor.',
       launchVisual: 'Tela de Início',
@@ -59,7 +59,7 @@
       shareHint: 'Safari · Share', shareAlt: 'or ••• → Share',
       addTitle: 'Add to Home Screen', addText: 'From the menu, select “Add to Home Screen”.',
       addVisual: 'Add to Home Screen',
-      confirmTitle: 'Confirm installation', confirmText: 'Keep “Open as Web App” enabled, if shown, and tap Add.',
+      confirmTitle: 'Confirm and open SePrepare', confirmText: 'Keep “Open as Web App” enabled, if shown. Tap Add, then open SePrepare from its Home Screen icon.',
       confirmVisual: 'Open as Web App', addButton: 'Add',
       launchTitle: 'Open SePrepare', launchText: 'Go to your Home Screen and tap the SePrepare icon to use the editor.',
       launchVisual: 'Home Screen',
@@ -87,7 +87,7 @@
       shareHint: 'Safari · Compartir', shareAlt: 'o ••• → Compartir',
       addTitle: 'Añade a inicio', addText: 'En la lista, selecciona “Añadir a pantalla de inicio”.',
       addVisual: 'Añadir a pantalla de inicio',
-      confirmTitle: 'Confirma la instalación', confirmText: 'Deja activado “Abrir como app”, si aparece, y toca Añadir.',
+      confirmTitle: 'Confirma y abre SePrepare', confirmText: 'Deja activado “Abrir como app”, si aparece. Toca Añadir y después abre SePrepare desde su icono en la pantalla de inicio.',
       confirmVisual: 'Abrir como app', addButton: 'Añadir',
       launchTitle: 'Abre SePrepare', launchText: 'Regresa a la pantalla de inicio y toca el icono de SePrepare para usar el editor.',
       launchVisual: 'Pantalla de inicio',
@@ -115,7 +115,7 @@
       shareHint: 'Safari · 共有', shareAlt: 'または ••• → 共有',
       addTitle: 'ホーム画面に追加', addText: '表示されたメニューから「ホーム画面に追加」を選びます。',
       addVisual: 'ホーム画面に追加',
-      confirmTitle: '追加を確認', confirmText: '「Webアプリとして開く」が表示されたらオンのまま「追加」をタップします。',
+      confirmTitle: '追加してSePrepareを開く', confirmText: '「Webアプリとして開く」が表示されたらオンのまま「追加」をタップし、ホーム画面のアイコンからSePrepareを開きます。',
       confirmVisual: 'Webアプリとして開く', addButton: '追加',
       launchTitle: 'SePrepareを開く', launchText: 'ホーム画面に戻り、SePrepareのアイコンからエディターを開きます。',
       launchVisual: 'ホーム画面',
@@ -188,7 +188,7 @@
       ? '<a href="https://seprepareapp.com.br/baixar/">' + escapeHtml(t.androidLink) + ' ↗</a>' : '';
     const stepsHtml = steps.map((kind, index) => renderStep(kind, index + 1, t)).join('');
     document.documentElement.lang = t === translations.en ? 'en' : t === translations.es ? 'es' : t === translations.ja ? 'ja' : 'pt-BR';
-    document.title = t.page + ' no ' + device;
+    document.title = t.page + ' · ' + device;
 
     guide.innerHTML =
       '<header class="install-header"><div class="install-shell install-topbar">' +
