@@ -38,7 +38,7 @@
       macOpenTitle: 'Abra no Mac', macOpenText: 'Acesse ios.seprepareapp.com.br pelo Safari ou Chrome.',
       macDockTitle: 'Instale como aplicativo', macDockText: 'No Safari, use Arquivo → Adicionar ao Dock. No Chrome, escolha Instalar aplicativo no menu.',
       macDockVisual: 'Adicionar ao Dock / Instalar',
-      macLaunchTitle: 'Abra pelo ícone', macLaunchText: 'Inicie o SePrepare pelo Dock, Spotlight ou pela lista de aplicativos.',
+      macLaunchTitle: 'Abra pelo ícone', macLaunchText: 'Inicie o SePrepare pelo Dock, Spotlight ou pela lista de aplicativos.', macLaunchVisual: 'Dock / Aplicativos',
       finish: 'Pronto! O editor é liberado ao abrir o aplicativo instalado.',
       help: 'Não encontrou “Adicionar à Tela de Início”?', helpText: 'No Safari, role as opções de compartilhamento para baixo e procure essa ação.',
       links: 'Informações', terms: 'Termos de Serviço', privacy: 'Privacidade', versions: 'Outras versões',
@@ -66,7 +66,7 @@
       macOpenTitle: 'Open on your Mac', macOpenText: 'Visit ios.seprepareapp.com.br in Safari or Chrome.',
       macDockTitle: 'Install as an app', macDockText: 'In Safari, choose File → Add to Dock. In Chrome, choose Install app from the menu.',
       macDockVisual: 'Add to Dock / Install',
-      macLaunchTitle: 'Open from the icon', macLaunchText: 'Launch SePrepare from the Dock, Spotlight, or your applications.',
+      macLaunchTitle: 'Open from the icon', macLaunchText: 'Launch SePrepare from the Dock, Spotlight, or your applications.', macLaunchVisual: 'Dock / Applications',
       finish: 'All set! The editor is available when you launch the installed app.',
       help: 'Can’t find “Add to Home Screen”?', helpText: 'In Safari, scroll down the sharing options to find it.',
       links: 'Information', terms: 'Terms of Service', privacy: 'Privacy', versions: 'Other versions',
@@ -94,7 +94,7 @@
       macOpenTitle: 'Abre en Mac', macOpenText: 'Visita ios.seprepareapp.com.br desde Safari o Chrome.',
       macDockTitle: 'Instala como aplicación', macDockText: 'En Safari, selecciona Archivo → Añadir al Dock. En Chrome, elige Instalar aplicación.',
       macDockVisual: 'Añadir al Dock / Instalar',
-      macLaunchTitle: 'Abre desde el icono', macLaunchText: 'Inicia SePrepare desde el Dock, Spotlight o tus aplicaciones.',
+      macLaunchTitle: 'Abre desde el icono', macLaunchText: 'Inicia SePrepare desde el Dock, Spotlight o tus aplicaciones.', macLaunchVisual: 'Dock / Aplicaciones',
       finish: '¡Listo! El editor se abre al iniciar la aplicación instalada.',
       help: '¿No encuentras “Añadir a pantalla de inicio”?', helpText: 'En Safari, desplázate por las opciones para encontrarla.',
       links: 'Información', terms: 'Términos del servicio', privacy: 'Privacidad', versions: 'Otras versiones',
@@ -122,7 +122,7 @@
       macOpenTitle: 'Macで開く', macOpenText: 'SafariまたはChromeでios.seprepareapp.com.brを開きます。',
       macDockTitle: 'アプリとして追加', macDockText: 'Safariでは「ファイル → Dockに追加」、Chromeではメニューから「アプリをインストール」を選びます。',
       macDockVisual: 'Dockに追加 / インストール',
-      macLaunchTitle: 'アイコンから起動', macLaunchText: 'Dock、Spotlight、またはアプリ一覧から起動します。',
+      macLaunchTitle: 'アイコンから起動', macLaunchText: 'Dock、Spotlight、またはアプリ一覧から起動します。', macLaunchVisual: 'Dock / アプリ',
       finish: '完了！インストールしたアプリからエディターを利用できます。',
       help: '「ホーム画面に追加」が見つからない場合', helpText: 'Safariの共有メニューを下にスクロールして探してください。',
       links: '情報', terms: '利用規約', privacy: 'プライバシー', versions: 'その他のバージョン',
@@ -161,7 +161,7 @@
       return '<div class="install-visual install-visual-confirm"><span>' + escapeHtml(t.confirmVisual) + '</span><span class="install-toggle" aria-hidden="true"></span><strong>' + escapeHtml(t.addButton) + '</strong></div>';
     }
     if (kind === 'launch' || kind === 'macLaunch') {
-      return '<div class="install-visual install-visual-launch"><img src="branding/apple-touch-icon.png" alt="" width="38" height="38"><span>SePrepare</span><span class="install-visual-tip">' + escapeHtml(t.launchVisual) + '</span></div>';
+      return '<div class="install-visual install-visual-launch"><img src="branding/apple-touch-icon.png" alt="" width="38" height="38"><span>SePrepare</span><span class="install-visual-tip">' + escapeHtml(kind === 'macLaunch' ? t.macLaunchVisual : t.launchVisual) + '</span></div>';
     }
     return '<div class="install-visual install-visual-choice">' + plusIcon + '<span>' + escapeHtml(t.macDockVisual) + '</span>' + arrowIcon + '</div>';
   }
