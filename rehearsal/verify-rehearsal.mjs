@@ -369,3 +369,27 @@ check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contrato
   controller.stop();
   check('Ensaio desbloqueia áudio com forRecording adequado antes do microfone em start, resume, repeat e switchMode');
 }
+
+// 12. Rehearsal voice resolver prefers exact-locale voices automatically while keeping manual overrides
+{
+  const regionalVoices = [
+    { name: 'Joana', locale: 'pt-PT', offline: true, default: true, label: 'Joana · pt-PT' },
+    { name: 'Luciana (Aprimorada)', locale: 'pt-BR', offline: true, default: false, label: 'Luciana (Aprimorada) · pt-BR' },
+    { name: 'Felipe', locale: 'pt-BR', offline: true, default: false, label: 'Felipe · pt-BR' }
+  ];
+  const audio = createRehearsalAudio({
+    player: createFakePlayer(regionalVoices),
+    getSettings: () => ({ language: 'pt-BR', rate: 1 })
+  });
+  const partLoc = makeThreeSpeakerPart('p3');
+  partLoc.id = 'speech-loc-test';
+  const resolved = audio.resolveParticipantVoices(partLoc.participants, partLoc.id);
+  assert.equal(resolved.assignments.get('p1').locale, 'pt-BR');
+  assert.equal(resolved.assignments.get('p2').locale, 'pt-BR');
+  assert.notEqual(resolved.assignments.get('p2').voice, 'Joana');
+  audio.setParticipantVoice(partLoc.id, 'p2', { voice: 'Joana', locale: 'pt-PT', rate: 1 });
+  const withOverride = audio.resolveParticipantVoices(partLoc.participants, partLoc.id);
+  assert.equal(withOverride.assignments.get('p2').voice, 'Joana');
+  assert.equal(withOverride.assignments.get('p1').voice, 'Luciana (Aprimorada)');
+  check('Ensaio escolhe automaticamente vozes do idioma/variante exatos e preserva escolha manual do usuário');
+}
