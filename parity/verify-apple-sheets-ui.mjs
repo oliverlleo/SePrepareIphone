@@ -57,7 +57,15 @@ try{
     const body=element.querySelector('.modal-body');
     const field=element.querySelector('#scheduleDate');
     const panel=element.querySelector('.apple-simple-sheet');
-    return panel&&body.scrollWidth<=body.clientWidth+1&&panel.scrollWidth<=panel.clientWidth+1&&(!field||field.getBoundingClientRect().right<=body.getBoundingClientRect().right+1);
+    if(!panel||body.scrollWidth>body.clientWidth+1||panel.scrollWidth>panel.clientWidth+1)return false;
+    if(!field)return true;
+    const frame=element.querySelector('.apple-agenda-date').getBoundingClientRect();
+    const input=field.getBoundingClientRect(), title=element.querySelector('#modalTitle').getBoundingClientRect();
+    const save=element.querySelector('[data-action="save-schedule"]').getBoundingClientRect();
+    const close=(a,b)=>Math.abs(a-b)<=1;
+    return close(frame.left,title.left)&&close(frame.left,save.left)&&close(frame.right,save.right)
+     &&input.left>=frame.left+11&&input.right<=frame.right-11
+     &&getComputedStyle(field).paddingInlineStart==='0px'&&getComputedStyle(field).paddingInlineEnd==='0px';
    }));
    if(language==='pt-BR'||width===320)await page.screenshot({path:path.join(output,label+'-'+size+'-'+language+'.png')});
    await enlarge.evaluate(element=>element.remove());
@@ -71,11 +79,23 @@ try{
    await action('schedule').click();
    assert.equal(await modal.locator('input').count(),1);
    assert.equal(await modal.locator('#modalTitle').textContent(),await translated('Adicionar à Agenda'));
+   assert.equal(await modal.locator('.apple-agenda-date-value').textContent(),await translated('Escolher data e horário'));
    await checkLayout('agenda');
    await action('save-schedule').click();
    assert.equal((await speech()).scheduledAt,0);
    const date=modal.locator('#scheduleDate');
+   await date.scrollIntoViewIfNeeded();
+   assert(await date.evaluate(input=>{
+    const bounds=input.getBoundingClientRect();
+    return document.elementFromPoint(bounds.x+bounds.width/2,bounds.y+bounds.height/2)===input;
+   }));
+   await date.evaluate(input=>input.addEventListener('click',event=>{
+    input.dataset.qaTrustedTap=String(event.isTrusted);
+   },{once:true}));
+   await date.tap();
+   assert.equal(await date.getAttribute('data-qa-trusted-tap'),'true');
    await date.fill('2032-09-21T19:17');
+   await modal.locator('.apple-agenda-more summary').click();
    await action('pwa-export-ics').click();
    await page.waitForFunction(()=>window.qaFiles.some(file=>file.name.endsWith('.ics')&&file.content.includes('BEGIN:VEVENT')));
    assert.equal((await speech()).scheduledAt,0);
@@ -89,7 +109,27 @@ try{
    await page.reload();await page.waitForFunction(()=>window.orador);
    assert.equal((await speech()).scheduledAt,timestamp);
    await nav('agenda');await page.locator('.agenda-day [data-action=schedule]').click();
+   assert.equal(await modal.locator('#modalTitle').textContent(),await translated('Editar data'));
    assert.equal(await modal.locator('#scheduleDate').inputValue(),'2032-09-21T19:17');
+   const visibleDate=await modal.locator('.apple-agenda-date-value').textContent();
+   assert(!visibleDate.includes('T19:17'));
+   if(language==='pt-BR')assert.equal(visibleDate,'21/09/2032, 19:17');
+   assert(!(await action('clear-schedule').isVisible()));
+   if(language==='pt-BR'){
+    await page.evaluate(()=>document.body.classList.add('dark'));
+    await page.screenshot({path:path.join(output,'agenda-edit-'+size+'-normal.png')});
+   }
+   await checkLayout('agenda-edit');
+   await modal.locator('.apple-agenda-more summary').click();
+   for(const name of ['clear-schedule','pwa-export-ics']){
+    assert.equal(await action(name).locator('svg').count(),1);
+   }
+   assert(await modal.locator('.apple-agenda-options').evaluate(options=>{
+    const [first,second]=[...options.querySelectorAll('.btn')].map(button=>button.querySelector('span').getBoundingClientRect().left);
+    return Math.abs(first-second)<=1;
+   }));
+   if(language==='pt-BR')await page.screenshot({path:path.join(output,'agenda-options-'+size+'-normal.png')});
+   await checkLayout('agenda-options');
    await action('clear-schedule').click();
    await page.locator('[data-action=choose-schedule]:visible').first().waitFor();
    assert.equal((await speech()).scheduledAt,0);

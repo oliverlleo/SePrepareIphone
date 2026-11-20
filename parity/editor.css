@@ -19,7 +19,53 @@ body.editor-open .editor-shell.editor-scrolled header.editor-top{display:flex}
 .apple-simple-sheet .help,.apple-simple-sheet .section-head{margin:0;overflow-wrap:break-word}
 .apple-sheet-context{font-weight:600}
 .apple-simple-sheet .field{min-width:0}
-.apple-simple-sheet input[type=datetime-local]{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.modal.apple-agenda-modal>.modal-head,
+.modal.apple-agenda-modal>.modal-body,
+.modal.apple-agenda-modal>.modal-footer{padding-inline:20px}
+.apple-agenda-modal .modal-head h2{min-width:0;overflow-wrap:break-word}
+.apple-agenda-sheet{grid-template-columns:minmax(0,1fr);gap:14px}
+.apple-agenda-date{display:grid;grid-template-columns:minmax(0,1fr);padding-inline:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.apple-agenda-date:focus-within{outline:2px solid var(--green);outline-offset:2px}
+/* iOS WebKit can add padding beyond width:100% on native date inputs. */
+.apple-agenda-sheet .apple-agenda-date input[type=datetime-local]{
+  grid-area:1/1;z-index:1;opacity:0;
+  display:block;width:100%;max-width:100%;min-width:0;min-height:46px;margin:0;padding:0;border:0;
+  box-sizing:border-box;background:transparent;outline:none;font-size:1rem;color:var(--ink);cursor:pointer
+}
+.apple-agenda-date-display{
+  grid-area:1/1;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding-block:10px;min-width:0;pointer-events:none;color:var(--ink);overflow-wrap:break-word
+}
+.apple-agenda-date-value{min-width:0}
+.apple-agenda-date-display>svg{width:18px;height:18px;flex:0 0 18px;color:var(--muted)}
+.apple-agenda-date-value.is-empty{color:var(--muted)}
+@media(pointer:fine){
+  .apple-agenda-sheet .apple-agenda-date input[type=datetime-local]:focus{opacity:1}
+  .apple-agenda-date input:focus+.apple-agenda-date-display{visibility:hidden}
+}
+.apple-agenda-more{min-width:0;border:1px solid var(--line);border-radius:12px}
+.apple-agenda-more summary{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;
+  padding:12px;min-height:44px;color:var(--ink);cursor:pointer;
+  font-size:.875rem;line-height:1.4;overflow-wrap:break-word
+}
+.apple-agenda-more summary::-webkit-details-marker{display:none}
+.apple-agenda-more summary::after{content:"";width:7px;height:7px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);flex-shrink:0}
+.apple-agenda-more[open] summary::after{transform:rotate(225deg)}
+.apple-agenda-more summary:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:12px}
+.apple-agenda-options{display:grid;grid-template-columns:minmax(0,1fr);border-top:1px solid var(--line)}
+.apple-agenda-options>.btn,.apple-agenda-modal .modal-footer>.btn{
+  min-width:0;min-height:44px;max-width:100%;margin:0;white-space:normal;overflow-wrap:break-word
+}
+.apple-agenda-options>.btn{
+  justify-content:flex-start;text-align:start;padding-inline:12px;border:0;border-radius:0;
+  background:transparent;color:var(--ink);font-weight:500
+}
+.apple-agenda-options>.btn+.btn{border-top:1px solid var(--line)}
+.apple-agenda-options>.btn:is(:hover,:focus-visible){background:var(--paper);text-decoration:underline}
+.apple-agenda-options>.btn span,.apple-agenda-modal .modal-footer>.btn span{min-width:0}
+.apple-agenda-options>.btn svg{width:18px;height:18px;flex:0 0 18px}
+.apple-agenda-modal .modal-footer>.btn svg{flex-shrink:0}
 .apple-sheet-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .apple-sheet-actions>.btn{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:break-word;text-align:start}
 .apple-sheet-actions>.btn>span{min-width:0}

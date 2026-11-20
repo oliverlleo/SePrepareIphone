@@ -17,6 +17,7 @@
     const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'') || (global.navigator?.platform==='MacIntel'&&global.navigator?.maxTouchPoints>1);
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
+    let lastPreviewVoice;
     let missingVoiceHandler=options.onMissingVoice;
     let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null,activeSegment=null,externalInterrupt=null;
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
@@ -70,12 +71,28 @@
       const parsed=String(name||'').split('\u001f');
       if(parsed[0]) {
         const chosen=exactVoice(parsed[0],parsed[1] || (!form&&settings.audioLanguage) || '');
-        if(chosen&&!failedVoices.has(voiceKey(chosen)))return chosen;
+        if(chosen&&(form||!failedVoices.has(voiceKey(chosen))))return chosen;
       }
-      // WebKit can expose installed voices that fail inside iPhone PWAs.
-      // Let iOS choose its own native voice before selecting an explicit one.
+      // Safari can fail to resolve an unspecified voice. Test a matching
+      // installed voice first. Leave the reader's established policy intact.
+      if(isIOS&&form) {
+        const voice=automaticVoice(locale());
+        if(voice?.localService)return voice;
+      }
       if(isIOS&&!failedSystemLocales.has(locale().toLowerCase()))return null;
       return automaticVoice(locale());
+    }
+    function alternatePreviewVoice() {
+      if(lastPreviewVoice===undefined)return undefined;
+      const last=voiceKey(lastPreviewVoice),preferred=(lastPreviewVoice?.lang||locale()).toLowerCase();
+      const matching=candidates.filter(voice=>voice.localService&&!failedVoices.has(voiceKey(voice))&&voiceKey(voice)!==last&&
+        voice.lang.toLowerCase().split('-')[0]===preferred.split('-')[0]);
+      return matching.find(voice=>voice.lang.toLowerCase()===preferred)||matching[0]||
+        (lastPreviewVoice&&!failedSystemLocales.has(preferred)&&preferred===locale().toLowerCase()?null:undefined);
+    }
+    function showPreviewAlternative(show) {
+      const alternate=document.getElementById('audioAlternateVoice');
+      if(alternate)alternate.hidden=!show||alternatePreviewVoice()===undefined;
     }
     function storedVoice() {
       const settings=o.getSettings();
@@ -111,6 +128,13 @@
         const actions=document.createElement('div');actions.className='audio-settings-actions';
         test.before(actions);actions.append(test,install);
         if(isIOS) {
+          lastPreviewVoice=undefined;
+          const alternate=document.createElement('button');
+          alternate.id='audioAlternateVoice';alternate.type='button';alternate.className='btn link audio-alternate-voice';alternate.hidden=true;
+          const alternateLabel={pt:'Tentar outra voz',en:'Try another voice',es:'Probar otra voz',ja:'別の音声を試す'};
+          alternate.textContent=alternateLabel[lang()]||alternateLabel.pt;
+          test.after(alternate);
+          alternate.addEventListener('click',()=>preview(true));
           const copy=appleVoiceHelp[lang()]||appleVoiceHelp.pt;
           install.innerHTML=o.icon('Info')+'<span>'+escape(copy[0])+'</span>';
           const help=document.createElement('p');help.id='audioAppleVoiceHelp';help.className='help audio-voice-help';help.hidden=true;help.textContent=copy[1];
@@ -325,6 +349,7 @@
       request++;previewing=false;previewUtterance=null;activeUtterance=null;
       cancelActiveSpeech();
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
+      showPreviewAlternative(true);
       update();
     }
     function startUtterance(text, offset, voice, isPreview) {
@@ -360,7 +385,7 @@
       function fail(code,at) {
         if(!valid())return;
         clearStartupTimer();
-        const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout'].includes(code);
+        const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout','preview-timeout'].includes(code);
         // A retry from an asynchronous callback loses the user's tap gesture
         // on iOS. Use a different voice only on the next explicit tap.
         if(isIOS&&retryable) {
@@ -375,15 +400,17 @@
         }
         if(isPreview) {
           previewing=false;previewUtterance=null;
+          cancelActiveSpeech();
           const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
+          showPreviewAlternative(true);
         } else {
           audio.state='paused';activeUtterance=null;
         }
         const retryText={
-          pt:'O iPhone não iniciou esta voz. Toque novamente para tentar outra voz.',
-          en:'The iPhone could not start this voice. Tap again to try another.',
-          es:'El iPhone no inició esta voz. Toca de nuevo para probar otra.',
-          ja:'iPhoneで音声を開始できませんでした。もう一度タップして別の音声を試してください。'
+          pt:'O iPhone não conseguiu ler com esta voz. Tente outra voz.',
+          en:'The iPhone could not read with this voice. Try another voice.',
+          es:'El iPhone no pudo leer con esta voz. Prueba otra voz.',
+          ja:'iPhoneでこの音声を読み上げられませんでした。別の音声をお試しください。'
         };
         o.toast(isIOS&&retryable ? retryText[lang()]||retryText.pt : speechErrorMessage(code));
         console.warn('SePrepare: speech synthesis failed',code,{language:preferredLocale,preview:isPreview,voice:currentVoice?.name||'system'});
@@ -416,7 +443,14 @@
         utterance.onstart=()=>{
           if(!isCurrent())return;
           started=true;clearStartupTimer();
-          if(isPreview){const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(6);}
+          if(isPreview){
+            const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(6);
+            // WebKit can report a start and then never deliver end or error.
+            // Allow extra time for slower voices and longer utterances.
+            startupTimer=setTimeout(()=>{
+              if(isCurrent())fail('preview-timeout',at);
+            },8000+Math.ceil(chunk.length*160/utterance.rate));
+          }
           if(!isPreview){audio.state='playing';update();dispatch();}
         };
         utterance.onboundary=ev=>{
@@ -434,7 +468,7 @@
             // On iOS a short task gap between chunks prevents a stalled queue.
             setTimeout(()=>nextChunk(finish),0);
           } else {
-            if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
+            if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);showPreviewAlternative(true);}
             else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
             update();dispatch();
           }
@@ -497,15 +531,18 @@
       if(wasPlaying){request++;synth?.cancel();audio.state='paused';play();}
       else {update();dispatch();}
     }
-    function preview() {
+    function preview(useAlternative=false) {
       stopActiveSegment(true);
-      if(previewing){stopPreview();return;}
+      if(previewing){stopPreview();if(!useAlternative)return;}
       pause();
       const field=document.getElementById('voicePreviewText');
       const text=(field?.value||'').trim() || t(19);
       if(field&&!field.value.trim())field.value=text;
       refreshVoices();
-      const voice=selectedVoice(true);
+      const voice=useAlternative?alternatePreviewVoice():selectedVoice(true);
+      if(voice===undefined)return;
+      lastPreviewVoice=voice;
+      showPreviewAlternative(false);
       previewing=true;
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=startingLabel();
       if(!startUtterance(text,0,voice,true)){previewing=false;if(label)label.textContent=t(5);}
