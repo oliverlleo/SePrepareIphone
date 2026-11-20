@@ -2,7 +2,7 @@ import fs from 'node:fs';import assert from 'node:assert/strict';
 import {JSDOM} from '../qa/time-dom/node_modules/jsdom/lib/api.js';
 const source=fs.readFileSync(new URL('../audio-parity.js',import.meta.url),'utf8'),checks=[];
 function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false,pending=false,language='pt-BR',voices,audioSession,withAudioCtx=false,activeMicLeases=0,captureAllTimers=false,savedVoice='',savedAudioLanguage='',speechText='Texto do discurso.'}={}){
- const timers=[],shortTimers=[],shortDelays=[];const dom=new JSDOM('<div class="modal"><div class="modal-body"></div></div>',{url:'https://audio.test/',runScripts:'outside-only'}),w=dom.window,log=[],utterances=[],toasts=[],settings={language,voice:savedVoice,audioLanguage:savedAudioLanguage,rate:1};let inGesture=true;
+ const timers=[],shortTimers=[],shortDelays=[];const dom=new JSDOM('<div class="modal"><div class="modal-body"></div></div>',{url:'https://audio.test/',runScripts:'outside-only'}),w=dom.window,log=[],utterances=[],toasts=[],settings={language,voice:savedVoice,audioLanguage:savedAudioLanguage,rate:1};let inGesture=true,clock=0;
  w.setTimeout=(fn,ms)=>{if(ms>=4500){timers.push(fn);return timers.length;}if(captureAllTimers){const id=100+shortTimers.length;shortDelays.push({id,fn,ms,cleared:false});shortTimers.push(fn);return id;}return 0;};
  w.clearTimeout=id=>{for(const item of shortDelays)if(item.id===id)item.cleared=true;};
  w.matchMedia=()=>({matches:false});Object.defineProperty(w.navigator,'userAgent',{value:ios?(ipad?'Mozilla/5.0 Macintosh AppleWebKit Safari':'Mozilla/5.0 iPhone AppleWebKit Safari'):'Windows Chrome'});Object.defineProperty(w.navigator,'platform',{value:ipad?'MacIntel':ios?'iPhone':'Win32'});Object.defineProperty(w.navigator,'maxTouchPoints',{value:ipad?5:1});
@@ -21,9 +21,9 @@ function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false
  const defaultVoices=[{name:'Local PT',lang:'pt-BR',localService:true,default:true,voiceURI:'fixture'}];
  const synth={paused,speaking:false,pending:false,getVoices:()=>empty?[]:(voices||defaultVoices),addEventListener(){},cancel(){log.push('cancel');this.speaking=false;this.pending=false;},resume(){log.push('resume');this.paused=false;},speak(u){log.push({action:'speak',inGesture});utterances.push(u);this.pending=true;if(!this.paused&&!pending){this.pending=false;this.speaking=true;u.onstart?.();}}};
  Object.defineProperty(w,'speechSynthesis',{value:unavailable?undefined:synth});w.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
- w.eval(source);const audio={state:'idle',text:'',offset:0,speechId:null};const api=w.SePrepareAudio.create({audio,getSettings:()=>settings,setVoices(){},icon:()=>'<svg></svg>',getSpeech:()=>({id:'fixture',text:speechText}),isReader:()=>false,sync(){},toast:msg=>toasts.push(msg),noSpeechMessage:()=>''});
+ w.eval(source);const audio={state:'idle',text:'',offset:0,speechId:null};const api=w.SePrepareAudio.create({audio,now:()=>clock,getSettings:()=>settings,setVoices(){},icon:()=>'<svg></svg>',getSpeech:()=>({id:'fixture',text:speechText}),isReader:()=>false,sync(){},toast:msg=>toasts.push(msg),noSpeechMessage:()=>''});
  w.document.querySelector('.modal-body').innerHTML=api.settingsHTML()+'<button class="btn secondary" data-action="install-voices"><svg></svg><span>Instalar ou gerenciar vozes</span></button>';api.bindSettings();
- return {w,dom,api,timers,shortTimers,shortDelays,synth,log,utterances,toasts,settings,audio,ctxLog,label:()=>w.document.querySelector('#audioTestLabel').textContent,close:()=>dom.window.close()};
+ return {w,dom,api,timers,shortTimers,shortDelays,synth,log,utterances,toasts,settings,audio,ctxLog,advance:ms=>{clock+=ms;},label:()=>w.document.querySelector('#audioTestLabel').textContent,close:()=>dom.window.close()};
 }
 function check(name,fn){fn();checks.push(name);console.log('PASS '+name);}
 check('Botão só anuncia teste iniciado após o evento real do sintetizador',()=>{const h=harness({pending:true});try{h.api.preview();assert.equal(h.label(),'Iniciando teste…');h.utterances[0].onstart();assert.equal(h.label(),'Parar teste');h.api.preview();assert.equal(h.label(),'Testar voz');}finally{h.close();}});
@@ -438,12 +438,14 @@ check('speakSegment empacota falas curtas no iPhone sem quebras de linha, recupe
   let ended=0,errors=0;
   segRecover.api.speakSegment({text:longTurn,locale:'pt-BR',onEnd:()=>ended++,onError:()=>errors++});
   segRecover.utterances[0].onstart();
+  segRecover.advance(1000);
   segRecover.utterances[0].onend();
   segRecover.shortDelays.at(-1).fn();
   segRecover.shortDelays.filter(d=>d.ms===2200).at(-1).fn();
   segRecover.shortDelays.filter(d=>d.ms===100).at(-1).fn();
   assert.equal(segRecover.utterances.length,3);
   segRecover.utterances[2].onstart();
+  segRecover.advance(1000);
   segRecover.utterances[2].onend();
   assert.equal(ended,1);
   assert.equal(errors,0);
@@ -491,6 +493,7 @@ check('speakSegment ignora onend de utterance cancelada durante recuperação e 
   h.shortDelays.filter(d=>d.ms===100).at(-1).fn();
   assert.equal(h.utterances.length,2);
   h.utterances[1].onstart();
+  h.advance(1000);
   h.utterances[1].onend();
   assert.equal(ended,1);
   assert.equal(errors,0);
@@ -514,6 +517,7 @@ check('Chunk 0 no iOS tenta fallback seguro para system-default e nunca bane a �
   assert.equal(hFallback.utterances[1].voice,undefined);
   assert.equal(hFallback.utterances[1].lang,'pt-BR');
   hFallback.utterances[1].onstart();
+  hFallback.advance(1000);
   hFallback.utterances[1].onend();
   assert.equal(ended,1);
   assert.equal(errors,0);
@@ -577,4 +581,80 @@ check('startUtterance ignora onerror(canceled) ao recuperar chunk travado no iOS
   assert.equal(h.audio.state,'finished');
   assert.equal(h.toasts.length,0);
  }finally{h.close();}
+});
+check('iOS detecta onend silencioso sem onstart e tenta novamente em vez de pular a fala do parceiro',()=>{
+ const h=harness({pending:true,captureAllTimers:true});
+ try{
+  let ended=0,errors=0;
+  h.api.speakSegment({text:'Esta é uma fala completa do parceiro.',locale:'pt-BR',onEnd:()=>ended++,onError:()=>errors++});
+  assert.equal(h.utterances.length,1);
+  h.utterances[0].onend();
+  assert.equal(ended,0);
+  assert.equal(errors,0);
+  const retry350=h.shortDelays.filter(d=>d.ms===350).at(-1);
+  assert(retry350&&!retry350.cleared);
+  retry350.fn();
+  assert.equal(h.utterances.length,2);
+  assert.equal(h.utterances[1].voice.voiceURI,'fixture');
+  h.utterances[1].onstart();
+  h.advance(1000);
+  h.utterances[1].onend();
+  assert.equal(ended,1);
+  assert.equal(errors,0);
+ }finally{h.close();}
+});
+check('iOS detecta onstart+onend instantâneo sem áudio, tenta fallback e pausa como not-allowed sem banir voz pt-BR',()=>{
+ const voices=[
+  {name:'Luciana',lang:'pt-BR',localService:true,default:true,voiceURI:'com.apple.voice.compact.pt-BR.Luciana'},
+  {name:'Felipe',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.compact.pt-BR.Felipe'}
+ ];
+ const h=harness({pending:true,voices,language:'pt-BR',captureAllTimers:true});
+ try{
+  let ended=0;const errs=[];
+  h.api.speakSegment({text:'Fala do parceiro que não pode ser pulada em silêncio.',locale:'pt-BR',onEnd:()=>ended++,onError:e=>errs.push(e.code)});
+  h.utterances[0].onstart();
+  h.advance(20);
+  h.utterances[0].onend();
+  assert.equal(ended,0);
+  h.shortDelays.filter(d=>d.ms===350).at(-1).fn();
+  assert.equal(h.utterances.length,2);
+  assert.equal(h.utterances[1].voice.name,'Luciana');
+  h.utterances[1].onstart();
+  h.advance(30);
+  h.utterances[1].onend();
+  assert.equal(ended,0);
+  h.shortDelays.filter(d=>d.ms===450).at(-1).fn();
+  assert.equal(h.utterances.length,3);
+  assert.equal(h.utterances[2].voice.name,'Felipe');
+  h.utterances[2].onstart();
+  h.advance(15);
+  h.utterances[2].onend();
+  assert.equal(ended,0);
+  assert.deepEqual(errs,['not-allowed']);
+  h.api.speakSegment({text:'Nova tentativa na mesma voz.',locale:'pt-BR'});
+  assert.equal(h.utterances.at(-1).voice.name,'Luciana');
+ }finally{h.close();}
+});
+check('speakSegment respeita settleMs de 350 ms no iOS após microfone e fala sincronamente fora do iOS ou com settleMs 0',()=>{
+ const hIOS=harness({captureAllTimers:true});
+ try{
+  hIOS.api.speakSegment({text:'Fala após permissão do microfone.',locale:'pt-BR',settleMs:350});
+  assert.equal(hIOS.utterances.length,0);
+  const d350=hIOS.shortDelays.filter(d=>d.ms===350).at(-1);
+  assert(d350&&!d350.cleared);
+  d350.fn();
+  assert.equal(hIOS.utterances.length,1);
+ }finally{hIOS.close();}
+
+ const hDesktop=harness({ios:false,captureAllTimers:true});
+ try{
+  hDesktop.api.speakSegment({text:'Fala desktop imediata.',locale:'pt-BR',settleMs:350});
+  assert.equal(hDesktop.utterances.length,1);
+ }finally{hDesktop.close();}
+
+ const hSync=harness({captureAllTimers:true});
+ try{
+  hSync.api.speakSegment({text:'Fala manual imediata.',locale:'pt-BR',settleMs:0});
+  assert.equal(hSync.utterances.length,1);
+ }finally{hSync.close();}
 });

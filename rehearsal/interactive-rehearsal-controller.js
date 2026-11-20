@@ -187,7 +187,7 @@ export function createRehearsalController({
     }
 
     timer?.ensureRunning?.();
-    await enterTurn(0, { resetHint: true, resumeOffset: 0, notifyTurn: true });
+    await enterTurn(0, { resetHint: true, resumeOffset: 0, notifyTurn: true, afterMic: activeMode === 'auto' });
     return { ok: true, plan: nextPlan, mode: activeMode };
   }
 
@@ -207,7 +207,7 @@ export function createRehearsalController({
     }
   }
 
-  async function enterTurn(index, { resetHint = true, resumeOffset = 0, notifyTurn = true, afterNarration = false } = {}) {
+  async function enterTurn(index, { resetHint = true, resumeOffset = 0, notifyTurn = true, afterNarration = false, afterMic = false } = {}) {
     if (!plan || !plan.valid || inTransition) return;
     inTransition = true;
     const mySession = sessionId;
@@ -252,6 +252,7 @@ export function createRehearsalController({
           speechId: activeSpeechId,
           title: `${turn.participantName} · ${activeSpeechTitle || t('Ensaio interativo')}`,
           offset: narrationCharOffset,
+          settleMs: afterMic ? 350 : 0,
           onStart: () => {
             if (mySession !== sessionId || myEpoch !== epoch || state !== 'narrating') return;
           },
@@ -344,7 +345,7 @@ export function createRehearsalController({
         onSpeechComplete: () => {
           if (mySession !== sessionId || myEpoch !== epoch || state !== 'listening') return;
           vadStatus = null;
-          void enterTurn(currentTurnIndex + 1, { resetHint: true, resumeOffset: 0, notifyTurn: true });
+          void enterTurn(currentTurnIndex + 1, { resetHint: true, resumeOffset: 0, notifyTurn: true, afterMic: true });
         },
         onError: err => {
           if (mySession !== sessionId || myEpoch !== epoch) return;
@@ -365,9 +366,10 @@ export function createRehearsalController({
 
   function finishUserTurn() {
     if (!['waiting-user', 'listening'].includes(state)) return false;
+    const wasListening = state === 'listening';
     vad?.stopListening?.();
     vadStatus = null;
-    void enterTurn(currentTurnIndex + 1, { resetHint: true, resumeOffset: 0, notifyTurn: true });
+    void enterTurn(currentTurnIndex + 1, { resetHint: true, resumeOffset: 0, notifyTurn: true, afterMic: wasListening });
     return true;
   }
 
@@ -412,7 +414,8 @@ export function createRehearsalController({
     await enterTurn(currentTurnIndex, {
       resetHint: false,
       resumeOffset: narrationCharOffset,
-      notifyTurn: false
+      notifyTurn: false,
+      afterMic: activeMode === 'auto'
     });
     return true;
   }

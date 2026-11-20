@@ -6,7 +6,7 @@ export function createWebSpeechClassifier({
   let worker, ready, requestId = 0, activeToken = 0, pendingFrames = 0;
   const requests = new Map();
   let onResult, onError;
-  function request(type, extra = {}, timeoutMs = 20000) {
+  function request(type, extra = {}, timeoutMs = 25000) {
     return new Promise((resolve, reject) => {
       const id = ++requestId;
       const timeout = setTimeoutFn(() => {
@@ -20,22 +20,29 @@ export function createWebSpeechClassifier({
   function ensure() {
     if (ready) return ready;
     ready = (async () => {
-      if (!WorkerClass) throw Error('Speech worker unavailable');
-      worker = new WorkerClass(new URL('speech-worker.js',baseURL));
-      worker.onerror = () => {
-        for (const request of requests.values()) { clearTimeoutFn(request.timeout); request.reject(Error('Speech worker failed')); }
-        requests.clear(); fail();
-      };
-      worker.onmessage = ({data}) => {
-        if (data.id && requests.has(data.id)) {
-          const req = requests.get(data.id); requests.delete(data.id); clearTimeoutFn(req.timeout);
-          if (data.type === 'error') req.reject(Error(data.message || 'Speech engine failed')); else req.resolve();
-        } else if (data.type === 'result' && data.token === activeToken) {
-          pendingFrames = Math.max(0,pendingFrames-1);
-          onResult?.(data.probability);
-        } else if (data.type === 'error' && data.token === activeToken) fail();
-      };
-      await request('init');
+      try {
+        if (!WorkerClass) throw Error('Speech worker unavailable');
+        worker = new WorkerClass(new URL('speech-worker.js',baseURL));
+        worker.onerror = () => {
+          for (const request of requests.values()) { clearTimeoutFn(request.timeout); request.reject(Error('Speech worker failed')); }
+          requests.clear(); fail();
+        };
+        worker.onmessage = ({data}) => {
+          if (data.id && requests.has(data.id)) {
+            const req = requests.get(data.id); requests.delete(data.id); clearTimeoutFn(req.timeout);
+            if (data.type === 'error') req.reject(Error(data.message || 'Speech engine failed')); else req.resolve();
+          } else if (data.type === 'result' && data.token === activeToken) {
+            pendingFrames = Math.max(0,pendingFrames-1);
+            onResult?.(data.probability);
+          } else if (data.type === 'error' && data.token === activeToken) fail();
+        };
+        await request('init', {}, 25000);
+      } catch (err) {
+        worker?.terminate?.();
+        worker = null;
+        ready = null;
+        throw err;
+      }
     })();
     return ready;
   }
@@ -44,11 +51,12 @@ export function createWebSpeechClassifier({
     async startTurn(token, result, error) {
       await ensure();
       activeToken = token; pendingFrames = 0; onResult = result; onError = error;
-      await request('reset',{token},3000);
+      await request('reset',{token},8000);
     },
     push(samples,token) {
       if (!worker || token !== activeToken) return;
-      if (++pendingFrames > 48) { fail(); return; }
+      if (pendingFrames >= 24) return;
+      pendingFrames++;
       worker.postMessage({type:'frame',token,samples},[samples.buffer]);
     },
     stopTurn() { activeToken=0; pendingFrames=0; onResult=onError=null; },
