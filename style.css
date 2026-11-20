@@ -337,3 +337,17 @@ html[data-seprepare-mode="installed"] .read-progress{top:var(--ios-viewport-top,
 /* Anchor card content at the top; keep the actions along the bottom of the row. */
 .speech-card{display:flex;flex-direction:column}
 .speech-card-main{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;flex:1 0 auto}
+
+.agenda-content > .row {
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.agenda-content > .row > .btn {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
