@@ -7,7 +7,7 @@ const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,'
 // Add narrowly scoped hooks to the current iPhone bundle, never replace it with
 // a desktop/Android build. Retains memory, device gate, Drive and update fixes.
 const marker=(name,text)=>`/* SEPREPARE SHARE ${name} START */${text}/* SEPREPARE SHARE ${name} END */`;
-let source=readFileSync(path.join(root,'app.js'),'utf8').replace(/\/\* SEPREPARE SHARE ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE SHARE \1 END \*\//g,'');
+let source=readFileSync(path.join(root,'app.js'),'utf8').replace(/\/\* SEPREPARE PARITY ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE PARITY \1 END \*\//g,'').replace(/\/\* SEPREPARE SHARE ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE SHARE \1 END \*\//g,'');
 const ast=parse(source,{ecmaVersion:'latest'}),nodes=[];
 const bundleRanges=[...source.matchAll(/\/\* SEPREPARE [A-Z]+ (BUNDLE|CODEC) START \*\/[\s\S]*?\/\* SEPREPARE [A-Z]+ \1 END \*\//g)].map(m=>[m.index,m.index+m[0].length]);
 function walk(node){if(!node||typeof node!=='object'||node.type&&bundleRanges.some(([a,b])=>node.start>=a&&node.end<=b))return;if(node.type)nodes.push(node);for(const [key,value]of Object.entries(node))if(key!=='start'&&key!=='end'){if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')walk(value);}}
@@ -22,9 +22,9 @@ const actions=only(nodes.filter(node=>node.type==='SwitchStatement'&&node.discri
 edit(actions.start,actions.start,marker('ACTIONS','if(SPShareCodes.handle(r))return;'));
 const importing=only(actions.cases.filter(node=>node.test?.value==='import'),'importar'),call=only(importing.consequent.filter(node=>node.type==='ExpressionStatement'),'importação');edit(call.start,call.end,'SPShareCodes.openImport();');
 const start=fn('aI'),startup=only(nodes.filter(node=>node.type==='CallExpression'&&node.callee?.name==='aI'&&node.start>start.end),'inicialização');
-edit(startup.start,startup.start,marker('BRIDGE',`var SPShareCodes=window.SePrepareSharedCode.createShareCodeUI({rhythms:window.SePrepareRhythmsUI,getState:()=>B,rt:d,$:L,icon:te,btn:oe,option:Me,esc:P,native:fe,openModal:Te,closeModal:he,toast:ae,syncCurrent:_r,persist:le,importFile:KM,exportFile:ps,documentHTML:jp,refreshContrast:vo,go:gt,onImported(speech){for(const version of speech.versions)_t.set(za(speech,version.id),vn({...speech,...version,activeVersionId:version.id}));}});`));
+edit(startup.start,startup.start,marker('BRIDGE',`var SPShareCodes=window.SePrepareSharedCode.createShareCodeUI({rhythms:window.SePrepareRhythmsUI,getState:()=>B,rt:d,$:L,icon:te,btn:oe,option:Me,esc:P,native:fe,openModal:Te,closeModal:he,toast:ae,syncCurrent:_r,persist:le,flush:()=>Yt.flushPendingSaves(),lockImport:window.SePrepareDriveProtection.lockFileImport,onSharedSaved:raw=>window.SePrepareParityRuntime?.notifyDrive(raw,'shared-import'),importFile:KM,exportFile:ps,documentHTML:jp,refreshContrast:vo,go:gt,onImported(speech){for(const version of speech.versions)_t.set(za(speech,version.id),vn({...speech,...version,activeVersionId:version.id}));}});`));
 for(const node of nodes.filter(node=>node.type==='CallExpression'&&node.callee?.name==='Ge'&&node.arguments[0]?.value==='import'&&node.arguments[1]?.value==='FileUp'))edit(node.arguments[2].start,node.arguments[2].end,JSON.stringify('Importar preparação'));
-const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id?.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.73"');
+const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id?.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.101"');
 const guide=object('share');edit(guide.start,guide.end,readFileSync(path.join(here,'share-guide.txt'),'utf8').trim());
 const tip=property(object('notes'),'tip'),tipText=tip.type==='CallExpression'?tip.arguments[0]?.value:tip.value;
 if(typeof tipText!=='string')throw Error('Revise o texto de ajuda das anotações antes de compilar.');

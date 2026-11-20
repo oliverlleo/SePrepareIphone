@@ -9,3 +9,5 @@ tests/qa-output/
 
 /QA-*.json
 **/QA-*.json
+
+.wrangler/

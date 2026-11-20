@@ -6,6 +6,7 @@ import {currentChangeOrigin,withChangeOrigin} from './change-origin.js';
 import {createBrowserDrive} from './browser-drive.js';
 import {createDriveUI} from './drive-ui.js';
 import {createIosAuthorization} from './ios-authorization.js';
+import {importFileBackup,lockFileImport} from './file-backup-ui.js';
 const LEGACY_KEY='seprepare-web-drive-v1',KEY='seprepare-drive-web-v1';
 function migrateLegacy(storage){
  if(storage.getItem(KEY))return;
@@ -37,4 +38,4 @@ export function createUI(config){
  const original=config.icon;
  return createDriveUI({...config,icon:(name,...args)=>paths[name]?'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths[name]+'</svg>':original(name,...args)});
 }
-window.SePrepareDriveProtection={createBridge,createUI,mergeImportedMetadata,pruneRedundantCheckpoints,createDeletionLedger,currentChangeOrigin,withChangeOrigin,editorDelta};
+window.SePrepareDriveProtection={createBridge,createUI,mergeImportedMetadata,pruneRedundantCheckpoints,createDeletionLedger,currentChangeOrigin,withChangeOrigin,editorDelta,importFileBackup,lockFileImport};

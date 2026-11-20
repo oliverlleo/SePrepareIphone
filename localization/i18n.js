@@ -1,5 +1,8 @@
-import {modalityAliases} from './modality-labels.js';
-import {catalogs} from './i18n-catalogs.js';
+import {modalityAliases as baseAliases} from './modality-labels.js';
+import {catalogs as baseCatalogs} from './i18n-catalogs.js';
+import {extraCatalogs} from './release-i18n.js';
+const modalityAliases={...baseAliases,["O motor Hunspell com o dicionário VERO e as regras locais funciona sem internet. A revisão online opcional usa o LanguageTool e envia somente o trecho escolhido quando você tocar em revisar."]:"O motor Hunspell com o dicionário VERO e as regras locais funciona sem internet. A revisão online opcional usa o LanguageTool. Envia o trecho selecionado ou, sem seleção, o texto inteiro, até o limite do serviço."};
+const catalogs=Object.fromEntries(['en','es','ja'].map(lang=>[lang,{...baseCatalogs[lang],...extraCatalogs[lang]}]));
 // UI-only localization. Document content is always an opaque interpolation.
 export const LANGUAGES=Object.freeze(['pt-BR','en','es','ja']);
 export const normalizeLanguage=value=>LANGUAGES.includes(value)?value:'pt-BR';

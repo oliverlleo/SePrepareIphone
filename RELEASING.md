@@ -1,3 +1,11 @@
+# Atualização 1.0.101
+
+Paridade de salvamento, compartilhamento e player integrada ao host Apple. Seletores Manual/Automático com círculos uniformes e títulos/descrições alinhados. `parity/` mantém o rascunho e aguarda a confirmação da fila IDB/OPFS. Código e arquivo individual só concluem a recepção após essa confirmação. Gate, migração, atualização segura, voz e Worker de autorização preservados.
+
+O pipeline completo é `node protection/verify-all.mjs`; instale as dependências declaradas de sharing, localization, protection, pdf, review e qa/time-dom antes de executá-lo. O builder `parity/build.mjs` roda **por último**, depois de recordings. Compilação repetida e contrato das cinco funções protegidas aprovados. Não substituir o host pelo bundle de outra plataforma nem alterar o contrato para aceitar uma divergência.
+
+Build do shell: `20261120.1` no HTML e no service worker. Validado localmente com WebKit, incluindo atualização da instalação anterior e reabertura offline; não equivale a iPhone/iPad físico ou conta Google real. A publicação ocorre pelo Cloudflare Workers Builds após mesclagem na main. O pacote estático mantém o Worker/configuração existentes separados dos assets.
+
 # Publicar uma atualização do PWA
 
 Ao alterar o aplicativo, use um identificador novo de versão em ambos os lugares:

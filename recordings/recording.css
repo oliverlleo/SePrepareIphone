@@ -28,3 +28,27 @@
 .reader-controls .reader-primary-timer.rec-row-dense .rec-start{flex:0 0 44px;width:44px;min-width:44px;max-width:44px;padding:8px}
 .reader-controls .reader-primary-timer.rec-timer-icon .start-reading{min-width:44px}
 .reader-controls .reader-primary-timer.rec-timer-icon #startTimerLabel{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* Use the whole presentation row; adapt to the space available to the player. */
+.reader-controls>.rec-inline-slot{grid-column:1 / -1;container-type:inline-size;margin-top:0}
+@media(min-width:800px){
+ .reader-shell .reader-controls{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center}
+ .reader-shell .reader-controls>.reader-primary-timer{flex:0 1 272px}
+ .reader-shell .reader-controls>.reader-subtools{flex:0 1 var(--reader-tools-width,341px);justify-content:flex-start}
+ .reader-shell .reader-controls>.rec-inline-slot{flex:1 1 420px;width:auto}
+}
+@container(min-width:420px){
+ .rec-transport-inline{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;column-gap:12px;padding:7px 12px;border-radius:13px}
+ .rec-transport-inline .rec-transport-heading{display:contents}
+ .rec-transport-inline .rec-transport-heading>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .rec-transport-inline .rec-transport-main{grid-column:1;grid-row:1;gap:10px}
+ .rec-transport-inline .rec-transport-footer{grid-column:2;grid-row:1;gap:8px;margin-top:0}
+ .rec-transport-inline .rec-other-audios{grid-column:3;grid-row:1;min-height:44px;padding:4px}
+ .rec-transport-inline .rec-transport-footer>button,.rec-transport-inline .rec-playback-speed{min-height:44px}
+ .rec-transport-inline .rec-seek{height:30px}
+}
+@container(min-width:420px) and (max-width:599px){
+ .rec-transport-inline .rec-other-audios>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .rec-transport-inline .rec-other-audios{min-width:44px}
+ .rec-transport-inline .rec-other-audios>svg:last-child{display:none}
+}
