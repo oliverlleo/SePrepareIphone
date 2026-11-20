@@ -10,3 +10,11 @@
 .audio-floating-stop>svg:first-child{width:23px;height:23px;margin-left:-5px}
 .audio-floating-stop .audio-stop-symbol{position:absolute;width:11px;height:11px;right:6px;bottom:8px;fill:var(--green);stroke:var(--paper);stroke-width:2}
 @media (min-width:850px){.audio-progress{margin:14px 0 0}.audio-floating-stop{width:56px;height:56px}}
+
+/* Keep the voice test and device help distinct, including enlarged text. */
+.audio-settings-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+.audio-settings-actions>.btn{width:100%;max-width:100%;min-width:0;margin:0;box-sizing:border-box;white-space:normal;overflow-wrap:break-word;justify-content:center}
+.audio-settings-actions>.btn>span{min-width:0}
+.audio-settings-actions>.btn>svg{flex-shrink:0}
+.audio-settings-actions>.audio-voice-help{margin:0;line-height:1.6;overflow-wrap:break-word}
+.audio-settings-actions>.audio-voice-help[hidden]{display:none}

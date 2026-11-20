@@ -14,7 +14,7 @@
   const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
   function create(options) {
     const o=options, synth=global.speechSynthesis, audio=o.audio;
-    const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'');
+    const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'') || (global.navigator?.platform==='MacIntel'&&global.navigator?.maxTouchPoints>1);
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
     let missingVoiceHandler=options.onMissingVoice;
@@ -22,6 +22,13 @@
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
     const t=i => (translations[lang()] || translations.pt)[i];
     const locale=() => normalized(o.getSettings().language);
+    const startingLabel=()=>({pt:'Iniciando teste…',en:'Starting test…',es:'Iniciando prueba…',ja:'テストを開始中…'}[lang()]||'Starting test…');
+    const appleVoiceHelp={
+      pt:['Como adicionar vozes','Abra Ajustes → Acessibilidade → Leitura e Fala → Vozes. Em versões anteriores, procure Conteúdo Falado.'],
+      en:['How to add voices','Open Settings → Accessibility → Read & Speak → Voices. On earlier versions, look for Spoken Content.'],
+      es:['Cómo añadir voces','Abre Ajustes → Accesibilidad → Lectura y voz → Voces. En versiones anteriores, busca Contenido leído.'],
+      ja:['音声の追加方法','「設定」→「アクセシビリティ」→「リーダーと読み上げ」→「声」を開きます。以前のバージョンでは「読み上げコンテンツ」を探してください。']
+    };
     const normalizedName=name => String(name||'').replace(/(?:\s*\(?(?:online|offline|network)\)?|-network|-local)$/i,'').trim();
     function refreshVoices() {
       try { browserList=synth ? synth.getVoices() : []; } catch { browserList=[]; }
@@ -94,10 +101,26 @@
         '<input type="range" id="voiceRate" min=".5" max="1.8" step=".1" value="'+escape(s.rate||1)+'"></div>'+
         '<div class="field audio-preview-field"><label for="voicePreviewText">'+escape(t(3))+'</label>'+
         '<textarea id="voicePreviewText" rows="3" maxlength="2000">'+escape(t(19))+'</textarea><small>'+escape(t(4))+'</small></div>'+
-        '<button type="button" class="btn soft" data-action="test-voice"><span id="audioTestLabel">'+escape(t(5))+'</span></button>'+
+        '<button type="button" class="btn soft" data-action="test-voice"><span id="audioTestLabel" aria-live="polite">'+escape(t(5))+'</span></button>'+
         '</div>';
     }
     function bindSettings() {
+      const test=document.querySelector('[data-action="test-voice"]');
+      const install=document.querySelector('[data-action="install-voices"]');
+      if(test&&install&&!test.closest('.audio-settings-actions')) {
+        const actions=document.createElement('div');actions.className='audio-settings-actions';
+        test.before(actions);actions.append(test,install);
+        if(isIOS) {
+          const copy=appleVoiceHelp[lang()]||appleVoiceHelp.pt;
+          install.innerHTML=o.icon('Info')+'<span>'+escape(copy[0])+'</span>';
+          const help=document.createElement('p');help.id='audioAppleVoiceHelp';help.className='help audio-voice-help';help.hidden=true;help.textContent=copy[1];
+          actions.append(help);install.setAttribute('aria-controls',help.id);install.setAttribute('aria-expanded','false');
+          install.addEventListener('click',event=>{
+            event.preventDefault();event.stopPropagation();help.hidden=!help.hidden;
+            install.setAttribute('aria-expanded',String(!help.hidden));
+          });
+        }
+      }
       const rate=document.getElementById('voiceRate');
       if(rate) rate.addEventListener('input',()=>{const v=document.getElementById('voiceRateValue');if(v)v.textContent=Number(rate.value).toFixed(1)+'×';});
     }
@@ -250,6 +273,7 @@
           failSegment(errCode||'synthesis-failed',at);
         };
         try {
+          if(synth.paused&&typeof synth.resume==='function')synth.resume();
           synth.speak(utterance);
           if(!chunkStarted && activeSegment===seg && id===request) {
             seg.startupTimer=setTimeout(()=>{
@@ -392,6 +416,7 @@
         utterance.onstart=()=>{
           if(!isCurrent())return;
           started=true;clearStartupTimer();
+          if(isPreview){const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(6);}
           if(!isPreview){audio.state='playing';update();dispatch();}
         };
         utterance.onboundary=ev=>{
@@ -422,6 +447,7 @@
         currentUtterance=utterance;
         if(isPreview)previewUtterance=utterance;else activeUtterance=utterance;
         try {
+          if(synth.paused&&typeof synth.resume==='function')synth.resume();
           synth.speak(utterance);
           if(!started && isCurrent()) {
             // Safari can silently drop speak(): don't leave a fake Playing state.
@@ -481,8 +507,8 @@
       refreshVoices();
       const voice=selectedVoice(true);
       previewing=true;
-      const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(6);
-      if(!startUtterance(text,0,voice,true))previewing=false;
+      const label=document.getElementById('audioTestLabel');if(label)label.textContent=startingLabel();
+      if(!startUtterance(text,0,voice,true)){previewing=false;if(label)label.textContent=t(5);}
       update();
     }
     function progressHTML() {
