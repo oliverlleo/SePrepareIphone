@@ -15,4 +15,30 @@ await test('Apple: espera comprovante antes de habilitar Visualizar e impede con
 await test('Apple: navegação bloqueada na falha mantém editor e texto em memória',async()=>{const h=harness();await h.runtime.navigate('editor');h.runtime.getEditor().title='draft';h.c.fail=()=>true;assert.equal(await h.runtime.navigate('reader'),false);assert.equal(h.c.rt.view,'editor');assert.equal(h.runtime.getEditor().title,'draft');});
 await test('Apple: restaurar caderno não projeta o editor antigo nos dados recebidos',async()=>{const h=harness();await h.runtime.navigate('editor');h.runtime.getEditor().title='draft';const next=clone(h.state());next.speeches[0].title='restored';assert(await h.runtime.commitRestore(next));assert.equal(h.stored().speeches[0].title,'restored');assert.equal(h.c.rt.view,'home');assert.equal(h.runtime.getEditor(),null);});
 await test('Apple: falha de restauração conserva base anterior e projeção editável',async()=>{const h=harness();await h.runtime.navigate('editor');h.runtime.getEditor().title='draft';const next=clone(h.state());next.speeches[0].title='restored';h.c.fail=state=>state.speeches[0].title==='restored';assert.equal(await h.runtime.commitRestore(next),false);assert.equal(h.state().speeches[0].title,'original');assert.equal(h.runtime.getEditor().title,'draft');});
+await test('Apple: data de Agenda é salva sem confirmar o texto do rascunho',async()=>{
+ const h=harness(),date=Date.UTC(2026,11,20,15);
+ h.state().speeches[0].reminders=[10080,42];
+ await h.runtime.navigate('editor');h.runtime.getEditor().title='draft';
+ assert(await h.runtime.saveAgendaDate('editor-fixture',date));
+ const saved=h.stored();
+ assert.equal(saved.speeches[0].scheduledAt,date);
+ assert.equal(saved.speeches[0].title,'original');
+ assert.deepEqual(saved.speeches[0].reminders,[10080,42]);
+ assert.equal(saved.editorDrafts[0].document.title,'draft');
+ assert.equal(saved.editorDrafts[0].document.scheduledAt,date);
+});
+await test('Apple: falha ao alterar data mantém a Agenda e o rascunho anteriores',async()=>{
+ const h=harness(),date=Date.UTC(2026,11,20,15),next=date+60000;
+ await h.runtime.navigate('editor');h.runtime.getEditor().title='draft';
+ assert(await h.runtime.saveAgendaDate('editor-fixture',date));
+ h.c.fail=state=>state.speeches[0].scheduledAt===next;
+ assert.equal(await h.runtime.saveAgendaDate('editor-fixture',next),false);
+ assert.equal(h.stored().speeches[0].scheduledAt,date);
+ assert.equal(h.runtime.getEditor().scheduledAt,date);
+ assert.equal(h.state().editorDrafts[0].document.title,'draft');
+ await h.runtime.navigate('agenda');
+ assert(await h.runtime.saveAgendaDate('editor-fixture',0));
+ assert.equal(h.stored().speeches[0].scheduledAt,0);
+ assert.equal(h.stored().editorDrafts[0].document.scheduledAt,0);
+});
 fs.writeFileSync(new URL('./QA-editor-runtime.json',import.meta.url),JSON.stringify({success:true,checks,realIPhone:false},null,2));dom.window.close();

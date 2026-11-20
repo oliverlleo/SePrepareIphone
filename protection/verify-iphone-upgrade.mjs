@@ -32,7 +32,11 @@ try{
  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));await page.clock.install({time:new Date('2026-10-24T12:00:00Z')});
  await page.goto(origin);await page.waitForFunction(()=>window.orador);assert.equal(await page.locator('html').getAttribute('data-seprepare-build'),oldBuild);
  await Promise.race([page.evaluate(()=>navigator.serviceWorker.ready),new Promise((_,reject)=>setTimeout(()=>reject(Error('Legacy service worker not ready')),15000))]);
- await page.locator('.speech-card [data-action="edit"]').click();await page.evaluate(()=>window.orador.getEditor().insertText(0,'Última edição antes de atualizar. ','user'));await page.locator('[data-action="save-editor"]').click();
+ await page.locator('.speech-card [data-action="edit"]').click();
+ await page.waitForFunction(()=>window.orador.getEditor());
+ await page.evaluate(()=>window.orador.getEditor().insertText(0,'Última edição antes de atualizar. ','user'));
+ await page.locator('[data-action="save-editor"]').click();
+ await page.waitForFunction(()=>window.orador.getState().speeches[0].delta.ops.some(op=>String(op.insert).startsWith('Última edição')));
  if(await page.evaluate(()=>['editor','part'].includes(window.orador.getRuntime().view)))await page.locator('[data-action="back"]').first().click();
  if(await page.evaluate(()=>window.orador.getRuntime().view!=='home'))await page.locator('[data-action="nav"][data-view="home"]').click();
  assert.equal(await page.evaluate(()=>window.orador.flushForUpdate()),true);const before=await page.evaluate(()=>window.orador.getState());

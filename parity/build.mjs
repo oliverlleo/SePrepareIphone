@@ -23,6 +23,27 @@ const sync=one(nodes.filter(n=>n.type==='CallExpression'&&n.callee?.name==='_r'&
 // A blocked/gated save must not leave an optimistic status in the editor.
 for(const ret of nodes.filter(n=>n.type==='ReturnStatement'&&n.start>save.start&&n.end<save.end&&n.argument?.value===false)){insert(ret.argument.start,'ERROR','(window.SePrepareParityRuntime?.mark("error"),');insert(ret.argument.end,'ERROR',')');}
 const actions=one(nodes.filter(n=>n.type==='SwitchStatement'&&n.discriminant?.name==='r'&&n.cases.some(x=>x.test?.value==='save-editor')),'actions');
+const byText=(name,fragment)=>one(nodes.filter(n=>n.type==='FunctionDeclaration'&&n.id?.name===name&&source.slice(n.start,n.end).includes(fragment)),name+' '+fragment);
+const hookBody=(f,label,code)=>insert(f.body.start+1,label,code);
+const vault=byText('M','pwa-snapshot-preview');
+hookBody(vault,'LOCALCOPIES',`if(window.SePrepareParity){await ct();await ne();window.SePrepareParity.openLocalCopies({copies:w.slice(0,fn),openModal:l,button:s,icon:o,escape:i,formatDate:Br,formatSize:rt});r.modal="pwa-vault";return;}`);
+hookBody(byText('$','pwa-memory-vault'),'LOCALSUMMARY',`if(window.SePrepareParity){
+ if(e)return "";
+ return SPLocale.h\`<div class="pwa-memory-box apple-simple-sheet"><p class="help">\${SPLocale.t("Seu caderno é salvo automaticamente neste aparelho.")}</p><div class="apple-sheet-actions">\${s("pwa-memory-vault",SPLocale.t("Cópias de recuperação"),"History","small secondary")}\${s("pwa-save-device-file",SPLocale.t("Exportar backup"),"Download","small soft")}\${v()?"":s("pwa-install",j()?"Instalar no iPhone":SPLocale.t("Instalar aplicativo"),"Smartphone","small")}</div></div>\`;
+ }`);
+hook('TM','AGENDASHEET',`if(window.SePrepareParity){if(t)d.speechId=t;window.SePrepareParity.openAgendaDate({speech:ue(),openModal:Te,button:oe,escape:P});d.modal="agenda-date";return;}`);
+const persistAgenda=`const spAgendaId=d.speechId;void window.SePrepareParityRuntime.saveAgendaDate(spAgendaId,spAgendaDate).then(ok=>{if(!ok)return;he();["editor","part"].includes(d.view)?yl():fr();ae(SPLocale.t(`;
+hook('EM','AGENDASAVE',`if(window.SePrepareParityRuntime){const spAgendaDate=window.SePrepareParity.readAgendaDate(L("#scheduleDate"),ae);if(spAgendaDate===null)return;${persistAgenda}"Data salva na Agenda."));});return;}`);
+const clear=one(actions.cases.filter(n=>n.test?.value==='clear-schedule'),'clear schedule');
+insert(clear.consequent[0].start,'AGENDACLEAR',`if(window.SePrepareParityRuntime){const spAgendaDate=0;${persistAgenda}"Agendamento removido."));});break;}`);
+hookBody(byText('Be','case"pwa-export-ics"'),'CALENDAREXPORT',`if(k==="pwa-export-ics"&&window.SePrepareParity){const speech=f().speeches.find(item=>item.id===(_||r.speechId));const date=window.SePrepareParity.readAgendaDate(a("#scheduleDate"),u);if(speech&&date!==null)Pe({...speech,scheduledAt:date});return true;}`);
+const exportCalendar=byText('Pe','BEGIN:VCALENDAR');
+const exportMessage=one(nodes.filter(n=>n.type==='CallExpression'&&n.start>exportCalendar.start&&n.end<exportCalendar.end&&n.callee?.name==='u'&&n.arguments[0]?.arguments?.[0]?.value?.startsWith('Abrindo o Calendário')),'calendar export message');
+insert(exportMessage.arguments[0].start,'CALENDARMESSAGE','SPLocale.t("Abra o arquivo para adicionar o evento ao Calendário.")||');
+hook('pM','AGENDAEMPTY','const help=L("#viewContent .empty p");if(help)help.textContent=SPLocale.t("Adicione uma data para ver suas próximas apresentações aqui.");',true);
+const settingsRender=fn('hM').body.body[0];
+if(!source.slice(settingsRender.start,settingsRender.end).includes('settings-list'))throw Error('Apple settings template unavailable');
+insert(settingsRender.end,'AGENDASETTINGS',`;for(const title of $t("#viewContent .setting-card > h3")){if(title.textContent.trim()===SPLocale.t("Notificações no iPhone")){const help=title.nextElementSibling;if(help)help.textContent=SPLocale.t("O SePrepare não envia lembretes no iPhone. Para receber um aviso, use o Calendário.");break;}}`);
 const saveCase=one(actions.cases.filter(n=>n.test?.value==='save-editor'),'confirm');insert(saveCase.consequent[0].start,'CONFIRM','if(window.SePrepareParityRuntime){void window.SePrepareParityRuntime.confirm();break;}');
 for(const name of ['new-speech','new-part']){const item=one(actions.cases.filter(n=>n.test?.value===name),name);const unshift=one(nodes.filter(n=>n.type==='CallExpression'&&n.start>item.start&&n.end<item.end&&n.callee?.property?.name==='unshift'),'new document');insert(unshift.start,'UNPUBLISHED','l.editorUnpublished=true,');}
 for(const name of ['hb','gb','yb']){const call=one(nodes.filter(n=>n.type==='CallExpression'&&n.callee?.name===name),'editor factory '+name);const config=call.arguments[0],getter=config.properties.find(p=>p.key?.name==='getState').value;insert(getter.body.start,'PROJECTION','window.SePrepareParityRuntime?.editorState()||');}

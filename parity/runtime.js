@@ -71,6 +71,30 @@ export function createEditorRuntime(c){
  function versionSnapshot(){return getEditor()&&saved()?clone(saved()):null;}
  function versionChanged(before){if(getEditor()&&saved())syncEditorVersionRuntime(saved(),before,working);retain();}
  function versionRollback(previous){if(previous&&saved())restore(saved(),previous);retain();}
+ async function saveAgendaDate(id,date){
+  if(busy||c.rt.fileImportCommit||c.rt.importingSharedCode)return false;
+  const state=c.getState(),document=state.speeches.find(item=>item.id===id&&!item.deleted);
+  if(!document)return false;
+  const targets=new Set([document]);
+  if(getEditor()?.id===id)targets.add(working);
+  const draft=state.editorDrafts?.find(item=>item.speechId===id)?.document;
+  if(draft)targets.add(draft);
+  const previousDrafts=state.editorDrafts;
+  const previousDates=new Map([...targets].map(item=>[item,item.scheduledAt]));
+  busy=true;
+  const release=c.lock?.()||(()=>{});
+  try{
+   for(const item of targets)item.scheduledAt=date;
+   if(!await durable())throw Error('save');
+   return true;
+  }catch{
+   for(const [item,previous] of previousDates)item.scheduledAt=previous;
+   state.editorDrafts=previousDrafts;
+   try{await durable();}catch{}
+   c.toast(t('Não foi possível salvar a data. Tente novamente.'));
+   return false;
+  }finally{busy=false;release();updateSaveButton();}
+ }
  // Restore must serialize the received notebook without projecting an old Quill
  // editor into it. Keep the old projection available if the write fails.
  async function commitRestore(next){
@@ -79,5 +103,5 @@ export function createEditorRuntime(c){
   catch{c.setState(previous);working=oldWorking;c.rt.q=q;try{await durable();}catch{}protection.mark('error');return false;}
   finally{busy=false;release();}
  }
- return {getEditor,editorState,prepareSave,retain,observeSave,notifyDrive,mountEditor,updateSaveButton,navigate,confirm,versionSnapshot,versionChanged,versionRollback,commitRestore,receiveFile:()=>receiveFilePreparation({...c,navigate}),mark:protection.mark};
+ return {getEditor,editorState,prepareSave,retain,observeSave,notifyDrive,mountEditor,updateSaveButton,navigate,confirm,versionSnapshot,versionChanged,versionRollback,saveAgendaDate,commitRestore,receiveFile:()=>receiveFilePreparation({...c,navigate}),mark:protection.mark};
 }
