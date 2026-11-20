@@ -1,10 +1,12 @@
 # Atualização 1.0.101
 
+Shell `20261120.3`. A Agenda mantém data e horário com opções de salvar, remover e exportar ao Calendário. O iPhone usa o Calendário para avisos. A exportação usa a data do formulário e o salvamento grava pela fila local. A tela de memória dá acesso direto a **Exportar backup** e **Cópias de recuperação**. Os textos foram revisados nos quatro idiomas.
+
 Paridade de salvamento, compartilhamento e player integrada ao host Apple. Seletores Manual/Automático com círculos uniformes e títulos/descrições alinhados. `parity/` mantém o rascunho e aguarda a confirmação da fila IDB/OPFS. Código e arquivo individual só concluem a recepção após essa confirmação. Gate, migração, atualização segura, voz e Worker de autorização preservados.
 
 O pipeline completo é `node protection/verify-all.mjs`; instale as dependências declaradas de sharing, localization, protection, pdf, review e qa/time-dom antes de executá-lo. O builder `parity/build.mjs` roda **por último**, depois de recordings. Compilação repetida e contrato das cinco funções protegidas aprovados. Não substituir o host pelo bundle de outra plataforma nem alterar o contrato para aceitar uma divergência.
 
-Build do shell: `20261120.1` no HTML e no service worker. Validado localmente com WebKit, incluindo atualização da instalação anterior e reabertura offline; não equivale a iPhone/iPad físico ou conta Google real. A publicação ocorre pelo Cloudflare Workers Builds após mesclagem na main. O pacote estático mantém o Worker/configuração existentes separados dos assets.
+O HTML e o service worker usam o mesmo identificador de shell. WebKit verifica a atualização da instalação anterior e a reabertura offline. O Calendário e o recebimento de alertas dependem de verificação em aparelho físico. A publicação ocorre pelo Cloudflare Workers Builds após mesclagem na main.
 
 # Publicar uma atualização do PWA
 

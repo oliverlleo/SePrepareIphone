@@ -6177,3 +6177,26 @@ Object.assign(catalogs.ja,{"Conceitos do cartão": "カードの概念", "Separe
 
 // Short label shared across presentation controls on every platform.
 Object.assign(catalogs.en,{"Nota":"Note"});Object.assign(catalogs.es,{"Nota":"Nota"});Object.assign(catalogs.ja,{"Nota":"メモ"});
+
+const appleSheetCopy=[
+ ["Editar data na Agenda","Edit Agenda date","Editar fecha en la agenda","予定の日付を変更"],
+ ["Adicionar à Agenda","Add to Agenda","Añadir a la agenda","予定に追加"],
+ ["Salvar na Agenda","Save to Agenda","Guardar en la agenda","予定を保存"],
+ ["Remover da Agenda","Remove from Agenda","Quitar de la agenda","予定から削除"],
+ ["Data salva na Agenda.","Date saved to Agenda.","Fecha guardada en la agenda.","予定の日付を保存しました。"],
+ ["Não foi possível salvar a data. Tente novamente.","Could not save the date. Try again.","No se pudo guardar la fecha. Inténtalo de nuevo.","日付を保存できませんでした。もう一度お試しください。"],
+ ["Exportar para o Calendário","Export to Calendar","Exportar al calendario","カレンダーに書き出す"],
+ ["O SePrepare não envia lembretes no iPhone. Para receber um aviso, use o Calendário.","SePrepare does not send reminders on iPhone. Use Calendar for alerts.","SePrepare no envía recordatorios en el iPhone. Usa el calendario para recibir avisos.","SePrepareはiPhoneでリマインダーを送りません。通知にはカレンダーを使ってください。"],
+ ["Abra o arquivo para adicionar o evento ao Calendário.","Open the file to add the event to Calendar.","Abre el archivo para añadir el evento al calendario.","ファイルを開いてカレンダーに予定を追加してください。"],
+ ["Adicione uma data para ver suas próximas apresentações aqui.","Add a date to see your upcoming presentations here.","Añade una fecha para ver aquí tus próximas presentaciones.","日付を設定すると、今後の発表がここに表示されます。"],
+ ["Memória do aparelho","Device storage","Almacenamiento del dispositivo","端末のストレージ"],
+ ["Seu caderno é salvo automaticamente neste aparelho.","Your notebook is saved automatically on this device.","Tu cuaderno se guarda automáticamente en este dispositivo.","ノートはこの端末に自動保存されます。"],
+ ["Exporte um backup para guardar uma cópia fora do SePrepare.","Export a backup to keep a copy outside SePrepare.","Exporta una copia de seguridad para guardarla fuera de SePrepare.","SePrepareの外にコピーを残すには、バックアップを書き出してください。"],
+ ["Cópias de recuperação","Recovery copies","Copias de recuperación","復元用コピー"],
+ ["Nenhuma cópia de recuperação ainda.","No recovery copies yet.","Aún no hay copias de recuperación.","復元用コピーはまだありません。"]
+];
+for(const [source,en,es,ja] of appleSheetCopy){
+ catalogs.en[source]=en;
+ catalogs.es[source]=es;
+ catalogs.ja[source]=ja;
+}
