@@ -151,6 +151,7 @@ edit(bridge.start, bridge.start, marker('BRIDGE', helpers));
 
 hook(fn('xM'), 'IDENTITY', 'if(se(t))return sp73IdentityHTML(t);');
 hook(fn('t0'), 'MOUNT', ';sp73Rehearsal?.mountBar();', true);
+hook(fn('Nl', 'focus-mode'), 'FOCUS', ';if(d.focus&&sp73Rehearsal?.isActive?.()&&sp73Rehearsal.controller.getSnapshot().isRunning){sp73Rehearsal.controller.pause();}', true);
 hook(fn('r0'), 'PAGES', 'if(sp73Rehearsal?.shouldShowAllLines())r=false;');
 hook(fn('ds'), 'READER', ';sp73Rehearsal?.syncReaderDom({scrollToTurn:false});', true);
 hook(
