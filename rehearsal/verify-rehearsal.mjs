@@ -562,3 +562,62 @@ check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contrato
   }
   check('Modo expandido oculta Ensaio interativo, pausa ensaio ativo e sai com gesto de voltar do iPhone');
 }
+
+// 15. Partner turn settleMs: 350 after getUserMedia/listening in Auto mode, 0 on consecutive partner->partner and Manual mode
+{
+  const fakePlayer = createFakePlayer();
+  const audio = createRehearsalAudio({ player: fakePlayer, getSettings: () => ({ language: 'pt-BR', rate: 1 }) });
+  let triggerSpeechComplete = null;
+  const fakeVad = {
+    ensureSession: async () => ({ ok: true }),
+    async startListeningTurn(opts) {
+      triggerSpeechComplete = opts.onSpeechComplete;
+      return { started: true };
+    },
+    stopListening() {},
+    release() {}
+  };
+  const speechSeq = newPart();
+  speechSeq.id = 'part-settle-ms';
+  speechSeq.participants = [
+    { id: 'p1', name: 'Usuário' },
+    { id: 'p2', name: 'Parceiro A' },
+    { id: 'p3', name: 'Parceiro B' }
+  ];
+  speechSeq.myParticipantId = 'p1';
+  speechSeq.delta = {
+    ops: [
+      { insert: 'Parceiro A abre.\n', attributes: { speaker: 'p2' } },
+      { insert: 'Parceiro B continua.\n', attributes: { speaker: 'p3' } },
+      { insert: 'Minha fala no meio.\n', attributes: { speaker: 'p1' } },
+      { insert: 'Parceiro A responde depois do microfone.\n', attributes: { speaker: 'p2' } }
+    ]
+  };
+  normalizeVersions(speechSeq);
+
+  const controller = createRehearsalController({ audio, vad: fakeVad });
+  await controller.start({ speech: speechSeq, mode: 'auto', silenceSeconds: 3 });
+  assert.equal(fakePlayer.calls.length, 1);
+  assert.equal(fakePlayer.calls[0].settleMs, 350);
+
+  fakePlayer.finishCurrent();
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(fakePlayer.calls.length, 2);
+  assert.equal(fakePlayer.calls[1].settleMs, 0);
+
+  fakePlayer.finishCurrent();
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(controller.getSnapshot().state, 'listening');
+  triggerSpeechComplete?.();
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(fakePlayer.calls.length, 3);
+  assert.equal(fakePlayer.calls[2].settleMs, 350);
+  controller.stop();
+
+  fakePlayer.calls.length = 0;
+  await controller.start({ speech: speechSeq, mode: 'manual', silenceSeconds: 3 });
+  assert.equal(fakePlayer.calls.length, 1);
+  assert.equal(fakePlayer.calls[0].settleMs, 0);
+  controller.stop();
+  check('Modo Automático aplica pausa de acomodação de 350 ms após permissão/microfone e mantém Manual síncrono');
+}

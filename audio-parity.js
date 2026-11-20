@@ -50,6 +50,7 @@
 
   function create(options) {
     const o=options, synth=global.speechSynthesis, audio=o.audio;
+    const now=typeof o.now==='function' ? o.now : () => Date.now();
     const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'') || (global.navigator?.platform==='MacIntel'&&global.navigator?.maxTouchPoints>1);
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
@@ -633,7 +634,7 @@
       return {status:synth?'ready':'unavailable',locale:loc,voices,allVoices:all};
     }
     function speakSegment(spec={}) {
-      const {text='',offset=0,voice='',locale:preferredLocale='',rate=1,onStart,onBoundary,onEnd,onPaused,onError}=spec;
+      const {text='',offset=0,voice='',locale:preferredLocale='',rate=1,settleMs=0,onStart,onBoundary,onEnd,onPaused,onError}=spec;
       const fromEndedUtterance=inUtteranceEnd;
       if(previewing) stopPreview();
       if(audio.state==='playing'||audio.state==='starting') {
@@ -701,7 +702,7 @@
         scheduleIOSAudioSessionRelease();
         if(typeof onError==='function') onError({code:code||'synthesis-failed',message:speechErrorMessage(code||'synthesis-failed')});
       }
-      function nextChunk(at,{retried=false}={}) {
+      function nextChunk(at,{retried=false,silentRetries=0}={}) {
         if(activeSegment!==seg || id!==request) return;
         clearTimeout(seg.pauseTimer);
         seg.pauseTimer=0;
@@ -721,7 +722,7 @@
         utterance.pitch=1;
         seg.utterance=utterance;
         activeUtterance=utterance;
-        let chunkStarted=false;
+        let chunkStarted=false,asyncStarted=false,sawBoundary=false,startedAt=-1,inSpeakCall=false;
         const isCurrent=()=>activeSegment===seg && id===request && seg.utterance===utterance;
         const detach=()=>{utterance.onstart=utterance.onboundary=utterance.onend=utterance.onerror=null;};
         const armStallWatchdog=()=>{
@@ -738,12 +739,16 @@
         utterance.onstart=()=>{
           if(!isCurrent()) return;
           chunkStarted=true;
+          if(!inSpeakCall) asyncStarted=true;
+          if(startedAt<0) startedAt=now();
           if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
           armStallWatchdog();
         };
         utterance.onboundary=ev=>{
           if(!isCurrent()) return;
           chunkStarted=true;
+          sawBoundary=true;
+          if(startedAt<0) startedAt=now();
           if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
           armStallWatchdog();
           const ratio=plan.spoken.length ? clamp((Number(ev.charIndex)||0)/plan.spoken.length,0,1) : 0;
@@ -754,6 +759,28 @@
           if(!isCurrent()) return;
           detach();
           clearTimeout(seg.startupTimer);
+          const spokenLetters=plan.spoken.replace(/[^\p{L}\p{N}]/gu,'').length;
+          const minRealMs=spokenLetters>=8 ? Math.min(500,Math.round((spokenLetters*22)/cleanRate)) : 0;
+          const elapsedMs=startedAt>=0 ? Math.max(0,now()-startedAt) : 0;
+          const silentDropIOS=isIOS && (
+            !chunkStarted ||
+            (asyncStarted && !sawBoundary && minRealMs>0 && elapsedMs<minRealMs)
+          );
+          if(silentDropIOS) {
+            seg.utterance=null;activeUtterance=null;
+            cancelActiveSpeech();
+            if(silentRetries<2) {
+              const nextSilent=silentRetries+1;
+              if(nextSilent===2) fallbackSegmentVoice();
+              seg.pauseTimer=setTimeout(
+                ()=>nextChunk(plan.start,{retried,silentRetries:nextSilent}),
+                nextSilent===1?350:450
+              );
+              return;
+            }
+            failSegment('not-allowed',plan.start,{afterRetry:true});
+            return;
+          }
           if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
           chunkIndex+=1;
           if(plan.nextAt<fullText.length) {
@@ -785,7 +812,12 @@
         };
         try {
           if(synth.paused&&typeof synth.resume==='function')synth.resume();
-          synth.speak(utterance);
+          inSpeakCall=true;
+          try {
+            synth.speak(utterance);
+          } finally {
+            inSpeakCall=false;
+          }
           if(!chunkStarted && isCurrent()) {
             const canRecoverIOS=isIOS && !retried;
             seg.startupTimer=setTimeout(()=>{
@@ -797,7 +829,7 @@
                 if(!seg.started && !cancelledOnStart && currentVoice) {
                   fallbackSegmentVoice();
                 }
-                seg.pauseTimer=setTimeout(()=>nextChunk(plan.start,{retried:true}),100);
+                seg.pauseTimer=setTimeout(()=>nextChunk(plan.start,{retried:true,silentRetries}),100);
                 return;
               }
               failSegment('startup-timeout',plan.start,{afterRetry:retried});
@@ -810,7 +842,10 @@
           failSegment('synthesis-failed',plan.start,{afterRetry:retried});
         }
       }
-      if(isIOS && fromEndedUtterance) seg.pauseTimer=setTimeout(()=>nextChunk(startAt),60);
+      const initialDelayMs=isIOS
+        ? Math.max(fromEndedUtterance?60:0,Math.max(0,Number(settleMs)||0))
+        : 0;
+      if(initialDelayMs>0) seg.pauseTimer=setTimeout(()=>nextChunk(startAt),initialDelayMs);
       else nextChunk(startAt);
       return reqId;
     }

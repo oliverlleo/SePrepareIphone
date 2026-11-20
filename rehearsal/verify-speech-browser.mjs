@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createRehearsalVad } from './interactive-rehearsal-vad.js';
+import { createWebSpeechClassifier } from './rehearsal-web-classifier.js';
 import { createClassifiedSpeechGate } from './rehearsal-speech-gate.js';
 import { PcmFrameResampler } from './voice/pcm-resampler.js';
 let checks=0;
@@ -187,14 +188,106 @@ for(const seconds of [2,3,5]) {
  const doneAfterEchoAndSilence=done;
  for(let i=0;i<15;i++){t+=32;pushCb?.(.95);}
  for(let i=0;i<64;i++){t+=32;pushCb?.(.01);}
- check('Janela echoGuardMs de 500 ms ignora eco residual da fala anterior e detecta fala real depois',()=>{
-  assert.equal(echoCheckTrack,false);
-  assert.equal(enabledDuringGuard,false);
+ check('Janela echoGuardMs de 500 ms ignora eco residual mantendo a faixa habilitada para AudioWorklet no iOS',()=>{
+  assert.equal(echoCheckTrack,true);
+  assert.equal(enabledDuringGuard,true);
   assert.equal(enabledAfterGuard,true);
   assert.equal(doneAfterEchoAndSilence,0);
   assert.equal(done,1);
   assert.equal(errors,0);
  });
  vad.release();
+}
+{
+ let t=0,intervalFn=null;
+ const h=harness({now:()=>t,setIntervalFn:fn=>{intervalFn=fn;return 1;},clearIntervalFn:()=>{intervalFn=null;}});
+ class Context extends h.Context{constructor(){super();this.audioWorklet={addModule:async()=>{}};}}
+ class Worklet{constructor(){this.port={onmessage:null,postMessage(){}};}connect(){}disconnect(){}}
+ h.options.AudioContextClass=Context;
+ h.options.AudioWorkletNodeClass=Worklet;
+ const vad=createRehearsalVad(h.options);
+ let errors=0;
+ await vad.startListeningTurn({onError:()=>errors++});
+ check('AudioWorklet inicialmente selecionado com faixa habilitada antes de ligar a captura',()=>{
+  assert.equal(vad.getBackend(),'worklet');
+  assert.equal(h.tracks[0].enabled,true);
+ });
+ t+=1050;
+ intervalFn?.();
+ check('AudioWorklet silencioso após 1 s migra automaticamente para captura alternativa do mesmo classificador',()=>{
+  assert.equal(vad.getBackend(),'script-processor');
+  assert.equal(errors,0);
+  assert.equal(h.closed,0);
+ });
+ vad.stopListening();
+ await vad.startListeningTurn({onError:()=>errors++});
+ check('Turno seguinte preserva script-processor após detectar AudioWorklet silencioso',()=>{
+  assert.equal(vad.getBackend(),'script-processor');
+  assert.equal(errors,0);
+ });
+ vad.release();
+}
+{
+ let classifierStarts=0,gumCalls=0,resolveGum;
+ const events={};
+ const mutedTrack={
+  enabled:true,muted:true,readyState:'live',
+  stop(){this.readyState='ended';},
+  addEventListener(type,fn){(events[type] ||= []).push(fn);},
+  removeEventListener(type,fn){events[type]=(events[type]||[]).filter(x=>x!==fn);}
+ };
+ const h=harness({
+  mediaDevices:{getUserMedia:()=>{gumCalls++;return new Promise(resolve=>{resolveGum=resolve;});}},
+  createClassifier:()=>({async ensure(){classifierStarts++;},startTurn:async()=>{},push(){},stopTurn(){},release(){}})
+ });
+ const vad=createRehearsalVad(h.options);
+ const p=vad.ensureSession();
+ assert.equal(classifierStarts,0);
+ resolveGum({getAudioTracks:()=>[mutedTrack],getTracks:()=>[mutedTrack]});
+ await new Promise(r=>setTimeout(r,0));
+ mutedTrack.muted=false;
+ events.unmute?.forEach(fn=>fn());
+ const res=await p;
+ check('ensureSession aguarda permissão antes de iniciar o classificador e tolera mute transitório até unmute',()=>{
+  assert.equal(classifierStarts,1);
+  assert.equal(res.ok,true);
+  assert.equal(gumCalls,1);
+ });
+ vad.release();
+}
+{
+ let attempt=0,lastWorker=null;
+ class FakeWorker {
+  constructor(){
+   this.attempt=++attempt;
+   this.posted=[];
+   lastWorker=this;
+  }
+  postMessage(msg){
+   this.posted.push(msg);
+   if(msg.type==='init'){
+    queueMicrotask(()=>{
+     if(this.attempt===1)this.onmessage?.({data:{id:msg.id,type:'error',message:'transient init'}});
+     else this.onmessage?.({data:{id:msg.id,type:'ready'}});
+    });
+   } else if(msg.type==='reset'){
+    queueMicrotask(()=>this.onmessage?.({data:{id:msg.id,type:'reset',token:msg.token}}));
+   }
+  }
+  terminate(){this.terminated=true;}
+ }
+ const cls=createWebSpeechClassifier({WorkerClass:FakeWorker,baseURL:'https://unit.test/voice/v1.0.74/'});
+ await assert.rejects(()=>cls.ensure());
+ await cls.ensure();
+ let clsErrors=0;
+ await cls.startTurn(7,()=>{},()=>clsErrors++);
+ for(let i=0;i<60;i++)cls.push(new Float32Array(512),7);
+ const sentFrames=lastWorker.posted.filter(m=>m.type==='frame').length;
+ check('Classificador limpa estado após falha de init e descarta excesso de quadros sem erro falso',()=>{
+  assert.equal(attempt,2);
+  assert.equal(sentFrames,24);
+  assert.equal(clsErrors,0);
+ });
+ cls.release();
 }
 console.log(`OK ${checks} verificações da captura e detecção de fala no navegador`);
