@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { JSDOM } from '../qa/time-dom/node_modules/jsdom/lib/api.js';
 import { newSpeech, newPart, normalizeVersions, createContentVersion, selectContentVersion } from '../sharing/core.js';
 import { rhythmValue } from '../timing/rhythm-core.js';
 import {
@@ -434,4 +435,130 @@ check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contrato
   assert.equal(controller.getSnapshot().currentTurnIndex, 2);
   controller.stop();
   check('Vez do usuário após narração do parceiro ativa proteção contra eco de 500 ms');
+}
+
+// 14. Focus/expanded mode hides interactive rehearsal UI, pauses running rehearsal, and exits on iPhone back gestures
+{
+  const styleCss = fs.readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  assert(styleCss.includes('.focus-mode .reader-top,.focus-mode .reader-heading,.focus-mode .reader-identity,.focus-mode .reader-controls,.focus-mode .reader-end{display:none}'));
+  const rehearsalCss = fs.readFileSync(new URL('./interactive-rehearsal.css', import.meta.url), 'utf8');
+  assert(rehearsalCss.includes('.focus-mode .reader-identity,') && rehearsalCss.includes('.focus-mode .rehearsal-bar {') && rehearsalCss.includes('display: none !important;'));
+  assert(appJs.includes('.focus-mode .reader-identity') && appJs.includes('.focus-mode .rehearsal-bar'));
+  assert(appJs.includes('SEPREPARE REHEARSAL FOCUS START') && appJs.includes('sp73Rehearsal.controller.pause()'));
+
+  const dom = new JSDOM('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div></body></html>', {
+    url: 'https://ios.seprepareapp.com.br/',
+    runScripts: 'outside-only'
+  });
+  try {
+    const w = dom.window;
+    const d = w.document;
+    Object.defineProperty(w.navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1',
+      configurable: true
+    });
+    Object.defineProperty(w.navigator, 'standalone', { value: true, configurable: true });
+    Object.defineProperty(d, 'currentScript', {
+      value: { src: 'https://ios.seprepareapp.com.br/launch-gate.js?v=20261120.15' },
+      configurable: true
+    });
+    w.matchMedia = () => ({ matches: true });
+    w.requestAnimationFrame = () => 1;
+    let backCalls = 0;
+    w.oradorBack = () => {
+      backCalls += 1;
+      if (d.body.classList.contains('focus-mode')) {
+        d.body.classList.remove('focus-mode');
+        return true;
+      }
+      const tele = d.querySelector('.tele-shell.tele-focus');
+      if (d.body.classList.contains('teleprompter-open') && tele) {
+        tele.classList.remove('tele-focus');
+        return true;
+      }
+      return false;
+    };
+    w.eval(fs.readFileSync(new URL('../launch-gate.js', import.meta.url), 'utf8'));
+
+    const makeTouch = (type, clientX, clientY, target = d.body) => {
+      const ev = new w.Event(type, { bubbles: true, cancelable: true });
+      const touch = { clientX, clientY, target };
+      Object.defineProperty(ev, 'touches', { value: type === 'touchend' || type === 'touchcancel' ? [] : [touch] });
+      Object.defineProperty(ev, 'changedTouches', { value: [touch] });
+      return ev;
+    };
+
+    // Case A: native iOS back gesture (history pushState + popstate) exits focus-mode once
+    d.body.classList.add('focus-mode');
+    await new Promise(r => setTimeout(r, 20));
+    assert.equal(w.history.state?.seprepareFocus, true);
+    w.history.back();
+    await new Promise(r => setTimeout(r, 40));
+    assert.equal(backCalls, 1);
+    assert.equal(d.body.classList.contains('focus-mode'), false);
+    w.dispatchEvent(new w.PopStateEvent('popstate', { state: w.history.state }));
+    assert.equal(backCalls, 1);
+    await new Promise(r => setTimeout(r, 200));
+
+    // Case B: left-edge right swipe exits focus-mode and cleans pushed history state
+    d.body.classList.add('focus-mode');
+    await new Promise(r => setTimeout(r, 20));
+    assert.equal(w.history.state?.seprepareFocus, true);
+    d.body.dispatchEvent(makeTouch('touchstart', 24, 200));
+    d.body.dispatchEvent(makeTouch('touchmove', 110, 206));
+    d.body.dispatchEvent(makeTouch('touchend', 115, 206));
+    assert.equal(backCalls, 2);
+    assert.equal(d.body.classList.contains('focus-mode'), false);
+    await new Promise(r => setTimeout(r, 200));
+
+    // Case C: negative guards (outside focus-mode, mid-screen swipe, vertical scroll)
+    d.body.dispatchEvent(makeTouch('touchstart', 24, 200));
+    d.body.dispatchEvent(makeTouch('touchmove', 120, 200));
+    d.body.dispatchEvent(makeTouch('touchend', 120, 200));
+    assert.equal(backCalls, 2);
+
+    d.body.classList.add('focus-mode');
+    await new Promise(r => setTimeout(r, 20));
+    d.body.dispatchEvent(makeTouch('touchstart', 140, 200));
+    d.body.dispatchEvent(makeTouch('touchmove', 240, 200));
+    d.body.dispatchEvent(makeTouch('touchend', 240, 200));
+    assert.equal(backCalls, 2);
+    assert.equal(d.body.classList.contains('focus-mode'), true);
+
+    d.body.dispatchEvent(makeTouch('touchstart', 20, 200));
+    d.body.dispatchEvent(makeTouch('touchmove', 50, 320));
+    d.body.dispatchEvent(makeTouch('touchend', 50, 320));
+    assert.equal(backCalls, 2);
+    assert.equal(d.body.classList.contains('focus-mode'), true);
+
+    w.history.back();
+    await new Promise(r => setTimeout(r, 40));
+    assert.equal(backCalls, 3);
+    assert.equal(d.body.classList.contains('focus-mode'), false);
+    await new Promise(r => setTimeout(r, 200));
+
+    // Case D: Teleprompter .tele-shell.tele-focus also exits on popstate and edge swipe
+    d.body.classList.add('teleprompter-open');
+    d.getElementById('app').innerHTML = '<main class="tele-shell tele-focus"></main>';
+    await new Promise(r => setTimeout(r, 30));
+    assert.equal(w.history.state?.seprepareFocus, true);
+    w.history.back();
+    await new Promise(r => setTimeout(r, 40));
+    assert.equal(backCalls, 4);
+    assert.equal(d.querySelector('.tele-shell').classList.contains('tele-focus'), false);
+    await new Promise(r => setTimeout(r, 200));
+
+    d.querySelector('.tele-shell').classList.add('tele-focus');
+    await new Promise(r => setTimeout(r, 30));
+    d.body.dispatchEvent(makeTouch('touchstart', 24, 220));
+    d.body.dispatchEvent(makeTouch('touchmove', 110, 225));
+    d.body.dispatchEvent(makeTouch('touchend', 115, 225));
+    assert.equal(backCalls, 5);
+    assert.equal(d.querySelector('.tele-shell').classList.contains('tele-focus'), false);
+    await new Promise(r => setTimeout(r, 200));
+    assert.notEqual(w.history.state?.seprepareFocus, true);
+  } finally {
+    dom.window.close();
+  }
+  check('Modo expandido oculta Ensaio interativo, pausa ensaio ativo e sai com gesto de voltar do iPhone');
 }

@@ -117,6 +117,147 @@ SePrepare\u306E\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u30FB\u30A2\u30AF\u30BB\u30B
     document.addEventListener('touchstart', preventPinch, { passive: false });
     document.addEventListener('touchmove', preventPinch, { passive: false });
 
+    // Allow iPhone back swipe (both native WebKit history edge-swipe and right swipe from left edge)
+    // to exit expanded/focus reading and teleprompter focus modes cleanly.
+    let focusActive = false;
+    let focusHistoryPushed = false;
+    let ignoringPopstate = false;
+    let focusCleanupTimer = 0;
+    let teleObserver = null;
+    let observingTele = false;
+    let edgeSwipe = null;
+
+    const isFocusActive = () => Boolean(
+      typeof document !== 'undefined' && document && document.body && (
+        document.body.classList.contains('focus-mode') ||
+        (document.body.classList.contains('teleprompter-open') && document.querySelector('.tele-shell.tele-focus'))
+      )
+    );
+
+    const syncTeleObserver = () => {
+      if (typeof document === 'undefined' || !document || !document.body) return;
+      const teleOpen = document.body.classList.contains('teleprompter-open');
+      if (teleOpen && !observingTele && typeof MutationObserver === 'function') {
+        const appRoot = document.getElementById('app') || document.body;
+        teleObserver ||= new MutationObserver(() => syncFocusHistory());
+        teleObserver.observe(appRoot, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+        observingTele = true;
+      } else if (!teleOpen && observingTele) {
+        teleObserver?.disconnect();
+        observingTele = false;
+      }
+    };
+
+    const syncFocusHistory = () => {
+      if (typeof document === 'undefined' || !document || !document.body || typeof window === 'undefined') return;
+      syncTeleObserver();
+      const active = isFocusActive();
+      if (active === focusActive) return;
+      focusActive = active;
+      if (active) {
+        clearTimeout(focusCleanupTimer);
+        focusCleanupTimer = 0;
+        if (!focusHistoryPushed) {
+          try {
+            const current = window.history?.state && typeof window.history.state === 'object' ? window.history.state : {};
+            window.history.pushState({ ...current, seprepareFocus: true }, '');
+            focusHistoryPushed = true;
+          } catch {}
+        }
+        return;
+      }
+      if (focusHistoryPushed) {
+        focusHistoryPushed = false;
+        clearTimeout(focusCleanupTimer);
+        focusCleanupTimer = setTimeout(() => {
+          focusCleanupTimer = 0;
+          if (!isFocusActive() && window.history?.state?.seprepareFocus) {
+            ignoringPopstate = true;
+            try {
+              window.history.back();
+            } catch {
+              ignoringPopstate = false;
+            }
+            setTimeout(() => {
+              ignoringPopstate = false;
+            }, 350);
+          }
+        }, 120);
+      }
+    };
+
+    window.addEventListener('popstate', () => {
+      if (ignoringPopstate) {
+        ignoringPopstate = false;
+        return;
+      }
+      focusHistoryPushed = false;
+      if (isFocusActive()) {
+        focusActive = false;
+        window.oradorBack?.();
+      }
+    });
+
+    if (typeof MutationObserver === 'function' && document.body) {
+      const bodyObserver = new MutationObserver(() => syncFocusHistory());
+      bodyObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      syncFocusHistory();
+    }
+
+    document.addEventListener('touchstart', event => {
+      if (!isFocusActive() || event.touches.length !== 1 || document.querySelector('.modal-backdrop')) {
+        edgeSwipe = null;
+        return;
+      }
+      const touch = event.touches[0];
+      const target = event.target;
+      if (!touch || touch.clientX > 48 || target?.closest?.('input,textarea,select,button,[contenteditable="true"]')) {
+        edgeSwipe = null;
+        return;
+      }
+      edgeSwipe = {
+        startX: touch.clientX,
+        startY: touch.clientY,
+        maxDx: 0,
+        maxDy: 0,
+        startedAt: Date.now()
+      };
+    }, { passive: true, capture: true });
+
+    document.addEventListener('touchmove', event => {
+      if (!edgeSwipe) return;
+      if (!isFocusActive() || event.touches.length !== 1) {
+        edgeSwipe = null;
+        return;
+      }
+      const touch = event.touches[0];
+      const dx = touch.clientX - edgeSwipe.startX;
+      const dy = Math.abs(touch.clientY - edgeSwipe.startY);
+      if (dx < -16 || (dy > 48 && dy > dx)) {
+        edgeSwipe = null;
+        return;
+      }
+      if (dx > edgeSwipe.maxDx) edgeSwipe.maxDx = dx;
+      if (dy > edgeSwipe.maxDy) edgeSwipe.maxDy = dy;
+    }, { passive: true, capture: true });
+
+    document.addEventListener('touchend', event => {
+      const swipe = edgeSwipe;
+      edgeSwipe = null;
+      if (!swipe || !isFocusActive()) return;
+      const touch = event.changedTouches?.[0];
+      const finalDx = touch ? touch.clientX - swipe.startX : swipe.maxDx;
+      const finalDy = touch ? Math.max(swipe.maxDy, Math.abs(touch.clientY - swipe.startY)) : swipe.maxDy;
+      const elapsed = Date.now() - swipe.startedAt;
+      if (finalDx >= 60 && finalDx > finalDy * 1.4 && elapsed <= 900) {
+        window.oradorBack?.();
+      }
+    }, { passive: true, capture: true });
+
+    document.addEventListener('touchcancel', () => {
+      edgeSwipe = null;
+    }, { passive: true, capture: true });
+
     const appScript = document.createElement('script');
     // A versioned URL bypasses the old installed worker's stale cache on the
     // first online navigation, before that worker has had time to update.

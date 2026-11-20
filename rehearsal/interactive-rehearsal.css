@@ -114,17 +114,9 @@
   }
 }
 
+.focus-mode .reader-identity,
 .focus-mode .rehearsal-bar {
-  max-width: 1060px;
-  margin-inline: auto;
-  margin-bottom: 14px;
-  top: max(10px, env(safe-area-inset-top, 0px));
-}
-
-@media (max-width: 750px) {
-  .focus-mode .rehearsal-bar {
-    margin-inline: 10px;
-  }
+  display: none !important;
 }
 
 .rehearsal-bar-head {
