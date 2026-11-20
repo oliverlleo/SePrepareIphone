@@ -31,7 +31,7 @@ hookBody(byText('$','pwa-memory-vault'),'LOCALSUMMARY',`if(window.SePrepareParit
  if(e)return "";
  return SPLocale.h\`<div class="pwa-memory-box apple-simple-sheet"><p class="help">\${SPLocale.t("Seu caderno é salvo automaticamente neste aparelho.")}</p><div class="apple-sheet-actions">\${s("pwa-memory-vault",SPLocale.t("Cópias de recuperação"),"History","small secondary")}\${s("pwa-save-device-file",SPLocale.t("Exportar backup"),"Download","small soft")}\${v()?"":s("pwa-install",j()?"Instalar no iPhone":SPLocale.t("Instalar aplicativo"),"Smartphone","small")}</div></div>\`;
  }`);
-hook('TM','AGENDASHEET',`if(window.SePrepareParity){if(t)d.speechId=t;window.SePrepareParity.openAgendaDate({speech:ue(),openModal:Te,button:oe,escape:P});d.modal="agenda-date";return;}`);
+hook('TM','AGENDASHEET',`if(window.SePrepareParity){if(t)d.speechId=t;window.SePrepareParity.openAgendaDate({speech:ue(),openModal:Te,button:oe,icon:te,escape:P});d.modal="agenda-date";return;}`);
 const persistAgenda=`const spAgendaId=d.speechId;void window.SePrepareParityRuntime.saveAgendaDate(spAgendaId,spAgendaDate).then(ok=>{if(!ok)return;he();["editor","part"].includes(d.view)?yl():fr();ae(SPLocale.t(`;
 hook('EM','AGENDASAVE',`if(window.SePrepareParityRuntime){const spAgendaDate=window.SePrepareParity.readAgendaDate(L("#scheduleDate"),ae);if(spAgendaDate===null)return;${persistAgenda}"Data salva na Agenda."));});return;}`);
 const clear=one(actions.cases.filter(n=>n.test?.value==='clear-schedule'),'clear schedule');

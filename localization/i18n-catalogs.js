@@ -6180,9 +6180,12 @@ Object.assign(catalogs.en,{"Nota":"Note"});Object.assign(catalogs.es,{"Nota":"No
 
 const appleSheetCopy=[
  ["Editar data na Agenda","Edit Agenda date","Editar fecha en la agenda","予定の日付を変更"],
+ ["Editar data","Edit date","Editar fecha","日付を変更"],
  ["Adicionar à Agenda","Add to Agenda","Añadir a la agenda","予定に追加"],
  ["Salvar na Agenda","Save to Agenda","Guardar en la agenda","予定を保存"],
  ["Remover da Agenda","Remove from Agenda","Quitar de la agenda","予定から削除"],
+ ["Escolher data e horário","Choose date and time","Elegir fecha y hora","日時を選択"],
+ ["Opções da Agenda","Agenda options","Opciones de la agenda","予定のオプション"],
  ["Data salva na Agenda.","Date saved to Agenda.","Fecha guardada en la agenda.","予定の日付を保存しました。"],
  ["Não foi possível salvar a data. Tente novamente.","Could not save the date. Try again.","No se pudo guardar la fecha. Inténtalo de nuevo.","日付を保存できませんでした。もう一度お試しください。"],
  ["Exportar para o Calendário","Export to Calendar","Exportar al calendario","カレンダーに書き出す"],
