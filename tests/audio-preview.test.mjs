@@ -181,3 +181,32 @@ for(const language of ['pt-BR','en','es','ja'])check('Dica discreta de Modo Sile
 });
 check('iPad em modo desktop recebe a mesma ajuda Apple',()=>{const h=harness({ipad:true});try{const b=h.w.document.querySelector('[data-action=install-voices]');b.click();assert.equal(b.getAttribute('aria-expanded'),'true');assert(h.w.document.querySelector('.audio-silent-hint'));}finally{h.close();}});
 check('Navegador Windows preserva a ação de gerenciamento existente e não mostra dica de iPhone',()=>{const h=harness({ios:false});try{let legacy=0;h.w.document.addEventListener('click',()=>legacy++);h.w.document.querySelector('[data-action=install-voices]').click();assert.equal(legacy,1);assert.equal(h.w.document.querySelector('.audio-silent-hint'),null);assert(!h.api.progressHTML().includes('audio-silent-hint'));}finally{h.close();}});
+check('unlock({forRecording:true}) muda para play-and-record, suspende AudioContext de leitura e não cria playback concorrente',()=>{
+ const session={type:'playback'};
+ const h=harness({paused:true,audioSession:session,withAudioCtx:true,captureAllTimers:true});
+ try{
+  h.api.unlock({forRecording:true});
+  assert.equal(session.type,'play-and-record');
+  assert.equal(h.ctxLog.created,0);
+  assert.equal(h.utterances.length,1);
+  assert.equal(h.utterances[0].volume,0);
+  h.utterances[0].onend();
+  h.synth.speaking=false;h.synth.pending=false;
+
+  session.type='auto';
+  h.api.preview();
+  assert.equal(session.type,'playback');
+  assert.equal(h.ctxLog.created,1);
+  h.utterances[1].onend();
+  h.api.unlock({forRecording:true});
+  assert.equal(session.type,'play-and-record');
+  assert.equal(h.ctxLog.suspended,1);
+
+  h.api.speakSegment({text:'Turno do parceiro em modo automático.',locale:'pt-BR',onEnd(){}});
+  assert.equal(session.type,'play-and-record');
+  assert.equal(h.ctxLog.created,1);
+  h.utterances[2].onend();
+  h.shortTimers.forEach(fn=>fn());
+  assert.equal(session.type,'play-and-record');
+ }finally{h.close();}
+});

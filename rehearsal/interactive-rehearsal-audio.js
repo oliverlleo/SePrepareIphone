@@ -246,8 +246,8 @@ export function createRehearsalAudio({ player, getSettings, t = s => s }) {
     }
   }
 
-  function unlock() {
-    player?.unlock?.();
+  function unlock(options) {
+    player?.unlock?.(options);
   }
 
   function speakTurn({

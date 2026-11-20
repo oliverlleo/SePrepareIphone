@@ -108,15 +108,18 @@
     function acquireIOSAudioSession() {
       if(!isIOS)return;
       if(sessionRestoreTimer!==null){clearTimeout(sessionRestoreTimer);sessionRestoreTimer=null;}
-      const micActive=hasActiveMic();
+      const session=global.navigator?.audioSession;
+      const recordSession=hasActiveMic() || session?.type==='play-and-record';
+      if(recordSession) {
+        previousSessionType=null;
+        return;
+      }
       try {
-        const session=global.navigator?.audioSession;
-        if(session && !micActive && session.type!=='play-and-record' && session.type!=='playback') {
+        if(session && session.type!=='playback') {
           if(previousSessionType===null) previousSessionType=session.type;
           session.type='playback';
         }
       } catch {}
-      if(micActive)return;
       try {
         const AudioCtx=global.AudioContext || global.webkitAudioContext;
         if(typeof AudioCtx==='function') {
@@ -159,13 +162,14 @@
       sessionRestoreTimer=setTimeout(()=>{
         sessionRestoreTimer=null;
         if(isAudioActive())return;
+        const session=global.navigator?.audioSession;
+        const recordSession=hasActiveMic() || session?.type==='play-and-record';
         try {
-          if(audioCtx && audioCtx.state==='running' && typeof audioCtx.suspend==='function') {
+          if(!recordSession && audioCtx && audioCtx.state==='running' && typeof audioCtx.suspend==='function') {
             Promise.resolve(audioCtx.suspend()).catch(()=>{});
           }
         } catch {}
         try {
-          const session=global.navigator?.audioSession;
           if(session && previousSessionType!==null && !hasActiveMic() && session.type==='playback') {
             session.type=previousSessionType;
           }
@@ -174,9 +178,24 @@
       },1000);
     }
 
-    function unlock() {
+    function unlock(opts) {
       if(!isIOS)return;
-      acquireIOSAudioSession();
+      const forRecording=Boolean(opts && opts.forRecording);
+      if(forRecording) {
+        if(sessionRestoreTimer!==null){clearTimeout(sessionRestoreTimer);sessionRestoreTimer=null;}
+        previousSessionType=null;
+        try {
+          const session=global.navigator?.audioSession;
+          if(session && session.type!=='play-and-record') session.type='play-and-record';
+        } catch {}
+        try {
+          if(audioCtx && audioCtx.state==='running' && typeof audioCtx.suspend==='function') {
+            Promise.resolve(audioCtx.suspend()).catch(()=>{});
+          }
+        } catch {}
+      } else {
+        acquireIOSAudioSession();
+      }
       if(!synth || typeof global.SpeechSynthesisUtterance!=='function')return;
       try {
         if(synth.paused && typeof synth.resume==='function') synth.resume();

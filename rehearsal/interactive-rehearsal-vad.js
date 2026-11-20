@@ -19,6 +19,7 @@ export function createRehearsalVad(options = {}) {
   let generation = 1, turn = 0, ctx, stream, source, capture, gain, resampler;
   let classifier, pending, workletReady, listening = false, sessionLossCallback, interval;
   let detachTrackListeners = () => {}, detachContextListener = () => {};
+  let audioSessionClaimed = false, previousSessionType = null;
 
   function errorInfo(error) {
     const name=String(error?.name || error?.code || '');
@@ -56,6 +57,28 @@ export function createRehearsalVad(options = {}) {
     for (const track of stream?.getTracks?.() || []) { try {track.stop();} catch {} }
     stream=null;
   }
+  function promoteAudioSession() {
+    try {
+      const session = globalThis.navigator?.audioSession;
+      if (!session) return;
+      if (!audioSessionClaimed) {
+        previousSessionType = (session.type === 'playback' || session.type === 'play-and-record') ? 'auto' : session.type;
+        audioSessionClaimed = true;
+      }
+      if (session.type !== 'play-and-record') session.type = 'play-and-record';
+    } catch {}
+  }
+  function restoreAudioSession() {
+    try {
+      const session = globalThis.navigator?.audioSession;
+      const hasOtherMic = Boolean(mediaDevices?.activeLeases?.() > 0);
+      if (audioSessionClaimed && session && !hasOtherMic && session.type === 'play-and-record') {
+        session.type = previousSessionType || 'auto';
+      }
+    } catch {}
+    audioSessionClaimed = false;
+    previousSessionType = null;
+  }
   function release() {
     generation++;stopListening();pending=null;
     releaseStream();
@@ -65,12 +88,29 @@ export function createRehearsalVad(options = {}) {
     try {Promise.resolve(previous?.close()).catch(()=>{});} catch {}
     classifier?.release();classifier=null;
     sessionLossCallback=null;
+    restoreAudioSession();
   }
   function lost(error) {
     const callback=sessionLossCallback;
     release();callback?.(errorInfo(error));
   }
   function later(ms) {return new Promise(resolve=>setTimeoutFn(resolve,ms));}
+  async function resumeContext(mine) {
+    if (!ctx || ctx.state === 'closed') return false;
+    if (ctx.state === 'running') return true;
+    for (const waitMs of [0, 150, 350, 500]) {
+      if (mine !== generation || !ctx || ctx.state === 'closed') return false;
+      if (waitMs > 0) await later(waitMs);
+      if (mine !== generation || !ctx || ctx.state === 'closed') return false;
+      if (ctx.state === 'running') return true;
+      try {
+        await Promise.race([Promise.resolve(ctx.resume()).catch(() => {}), later(600)]);
+      } catch {}
+      if (mine !== generation || !ctx || ctx.state === 'closed') return false;
+      if (ctx.state === 'running') return true;
+    }
+    return ctx?.state === 'running';
+  }
   async function acquire(myGeneration) {
     // Optional constraints: never force a device, sample rate or unsupported DSP setting.
     const attempts=[{audio:{channelCount:{ideal:1},echoCancellation:true,noiseSuppression:true,autoGainControl:false},video:false},
@@ -103,10 +143,17 @@ export function createRehearsalVad(options = {}) {
     const mine=generation;
     // Keep creation, resume AND getUserMedia in the originating user gesture, before any await.
     try {
+      promoteAudioSession();
       if(!ctx || ctx.state==='closed') {
         ctx=new AudioContextClass();
         const active=ctx;
-        const stateChanged=()=>{if(listening&&active.state==='closed')lost({code:'stream-lost'});};
+        const stateChanged=()=>{
+          if(mine!==generation)return;
+          if(active.state==='closed'){if(listening)lost({code:'stream-lost'});return;}
+          if(listening&&(active.state==='suspended'||active.state==='interrupted')){
+            try{Promise.resolve(active.resume()).catch(()=>{});}catch{}
+          }
+        };
         active.addEventListener?.('statechange',stateChanged);
         detachContextListener=()=>active.removeEventListener?.('statechange',stateChanged);
       }
@@ -115,12 +162,14 @@ export function createRehearsalVad(options = {}) {
       const readyClassifier=classifier.ensure();
       // Attach a handler immediately while the browser's permission dialog can remain open.
       readyClassifier.catch(()=>{});
-      const healthy=stream?.getAudioTracks?.().some(track=>track.readyState!=='ended');
+      const healthy=stream?.getAudioTracks?.().some(track=>track.readyState!=='ended'&&!track.muted);
+      if(!healthy && stream)releaseStream();
       const mic=healthy?Promise.resolve(stream):acquire(mine);
       pending=(async()=>{
         try {
           const candidate=await mic;
           if(mine!==generation || !candidate)return {ok:false,code:'cancelled',message:''};
+          promoteAudioSession();
           if(candidate!==stream) {
             releaseStream();stream=candidate;enabled(false);
             const handlers=[];
@@ -139,13 +188,14 @@ export function createRehearsalVad(options = {}) {
           await readyClassifier;
           if(mine!==generation)return {ok:false,code:'cancelled',message:''};
           if(ctx.state!=='running') {
-            await Promise.race([Promise.resolve(ctx.resume()),later(700)]);
+            const running=await resumeContext(mine);
             if(mine!==generation)return {ok:false,code:'cancelled',message:''};
-            if(ctx.state!=='running')throw {code:'audio-blocked'};
+            if(!running)throw {code:'audio-blocked'};
           }
           return {ok:true};
         } catch(error) {
           if(mine!==generation)return {ok:false,code:'cancelled',message:''};
+          console.warn('SePrepare VAD:',error?.code||error?.name||error);
           const info=errorInfo(error);release();return {ok:false,...info};
         } finally {if(mine===generation)pending=null;}
       })();
@@ -182,7 +232,10 @@ export function createRehearsalVad(options = {}) {
       source=ctx.createMediaStreamSource(stream);
       if(ctx.audioWorklet && AudioWorkletNodeClass) {
         try {
-          workletReady ||= ctx.audioWorklet.addModule(new URL('pcm-capture-worklet.js',baseURL));
+          workletReady ||= ctx.audioWorklet.addModule(new URL('pcm-capture-worklet.js',baseURL)).catch(err=>{
+            workletReady=null;
+            throw err;
+          });
           await workletReady;
           if(myTurn!==turn||mine!==generation)return {started:false,reason:'cancelled'};
           capture=new AudioWorkletNodeClass(ctx,'seprepare-speech-capture',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
@@ -200,11 +253,22 @@ export function createRehearsalVad(options = {}) {
           if(valid())resampler.push(event.inputBuffer.getChannelData(0));
         };
       }
+      if(ctx.state!=='running') {
+        const running=await resumeContext(mine);
+        if(myTurn!==turn||mine!==generation)return {started:false,reason:'cancelled'};
+        if(!running)throw {code:'audio-blocked'};
+      }
       gain=ctx.createGain();gain.gain.value=0;
       source.connect(capture);capture.connect(gain);gain.connect(ctx.destination);
       listening=true;lastData=now();enabled(true);
       onStateChange?.({phase:'waiting-voice',hasStartedSpeaking:false,level:0,silenceTargetMs,silenceRemainingMs:silenceTargetMs});
-      interval=setIntervalFn(()=>{if(valid()&&now()-lastData>2500)fail({code:'capture-stalled'});},500);
+      interval=setIntervalFn(()=>{
+        if(!valid())return;
+        if(ctx&&(ctx.state==='suspended'||ctx.state==='interrupted')){
+          try{Promise.resolve(ctx.resume()).catch(()=>{});}catch{}
+        }
+        if(now()-lastData>2500)fail({code:'capture-stalled'});
+      },500);
       return {started:true};
     } catch(error) {
       if(myTurn===turn&&mine===generation){const info=errorInfo(error);release();onError?.(info);}

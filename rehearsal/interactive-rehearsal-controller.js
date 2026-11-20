@@ -162,7 +162,7 @@ export function createRehearsalController({
     emit();
 
     if (activeMode === 'auto' || nextPlan.turns[0]?.isUser) {
-      audio?.unlock?.();
+      audio?.unlock?.({ forRecording: activeMode === 'auto' && Boolean(vad) });
     }
 
     if (activeMode === 'auto') {
@@ -384,7 +384,7 @@ export function createRehearsalController({
     errorInfo = null;
 
     if (activeMode === 'auto' || plan.turns[currentTurnIndex]?.isUser) {
-      audio?.unlock?.();
+      audio?.unlock?.({ forRecording: activeMode === 'auto' && Boolean(vad) });
     }
 
     if (activeMode === 'auto' && vad) {
@@ -424,6 +424,13 @@ export function createRehearsalController({
       return true;
     }
     if (state === 'completed') {
+      const mySession = sessionId;
+      audio?.unlock?.({ forRecording: activeMode === 'auto' && Boolean(vad) });
+      if (activeMode === 'auto' && vad) {
+        Promise.resolve(vad.ensureSession({
+          onStreamLost: err => handleVadFailure(mySession, err)
+        })).catch(() => {});
+      }
       timer?.ensureRunning?.();
     }
     void enterTurn(target, { resetHint: true, resumeOffset: 0, notifyTurn: true });
@@ -441,6 +448,13 @@ export function createRehearsalController({
     }
     narrationCharOffset = 0;
     if (state === 'paused' || state === 'completed' || state === 'error') {
+      const mySession = sessionId;
+      audio?.unlock?.({ forRecording: activeMode === 'auto' && Boolean(vad) });
+      if (activeMode === 'auto' && vad) {
+        Promise.resolve(vad.ensureSession({
+          onStreamLost: err => handleVadFailure(mySession, err)
+        })).catch(() => {});
+      }
       timer?.ensureRunning?.();
     }
     void enterTurn(target, { resetHint: target !== currentTurnIndex, resumeOffset: 0, notifyTurn: true });
@@ -529,7 +543,7 @@ export function createRehearsalController({
       return false;
     }
 
-    audio?.unlock?.();
+    audio?.unlock?.({ forRecording: true });
 
     const res = await vad.ensureSession({
       onStreamLost: err => handleVadFailure(mySession, err)

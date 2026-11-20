@@ -26,5 +26,5 @@ self.onmessage = ({data}) => {
       const probability = await engine.probability(data.samples);
       self.postMessage({type:'result',token,probability});
     }
-  }).catch(() => self.postMessage({type:'error',id:data.id,token:data.token}));
+  }).catch(err => self.postMessage({type:'error',id:data.id,token:data.token,message:String(err?.message||err||'')}));
 };

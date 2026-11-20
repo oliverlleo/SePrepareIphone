@@ -4,8 +4,13 @@ export function createSharedMicrophone(devices=globalThis.navigator?.mediaDevice
  function cleanup(){if(leases.size||pending)return;for(const track of root?.getTracks?.()||[])track.stop();root=null;}
  async function getUserMedia(constraints){
   if(!devices?.getUserMedia)throw new DOMException('Microphone unavailable','NotFoundError');
-  if(!root?.getAudioTracks?.().some(track=>track.readyState==='live')){
-   if(!pending)pending=devices.getUserMedia(constraints).then(stream=>(root=stream)).finally(()=>{pending=null;});
+  try{const session=globalThis.navigator?.audioSession;if(session&&session.type==='playback')session.type='play-and-record';}catch{}
+  const rootHealthy=root?.getAudioTracks?.().some(track=>track.readyState==='live'&&!track.muted);
+  if(!rootHealthy){
+   if(!pending){
+    if(root&&!leases.size){for(const track of root.getTracks?.()||[]){try{track.stop();}catch{}}root=null;}
+    pending=devices.getUserMedia(constraints).then(stream=>(root=stream)).finally(()=>{pending=null;});
+   }
    await pending;
   }
   const stream=root.clone(),lease={stream};leases.add(lease);let remaining=stream.getTracks().length;
