@@ -1,12 +1,14 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';
 import {JSDOM} from '../qa/time-dom/node_modules/jsdom/lib/api.js';
 const source=fs.readFileSync(new URL('../audio-parity.js',import.meta.url),'utf8'),checks=[];
-function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false,pending=false,language='pt-BR'}={}){
+function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false,pending=false,language='pt-BR',localVoice}={}){
  const timers=[];const dom=new JSDOM('<div class="modal"><div class="modal-body"></div></div>',{url:'https://audio.test/',runScripts:'outside-only'}),w=dom.window,log=[],utterances=[],toasts=[],settings={language,voice:'',audioLanguage:'',rate:1};let inGesture=true;
  w.setTimeout=(fn,ms)=>{if(ms>=4500)timers.push(fn);return timers.length;};w.clearTimeout=()=>{};
  w.matchMedia=()=>({matches:false});Object.defineProperty(w.navigator,'userAgent',{value:ios?(ipad?'Mozilla/5.0 Macintosh AppleWebKit Safari':'Mozilla/5.0 iPhone AppleWebKit Safari'):'Windows Chrome'});Object.defineProperty(w.navigator,'platform',{value:ipad?'MacIntel':ios?'iPhone':'Win32'});Object.defineProperty(w.navigator,'maxTouchPoints',{value:ipad?5:1});
  const synth={paused,speaking:false,pending:false,getVoices:()=>empty?[]:[{name:'Local PT',lang:'pt-BR',localService:true,default:true,voiceURI:'fixture'}],addEventListener(){},cancel(){log.push('cancel');this.speaking=false;this.pending=false;},resume(){log.push('resume');this.paused=false;},speak(u){log.push({action:'speak',inGesture});utterances.push(u);this.pending=true;if(!this.paused&&!pending){this.pending=false;this.speaking=true;u.onstart?.();}}};
- Object.defineProperty(w,'speechSynthesis',{value:unavailable?undefined:synth});w.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};w.eval(source);const audio={state:'idle',text:'',offset:0,speechId:null};const api=w.SePrepareAudio.create({audio,getSettings:()=>settings,setVoices(){},icon:()=>'<svg></svg>',getSpeech:()=>({id:'fixture',text:'Texto do discurso.'}),isReader:()=>false,sync(){},toast:msg=>toasts.push(msg),noSpeechMessage:()=>''});
+ Object.defineProperty(w,'speechSynthesis',{value:unavailable?undefined:synth});w.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
+ if(localVoice)w.SePrepareLocalVoice={create:()=>localVoice};
+ w.eval(source);const audio={state:'idle',text:'',offset:0,speechId:null};const api=w.SePrepareAudio.create({audio,getSettings:()=>settings,setVoices(){},icon:()=>'<svg></svg>',getSpeech:()=>({id:'fixture',text:'Texto do discurso.'}),isReader:()=>false,sync(){},toast:msg=>toasts.push(msg),noSpeechMessage:()=>''});
  w.document.querySelector('.modal-body').innerHTML=api.settingsHTML()+'<button class="btn secondary" data-action="install-voices"><svg></svg><span>Instalar ou gerenciar vozes</span></button>';api.bindSettings();
  return {w,dom,api,timers,synth,log,utterances,toasts,settings,audio,label:()=>w.document.querySelector('#audioTestLabel').textContent,close:()=>dom.window.close()};
 }
@@ -25,6 +27,40 @@ check('Botões ficam no mesmo grupo, sem duplicação após nova ligação',()=>
 check('Automática usa voz instalada do idioma em vez de depender da resolução do sistema',()=>{
  const h=harness();
  try{h.api.preview();assert.equal(h.utterances[0].voice.voiceURI,'fixture');assert.equal(h.utterances[0].lang,'pt-BR');}finally{h.close();}
+});
+check('Automática no Apple usa saída local no teste e na leitura, mesmo sem sintetizador do sistema',()=>{
+ const played=[];
+ const h=harness({unavailable:true,localVoice:{play:utterance=>played.push(utterance),stop(){}}});
+ try{
+  h.api.preview();
+  assert.equal(h.label(),'Iniciando teste…');
+  played[0].onstart();
+  assert.equal(h.label(),'Parar teste');
+  played[0].onend();
+  assert.equal(h.label(),'Testar voz');
+  h.api.play();
+  assert.equal(played[1].lang,played[0].lang);
+  assert.equal(played[1].text,'Texto do discurso.');
+  played[1].onstart();
+  played[1].onboundary({charIndex:6});
+  h.api.pause();
+  assert.equal(h.audio.state,'paused');
+  h.api.play();
+  assert.equal(played[2].text,'do discurso.');
+  assert.equal(h.utterances.length,0);
+ }finally{h.close();}
+});
+check('Uma voz escolhida manualmente ainda é reproduzida pelo sintetizador Apple',()=>{
+ const h=harness({localVoice:{play(){throw Error('wrong engine');},stop(){}}});
+ try{
+  h.w.document.querySelector('#voiceName').value='Local PT\u001fpt-BR';
+  h.api.preview();
+  assert.equal(h.utterances[0].voice.voiceURI,'fixture');
+  h.utterances[0].onend();
+  h.api.saveSettings();
+  h.api.play();
+  assert.equal(h.utterances[1].voice.voiceURI,'fixture');
+ }finally{h.close();}
 });
 check('Conclusão permite repetir o teste no mesmo botão, sem gravar preferência',()=>{
  const h=harness();

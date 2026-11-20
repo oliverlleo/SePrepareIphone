@@ -1,0 +1,16 @@
+Local speech generation worker
+
+The worker and the Spellophone/eSpeak NG runtime and dictionaries in this
+directory are distributed under the GNU GPL, version 3 or later. The license
+text is included as LICENSE. The worker source is synthesize.mjs.
+
+The vendor files are unmodified files from @spelling-creator/spellophone 0.2.1.
+Corresponding source, including the build scripts and the pinned eSpeak NG
+submodule, is available at:
+https://github.com/Spelling-Creator/spellophone/tree/6d51a872d54a773e4969d7130fdaed665b2d6d18
+
+To fetch the build sources including the pinned submodule:
+  git clone --branch v0.2.1 --recurse-submodules https://github.com/Spelling-Creator/spellophone.git
+
+The worker receives plain text and returns PCM audio and word timing only.
+Text and generated audio stay in the browser and are not persisted by it.
