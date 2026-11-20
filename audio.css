@@ -18,5 +18,3 @@
 .audio-settings-actions>.btn>svg{flex-shrink:0}
 .audio-settings-actions>.audio-voice-help{margin:0;line-height:1.6;overflow-wrap:break-word}
 .audio-settings-actions>.audio-voice-help[hidden]{display:none}
-.audio-settings-actions>.audio-alternate-voice{min-height:44px}
-.audio-settings-actions>.audio-alternate-voice[hidden]{display:none}

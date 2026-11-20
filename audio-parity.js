@@ -17,7 +17,6 @@
     const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'') || (global.navigator?.platform==='MacIntel'&&global.navigator?.maxTouchPoints>1);
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
-    let lastPreviewVoice;
     let missingVoiceHandler=options.onMissingVoice;
     let candidates=[],browserList=[],activeUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null,activeSegment=null,externalInterrupt=null;
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
@@ -82,18 +81,6 @@
       if(isIOS&&!failedSystemLocales.has(locale().toLowerCase()))return null;
       return automaticVoice(locale());
     }
-    function alternatePreviewVoice() {
-      if(lastPreviewVoice===undefined)return undefined;
-      const last=voiceKey(lastPreviewVoice),preferred=(lastPreviewVoice?.lang||locale()).toLowerCase();
-      const matching=candidates.filter(voice=>voice.localService&&!failedVoices.has(voiceKey(voice))&&voiceKey(voice)!==last&&
-        voice.lang.toLowerCase().split('-')[0]===preferred.split('-')[0]);
-      return matching.find(voice=>voice.lang.toLowerCase()===preferred)||matching[0]||
-        (lastPreviewVoice&&!failedSystemLocales.has(preferred)&&preferred===locale().toLowerCase()?null:undefined);
-    }
-    function showPreviewAlternative(show) {
-      const alternate=document.getElementById('audioAlternateVoice');
-      if(alternate)alternate.hidden=!show||alternatePreviewVoice()===undefined;
-    }
     function storedVoice() {
       const settings=o.getSettings();
       const chosen=exactVoice(settings.voice,settings.audioLanguage);
@@ -128,13 +115,6 @@
         const actions=document.createElement('div');actions.className='audio-settings-actions';
         test.before(actions);actions.append(test,install);
         if(isIOS) {
-          lastPreviewVoice=undefined;
-          const alternate=document.createElement('button');
-          alternate.id='audioAlternateVoice';alternate.type='button';alternate.className='btn link audio-alternate-voice';alternate.hidden=true;
-          const alternateLabel={pt:'Tentar outra voz',en:'Try another voice',es:'Probar otra voz',ja:'別の音声を試す'};
-          alternate.textContent=alternateLabel[lang()]||alternateLabel.pt;
-          test.after(alternate);
-          alternate.addEventListener('click',()=>preview(true));
           const copy=appleVoiceHelp[lang()]||appleVoiceHelp.pt;
           install.innerHTML=o.icon('Info')+'<span>'+escape(copy[0])+'</span>';
           const help=document.createElement('p');help.id='audioAppleVoiceHelp';help.className='help audio-voice-help';help.hidden=true;help.textContent=copy[1];
@@ -349,7 +329,6 @@
       request++;previewing=false;previewUtterance=null;activeUtterance=null;
       cancelActiveSpeech();
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
-      showPreviewAlternative(true);
       update();
     }
     function startUtterance(text, offset, voice, isPreview) {
@@ -402,7 +381,6 @@
           previewing=false;previewUtterance=null;
           cancelActiveSpeech();
           const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
-          showPreviewAlternative(true);
         } else {
           audio.state='paused';activeUtterance=null;
         }
@@ -412,7 +390,8 @@
           es:'El iPhone no pudo leer con esta voz. Prueba otra voz.',
           ja:'iPhoneでこの音声を読み上げられませんでした。別の音声をお試しください。'
         };
-        o.toast(isIOS&&retryable ? retryText[lang()]||retryText.pt : speechErrorMessage(code));
+        const messageCode=isPreview&&['startup-timeout','preview-timeout'].includes(code)?'synthesis-failed':code;
+        o.toast(isIOS&&retryable&&!isPreview ? retryText[lang()]||retryText.pt : speechErrorMessage(messageCode));
         console.warn('SePrepare: speech synthesis failed',code,{language:preferredLocale,preview:isPreview,voice:currentVoice?.name||'system'});
         update();dispatch();
         if(!isPreview&&['voice-unavailable','language-unavailable'].includes(code))missingVoiceHandler?.();
@@ -468,7 +447,7 @@
             // On iOS a short task gap between chunks prevents a stalled queue.
             setTimeout(()=>nextChunk(finish),0);
           } else {
-            if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);showPreviewAlternative(true);}
+            if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
             else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
             update();dispatch();
           }
@@ -531,18 +510,15 @@
       if(wasPlaying){request++;synth?.cancel();audio.state='paused';play();}
       else {update();dispatch();}
     }
-    function preview(useAlternative=false) {
+    function preview() {
       stopActiveSegment(true);
-      if(previewing){stopPreview();if(!useAlternative)return;}
+      if(previewing){stopPreview();return;}
       pause();
       const field=document.getElementById('voicePreviewText');
       const text=(field?.value||'').trim() || t(19);
       if(field&&!field.value.trim())field.value=text;
       refreshVoices();
-      const voice=useAlternative?alternatePreviewVoice():selectedVoice(true);
-      if(voice===undefined)return;
-      lastPreviewVoice=voice;
-      showPreviewAlternative(false);
+      const voice=selectedVoice(true);
       previewing=true;
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=startingLabel();
       if(!startUtterance(text,0,voice,true)){previewing=false;if(label)label.textContent=t(5);}
