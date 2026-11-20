@@ -30,6 +30,7 @@
       es:'La voz automática se genera en el dispositivo.',
       ja:'自動音声は端末で生成されます。'
     };
+    const localAutomaticLabel={pt:'Automática',en:'Automatic',es:'Automática',ja:'自動'};
     const appleVoiceHelp={
       pt:['Como adicionar vozes','Abra Ajustes → Acessibilidade → Leitura e Fala → Vozes. Em versões anteriores, procure Conteúdo Falado.'],
       en:['How to add voices','Open Settings → Accessibility → Read & Speak → Voices. On earlier versions, look for Spoken Content.'],
@@ -95,7 +96,8 @@
     }
     function voiceOptions(previous) {
       const chosen=previous===undefined ? storedVoice() : previous;
-      let html='<option value="">'+escape(t(0))+'</option>';
+      const automatic=localVoice ? localAutomaticLabel[lang()] || localAutomaticLabel.pt : t(0);
+      let html='<option value="">'+escape(automatic)+'</option>';
       for(const v of candidates) {
         const value=v.name+'\u001f'+v.lang;
         html+='<option value="'+escape(value)+'"'+(value===chosen?' selected':'')+'>'+escape(normalizedName(v.name)+' · '+v.lang)+'</option>';
