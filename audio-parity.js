@@ -103,18 +103,25 @@
       const uri=String(v?.voiceURI||'').toLowerCase();
       return uri.includes('eloquence') || (isIOS && APPLE_ELOQUENCE_NAMES.has(baseVoiceLabel(v?.name)));
     };
+    const isSiriVoice=v => {
+      const uri=String(v?.voiceURI||'').toLowerCase();
+      const name=String(v?.name||'').toLowerCase();
+      return uri.includes('.siri.') || uri.includes('siri_') || /\bsiri\b/.test(name);
+    };
+    const isReliableNatural=v => !isNoveltyVoice(v) && !isEloquenceVoice(v) && !(isIOS && isSiriVoice(v));
     function voiceQualityTier(v) {
       if(!v)return 'none';
       if(isNoveltyVoice(v))return 'novelty';
       if(isEloquenceVoice(v))return 'eloquence';
+      if(isIOS && isSiriVoice(v))return 'siri-restricted';
       const uri=String(v.voiceURI||'').toLowerCase();
       const name=String(v.name||'').toLowerCase();
       if(uri.includes('.premium.') || /\bpremium\b|プレミアム/.test(name)) return 'premium';
-      if(uri.includes('.siri.') || uri.includes('siri_') || /\b(siri|neural|natural)\b/.test(name)) return 'siri';
+      if(!isIOS && (uri.includes('.siri.') || /\b(siri|neural|natural)\b/.test(name))) return 'neural';
       if(uri.includes('.enhanced.') || /\b(enhanced|aprimorad[ao]|melhorad[ao]|mejorad[ao])\b|拡張/.test(name)) return 'enhanced';
       return 'compact';
     }
-    const isRealisticVoice=v => ['premium','siri','enhanced'].includes(voiceQualityTier(v));
+    const isRealisticVoice=v => ['premium','neural','enhanced'].includes(voiceQualityTier(v));
     function voiceQualityScore(v) {
       if(!v)return -1000;
       let score=v.localService!==false ? 10 : 0;
@@ -122,8 +129,9 @@
       const uri=String(v.voiceURI||'').toLowerCase();
       if(tier==='novelty') score-=100;
       else if(tier==='eloquence') score-=50;
+      else if(tier==='siri-restricted') score-=25;
       else if(tier==='premium') score+=60;
-      else if(tier==='siri') score+=55;
+      else if(tier==='neural') score+=55;
       else if(tier==='enhanced') score+=45;
       else if(uri.includes('super-compact')) score+=10;
       else if(uri.includes('com.apple.voice.') || uri.includes('com.apple.ttsbundle.')) score+=20;
@@ -251,7 +259,7 @@
       const prefix=pref.split('-')[0];
       const sameLang=list.filter(v=>String(v.lang||'').replace(/_/g,'-').split('-')[0].toLowerCase()===prefix);
       if(!sameLang.length)return [];
-      const natural=sameLang.filter(v=>!isNoveltyVoice(v)&&!isEloquenceVoice(v));
+      const natural=sameLang.filter(isReliableNatural);
       const nonNovelty=sameLang.filter(v=>!isNoveltyVoice(v));
       const pool=natural.length ? natural : (nonNovelty.length ? nonNovelty : sameLang);
       return [...pool].sort((a,b)=>{
@@ -281,7 +289,7 @@
       candidates=unique.some(v=>v.localService) ? unique.filter(v=>v.localService!==false) : unique;
       candidates.sort((a,b)=>a.lang.localeCompare(b.lang)||voiceQualityScore(b)-voiceQualityScore(a)||normalizedName(a.name).localeCompare(normalizedName(b.name)));
       const localeVoices=voicesForLocale(locale());
-      const exposed=localeVoices.length ? localeVoices : candidates.filter(v=>!isNoveltyVoice(v)&&!isEloquenceVoice(v));
+      const exposed=localeVoices.length ? localeVoices : candidates.filter(isReliableNatural);
       o.setVoices(exposed.map(v=>({name:v.name,locale:v.lang,offline:v.localService!==false})));
       const select=document.getElementById('voiceName');
       if(select && !previewing) {
@@ -424,14 +432,16 @@
       s.rate=clamp(Number(document.getElementById('voiceRate')?.value||s.rate||1),.5,1.8);
       return s;
     }
-    function formatSpokenChunk(rawChunk) {
-      const text=String(rawChunk||'')
+    function formatSpokenChunk(rawChunk, addTerminalPause=false) {
+      let text=String(rawChunk||'')
+        .replace(/[<>]/g,' ')
         .replace(/^[ \t]*(?:[•▪◦‣●○■□▸►★☆]+|[-–—](?=\s))\s*/u,'')
-        .replace(/\.{3,}/g,'…')
+        .replace(/\.{3,}/g,'...')
         .replace(/\s+[—–-]\s+/g,', ')
         .replace(/[ \t]{2,}/g,' ')
         .trim();
-      if(!text || /^[-–—_=*~•·.]{2,}$/.test(text)) return '';
+      if(!text || !/[\p{L}\p{N}]/u.test(text)) return '';
+      if(addTerminalPause && !/[.!?:;。！？…]$/.test(text)) text+='.';
       return text;
     }
     function scalePause(baseMs, rate) {
@@ -458,7 +468,7 @@
       return 0;
     }
     function planSpeechChunk(fullText, startAt, rate) {
-      const TARGET_CHUNK=280, MAX_SENTENCE_CHUNK=360, MIN_BREAK=40;
+      const TARGET_CHUNK=200, MAX_SENTENCE_CHUNK=250, CLAUSE_MAX=230, MIN_BREAK=40;
       const SENTENCE_RE=/[.!?…]["'”’)\]]*(?=\s|$)|[。！？…]["'”’」』）\]]*/g;
       const CLAUSE_RE=/[;,:—–]["'”’)\]]*(?=\s|$)|\)(?=\s|$)|[、；：]/g;
       let cursor=startAt, pendingBreak='end';
@@ -483,13 +493,13 @@
             end=cursor+wholeEnd;
             boundaryKind='sentence';
           } else {
-            const clauseEnd=lastRegexEnd(slice,80,320,CLAUSE_RE);
+            const clauseEnd=lastRegexEnd(slice,80,CLAUSE_MAX,CLAUSE_RE);
             if(clauseEnd) {
               end=cursor+clauseEnd;
               boundaryKind='clause';
             } else {
-              const wordsEnd=slice.slice(0,320).lastIndexOf(' ');
-              end=cursor+(wordsEnd>=100 ? wordsEnd+1 : 320);
+              const wordsEnd=slice.slice(0,CLAUSE_MAX).lastIndexOf(' ');
+              end=cursor+(wordsEnd>=100 ? wordsEnd+1 : CLAUSE_MAX);
               boundaryKind='clause';
             }
           }
@@ -501,7 +511,8 @@
         if(nextAt>=fullText.length) boundaryKind='end';
         else if(/\n[ \t]*\n/.test(gap)) boundaryKind='paragraph';
         else if(gap.includes('\n')) boundaryKind='line';
-        const spoken=formatSpokenChunk(raw);
+        const addTerminalPause=(boundaryKind==='paragraph' || boundaryKind==='line') && nextAt<fullText.length;
+        const spoken=formatSpokenChunk(raw,addTerminalPause);
         if(!spoken) {
           if(boundaryKind==='paragraph' || pendingBreak!=='paragraph') pendingBreak=boundaryKind;
           cursor=nextAt;
@@ -519,7 +530,7 @@
           sentence:scalePause(140,rate),
           clause:scalePause(50,rate)
         };
-        return {start:cursor,raw,spoken,nextAt,pauseMs:pauseMap[effectiveBreak]||0};
+        return {start:cursor,raw,spoken,nextAt,pauseMs:isIOS?0:(pauseMap[effectiveBreak]||0)};
       }
       return null;
     }
@@ -544,7 +555,7 @@
       const loc=preferredLocale || locale();
       const available=candidates.filter(v=>!failedVoices.has(voiceKey(v)));
       const matchingVoices=voicesForLocale(loc,available);
-      const naturalAll=available.filter(v=>!isNoveltyVoice(v)&&!isEloquenceVoice(v));
+      const naturalAll=available.filter(isReliableNatural);
       const nonNoveltyAll=available.filter(v=>!isNoveltyVoice(v));
       const cleanAll=naturalAll.length ? naturalAll : (nonNoveltyAll.length ? nonNoveltyAll : available);
       const mapVoice=v=>({
@@ -701,7 +712,7 @@
               if(activeSegment!==seg || id!==request || chunkStarted) return;
               cancelActiveSpeech();
               failSegment('startup-timeout',plan.start);
-            },4500);
+            },5500);
           }
         } catch {
           clearTimeout(seg.startupTimer);
@@ -894,7 +905,7 @@
             startupTimer=setTimeout(()=>{
               startupTimer=null;
               if(isCurrent()&&!started)fail('startup-timeout',plan.start);
-            },4500);
+            },5500);
           }
         } catch(error) {
           console.warn('SePrepare: speechSynthesis.speak threw',error);

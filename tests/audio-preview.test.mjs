@@ -240,8 +240,31 @@ check('Padrão ignora voz salva de outro idioma, prioriza voz localizada mais re
   topTier.api.play();
   assert.equal(topTier.utterances[0].voice.voiceURI,'com.apple.voice.premium.pt-BR.Luciana');
   const names=[...topTier.w.document.querySelectorAll('#voiceName option')].map(o=>o.textContent);
-  assert.deepEqual(names,['Automática (idioma do aplicativo)','Luciana (Premium) · pt-BR','Siri (Voz 1) · pt-BR','Felipe (Aprimorado) · pt-BR','Rafael · pt-BR']);
+  assert.deepEqual(names,['Automática (idioma do aplicativo)','Luciana (Premium) · pt-BR','Felipe (Aprimorado) · pt-BR','Rafael · pt-BR']);
  }finally{topTier.close();}
+
+ const siriVsCompact=harness({voices:[tiered[0],tiered[2]],language:'pt-BR'});
+ try{
+  siriVsCompact.api.play();
+  assert.equal(siriVsCompact.utterances[0].voice.voiceURI,'com.apple.voice.compact.pt-BR.Rafael');
+ }finally{siriVsCompact.close();}
+
+ const winNeural=harness({ios:false,language:'pt-BR',voices:[
+  {name:'Microsoft Daniel',lang:'pt-BR',localService:true,default:true,voiceURI:'daniel'},
+  {name:'Microsoft Thalita Online (Natural)',lang:'pt-BR',localService:false,default:false,voiceURI:'thalita-natural'}
+ ]});
+ try{
+  winNeural.api.play();
+  assert.equal(winNeural.utterances[0].voice.name,'Microsoft Daniel');
+  const winBothCloud=harness({ios:false,language:'pt-BR',voices:[
+   {name:'Microsoft Francisca',lang:'pt-BR',localService:false,default:true,voiceURI:'francisca'},
+   {name:'Microsoft Thalita Online (Natural)',lang:'pt-BR',localService:false,default:false,voiceURI:'thalita-natural'}
+  ]});
+  try{
+   winBothCloud.api.play();
+   assert.equal(winBothCloud.utterances[0].voice.name,'Microsoft Thalita Online (Natural)');
+  }finally{winBothCloud.close();}
+ }finally{winNeural.close();}
 
  const manualOk=harness({voices:tiered,language:'pt-BR',savedVoice:'Rafael',savedAudioLanguage:'pt-BR'});
  try{
@@ -274,25 +297,25 @@ check('Aviso de qualidade da voz aparece apenas no iPhone quando usa voz compact
  const win=harness({ios:false,voices:compactOnly});
  try{assert.equal(win.w.document.querySelector('#audioQualityHint'),null);}finally{win.close();}
 });
-check('Leitura preserva frases inteiras até 360 chars, insere pausas naturais entre parágrafos, limpa símbolos e cancela pausa ao pausar',()=>{
- const longSentence='A preparação cuidadosa de uma apresentação ajuda quem fala a manter o ritmo calmo, dar ênfase às ideias principais com clareza e responder às necessidades reais de cada pessoa presente na reunião sem tropeçar nas próprias anotações durante todo o discurso do início até a conclusão.';
- assert(longSentence.length>250&&longSentence.length<350);
- const speech='Introdução\n\n---\n\n• Primeiro ponto — com pausa natural... Fim.\n\n'+longSentence;
+check('Leitura preserva frases até 250 chars, sanitiza símbolos, usa transição 0ms no iPhone e pausa entre parágrafos fora do iOS',()=>{
+ const longSentence='A preparação cuidadosa de uma apresentação ajuda quem fala a manter o ritmo calmo, dar ênfase às ideias principais com clareza e responder às necessidades reais de cada pessoa presente na reunião sem perder o fio até o fim.';
+ assert(longSentence.length>205&&longSentence.length<=250);
+ const speech='Introdução\n\n...\n\n•\n\n---\n\n• Primeiro ponto — com <atenção> natural... Fim.\n\n'+longSentence;
  const h=harness({speechText:speech,captureAllTimers:true});
  try{
   h.api.play();
   assert.equal(h.utterances.length,1);
-  assert.equal(h.utterances[0].text,'Introdução');
+  assert.equal(h.utterances[0].text,'Introdução.');
   h.utterances[0].onend();
   const p1=h.shortDelays.at(-1);
-  assert(p1&&p1.ms>=250&&!p1.cleared);
+  assert(p1&&p1.ms===0&&!p1.cleared);
   p1.fn();
   assert.equal(h.utterances.length,2);
-  assert.equal(h.utterances[1].text,'Primeiro ponto, com pausa natural… Fim.');
+  assert.equal(h.utterances[1].text,'Primeiro ponto, com atenção natural... Fim.');
   assert.equal(h.audio.text,speech);
   h.utterances[1].onend();
   const p2=h.shortDelays.at(-1);
-  assert(p2&&p2.ms>=250&&!p2.cleared);
+  assert(p2&&p2.ms===0&&!p2.cleared);
   p2.fn();
   assert.equal(h.utterances.length,3);
   assert.equal(h.utterances[2].text,longSentence);
@@ -310,21 +333,45 @@ check('Leitura preserva frases inteiras até 360 chars, insere pausas naturais e
   pendingPause.fn();
   assert.equal(h.utterances.length,countBeforePause);
  }finally{h.close();}
+
+ const onlyPunct=harness({speechText:'... \n\n --- \n\n •',captureAllTimers:true});
+ try{
+  onlyPunct.api.play();
+  assert.equal(onlyPunct.utterances.length,0);
+  assert.equal(onlyPunct.audio.state,'finished');
+ }finally{onlyPunct.close();}
+
+ const win=harness({ios:false,speechText:'Introdução\n\nSegunda parte.',captureAllTimers:true});
+ try{
+  win.api.play();
+  assert.equal(win.utterances[0].text,'Introdução.');
+  win.utterances[0].onend();
+  const pWin=win.shortDelays.at(-1);
+  assert(pWin&&pWin.ms>=250);
+ }finally{win.close();}
 });
-check('speakSegment também respeita pausas entre parágrafos e cancelSegment limpa pausa pendente',()=>{
+check('speakSegment mantém troca imediata segura no iPhone, pausa entre parágrafos no desktop e cancelSegment limpa timer',()=>{
  const h=harness({captureAllTimers:true});
  try{
   let ended=0;
-  const reqId=h.api.speakSegment({text:'Primeira fala.\n\nSegunda fala.',locale:'pt-BR',onEnd:()=>ended++});
+  const reqId=h.api.speakSegment({text:'Primeira fala\n\nSegunda fala.',locale:'pt-BR',onEnd:()=>ended++});
   assert.equal(h.utterances.length,1);
   assert.equal(h.utterances[0].text,'Primeira fala.');
   h.utterances[0].onend();
   const p=h.shortDelays.at(-1);
-  assert(p&&p.ms>=250&&!p.cleared);
+  assert(p&&p.ms===0&&!p.cleared);
   h.api.cancelSegment(reqId);
   assert.equal(p.cleared,true);
   p.fn();
   assert.equal(h.utterances.length,1);
   assert.equal(ended,0);
  }finally{h.close();}
+
+ const win=harness({ios:false,captureAllTimers:true});
+ try{
+  win.api.speakSegment({text:'Primeira fala.\n\nSegunda fala.',locale:'pt-BR'});
+  win.utterances[0].onend();
+  const pWin=win.shortDelays.at(-1);
+  assert(pWin&&pWin.ms>=250);
+ }finally{win.close();}
 });
