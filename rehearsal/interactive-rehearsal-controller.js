@@ -276,8 +276,9 @@ export function createRehearsalController({
                 info?.message ||
                 t('Toque em Reproduzir fala para autorizar o áudio neste dispositivo.')
             };
-            timer?.pauseIfRunning?.();
+            vad?.release?.();
             setState('paused');
+            timer?.pauseIfRunning?.();
             emit();
           },
           onError: err => {
@@ -286,8 +287,9 @@ export function createRehearsalController({
               code: err?.code || 'synthesis-failed',
               message: err?.message || t('Não foi possível reproduzir esta fala.')
             };
-            timer?.pauseIfRunning?.();
+            vad?.release?.();
             setState('error');
+            timer?.pauseIfRunning?.();
             emit();
           }
         });

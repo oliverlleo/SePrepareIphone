@@ -297,28 +297,30 @@ check('Aviso de qualidade da voz aparece apenas no iPhone quando usa voz compact
  const win=harness({ios:false,voices:compactOnly});
  try{assert.equal(win.w.document.querySelector('#audioQualityHint'),null);}finally{win.close();}
 });
-check('Leitura preserva frases até 250 chars, sanitiza símbolos, usa transição 0ms no iPhone e pausa entre parágrafos fora do iOS',()=>{
+check('Leitura empacota trechos curtos no iPhone em uma única fala, sanitiza símbolos, preserva frases até 250 chars e pausa entre parágrafos no desktop',()=>{
+ const shortMulti='Introdução\n\n...\n\n•\n\n---\n\n• Primeiro ponto — com <atenção> natural... Fim.';
+ const hShort=harness({speechText:shortMulti,captureAllTimers:true});
+ try{
+  hShort.api.play();
+  assert.equal(hShort.utterances.length,1);
+  assert.equal(hShort.utterances[0].text,'Introdução.\n\nPrimeiro ponto, com atenção natural... Fim.');
+  assert.equal(hShort.audio.text,shortMulti);
+ }finally{hShort.close();}
+
  const longSentence='A preparação cuidadosa de uma apresentação ajuda quem fala a manter o ritmo calmo, dar ênfase às ideias principais com clareza e responder às necessidades reais de cada pessoa presente na reunião sem perder o fio até o fim.';
  assert(longSentence.length>205&&longSentence.length<=250);
- const speech='Introdução\n\n...\n\n•\n\n---\n\n• Primeiro ponto — com <atenção> natural... Fim.\n\n'+longSentence;
+ const speech=shortMulti+'\n\n'+longSentence;
  const h=harness({speechText:speech,captureAllTimers:true});
  try{
   h.api.play();
   assert.equal(h.utterances.length,1);
-  assert.equal(h.utterances[0].text,'Introdução.');
+  assert.equal(h.utterances[0].text,'Introdução.\n\nPrimeiro ponto, com atenção natural... Fim.');
   h.utterances[0].onend();
   const p1=h.shortDelays.at(-1);
   assert(p1&&p1.ms===0&&!p1.cleared);
   p1.fn();
   assert.equal(h.utterances.length,2);
-  assert.equal(h.utterances[1].text,'Primeiro ponto, com atenção natural... Fim.');
-  assert.equal(h.audio.text,speech);
-  h.utterances[1].onend();
-  const p2=h.shortDelays.at(-1);
-  assert(p2&&p2.ms===0&&!p2.cleared);
-  p2.fn();
-  assert.equal(h.utterances.length,3);
-  assert.equal(h.utterances[2].text,longSentence);
+  assert.equal(h.utterances[1].text,longSentence);
 
   h.api.stopPreview();
   h.api.pause();
@@ -350,13 +352,66 @@ check('Leitura preserva frases até 250 chars, sanitiza símbolos, usa transiç�
   assert(pWin&&pWin.ms>=250);
  }finally{win.close();}
 });
-check('speakSegment mantém troca imediata segura no iPhone, pausa entre parágrafos no desktop e cancelSegment limpa timer',()=>{
+check('iPhone recupera fila travada após troca de bloco sem bloquear voz que já funcionou',()=>{
+ const firstPara='Bloco inicial completo com duração suficiente para separar os trechos da leitura.';
+ const secondPara='Segundo bloco longo que vem logo em seguida e testa a recuperação automática na troca.';
+ const speech=firstPara+'\n\n'+(secondPara+' ').repeat(2).trim();
+
+ const recover=harness({pending:true,speechText:speech,captureAllTimers:true});
+ try{
+  recover.api.play();
+  assert.equal(recover.utterances.length,1);
+  recover.utterances[0].onstart();
+  recover.utterances[0].onend();
+  recover.shortDelays.at(-1).fn();
+  assert.equal(recover.utterances.length,2);
+  const watchdog2200=recover.shortDelays.filter(d=>d.ms===2200).at(-1);
+  assert(watchdog2200);
+  watchdog2200.fn();
+  assert.equal(recover.toasts.length,0);
+  const retry100=recover.shortDelays.filter(d=>d.ms===100).at(-1);
+  assert(retry100);
+  retry100.fn();
+  assert.equal(recover.utterances.length,3);
+  assert.equal(recover.utterances[2].voice.voiceURI,'fixture');
+  recover.utterances[2].onstart();
+  recover.utterances[2].onend();
+  assert.equal(recover.audio.state,'finished');
+  assert.equal(recover.toasts.length,0);
+ }finally{recover.close();}
+
+ const keepVoice=harness({pending:true,speechText:speech,captureAllTimers:true});
+ try{
+  keepVoice.api.play();
+  keepVoice.utterances[0].onstart();
+  keepVoice.utterances[0].onend();
+  keepVoice.shortDelays.at(-1).fn();
+  keepVoice.shortDelays.filter(d=>d.ms===2200).at(-1).fn();
+  keepVoice.shortDelays.filter(d=>d.ms===100).at(-1).fn();
+  keepVoice.timers.at(-1)();
+  assert.equal(keepVoice.toasts.length,1);
+  keepVoice.api.play();
+  assert.equal(keepVoice.utterances.at(-1).voice.voiceURI,'fixture');
+ }finally{keepVoice.close();}
+});
+check('speakSegment empacota falas curtas no iPhone, recupera troca travada, pausa no desktop e cancelSegment limpa timer',()=>{
+ const shortSeg=harness({captureAllTimers:true});
+ try{
+  let ended=0;
+  shortSeg.api.speakSegment({text:'Primeira fala\n\nSegunda fala.',locale:'pt-BR',onEnd:()=>ended++});
+  assert.equal(shortSeg.utterances.length,1);
+  assert.equal(shortSeg.utterances[0].text,'Primeira fala.\n\nSegunda fala.');
+  shortSeg.utterances[0].onend();
+  assert.equal(ended,1);
+ }finally{shortSeg.close();}
+
+ const longTurn='Primeira frase longa o suficiente para completar um trecho antes da mudança de bloco.\n\n'+
+  'Segunda frase também longa para garantir dois blocos separados durante o ensaio interativo. '.repeat(2).trim();
  const h=harness({captureAllTimers:true});
  try{
   let ended=0;
-  const reqId=h.api.speakSegment({text:'Primeira fala\n\nSegunda fala.',locale:'pt-BR',onEnd:()=>ended++});
+  const reqId=h.api.speakSegment({text:longTurn,locale:'pt-BR',onEnd:()=>ended++});
   assert.equal(h.utterances.length,1);
-  assert.equal(h.utterances[0].text,'Primeira fala.');
   h.utterances[0].onend();
   const p=h.shortDelays.at(-1);
   assert(p&&p.ms===0&&!p.cleared);
@@ -366,6 +421,22 @@ check('speakSegment mantém troca imediata segura no iPhone, pausa entre parágr
   assert.equal(h.utterances.length,1);
   assert.equal(ended,0);
  }finally{h.close();}
+
+ const segRecover=harness({pending:true,captureAllTimers:true});
+ try{
+  let ended=0,errors=0;
+  segRecover.api.speakSegment({text:longTurn,locale:'pt-BR',onEnd:()=>ended++,onError:()=>errors++});
+  segRecover.utterances[0].onstart();
+  segRecover.utterances[0].onend();
+  segRecover.shortDelays.at(-1).fn();
+  segRecover.shortDelays.filter(d=>d.ms===2200).at(-1).fn();
+  segRecover.shortDelays.filter(d=>d.ms===100).at(-1).fn();
+  assert.equal(segRecover.utterances.length,3);
+  segRecover.utterances[2].onstart();
+  segRecover.utterances[2].onend();
+  assert.equal(ended,1);
+  assert.equal(errors,0);
+ }finally{segRecover.close();}
 
  const win=harness({ios:false,captureAllTimers:true});
  try{
