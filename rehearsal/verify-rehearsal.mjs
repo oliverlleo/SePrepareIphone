@@ -305,3 +305,51 @@ assert(appJs.includes('SEPREPARE REHEARSAL BUNDLE START'));
 assert(appJs.includes('SePrepareRehearsalRuntime'));
 assert(appJs.includes('1.0.74'));
 check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contratos do PWA');
+
+// 11. Synchronous audio.unlock() before async VAD ensureSession in start(), resume(), and switchMode()
+{
+  const timeline = [];
+  let resolveMic;
+  const fakePlayer = createFakePlayer();
+  fakePlayer.unlock = () => timeline.push('unlock');
+  const audio = createRehearsalAudio({ player: fakePlayer, getSettings: () => ({ language: 'pt-BR', rate: 1 }) });
+  const fakeVad = {
+    ensureSession() {
+      timeline.push('ensureSession-start');
+      return new Promise(resolve => {
+        resolveMic = () => {
+          timeline.push('ensureSession-resolve');
+          resolve({ ok: true });
+        };
+      });
+    },
+    startListeningTurn: async () => ({ started: true }),
+    stopListening() {},
+    release() {}
+  };
+  const controller = createRehearsalController({ audio, vad: fakeVad });
+
+  const startPromise = controller.start({ speech: makeThreeSpeakerPart('p1'), mode: 'auto', silenceSeconds: 3 });
+  assert.deepEqual(timeline.slice(0, 2), ['unlock', 'ensureSession-start']);
+  resolveMic();
+  await startPromise;
+
+  controller.pause();
+  timeline.length = 0;
+  const resumePromise = controller.resume();
+  assert.deepEqual(timeline.slice(0, 2), ['unlock', 'ensureSession-start']);
+  resolveMic();
+  await resumePromise;
+  controller.stop();
+
+  timeline.length = 0;
+  await controller.start({ speech: makeThreeSpeakerPart('p1'), mode: 'manual', silenceSeconds: 3 });
+  assert.deepEqual(timeline, ['unlock']);
+  timeline.length = 0;
+  const switchPromise = controller.switchMode('auto');
+  assert.deepEqual(timeline.slice(0, 2), ['unlock', 'ensureSession-start']);
+  resolveMic();
+  await switchPromise;
+  controller.stop();
+  check('Ensaio desbloqueia áudio sincronamente antes de aguardar microfone no start, resume e switchMode');
+}

@@ -82,79 +82,79 @@ SePrepare\u306E\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u30FB\u30A2\u30AF\u30BB\u30B
       </div>
       <div class="section-head"><h3>${D("C\xF3pias de recupera\xE7\xE3o")}</h3><span>${e.length}</span></div>
       ${a?X`<div class="sheet-options">${a}</div>`:X`<p class="help">${D("Nenhuma c\xF3pia de recupera\xE7\xE3o ainda.")}</p>`}
-    </div>`,n("close-modal",D("Concluir"),"Check"))}var kt=`/* Editor protection stays in the header, separate from presentation confirmation. */
-.editor-shell .editor-top{flex-wrap:wrap;row-gap:4px}
-.editor-shell .editor-top .editor-name{flex:1;min-width:0}
-.editor-shell .editor-top .editor-save{max-width:156px;width:auto;min-width:44px}
-.editor-shell .editor-top .editor-save span{display:inline;white-space:normal;line-height:1.3;text-align:start}
-.editor-protection{flex:0 0 100%;display:flex;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:0 16px;min-width:0}
-.editor-shell .editor-protection .save-status,.editor-shell .editor-drive-status{display:inline-flex;flex:0 1 auto;align-items:center;gap:5px;font:500 10px/1.45 Inter,Arial,sans-serif;color:var(--muted);min-width:0;margin:0;max-width:100%;text-align:start}
-.editor-shell .editor-drive-status{background:transparent;border:0;padding:5px 0;min-height:32px;cursor:pointer}
-.editor-protection span{overflow-wrap:break-word}
-.editor-protection svg{width:14px;height:14px;flex:0 0 14px}
-.editor-protection [data-tone=warning]{color:var(--danger,#b44339)}
-.editor-drive-status[data-tone=saved]{color:var(--green)}
-.editor-drive-status:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:4px}
-@media(max-width:420px){.editor-shell .editor-top .editor-save{max-width:132px;padding:7px 9px;gap:5px}.editor-protection{column-gap:12px}.editor-shell .editor-name .name{white-space:nowrap;overflow:visible;text-overflow:clip;font-size:15px;line-height:1.3}}
-
-body.editor-open .editor-shell.editor-scrolled header.editor-top{display:flex}
-
-.apple-simple-sheet{display:grid;gap:14px;min-width:0}
-.apple-simple-sheet .help,.apple-simple-sheet .section-head{margin:0;overflow-wrap:break-word}
-.apple-sheet-context{font-weight:600}
-.apple-simple-sheet .field{min-width:0}
-.modal.apple-agenda-modal>.modal-head,
-.modal.apple-agenda-modal>.modal-body,
-.modal.apple-agenda-modal>.modal-footer{padding-inline:20px}
-.apple-agenda-modal .modal-head h2{min-width:0;overflow-wrap:break-word}
-.apple-agenda-sheet{grid-template-columns:minmax(0,1fr);gap:14px}
-.apple-agenda-date{display:grid;grid-template-columns:minmax(0,1fr);padding-inline:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
-.apple-agenda-date:focus-within{outline:2px solid var(--green);outline-offset:2px}
-/* iOS WebKit can add padding beyond width:100% on native date inputs. */
-.apple-agenda-sheet .apple-agenda-date input[type=datetime-local]{
-  grid-area:1/1;z-index:1;opacity:0;
-  display:block;width:100%;max-width:100%;min-width:0;min-height:46px;margin:0;padding:0;border:0;
-  box-sizing:border-box;background:transparent;outline:none;font-size:1rem;color:var(--ink);cursor:pointer
-}
-.apple-agenda-date-display{
-  grid-area:1/1;display:flex;align-items:center;justify-content:space-between;gap:8px;
-  padding-block:10px;min-width:0;pointer-events:none;color:var(--ink);overflow-wrap:break-word
-}
-.apple-agenda-date-value{min-width:0}
-.apple-agenda-date-display>svg{width:18px;height:18px;flex:0 0 18px;color:var(--muted)}
-.apple-agenda-date-value.is-empty{color:var(--muted)}
-@media(pointer:fine){
-  .apple-agenda-sheet .apple-agenda-date input[type=datetime-local]:focus{opacity:1}
-  .apple-agenda-date input:focus+.apple-agenda-date-display{visibility:hidden}
-}
-.apple-agenda-more{min-width:0;border:1px solid var(--line);border-radius:12px}
-.apple-agenda-more summary{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;
-  padding:12px;min-height:44px;color:var(--ink);cursor:pointer;
-  font-size:.875rem;line-height:1.4;overflow-wrap:break-word
-}
-.apple-agenda-more summary::-webkit-details-marker{display:none}
-.apple-agenda-more summary::after{content:"";width:7px;height:7px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);flex-shrink:0}
-.apple-agenda-more[open] summary::after{transform:rotate(225deg)}
-.apple-agenda-more summary:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:12px}
-.apple-agenda-options{display:grid;grid-template-columns:minmax(0,1fr);border-top:1px solid var(--line)}
-.apple-agenda-options>.btn,.apple-agenda-modal .modal-footer>.btn{
-  min-width:0;min-height:44px;max-width:100%;margin:0;white-space:normal;overflow-wrap:break-word
-}
-.apple-agenda-options>.btn{
-  justify-content:flex-start;text-align:start;padding-inline:12px;border:0;border-radius:0;
-  background:transparent;color:var(--ink);font-weight:500
-}
-.apple-agenda-options>.btn+.btn{border-top:1px solid var(--line)}
-.apple-agenda-options>.btn:is(:hover,:focus-visible){background:var(--paper);text-decoration:underline}
-.apple-agenda-options>.btn span,.apple-agenda-modal .modal-footer>.btn span{min-width:0}
-.apple-agenda-options>.btn svg{width:18px;height:18px;flex:0 0 18px}
-.apple-agenda-modal .modal-footer>.btn svg{flex-shrink:0}
-.apple-sheet-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.apple-sheet-actions>.btn{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:break-word;text-align:start}
-.apple-sheet-actions>.btn>span{min-width:0}
-.apple-sheet-actions>.btn>svg{flex-shrink:0}
-.apple-simple-sheet .sheet-option span{min-width:0;overflow-wrap:break-word}
+    </div>`,n("close-modal",D("Concluir"),"Check"))}var kt=`/* Editor protection stays in the header, separate from presentation confirmation. */\r
+.editor-shell .editor-top{flex-wrap:wrap;row-gap:4px}\r
+.editor-shell .editor-top .editor-name{flex:1;min-width:0}\r
+.editor-shell .editor-top .editor-save{max-width:156px;width:auto;min-width:44px}\r
+.editor-shell .editor-top .editor-save span{display:inline;white-space:normal;line-height:1.3;text-align:start}\r
+.editor-protection{flex:0 0 100%;display:flex;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:0 16px;min-width:0}\r
+.editor-shell .editor-protection .save-status,.editor-shell .editor-drive-status{display:inline-flex;flex:0 1 auto;align-items:center;gap:5px;font:500 10px/1.45 Inter,Arial,sans-serif;color:var(--muted);min-width:0;margin:0;max-width:100%;text-align:start}\r
+.editor-shell .editor-drive-status{background:transparent;border:0;padding:5px 0;min-height:32px;cursor:pointer}\r
+.editor-protection span{overflow-wrap:break-word}\r
+.editor-protection svg{width:14px;height:14px;flex:0 0 14px}\r
+.editor-protection [data-tone=warning]{color:var(--danger,#b44339)}\r
+.editor-drive-status[data-tone=saved]{color:var(--green)}\r
+.editor-drive-status:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:4px}\r
+@media(max-width:420px){.editor-shell .editor-top .editor-save{max-width:132px;padding:7px 9px;gap:5px}.editor-protection{column-gap:12px}.editor-shell .editor-name .name{white-space:nowrap;overflow:visible;text-overflow:clip;font-size:15px;line-height:1.3}}\r
+\r
+body.editor-open .editor-shell.editor-scrolled header.editor-top{display:flex}\r
+\r
+.apple-simple-sheet{display:grid;gap:14px;min-width:0}\r
+.apple-simple-sheet .help,.apple-simple-sheet .section-head{margin:0;overflow-wrap:break-word}\r
+.apple-sheet-context{font-weight:600}\r
+.apple-simple-sheet .field{min-width:0}\r
+.modal.apple-agenda-modal>.modal-head,\r
+.modal.apple-agenda-modal>.modal-body,\r
+.modal.apple-agenda-modal>.modal-footer{padding-inline:20px}\r
+.apple-agenda-modal .modal-head h2{min-width:0;overflow-wrap:break-word}\r
+.apple-agenda-sheet{grid-template-columns:minmax(0,1fr);gap:14px}\r
+.apple-agenda-date{display:grid;grid-template-columns:minmax(0,1fr);padding-inline:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}\r
+.apple-agenda-date:focus-within{outline:2px solid var(--green);outline-offset:2px}\r
+/* iOS WebKit can add padding beyond width:100% on native date inputs. */\r
+.apple-agenda-sheet .apple-agenda-date input[type=datetime-local]{\r
+  grid-area:1/1;z-index:1;opacity:0;\r
+  display:block;width:100%;max-width:100%;min-width:0;min-height:46px;margin:0;padding:0;border:0;\r
+  box-sizing:border-box;background:transparent;outline:none;font-size:1rem;color:var(--ink);cursor:pointer\r
+}\r
+.apple-agenda-date-display{\r
+  grid-area:1/1;display:flex;align-items:center;justify-content:space-between;gap:8px;\r
+  padding-block:10px;min-width:0;pointer-events:none;color:var(--ink);overflow-wrap:break-word\r
+}\r
+.apple-agenda-date-value{min-width:0}\r
+.apple-agenda-date-display>svg{width:18px;height:18px;flex:0 0 18px;color:var(--muted)}\r
+.apple-agenda-date-value.is-empty{color:var(--muted)}\r
+@media(pointer:fine){\r
+  .apple-agenda-sheet .apple-agenda-date input[type=datetime-local]:focus{opacity:1}\r
+  .apple-agenda-date input:focus+.apple-agenda-date-display{visibility:hidden}\r
+}\r
+.apple-agenda-more{min-width:0;border:1px solid var(--line);border-radius:12px}\r
+.apple-agenda-more summary{\r
+  display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;\r
+  padding:12px;min-height:44px;color:var(--ink);cursor:pointer;\r
+  font-size:.875rem;line-height:1.4;overflow-wrap:break-word\r
+}\r
+.apple-agenda-more summary::-webkit-details-marker{display:none}\r
+.apple-agenda-more summary::after{content:"";width:7px;height:7px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);flex-shrink:0}\r
+.apple-agenda-more[open] summary::after{transform:rotate(225deg)}\r
+.apple-agenda-more summary:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:12px}\r
+.apple-agenda-options{display:grid;grid-template-columns:minmax(0,1fr);border-top:1px solid var(--line)}\r
+.apple-agenda-options>.btn,.apple-agenda-modal .modal-footer>.btn{\r
+  min-width:0;min-height:44px;max-width:100%;margin:0;white-space:normal;overflow-wrap:break-word\r
+}\r
+.apple-agenda-options>.btn{\r
+  justify-content:flex-start;text-align:start;padding-inline:12px;border:0;border-radius:0;\r
+  background:transparent;color:var(--ink);font-weight:500\r
+}\r
+.apple-agenda-options>.btn+.btn{border-top:1px solid var(--line)}\r
+.apple-agenda-options>.btn:is(:hover,:focus-visible){background:var(--paper);text-decoration:underline}\r
+.apple-agenda-options>.btn span,.apple-agenda-modal .modal-footer>.btn span{min-width:0}\r
+.apple-agenda-options>.btn svg{width:18px;height:18px;flex:0 0 18px}\r
+.apple-agenda-modal .modal-footer>.btn svg{flex-shrink:0}\r
+.apple-sheet-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}\r
+.apple-sheet-actions>.btn{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:break-word;text-align:start}\r
+.apple-sheet-actions>.btn>span{min-width:0}\r
+.apple-sheet-actions>.btn>svg{flex-shrink:0}\r
+.apple-simple-sheet .sheet-option span{min-width:0;overflow-wrap:break-word}\r
 `;var $e=document.createElement("style");$e.dataset.seprepare="editor-protection";$e.textContent=kt;document.head.append($e);window.SePrepareParity={createEditorRuntime:Ct,openAgendaDate:Ot,readAgendaDate:Rt,openLocalCopies:Tt};})();
 /* SEPREPARE PARITY BUNDLE END *//* SEPREPARE RECORDINGS BUNDLE START */(()=>{function Ge({slot:r,url:i,record:t,t:u,icon:b,inline:p=!1,onError:l=()=>{}}){let g=c=>String(c??"").replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[x]),A=c=>{let x=Math.max(0,Math.floor(Number(c)||0));return(x>=3600?Math.floor(x/3600)+":":"")+String(Math.floor(x/60)%60).padStart(2,"0")+":"+String(x%60).padStart(2,"0")};r.hidden=!1,r.innerHTML=`<section class="rec-transport ${p?"rec-transport-inline":""}" aria-label="${g(u("rehearsalAudio"))}"><div class="rec-transport-heading"><span>${b("Mic")}${g(u("rehearsalAudio"))}</span>${p?`<button type="button" class="rec-other-audios" data-action="recording-other-audios" title="${g(u("otherAudios"))}" aria-label="${g(u("otherAudios"))}">${b("List")}<span>${g(u("otherAudios"))}</span>${b("ChevronRight")}</button>`:""}</div><div class="rec-transport-main"><button type="button" class="rec-transport-toggle" data-action="recording-toggle-play" aria-label="${g(u("listen"))}" title="${g(u("listen"))}">${b("Play")}</button><div class="rec-timeline"><input type="range" class="rec-seek" min="0" max="${Math.max(.1,t.durationMs/1e3)}" value="0" step="0.05" aria-label="${g(u("audioPosition"))}"><div class="rec-time"><span data-rec-elapsed>00:00</span><span data-rec-duration>${A(t.durationMs/1e3)}</span></div></div></div><div class="rec-transport-footer"><button type="button" data-action="recording-seek-back" title="${g(u("back10"))}" aria-label="${g(u("back10"))}">${b("RotateCcw")}<span>10 s</span></button><label><span class="rec-sr">${g(u("speed"))}</span><select class="rec-playback-speed" aria-label="${g(u("speed"))}">${[.75,1,1.25,1.5,2].map(c=>`<option value="${c}" ${c===1?"selected":""}>${c}\xD7</option>`).join("")}</select></label><button type="button" data-action="recording-seek-forward" title="${g(u("forward10"))}" aria-label="${g(u("forward10"))}"><span>10 s</span>${b("Redo2")}</button></div><audio preload="metadata" playsinline hidden></audio></section>${p?"":'<div class="rec-text" hidden></div>'}`;let f=r.querySelector("audio"),v=r.querySelector(".rec-seek"),h=r.querySelector(".rec-transport-toggle"),M=!1,I=null,k=!1,s=()=>Number.isFinite(f.duration)&&f.duration>0?f.duration:Math.max(.1,t.durationMs/1e3);function m(){if(k)return;let c=s(),x=M?Number(v.value):Math.min(c,Number(f.currentTime)||0);v.max=String(c),M||(v.value=String(x)),v.style.setProperty("--rec-progress",Math.min(100,x/c*100)+"%"),v.setAttribute("aria-valuetext",A(x)+" / "+A(c)),r.querySelector("[data-rec-elapsed]").textContent=A(x),r.querySelector("[data-rec-duration]").textContent=A(c);let w=!f.paused&&!f.ended,S=u(w?"pauseAudio":"listen");h.dataset.playing!==String(w)&&(h.dataset.playing=String(w),h.innerHTML=b(w?"Pause":"Play")),h.title=S,h.setAttribute("aria-label",S),h.setAttribute("aria-pressed",String(w))}function y(c){let x=Math.max(0,Math.min(s(),Number(c)||0));try{f.readyState<1?I=x:f.currentTime=x}catch{I=x}v.value=String(x),m()}v.addEventListener("input",()=>{M=!0,y(v.value)}),v.addEventListener("change",()=>{y(v.value),M=!1,m()}),v.addEventListener("blur",()=>{M=!1,m()}),r.querySelector("select").addEventListener("change",c=>{f.playbackRate=Number(c.target.value)});let $=["timeupdate","durationchange","loadedmetadata","play","pause","ended","seeked"],R=()=>{if(I!==null&&f.readyState>=1){let c=I;I=null;try{f.currentTime=c}catch{}}m()};for(let c of $)f.addEventListener(c,R);return f.onerror=l,f.src=i,m(),{audio:f,seek:y,async toggle(){f.paused||f.ended?(f.ended&&y(0),await f.play()):f.pause(),m()},dispose(){k=!0;for(let c of $)f.removeEventListener(c,R);f.onerror=null,f.pause(),f.removeAttribute("src"),f.load()}}}var be=()=>"rec-"+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+"-"+Math.random().toString(36).slice(2)),ye=r=>typeof r=="string"&&/^rec-[a-zA-Z0-9-]{8,80}$/.test(r),we=r=>/mp4/.test(r)?"m4a":/wav/.test(r)?"wav":/aac/.test(r)?"aac":/ogg/.test(r)?"ogg":"webm";function Ne(r){for(let i of["audio/mp4;codecs=mp4a.40.2","audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"])if(r?.isTypeSupported?.(i))return i;return""}async function Q(r){return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",await r.arrayBuffer())),i=>i.toString(16).padStart(2,"0")).join("")}var Z=r=>Q(new Blob([JSON.stringify(r,(i,t)=>t&&typeof t=="object"&&!Array.isArray(t)?Object.fromEntries(Object.keys(t).sort().map(u=>[u,t[u]])):t)]));function Y(r){return r?.schema===1&&ye(r.id)&&typeof r.speechId=="string"&&r.speechId.length<=200&&typeof r.versionId=="string"&&r.versionId.length<=200&&typeof r.snapshotId=="string"&&/^[a-f0-9]{64}$/.test(r.snapshotId)&&Number.isFinite(r.createdAt)&&Number.isFinite(r.durationMs)&&r.durationMs>=0&&["recording","ready","deleted","failed"].includes(r.status)&&Number.isFinite(r.bytes)&&r.bytes>=0&&r.bytes<=134217728&&(["recording","failed","deleted"].includes(r.status)||/^[a-f0-9]{64}$/.test(r.sha256||"")&&r.bytes>0)&&["speech","part"].includes(r.type)&&typeof r.title=="string"&&r.title.length<=1e3}function Be(r,{type:i="all",query:t=""}={}){let u=l=>String(l||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase(),b=u(t),p=new Map;for(let l of r){if(l.status==="deleted"||l.status==="failed"||i!=="all"&&l.type!==i||b&&!u(l.title+" "+l.versionName).includes(b))continue;let g=p.get(l.speechId);g||(g={id:l.speechId,title:l.title,type:l.type,bytes:0,count:0,at:0,versions:new Map},p.set(l.speechId,g));let A=g.versions.get(l.versionId);A||(A={id:l.versionId,name:l.versionName,bytes:0,count:0,at:0,records:[]},g.versions.set(l.versionId,A));let f=l.localAvailable&&Number(l.bytes)||0;g.bytes+=f,g.count++,g.at=Math.max(g.at,l.createdAt),A.bytes+=f,A.count++,A.at=Math.max(A.at,l.createdAt),A.records.push(l)}return[...p.values()].sort((l,g)=>g.at-l.at).map(l=>({...l,versions:[...l.versions.values()].sort((g,A)=>A.at-g.at).map(g=>({...g,records:g.records.sort((A,f)=>f.createdAt-A.createdAt)}))}))}function ke(r,i,t){if(!Y(i))throw Error("Grava\xE7\xE3o inv\xE1lida.");return r?.status==="deleted"?{...r,cloud:{...r.cloud,[t]:{...r.cloud?.[t],...i.receipt,...i.status==="deleted"?{deleted:!0}:{}}}}:i.status==="deleted"?{...r,...i,localAvailable:!1,cloud:{...r?.cloud||{},[t]:{...r?.cloud?.[t]||{},...i.receipt,deleted:!0}},snapshot:void 0}:{...i,...r||{},cloud:{...r?.cloud||{},[t]:{...i.receipt,hash:i.sha256}},localAvailable:!!r?.localAvailable,snapshot:void 0}}var Se=r=>new Promise((i,t)=>{r.onsuccess=()=>i(r.result),r.onerror=()=>t(r.error)}),ee=r=>new Promise((i,t)=>{r.oncomplete=i,r.onabort=()=>t(r.error||Error("Falha de armazenamento.")),r.onerror=()=>{}});function He({indexedDB:r=globalThis.indexedDB,name:i="seprepare-rehearsal-audio-v1"}={}){let t,u;async function b(){return t||(u||(u=new Promise((s,m)=>{if(!r){m(Error("Armazenamento de grava\xE7\xF5es indispon\xEDvel."));return}let y=r.open(i,1);y.onupgradeneeded=()=>{for(let $ of["records","chunks","snapshots","settings"])y.result.objectStoreNames.contains($)||y.result.createObjectStore($)},y.onsuccess=()=>{t=y.result,t.onversionchange=()=>{t.close(),t=null,u=null},s(t)},y.onerror=()=>{u=null,m(y.error)}})),u)}async function p(s,m){let y=await b();return Se(y.transaction(s).objectStore(s).get(m))}async function l(s,m,y){let $=await b(),R=$.transaction(s,"readwrite"),c=ee(R);return R.objectStore(s).put(y,m),await c,y}async function g(){let s=await b();return(await Se(s.transaction("records").objectStore("records").getAll())).filter(Y)}async function A(s,m){let y=await b(),$=y.transaction("records","readwrite"),R=ee($),c=$.objectStore("records"),x=c.get(s);return x.onsuccess=()=>{if(!x.result){$.abort();return}c.put({...x.result,...m},s)},await R,p("records",s)}async function f(s,m){if(!Y(s))throw Error("Grava\xE7\xE3o inv\xE1lida.");if(await p("records",s.id))throw Error("Grava\xE7\xE3o j\xE1 existente.");let y=new Blob([JSON.stringify(m)],{type:"application/json"});if(await Z(m)!==s.snapshotId)throw Error("Texto do ensaio inv\xE1lido.");await l("snapshots",s.snapshotId,m),await l("records",s.id,s)}async function v(s,m,y){if(!ye(s)||!(y instanceof Blob)||y.size>134217728)throw Error("\xC1udio inv\xE1lido.");let $=await y.arrayBuffer(),R=await b(),c=R.transaction(["records","chunks"],"readwrite"),x=ee(c),w=c.objectStore("records"),S=w.get(s);S.onsuccess=()=>{let L=S.result;if(!L||L.status!=="recording"||L.bytes+y.size>134217728){c.abort();return}c.objectStore("chunks").put($,s+":"+String(m).padStart(8,"0")),w.put({...L,bytes:(L.bytes||0)+y.size,chunks:m+1,heartbeat:Date.now(),localAvailable:!0},s)},await x}async function h(s){let m=await p("records",s);if(!m?.localAvailable||m.storage==="native")return null;let y=await b(),$=IDBKeyRange.bound(s+":",s+":\uFFFF"),R=await Se(y.transaction("chunks").objectStore("chunks").getAll($));return R.length?new Blob(R,{type:m.mime}):null}async function M(s){let m=await b(),y=m.transaction(["records","chunks"],"readwrite"),$=ee(y),R=y.objectStore("records"),c=R.get(s);c.onsuccess=()=>{c.result&&R.put({...c.result,localAvailable:!1,chunks:0},s)},y.objectStore("chunks").delete(IDBKeyRange.bound(s+":",s+":\uFFFF")),await $}async function I(s,m,y){if(y.size!==s.bytes||await Q(y)!==s.sha256)throw Error("A integridade do \xE1udio n\xE3o p\xF4de ser confirmada.");let $=await y.arrayBuffer();if(await l("snapshots",s.snapshotId,m),(await p("records",s.id))?.status==="deleted")throw Error("Grava\xE7\xE3o exclu\xEDda.");let c=await b(),x=c.transaction(["records","chunks"],"readwrite"),w=ee(x),S=x.objectStore("records").get(s.id);S.onsuccess=()=>{if(S.result?.status==="deleted"){x.abort();return}x.objectStore("chunks").delete(IDBKeyRange.bound(s.id+":",s.id+":\uFFFF")),x.objectStore("chunks").put($,s.id+":00000000"),x.objectStore("records").put({...s,storage:"browser",localAvailable:!0,chunks:1},s.id)},await w}async function k(s,m=!1){let y=await b(),$=y.transaction("settings","readwrite"),R=ee($),c=$.objectStore("settings"),x=c.get("capture-lease"),w=!1;return x.onsuccess=()=>{let S=x.result;m?(S?.owner===s&&c.delete("capture-lease"),w=!0):(!S||S.owner===s||S.until<Date.now())&&(c.put({owner:s,until:Date.now()+2e4},"capture-lease"),w=!0)},await R,w}return{getRecord:s=>p("records",s),saveRecord:s=>{if(!Y(s))throw Error("Grava\xE7\xE3o inv\xE1lida.");return l("records",s.id,s)},list:g,patch:A,create:f,append:v,blob:h,evict:M,saveDownload:I,lease:k,snapshot:s=>p("snapshots",s),saveSnapshot:(s,m)=>l("snapshots",s,m),setting:s=>p("settings",s),setSetting:(s,m)=>l("settings",s,m),close(){t?.close(),t=null,u=null}}}function gr(r=globalThis.navigator?.mediaDevices){let i=null,t=null,u=new Set;function b(){if(!(u.size||t)){for(let l of i?.getTracks?.()||[])l.stop();i=null}}async function p(l){if(!r?.getUserMedia)throw new DOMException("Microphone unavailable","NotFoundError");i?.getAudioTracks?.().some(v=>v.readyState==="live")||(t||(t=r.getUserMedia(l).then(v=>i=v).finally(()=>{t=null})),await t);let g=i.clone(),A={stream:g};u.add(A);let f=g.getTracks().length;for(let v of g.getTracks()){let h=v.stop.bind(v),M=!1,I=()=>{M||(M=!0,--f===0&&(u.delete(A),b()))};v.stop=()=>{h(),I()},v.addEventListener("ended",I,{once:!0})}return g}return{getUserMedia:p,activeLeases:()=>u.size}}var Fe=Symbol.for("SePrepare.sharedMicrophone"),Ue=globalThis[Fe]||(globalThis[Fe]=gr());function Ve({store:r,Recorder:i=globalThis.MediaRecorder,microphone:t=Ue,onInterruption:u=()=>{}}){let b,p,l,g=0,A=Promise.resolve(),f=null,v=null,h=0,M=0,I=!1,k;async function s(R){if(!i)throw Error("Grava\xE7\xE3o de \xE1udio indispon\xEDvel neste navegador.");p=await t.getUserMedia({audio:{channelCount:{ideal:1},echoCancellation:!0,noiseSuppression:!0},video:!1}),l=R.id,g=0,A=Promise.resolve(),f=null,v=null,M=0,I=!1;try{let x=Ne(i);b=new i(p,{...x?{mimeType:x}:{},audioBitsPerSecond:48e3}),await r.patch(l,{mime:b.mimeType||x||"audio/webm"}),b.ondataavailable=w=>{if(!w.data?.size)return;let S=g++;A=A.then(()=>r.append(l,S,w.data)).catch(L=>{v||(v=L,u("storage"))})},b.onerror=()=>{v||=Error("A capta\xE7\xE3o de \xE1udio foi interrompida."),u("capture")},b.onstop=()=>k?.();for(let w of p.getAudioTracks())w.addEventListener("ended",()=>{f||u("capture")});return h=performance.now(),b.start(2e3),{mime:b.mimeType||x||"audio/webm"}}catch(x){for(let w of p?.getTracks()||[])w.stop();throw p=null,x}}function m(){if(b?.state==="recording"){M+=performance.now()-h,I=!0;try{b.requestData(),b.pause()}catch{u("capture")}}}function y(){if(b?.state==="paused"){h=performance.now(),I=!1;try{b.resume()}catch{u("capture")}}}function $(){return f||(f=(async()=>{let R=Math.round(M+(I?0:Math.max(0,performance.now()-h)));if(b&&b.state!=="inactive"){let c,x=new Promise(w=>{k=w,c=setTimeout(w,4e3)});try{b.requestData(),b.stop()}catch{}await x,clearTimeout(c)}for(let c of p?.getTracks()||[])c.stop();return p=null,await A,{durationMs:R,error:v?.message}})(),f)}return{start:s,pause:m,resume:y,finish:$}}function We(r,i=window){let t=new Map,u=0;i.addEventListener("nativeRecording",l=>{let g=t.get(l.detail?.requestId);g&&(t.delete(l.detail.requestId),clearTimeout(g.timer),l.detail.error?g.reject(Error(l.detail.error)):g.resolve(l.detail.result))});function b(l,g="",A={}){let f="audio-"+Date.now()+"-"+ ++u;return new Promise((v,h)=>{let M=setTimeout(()=>{t.delete(f),h(Error("A opera\xE7\xE3o de \xE1udio demorou mais que o esperado."))},18e4);t.set(f,{resolve:v,reject:h,timer:M});try{r.recordingCommand(f,l,g,JSON.stringify(A))}catch(I){clearTimeout(M),t.delete(f),h(I)}})}async function p(){r.hasMicPermission()||await new Promise((l,g)=>{let A=v=>{clearTimeout(f),i.removeEventListener("nativeMicPermission",A),v.detail?.granted?l():g(Error("Permita o microfone para gravar seu ensaio."))},f=setTimeout(()=>{i.removeEventListener("nativeMicPermission",A),g(Error("A permiss\xE3o do microfone n\xE3o foi conclu\xEDda."))},12e4);i.addEventListener("nativeMicPermission",A),r.requestMicPermission()})}return{request:b,permission:p,url:l=>new URL("rehearsal-audio/"+encodeURIComponent(l),document.baseURI).href}}function Ye(r){let i;return{async start(t){return i=t.id,await r.permission(),r.request("start",i,t)},pause(){return r.request("pause",i)},resume(){return r.request("resume",i)},finish(){return r.request("finish",i)}}}function Ke({store:r,transport:i,account:t,readBlob:u,removeLocal:b,onChange:p=()=>{}}){let l=null;async function g(){return l||(l=A().finally(()=>{l=null,p()}),l)}async function A(){let v=t();if(!v||!i)throw Error("Conecte o Google Drive em Ajustes para proteger as grava\xE7\xF5es.");let h=()=>{if(v!==t())throw Error("A conta do Drive mudou.")},M=await i.list(),I=new Map;h();for(let k of M){let s=await i.read(k.id);if(h(),!Y(s))throw Error("O Drive retornou uma grava\xE7\xE3o inv\xE1lida.");let m=I.get(s.id);(!m||Number(s.updatedAt||s.createdAt)>Number(m.data.updatedAt||m.data.createdAt))&&I.set(s.id,{file:k,data:s})}for(let{file:k,data:s}of I.values()){let m=await r.getRecord(s.id),y={metaId:k.id,audioId:s.audioFileId,snapshotFileId:s.snapshotFileId,hash:s.sha256};s.status==="deleted"?(m?.localAvailable&&await b(m),await r.saveRecord(ke(m,{...s,receipt:y},v))):m?.status!=="deleted"&&await r.saveRecord(ke(m,{...s,receipt:y},v))}for(let k of await r.list()){h();let s=k.cloud?.[v],m=I.get(k.id);if(k.status==="deleted"){if(s?.deleted||!s?.metaId&&!m)continue;let S={...k,status:"deleted",deletedAt:k.deletedAt||Date.now(),updatedAt:k.deletedAt||Date.now(),cloud:void 0,localAvailable:!1,storage:void 0};await i.putMeta(S,s?.metaId||m?.file.id),h(),s?.audioId&&await i.removeAudio(s.audioId),await r.patch(k.id,{cloud:{...k.cloud,[v]:{...s,deleted:!0}}});continue}if(k.status!=="ready"||!k.localAvailable||s?.hash===k.sha256)continue;let y=await r.snapshot(k.snapshotId);if(!y)throw Error("O texto deste ensaio n\xE3o foi encontrado.");let $=await i.putSnapshot(k.snapshotId,y);h();let R=i.uploadNative&&k.storage==="native"?await i.uploadNative(k):await i.upload(k,await u(k));h();let c=await r.getRecord(k.id);if(h(),c?.status==="deleted"){let S={...c,cloud:void 0,storage:void 0,localAvailable:!1,audioFileId:R.id,snapshotFileId:$.id},L=await i.putMeta(S,s?.metaId||m?.file.id);h(),await i.removeAudio(R.id),h(),await r.patch(k.id,{cloud:{...c.cloud,[v]:{metaId:L.id,audioId:R.id,snapshotFileId:$.id,hash:k.sha256,deleted:!0}}});continue}let x={...k,cloud:void 0,localAvailable:!1,storage:void 0,audioFileId:R.id,snapshotFileId:$.id,updatedAt:k.updatedAt||k.createdAt},w=await i.putMeta(x,s?.metaId||m?.file.id);h(),await r.patch(k.id,{cloud:{...k.cloud,[v]:{metaId:w.id,audioId:R.id,snapshotFileId:$.id,hash:k.sha256}}}),p()}}async function f(v){let h=t(),M=v.cloud?.[h];if(!h||!M?.audioId)throw Error("Esta grava\xE7\xE3o n\xE3o tem uma c\xF3pia dispon\xEDvel nesta conta.");let I=await r.snapshot(v.snapshotId);if(!I&&(I=await i.snapshot(M.snapshotFileId),await Z(I)!==v.snapshotId))throw Error("Texto do ensaio inv\xE1lido.");if(i.downloadNative){if(await i.downloadNative(M.audioId,v),h!==t())throw Error("A conta do Drive mudou.");if(await r.saveSnapshot(v.snapshotId,I),(await r.getRecord(v.id))?.status==="deleted")throw await b({...v,storage:"native",localAvailable:!0}),Error("Grava\xE7\xE3o exclu\xEDda.");await r.patch(v.id,{storage:"native",localAvailable:!0})}else{let k=await i.download(M.audioId,v);if(h!==t())throw Error("A conta do Drive mudou.");await r.saveDownload(v,I,k)}return p(),r.getRecord(v.id)}return{sync:g,download:f,isBusy:()=>!!l}}var mr={listenRecording:["Ouvir grava\xE7\xE3o","Listen to recording","Escuchar grabaci\xF3n","\u9332\u97F3\u3092\u518D\u751F"],rehearsalAudio:["Grava\xE7\xE3o do ensaio","Rehearsal recording","Grabaci\xF3n del ensayo","\u30EA\u30CF\u30FC\u30B5\u30EB\u306E\u9332\u97F3"],otherAudios:["Outros \xE1udios","Other recordings","Otros audios","\u307B\u304B\u306E\u9332\u97F3"],audioPosition:["Posi\xE7\xE3o da grava\xE7\xE3o","Recording position","Posici\xF3n de la grabaci\xF3n","\u9332\u97F3\u306E\u518D\u751F\u4F4D\u7F6E"],pauseAudio:["Pausar \xE1udio","Pause audio","Pausar audio","\u97F3\u58F0\u3092\u4E00\u6642\u505C\u6B62"],recordingsHeading:["Grava\xE7\xF5es","Recordings","Grabaciones","\u9332\u97F3"],choose:["Selecionar","Select","Seleccionar","\u9078\u629E"],recordingOptions:["Op\xE7\xF5es da grava\xE7\xE3o","Recording options","Opciones de la grabaci\xF3n","\u9332\u97F3\u306E\u30AA\u30D7\u30B7\u30E7\u30F3"],rehearsalNumber:["Ensaio {number}","Rehearsal {number}","Ensayo {number}","\u30EA\u30CF\u30FC\u30B5\u30EB {number}"],noRecordingsYet:["Nenhuma grava\xE7\xE3o nesta vers\xE3o","No recordings for this version","No hay grabaciones de esta versi\xF3n","\u3053\u306E\u30D0\u30FC\u30B8\u30E7\u30F3\u306B\u306F\u9332\u97F3\u304C\u3042\u308A\u307E\u305B\u3093"],timedRehearsals:["Ensaios sem grava\xE7\xE3o","Rehearsals without audio","Ensayos sin grabaci\xF3n","\u9332\u97F3\u306A\u3057\u306E\u30EA\u30CF\u30FC\u30B5\u30EB"],manageAll:["Gerenciar todas as grava\xE7\xF5es","Manage all recordings","Gestionar todas las grabaciones","\u3059\u3079\u3066\u306E\u9332\u97F3\u3092\u7BA1\u7406"],startTimerShort:["Iniciar","Start","Iniciar","\u958B\u59CB"],pauseShort:["Pausar","Pause","Pausar","\u4E00\u6642\u505C\u6B62"],savingShort:["Salvando\u2026","Saving\u2026","Guardando\u2026","\u4FDD\u5B58\u4E2D\u2026"],loadingShort:["Preparando\u2026","Preparing\u2026","Preparando\u2026","\u6E96\u5099\u4E2D\u2026"],resumeShort:["Continuar","Resume","Continuar","\u518D\u958B"],recordingNoun:["grava\xE7\xE3o","recording","grabaci\xF3n","\u4EF6\u306E\u9332\u97F3"],record:["Gravar ensaio","Record rehearsal","Grabar ensayo","\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u9332\u97F3"],recordShort:["Gravar","Record","Grabar","\u9332\u97F3"],recording:["Gravando","Recording","Grabando","\u9332\u97F3\u4E2D"],paused:["Grava\xE7\xE3o pausada","Recording paused","Grabaci\xF3n pausada","\u9332\u97F3\u3092\u4E00\u6642\u505C\u6B62\u4E2D"],saving:["Salvando grava\xE7\xE3o\u2026","Saving recording\u2026","Guardando grabaci\xF3n\u2026","\u9332\u97F3\u3092\u4FDD\u5B58\u4E2D\u2026"],pause:["Pausar ensaio","Pause rehearsal","Pausar ensayo","\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u4E00\u6642\u505C\u6B62"],resume:["Continuar ensaio","Resume rehearsal","Continuar ensayo","\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u518D\u958B"],finish:["Finalizar ensaio","Finish rehearsal","Finalizar ensayo","\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u7D42\u4E86"],saved:["Ensaio salvo","Rehearsal saved","Ensayo guardado","\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u4FDD\u5B58\u3057\u307E\u3057\u305F"],listen:["Reproduzir","Play","Reproducir","\u518D\u751F"],versionRehearsals:["Ensaios desta vers\xE3o","Rehearsals for this version","Ensayos de esta versi\xF3n","\u3053\u306E\u30D0\u30FC\u30B8\u30E7\u30F3\u306E\u30EA\u30CF\u30FC\u30B5\u30EB"],manage:["Grava\xE7\xF5es dos ensaios","Rehearsal recordings","Grabaciones de los ensayos","\u30EA\u30CF\u30FC\u30B5\u30EB\u306E\u9332\u97F3"],description:["Ou\xE7a seus ensaios e organize os \xE1udios por prepara\xE7\xE3o e vers\xE3o.","Listen to your rehearsals and organize audio by preparation and version.","Escucha tus ensayos y organiza los audios por preparaci\xF3n y versi\xF3n.","\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u8074\u304D\u3001\u539F\u7A3F\u3068\u30D0\u30FC\u30B8\u30E7\u30F3\u3054\u3068\u306B\u9332\u97F3\u3092\u6574\u7406\u3067\u304D\u307E\u3059\u3002"],all:["Todos","All","Todos","\u3059\u3079\u3066"],speeches:["Discursos","Speeches","Discursos","\u30B9\u30D4\u30FC\u30C1"],parts:["Demonstra\xE7\xF5es","Demonstrations","Demostraciones","\u5B9F\u6F14"],search:["Pesquisar prepara\xE7\xE3o ou vers\xE3o\u2026","Search preparation or version\u2026","Buscar preparaci\xF3n o versi\xF3n\u2026","\u539F\u7A3F\u307E\u305F\u306F\u30D0\u30FC\u30B8\u30E7\u30F3\u3092\u691C\u7D22\u2026"],versions:["Vers\xF5es","Versions","Versiones","\u30D0\u30FC\u30B8\u30E7\u30F3"],recordings:["grava\xE7\xF5es","recordings","grabaciones","\u4EF6\u306E\u9332\u97F3"],rehearsals:["ensaios","rehearsals","ensayos","\u4EF6\u306E\u30EA\u30CF\u30FC\u30B5\u30EB"],space:["Espa\xE7o ocupado neste aparelho","Storage used on this device","Espacio ocupado en este dispositivo","\u3053\u306E\u7AEF\u672B\u306E\u4F7F\u7528\u5BB9\u91CF"],empty:["Seus ensaios merecem ser ouvidos.","Your rehearsals are worth listening to.","Tus ensayos merecen ser escuchados.","\u81EA\u5206\u306E\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u8074\u3044\u3066\u307F\u307E\u3057\u3087\u3046\u3002"],emptyHelp:["No modo Apresenta\xE7\xE3o, toque no microfone ao lado do cron\xF4metro para gravar.","In Presentation mode, tap the microphone beside the timer to record.","En Presentaci\xF3n, toca el micr\xF3fono junto al cron\xF3metro para grabar.","\u30D7\u30EC\u30BC\u30F3\u30C6\u30FC\u30B7\u30E7\u30F3\u30E2\u30FC\u30C9\u3067\u30BF\u30A4\u30DE\u30FC\u306E\u6A2A\u306E\u30DE\u30A4\u30AF\u3092\u30BF\u30C3\u30D7\u3059\u308B\u3068\u9332\u97F3\u3067\u304D\u307E\u3059\u3002"],noResults:["Nenhuma grava\xE7\xE3o encontrada","No recordings found","No se encontraron grabaciones","\u9332\u97F3\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093"],local:["Salvo neste aparelho","Saved on this device","Guardado en este dispositivo","\u3053\u306E\u7AEF\u672B\u306B\u4FDD\u5B58\u6E08\u307F"],protected:["Protegido no Google Drive","Backed up to Google Drive","Protegido en Google Drive","Google Drive \u306B\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u6E08\u307F"],cloudOnly:["Dispon\xEDvel no Google Drive","Available on Google Drive","Disponible en Google Drive","Google Drive \u306B\u4FDD\u5B58\u3055\u308C\u3066\u3044\u307E\u3059"],pending:["Backup pendente","Backup pending","Copia pendiente","\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u5F85\u3061"],sync:["Proteger e recuperar grava\xE7\xF5es","Back up and recover recordings","Proteger y recuperar grabaciones","\u9332\u97F3\u306E\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3068\u5FA9\u5143"],syncing:["Conferindo grava\xE7\xF5es no Drive\u2026","Checking recordings in Drive\u2026","Comprobando grabaciones en Drive\u2026","Drive \u306E\u9332\u97F3\u3092\u78BA\u8A8D\u4E2D\u2026"],syncDone:["Grava\xE7\xF5es conferidas no Google Drive.","Recordings checked in Google Drive.","Grabaciones comprobadas en Google Drive.","Google Drive \u306E\u9332\u97F3\u3092\u78BA\u8A8D\u3057\u307E\u3057\u305F\u3002"],driveHint:["Os \xE1udios s\xE3o protegidos separadamente do backup de texto.","Audio is backed up separately from text backups.","Los audios se protegen por separado de las copias del texto.","\u97F3\u58F0\u306F\u539F\u7A3F\u306E\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3068\u5225\u306B\u4FDD\u5B58\u3055\u308C\u307E\u3059\u3002"],connect:["Conectar Google Drive","Connect Google Drive","Conectar Google Drive","Google Drive \u306B\u63A5\u7D9A"],autoBackup:["Proteger novas grava\xE7\xF5es automaticamente no Drive","Automatically back up new recordings to Drive","Proteger nuevas grabaciones autom\xE1ticamente en Drive","\u65B0\u3057\u3044\u9332\u97F3\u3092 Drive \u306B\u81EA\u52D5\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7"],download:["Baixar \xE1udio","Download audio","Descargar audio","\u97F3\u58F0\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9"],loading:["Preparando \xE1udio\u2026","Preparing audio\u2026","Preparando audio\u2026","\u97F3\u58F0\u3092\u6E96\u5099\u4E2D\u2026"],share:["Compartilhar grava\xE7\xE3o","Share recording","Compartir grabaci\xF3n","\u9332\u97F3\u3092\u5171\u6709"],text:["Ver texto utilizado","View rehearsed text","Ver texto utilizado","\u4F7F\u7528\u3057\u305F\u539F\u7A3F\u3092\u898B\u308B"],hideText:["Ocultar texto","Hide text","Ocultar texto","\u539F\u7A3F\u3092\u9589\u3058\u308B"],speed:["Velocidade","Speed","Velocidad","\u518D\u751F\u901F\u5EA6"],back10:["Voltar 10 segundos","Back 10 seconds","Retroceder 10 segundos","10\u79D2\u623B\u308B"],forward10:["Avan\xE7ar 10 segundos","Forward 10 seconds","Avanzar 10 segundos","10\u79D2\u9032\u3080"],back:["Voltar","Back","Volver","\u623B\u308B"],select:["Selecionar grava\xE7\xE3o","Select recording","Seleccionar grabaci\xF3n","\u9332\u97F3\u3092\u9078\u629E"],selected:["Selecionadas","Selected","Seleccionadas","\u9078\u629E\u6E08\u307F"],selectAll:["Selecionar todas","Select all","Seleccionar todas","\u3059\u3079\u3066\u9078\u629E"],clear:["Desmarcar todas","Deselect all","Desmarcar todas","\u3059\u3079\u3066\u306E\u9078\u629E\u3092\u89E3\u9664"],deleteSelected:["Apagar selecionadas","Delete selected","Eliminar seleccionadas","\u9078\u629E\u3057\u305F\u9332\u97F3\u3092\u524A\u9664"],deleteAll:["Apagar todas as grava\xE7\xF5es","Delete all recordings","Eliminar todas las grabaciones","\u3059\u3079\u3066\u306E\u9332\u97F3\u3092\u524A\u9664"],deleteVersion:["Apagar \xE1udios desta vers\xE3o","Delete audio for this version","Eliminar audios de esta versi\xF3n","\u3053\u306E\u30D0\u30FC\u30B8\u30E7\u30F3\u306E\u97F3\u58F0\u3092\u524A\u9664"],deletePreparation:["Apagar \xE1udios desta prepara\xE7\xE3o","Delete audio for this preparation","Eliminar audios de esta preparaci\xF3n","\u3053\u306E\u539F\u7A3F\u306E\u97F3\u58F0\u3092\u524A\u9664"],remove:["Apagar \xE1udio","Delete audio","Eliminar audio","\u97F3\u58F0\u3092\u524A\u9664"],confirm:["Como deseja apagar estes \xE1udios?","How would you like to delete this audio?","\xBFC\xF3mo quieres eliminar estos audios?","\u97F3\u58F0\u306E\u524A\u9664\u65B9\u6CD5\u3092\u9078\u3093\u3067\u304F\u3060\u3055\u3044"],keepHistory:["Os textos, as vers\xF5es e os registros de dura\xE7\xE3o dos ensaios ser\xE3o preservados.","Texts, versions and rehearsal duration records will be preserved.","Se conservar\xE1n los textos, las versiones y los registros de duraci\xF3n de los ensayos.","\u539F\u7A3F\u3001\u30D0\u30FC\u30B8\u30E7\u30F3\u3001\u30EA\u30CF\u30FC\u30B5\u30EB\u306E\u6240\u8981\u6642\u9593\u306E\u8A18\u9332\u306F\u6B8B\u308A\u307E\u3059\u3002"],evict:["Remover deste aparelho","Remove from this device","Quitar de este dispositivo","\u3053\u306E\u7AEF\u672B\u304B\u3089\u524A\u9664"],evictHelp:["Libera espa\xE7o e mant\xE9m a c\xF3pia confirmada no Google Drive.","Frees storage and keeps the confirmed copy in Google Drive.","Libera espacio y mantiene la copia confirmada en Google Drive.","\u7AEF\u672B\u306E\u7A7A\u304D\u5BB9\u91CF\u3092\u5897\u3084\u3057\u3001\u78BA\u8A8D\u6E08\u307F\u306E Drive \u30B3\u30D4\u30FC\u3092\u6B8B\u3057\u307E\u3059\u3002"],permanent:["Excluir grava\xE7\xE3o definitivamente","Permanently delete recording","Eliminar grabaci\xF3n definitivamente","\u9332\u97F3\u3092\u5B8C\u5168\u306B\u524A\u9664"],permanentHelp:["Exclui o \xE1udio local e a c\xF3pia do Drive quando a conta estiver conectada.","Deletes local audio and the Drive copy when the account is connected.","Elimina el audio local y la copia de Drive cuando la cuenta est\xE9 conectada.","\u7AEF\u672B\u306E\u97F3\u58F0\u3068\u3001\u30A2\u30AB\u30A6\u30F3\u30C8\u63A5\u7D9A\u6642\u306B Drive \u306E\u30B3\u30D4\u30FC\u3092\u524A\u9664\u3057\u307E\u3059\u3002"],deletePending:["Exclus\xE3o do Drive pendente","Drive deletion pending","Eliminaci\xF3n de Drive pendiente","Drive \u304B\u3089\u306E\u524A\u9664\u5F85\u3061"],deleteDone:["\xC1udios removidos. Os ensaios e textos foram preservados.","Audio removed. Rehearsals and texts were preserved.","Audios eliminados. Se conservaron los ensayos y textos.","\u97F3\u58F0\u3092\u524A\u9664\u3057\u307E\u3057\u305F\u3002\u30EA\u30CF\u30FC\u30B5\u30EB\u3068\u539F\u7A3F\u306E\u8A18\u9332\u306F\u6B8B\u3063\u3066\u3044\u307E\u3059\u3002"],cancel:["Cancelar","Cancel","Cancelar","\u30AD\u30E3\u30F3\u30BB\u30EB"],continue:["Continuar ensaio","Continue rehearsal","Continuar ensayo","\u30EA\u30CF\u30FC\u30B5\u30EB\u3092\u7D9A\u3051\u308B"],leaveTitle:["Salvar a grava\xE7\xE3o antes de continuar?","Save the recording before continuing?","\xBFGuardar la grabaci\xF3n antes de continuar?","\u7D9A\u3051\u308B\u524D\u306B\u9332\u97F3\u3092\u4FDD\u5B58\u3057\u307E\u3059\u304B"],leaveHelp:["O ensaio e a grava\xE7\xE3o ser\xE3o finalizados na vers\xE3o em que come\xE7aram.","The rehearsal and recording will finish in the version where they started.","El ensayo y la grabaci\xF3n finalizar\xE1n en la versi\xF3n en la que comenzaron.","\u958B\u59CB\u3057\u305F\u30D0\u30FC\u30B8\u30E7\u30F3\u3067\u30EA\u30CF\u30FC\u30B5\u30EB\u3068\u9332\u97F3\u3092\u7D42\u4E86\u3057\u307E\u3059\u3002"],saveLeave:["Salvar e continuar","Save and continue","Guardar y continuar","\u4FDD\u5B58\u3057\u3066\u7D9A\u3051\u308B"],permission:["Permita o microfone para gravar seu ensaio.","Allow microphone access to record your rehearsal.","Permite el micr\xF3fono para grabar tu ensayo.","\u9332\u97F3\u3059\u308B\u306B\u306F\u30DE\u30A4\u30AF\u306E\u4F7F\u7528\u3092\u8A31\u53EF\u3057\u3066\u304F\u3060\u3055\u3044\u3002"],unsupported:["A grava\xE7\xE3o n\xE3o est\xE1 dispon\xEDvel neste navegador. O cron\xF4metro continua dispon\xEDvel.","Recording is unavailable in this browser. You can still use the timer.","La grabaci\xF3n no est\xE1 disponible en este navegador. Puedes seguir usando el cron\xF3metro.","\u3053\u306E\u30D6\u30E9\u30A6\u30B6\u3067\u306F\u9332\u97F3\u3067\u304D\u307E\u305B\u3093\u3002\u30BF\u30A4\u30DE\u30FC\u306F\u5F15\u304D\u7D9A\u304D\u4F7F\u7528\u3067\u304D\u307E\u3059\u3002"],storageError:["Libere espa\xE7o no aparelho para salvar as grava\xE7\xF5es.","Free device storage to save recordings.","Libera espacio en el dispositivo para guardar las grabaciones.","\u9332\u97F3\u3092\u4FDD\u5B58\u3059\u308B\u305F\u3081\u306B\u7AEF\u672B\u306E\u7A7A\u304D\u5BB9\u91CF\u3092\u5897\u3084\u3057\u3066\u304F\u3060\u3055\u3044\u3002"],audioError:["N\xE3o foi poss\xEDvel concluir a opera\xE7\xE3o de \xE1udio. Seus textos foram preservados.","The audio operation could not be completed. Your texts were preserved.","No se pudo completar la operaci\xF3n de audio. Se conservaron tus textos.","\u97F3\u58F0\u306E\u64CD\u4F5C\u3092\u5B8C\u4E86\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002\u539F\u7A3F\u306F\u4FDD\u5B58\u3055\u308C\u3066\u3044\u307E\u3059\u3002"],driveError:["N\xE3o foi poss\xEDvel concluir o backup dos \xE1udios. As c\xF3pias locais foram mantidas. Confira a conex\xE3o e a conta do Drive.","Audio backup could not be completed. Local copies were kept. Check your connection and Drive account.","No se pudo completar la copia de los audios. Se mantuvieron las copias locales. Comprueba la conexi\xF3n y la cuenta de Drive.","\u97F3\u58F0\u306E\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3092\u5B8C\u4E86\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002\u7AEF\u672B\u306E\u30B3\u30D4\u30FC\u306F\u6B8B\u3063\u3066\u3044\u307E\u3059\u3002\u63A5\u7D9A\u3068 Drive \u30A2\u30AB\u30A6\u30F3\u30C8\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002"],busy:["Aguarde o salvamento da grava\xE7\xE3o.","Wait while the recording is saved.","Espera mientras se guarda la grabaci\xF3n.","\u9332\u97F3\u306E\u4FDD\u5B58\u304C\u7D42\u308F\u308B\u307E\u3067\u304A\u5F85\u3061\u304F\u3060\u3055\u3044\u3002"],otherTab:["H\xE1 uma grava\xE7\xE3o em andamento em outra janela.","A recording is running in another window.","Hay una grabaci\xF3n en curso en otra ventana.","\u5225\u306E\u30A6\u30A3\u30F3\u30C9\u30A6\u3067\u9332\u97F3\u4E2D\u3067\u3059\u3002"],interrupted:["Grava\xE7\xE3o interrompida; o \xE1udio dispon\xEDvel foi salvo.","Recording interrupted; available audio was saved.","Grabaci\xF3n interrumpida; se guard\xF3 el audio disponible.","\u9332\u97F3\u304C\u4E2D\u65AD\u3055\u308C\u307E\u3057\u305F\u3002\u4FDD\u5B58\u3067\u304D\u305F\u97F3\u58F0\u3092\u6B8B\u3057\u307E\u3057\u305F\u3002"],recovered:["\xC1udio recuperado ap\xF3s interrup\xE7\xE3o","Audio recovered after interruption","Audio recuperado tras una interrupci\xF3n","\u4E2D\u65AD\u5F8C\u306B\u5FA9\u5143\u3057\u305F\u97F3\u58F0"],noAudio:["Sem grava\xE7\xE3o de \xE1udio","No audio recording","Sin grabaci\xF3n de audio","\u97F3\u58F0\u306E\u9332\u97F3\u306A\u3057"],startedAt:["Grava\xE7\xE3o iniciada aos {time} do ensaio","Recording started at {time} in the rehearsal","Grabaci\xF3n iniciada a los {time} del ensayo","\u30EA\u30CF\u30FC\u30B5\u30EB\u306E {time} \u304B\u3089\u9332\u97F3"],more:["Mostrar mais","Show more","Mostrar m\xE1s","\u3055\u3089\u306B\u8868\u793A"],close:["Fechar","Close","Cerrar","\u9589\u3058\u308B"],current:["Em andamento","In progress","En curso","\u9032\u884C\u4E2D"],snapshotMissing:["O texto deste ensaio n\xE3o est\xE1 dispon\xEDvel neste aparelho. Conecte o Drive para recuper\xE1-lo.","The rehearsed text is unavailable on this device. Connect Drive to recover it.","El texto de este ensayo no est\xE1 disponible en este dispositivo. Conecta Drive para recuperarlo.","\u3053\u306E\u7AEF\u672B\u306B\u306F\u4F7F\u7528\u3057\u305F\u539F\u7A3F\u304C\u3042\u308A\u307E\u305B\u3093\u3002Drive \u306B\u63A5\u7D9A\u3057\u3066\u5FA9\u5143\u3057\u3066\u304F\u3060\u3055\u3044\u3002"],neverReplace:["Cada grava\xE7\xE3o cria um novo ensaio. As anteriores s\xE3o mantidas.","Each recording creates a new rehearsal. Previous recordings are kept.","Cada grabaci\xF3n crea un nuevo ensayo. Se mantienen las anteriores.","\u9332\u97F3\u3054\u3068\u306B\u65B0\u3057\u3044\u30EA\u30CF\u30FC\u30B5\u30EB\u3068\u3057\u3066\u4FDD\u5B58\u3057\u3001\u4EE5\u524D\u306E\u9332\u97F3\u3082\u6B8B\u3057\u307E\u3059\u3002"]};function _e(r){return(i,t={})=>{let u={"pt-BR":0,en:1,es:2,ja:3}[r()]??0;return(mr[i]?.[u]||i).replace(/\{(\w+)\}/g,(b,p)=>t[p]??b)}}function Je(r){let i=He(),t=_e(()=>r.getState().settings.language),u=r.native?.recordingCommand?We(r.native):null,b=be(),p=e=>String(e??"").replace(/[&<>"']/g,a=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[a]),l=e=>globalThis.document?.querySelector(e)||null,g=e=>r.icon({HardDrive:"Save",Layers:"Copy",CloudCheck:"Cloud",RotateCw:"Redo2",RefreshCw:"RotateCcw"}[e]||e),A=e=>{let a=Math.floor((e||0)/1e3);return(a>=3600?Math.floor(a/3600)+":":"")+String(Math.floor(a/60)%60).padStart(2,"0")+":"+String(a%60).padStart(2,"0")},f=e=>e>=1048576?(e/1048576).toFixed(1)+" MB":Math.ceil(e/1024)+" KB",v=e=>new Intl.DateTimeFormat(r.getState().settings.language,{dateStyle:"medium",timeStyle:"short"}).format(e),h=(e,a,o,d="",n="")=>`<button type="button" class="rec-button ${n}" title="${p(a)}" aria-label="${p(a)}" data-action="${e}" ${d}>${o?g(o):""}<span>${p(a)}</span></button>`,M=null,I=null,k="",s=0,m=null,y=!1,$="",R=null,c=null,x=null,w=!1,S=null,L=!1,pe,E=null,P=[],q=new Set,C=null,ae="",ie=null,Ae=null,oe="",ue=0,ne=0;function K(){try{let e=JSON.parse(r.getDrive()?.driveStatus()||"{}");return e.connected?String(e.email||""):""}catch{return""}}function Ze(){let e=r.getDrive();return u?rr():e?.recordingTransport}let er,ge,re=e=>t(e===1?"recordingNoun":"recordings");function rr(){return er||=Object.fromEntries([["list",()=>u.request("drive-list")],["read",e=>u.request("drive-read","",{id:e})],["snapshot",e=>u.request("drive-snapshot","",{id:e})],["putSnapshot",(e,a)=>u.request("drive-put-snapshot","",{hash:e,data:a})],["putMeta",(e,a)=>u.request("drive-put-meta","",{data:e,id:a||""})],["uploadNative",e=>u.request("drive-upload","",{record:e})],["downloadNative",(e,a)=>u.request("drive-download","",{id:e,record:a})],["removeAudio",e=>u.request("drive-remove-audio","",{id:e})]])}function $e(){let e=Ze();return e?(e!==Ae&&(Ae=e,ie=Ke({store:i,transport:e,account:K,readBlob:he,removeLocal:Ee,onChange:()=>{J(),E&&ve()}})),ie):null}function _(e,a="audioError"){console.error("SePrepare recording:",e),r.toast(t(/NotAllowed|Security|permiss/i.test(e?.name+" "+e?.message)?"permission":/Quota|espaço|storage/i.test(e?.name+" "+e?.message)?"storageError":a))}function H(){let e=r.getActive();return e&&{s:e,v:e.versions?.find(a=>a.id===e.activeVersionId)||e}}function Ie(e){let a=e?.timer||{};return(a.elapsedMs||0)+(a.running?Math.max(0,Date.now()-a.startedAt):0)}function se(){let e=H();return e&&e.s.id===c?.speechId&&(e.s.activeVersionId||e.v.id)===c?.versionId}async function tr(){if(c||w||S){r.toast(t("busy"));return}let e=H();if(!e)return;if(!u&&(!globalThis.MediaRecorder||!navigator.mediaDevices?.getUserMedia)){r.toast(t("unsupported"));return}j(),w=!0,U();let a=!1;try{if(!await i.lease(b))throw Error(t("otherTab"));pe=setInterval(()=>{i.lease(b).then(z=>{z||N()}).catch(()=>void N())},5e3);let o={schema:1,speechId:e.s.id,versionId:e.s.activeVersionId||e.v.id,title:e.s.title,versionName:e.v.name||"",type:e.s.type==="part"?"part":"speech",delta:structuredClone(e.s.delta),participants:structuredClone(e.s.participants||[])},d=await Z(o),n=Date.now();c={schema:1,id:be(),speechId:e.s.id,versionId:o.versionId,versionName:o.versionName,title:e.s.title,type:o.type,snapshotId:d,createdAt:n,updatedAt:n,durationMs:0,bytes:0,status:"recording",mime:"audio/mp4",localAvailable:!1,storage:u?"native":"browser",offsetMs:Ie(e.s),sessionStartedAt:n-Ie(e.s),cloud:{},paused:!1},await i.create(c,o),a=!0,x=u?Ye(u):Ve({store:i,onInterruption:()=>void N()});let D=await x.start(c);await i.patch(c.id,{mime:D.mime||c.mime}),e.s.timer?.running||r.toggleTimer(),navigator.storage?.persist?.().catch(()=>{})}catch(o){if(x)try{await x.finish()}catch{}a&&await i.patch(c.id,{status:"failed"}).catch(()=>{}),c=null,x=null,await i.lease(b,!0).catch(()=>{}),o.message===t("otherTab")?r.toast(o.message):_(o)}finally{c||clearInterval(pe),w=!1,U(),ce()}}async function me(e,a=!1){if(S)return S;if(!c)return!1;se()&&r.getActive()?.timer?.running&&r.toggleTimer();let o=c,d=x;return clearInterval(pe),w=!1,S=(async()=>{let n;try{n=await d.finish();let D=u?{mime:n.mime,bytes:n.bytes,sha256:n.sha256,durationMs:n.durationMs,localAvailable:!!n.localAvailable}:{};if(!u){let le=await i.getRecord(o.id),G=await i.blob(o.id);if(!G?.size)throw Error(t("noAudio"));Object.assign(D,{mime:le.mime,bytes:G.size,sha256:await Q(G),durationMs:n.durationMs,localAvailable:!0})}if(!D.localAvailable||!D.bytes)throw Error(t("noAudio"));L=!0;try{r.finishRehearsal(e)}finally{L=!1}let z=H(),T=z?.v.rehearsals?.at(-1);return await i.patch(o.id,{...D,status:"ready",interrupted:a||!!n.error,rehearsalAt:T?.at||Date.now(),updatedAt:Date.now()}),c=null,x=null,or(o.id,a),await i.setting("autoBackup")!==!1&&O(!1),!0}catch(D){return se()&&r.getActive()?.timer?.running&&r.toggleTimer(),c=null,x=null,r.toast(t("audioError")),console.error("Recording finalization failed; journal retained",D),!1}finally{await i.lease(b,!0).catch(()=>{}),S=null,U(),J(),ce()}})(),U(),S}async function N(){!c||S||w||(se()&&r.getActive()?.timer?.running&&r.toggleTimer(),r.pauseRehearsal?.(),await me(void 0,!0))}function ar(e){return L||!c&&!S&&!w?!1:w?(r.toast(t("busy")),!0):(me(e),!0)}function Re(e){return m&&j(),!c&&!S&&!w?!1:w||S?(r.toast(t("busy")),!0):(r.openModal(t("leaveTitle"),`<div class="rec-confirm"><p>${p(t("leaveHelp"))}</p><p class="help">${p(t("neverReplace"))}</p></div>`,h("recording-cancel",t("continue"),"ArrowLeft")+h("recording-save-leave",t("saveLeave"),"Check","","rec-primary")),r.rt.modal="recording-leave",de=e,!0)}let de=null;function F(){let e=H();return r.rt.view==="reader"&&e?e.s.id+"\0"+(e.s.activeVersionId||e.v.id):""}function ce(){if(F()!==k&&(m&&j(),I=null,k=F(),J()),X(),c&&!w&&!S&&se()){let o=!!r.getActive()?.timer?.running;x&&!!c.paused===o&&(c.paused=!o,Promise.resolve(o?x.resume():x.pause()).catch(()=>void N()))}let e=l('[data-action="recording-start"]');if(e){let o=w||!!S;e.disabled=o,e.dataset.active=String(!!c),e.setAttribute("aria-pressed",String(!!c)),e.title=t(S?"saving":w?"loading":c?r.getActive()?.timer?.running?"pause":"resume":"record"),e.setAttribute("aria-label",e.title);let d=e.querySelector("span");if(d){let n=t(S?"savingShort":w?"loadingShort":c?r.getActive()?.timer?.running?"recording":"resumeShort":"recordShort");d.textContent!==n&&(d.textContent=n)}}let a=l("#recordingDockMark");a&&(a.hidden=!c,a.title=t("recording"),a.setAttribute("aria-label",t("recording")),a.dataset.paused=String(!r.getActive()?.timer?.running))}function ir(e){let a=r.getActive()?.timer;if(c)return t(a?.running?"pause":"resume");let o=l(".reader-primary-timer")?.clientWidth||innerWidth;return I&&k===F()&&o<480?t(a?.running?"pauseShort":a?.elapsedMs?"resumeShort":"startTimerShort"):e}function U(){let e=l(".reader-primary-timer");e&&!e.querySelector('[data-action="recording-start"]')&&e.insertAdjacentHTML("beforeend",h("recording-start",t("recordShort"),"Mic","","rec-start")),e&&!e.querySelector('[data-action="recording-listen-latest"]')&&e.insertAdjacentHTML("beforeend",h("recording-listen-latest",t("listen"),"Play","hidden","rec-listen-latest"));let a=l(".reader-controls");a&&!l("#recordingInlinePlayer")&&a.insertAdjacentHTML("beforeend",'<div id="recordingInlinePlayer" class="rec-inline-slot" hidden></div>'),J();let o=l("#timerDock");o&&!l("#recordingDockMark")&&o.insertAdjacentHTML("afterbegin",'<span id="recordingDockMark" class="rec-dot" hidden></span>'),ce()}function or(e,a){r.toast(t(a?"interrupted":"saved"));let o=l("#toast");if(o){o.append(document.createTextNode(" "));let d=document.createElement("button");d.type="button",d.dataset.action="recording-open-saved",d.dataset.id=e,d.textContent=t("listen"),o.append(d)}}function j(){if(ne++,R=null,M?.dispose(),M=null,C){let e=C.closest(".rec-player-slot,.rec-inline-slot");C.onerror=null,C.pause(),C.removeAttribute("src"),C.load(),e?.replaceChildren(),e?.classList.contains("rec-inline-slot")&&(e.hidden=!0),C=null}m=null,ae&&(URL.revokeObjectURL(ae),ae=""),X()}async function J(){let e=F(),a=++s;if(m&&e!==m.speechId+"\0"+m.versionId&&j(),e!==k&&(I=null),k=e,!e){I=null,X();return}try{let o=await i.list();if(a!==s||e!==F())return;let d=H(),n=K();I=o.filter(D=>D.status==="ready"&&D.speechId===d.s.id&&D.versionId===(d.s.activeVersionId||d.v.id)&&(D.localAvailable||D.cloud?.[n]?.audioId&&!D.cloud[n].deleted)).sort((D,z)=>z.createdAt-D.createdAt)[0]||null,X()}catch{I=null,X()}}function X(){let e=l('[data-action="recording-listen-latest"]');if(!e)return;e.hidden=!I||k!==F()||!!c||w||!!S,e.disabled=!!c||w||!!S,e.title=t("listenRecording"),e.setAttribute("aria-label",e.title),e.setAttribute("aria-expanded",String(!!C&&!!C.closest(".rec-inline-slot"))),e.classList.toggle("is-open",e.getAttribute("aria-expanded")==="true");let a=e.closest(".reader-primary-timer");if(a.classList.toggle("rec-playback-available",!e.hidden),e.hidden){a.classList.remove("rec-row-dense","rec-timer-icon");return}let o=[...a.children].filter(G=>G.matches("button")&&!G.hidden),d=parseFloat(getComputedStyle(a).columnGap)||0,n=a.querySelector(".start-reading"),D=a.querySelector(".rec-start"),z=G=>{let xe=G.querySelector("span:last-child"),ur=G===n;return Math.max(44,(xe?.scrollWidth||0)+(ur?41:43))},T=o.reduce((G,xe)=>G+z(xe),Math.max(0,o.length-1)*d),le=T>a.clientWidth;a.classList.toggle("rec-row-dense",le),le&&D&&(T-=z(D)-44),a.classList.toggle("rec-timer-icon",T>a.clientWidth)}async function he(e){if(u){let a=await fetch(u.url(e.id));if(!a.ok)throw Error(t("audioError"));return a.blob()}return i.blob(e.id)}async function Ee(e){m?.id===e.id&&j(),u&&e.storage==="native"&&await u.request("remove",e.id),await i.evict(e.id)}function nr(e){let a=e.cloud?.[K()],o=!!a?.audioId&&a.hash===e.sha256&&!a.deleted;return t(e.localAvailable?o?"protected":"local":"cloudOnly")}function De(e,a=0){let o=q.has(e.id);return`<article class="rec-item ${$===e.id?"rec-menu-open":""}" data-recording-id="${p(e.id)}"><div class="rec-item-line">${y?`<label class="rec-select"><input type="checkbox" data-rec-select="${p(e.id)}" ${o?"checked":""} aria-label="${p(t("select"))}"></label>`:""}<button type="button" class="rec-play" data-action="recording-play" data-id="${p(e.id)}" aria-label="${p(t(e.localAvailable?"listen":"download"))}" title="${p(t(e.localAvailable?"listen":"download"))}">${g(e.localAvailable?"Play":"CloudDownload")}</button><div class="rec-item-copy"><div class="rec-record-title"><strong>${p(t("rehearsalNumber",{number:P.filter(d=>d.status==="ready"&&d.speechId===e.speechId&&d.versionId===e.versionId&&d.createdAt<=e.createdAt).length}))}</strong><span>${A(e.durationMs)}</span></div><small>${p(v(e.createdAt))}</small><small class="rec-cloud">${g(e.cloud?.[K()]?.audioId?"CloudCheck":"HardDrive")}${p(nr(e))}</small></div>${h("recording-item-menu",t("recordingOptions"),"MoreHorizontal",`data-id="${p(e.id)}" aria-expanded="${$===e.id}"`,"rec-icon-only")}</div><div class="rec-item-menu" ${$===e.id?"":"hidden"}>${h("recording-text",t("text"),"FileText",`data-id="${p(e.id)}"`)}${h("recording-share",t("share"),"Share2",`data-id="${p(e.id)}"`)}${h("recording-delete",t("remove"),"Trash2",`data-id="${p(e.id)}"`,"rec-delete-option")}</div><div class="rec-player-slot"></div></article>`}function Me(e){return y?`<div class="rec-selection-toolbar"><span>${q.size} ${p(t("selected").toLocaleLowerCase())}</span>${h("recording-select-all",t("selectAll"),"CheckCheck")}${h("recording-selection-done",t("cancel"),"X")}${h("recording-delete-selected",t("deleteSelected"),"Trash2",q.size?"":"disabled","rec-icon-only")}</div>`:`<div class="rec-list-heading"><h3>${p(t("recordingsHeading"))}</h3>${e?h("recording-selection-start",t("choose"),"CheckSquare","","rec-subtle"):""}</div>`}function sr(){let e=P.filter(z=>z.status==="ready"&&z.speechId===E.speechId&&z.versionId===E.versionId).sort((z,T)=>T.createdAt-z.createdAt),a=r.getState().speeches.find(z=>z.id===E.speechId),o=a?.versions?.find(z=>z.id===E.versionId),d=a?.title||e[0]?.title||"",n=o?.name||e[0]?.versionName||"",D=e.reduce((z,T)=>z+(T.localAvailable?T.bytes:0),0);return`<section class="rec-library rec-version-library"><div class="rec-version-intro"><p>${p(d)}</p><div class="rec-intro-meta"><span class="rec-version-chip">${g("Copy")}${p(n)}</span><span>${e.length} ${p(re(e.length))} \xB7 ${f(D)}</span></div></div>${Me(e.length)}<div class="rec-version-recordings">${e.map(De).join("")||`<div class="rec-empty">${g("Mic")}<h3>${p(t("noRecordingsYet"))}</h3><p>${p(t("emptyHelp"))}</p></div>`}</div>${ze()}<footer class="rec-version-footer">${h("recording-manager",t("manageAll"),"Settings","","rec-subtle")}${g("ChevronRight")}</footer></section>`}function ze(){if(!E?.versionId)return"";let e=r.getState().speeches.find(d=>d.id===E.speechId),a=e?.versions?.find(d=>d.id===E.versionId),o=(a?.rehearsals||[]).filter(d=>!P.some(n=>n.status==="ready"&&n.rehearsalAt===d.at&&n.versionId===a.id));return o.length?`<details class="rec-timed"><summary>${g("Timer")}${p(t("timedRehearsals"))} \xB7 ${o.length}</summary>${o.slice().reverse().map(d=>`<div class="rec-timed-row"><span>${p(v(d.at))}</span><strong>${A(d.duration)}</strong></div>`).join("")}</details>`:""}function Ce(){if(E?.versionId)return sr();let e=P.filter(d=>d.status==="ready"&&(!E?.speechId||d.speechId===E.speechId)&&(!E?.versionId||d.versionId===E.versionId)),a=Be(e,{query:E?.query||"",type:E?.type||"all"}),o=e.reduce((d,n)=>d+(n.localAvailable?n.bytes:0),0);return`<section class="rec-library"><p class="rec-description">${p(t("description"))}</p><div class="rec-stats"><span>${e.length} ${p(re(e.length))}</span><span>${p(t("space"))}: <strong>${f(o)}</strong></span></div><div class="rec-search"><label>${g("Search")}<input type="search" id="recordingSearch" placeholder="${p(t("search"))}" value="${p(E.query||"")}"></label><select id="recordingType" aria-label="${p(t("parts"))}">${["all","speeches","parts"].map((d,n)=>`<option value="${["all","speech","part"][n]}" ${E.type===["all","speech","part"][n]?"selected":""}>${p(t(d))}</option>`).join("")}</select></div>${Me(e.length)}<div class="rec-groups">${a.map(d=>`<details class="rec-group" ${E.speechId?"open":""}><summary>${g(d.type==="part"?"Users":"Mic")}<span><strong>${p(d.title)}</strong><small>${d.count} ${p(re(d.count))} \xB7 ${f(d.bytes)}</small></span>${g("ChevronDown")}</summary><div class="rec-scope-tools">${h("recording-delete-preparation",t("deletePreparation"),"Trash2",`data-id="${p(d.id)}"`)}</div>${d.versions.map(n=>`<details class="rec-version" ${E.versionId?"open":""}><summary>${g("Layers")}<span><strong>${p(n.name)}</strong><small>${n.count} ${p(re(n.count))} \xB7 ${f(n.bytes)}</small></span>${g("ChevronDown")}</summary><div class="rec-scope-tools">${h("recording-delete-version",t("deleteVersion"),"Trash2",`data-id="${p(d.id)}" data-version="${p(n.id)}"`)}</div>${n.records.map(De).join("")}</details>`).join("")}</details>`).join("")||`<div class="rec-empty">${g("Mic")}<h3>${p(t(E.query?"noResults":"empty"))}</h3><p>${p(t("emptyHelp"))}</p></div>`}</div>${ze()}<details class="rec-drive"><summary>${g("Cloud")}Google Drive${g("ChevronDown")}</summary><p>${p(t("driveHint"))}</p><label class="rec-auto"><input type="checkbox" id="recordingAutoBackup" checked><span>${p(t("autoBackup"))}</span></label>${h("recording-sync",t(ie?.isBusy()?"syncing":K()?"sync":"connect"),"RefreshCw",ie?.isBusy()?"disabled":"")}<p class="rec-sync-error" role="status">${p(oe)}</p>${P.some(d=>d.status==="deleted"&&Object.values(d.cloud||{}).some(n=>!n.deleted))?`<p class="help">${p(t("deletePending"))}</p>`:""}</details>${h("recording-delete-all",t("deleteAll"),"Trash2",e.length?"":"disabled","rec-delete-all")}</section>`}async function B(e={}){j();let a={query:"",type:"all",...e};r.closeModal(),E=a,y=!1,$="",q.clear(),P=await i.list(),J(),r.openModal(t(e.versionId?"versionRehearsals":"manage"),Ce()),r.rt.modal="recording-library",l(".modal")?.classList.add("rec-dialog",...e.versionId?["rec-version-dialog"]:[]),Te()}function Te(){let e=l("#recordingSearch");e?.addEventListener("input",()=>{E.query=e.value,V(!0)}),l("#recordingType")?.addEventListener("change",a=>{E.type=a.target.value,V()}),l("#recordingAutoBackup")?.addEventListener("change",a=>{i.setSetting("autoBackup",a.target.checked)}),i.setting("autoBackup").then(a=>{let o=l("#recordingAutoBackup");o&&(o.checked=a!==!1)}),document.querySelectorAll("[data-rec-select]").forEach(a=>a.addEventListener("change",()=>{a.checked?q.add(a.dataset.recSelect):q.delete(a.dataset.recSelect);let o=l('[data-action="recording-delete-selected"]');o&&(o.disabled=!q.size);let d=l(".rec-selection-toolbar>span");d&&(d.textContent=q.size+" "+t("selected").toLocaleLowerCase())}))}function V(e=!1){if(!E||r.rt.modal!=="recording-library")return;let a=[...document.querySelectorAll(".rec-group[open],.rec-version[open]")].map(n=>n.querySelector("strong")?.textContent);j();let o=l(".modal-body"),d=o.scrollTop;o.innerHTML=Ce();for(let n of o.querySelectorAll(".rec-group,.rec-version"))a.includes(n.querySelector("strong")?.textContent)&&(n.open=!0);if(Te(),o.scrollTop=d,e){let n=l("#recordingSearch");n?.focus(),n?.setSelectionRange?.(n.value.length,n.value.length)}}async function ve(){P=await i.list(),J(),C||V()}async function fe(e,a=!1){if(c||w||S){r.toast(t("busy"));return}j();let o=ne,d=await i.getRecord(e);if(!(!d||d.status!=="ready"))try{if(r.pauseAudio?.(),r.pauseRehearsal?.(),r.getActive()?.timer?.running&&r.toggleTimer(),!d.localAvailable){r.toast(t("loading"));let T=$e();if(!T)throw Error(t("driveError"));d=await T.download(d),P=await i.list()}if(o!==ne||a&&F()!==d.speechId+"\0"+d.versionId||!a&&!E)return;let n=a?l("#recordingInlinePlayer"):document.querySelector(`[data-recording-id="${e}"] .rec-player-slot`);if(!n)return;let D,z="";if(u&&d.storage==="native")D=u.url(e);else{let T=await he(d);if(!T)throw Error(t("audioError"));R={id:e,file:new File([T],"SePrepare-"+new Date(d.createdAt).toISOString().slice(0,10)+"."+we(d.mime),{type:d.mime})},D=z=URL.createObjectURL(T)}if(o!==ne){z&&URL.revokeObjectURL(z);return}ae=z,m=d,M=Ge({slot:n,url:D,record:d,t,icon:g,inline:a,onError:()=>_(Error("Playback error"))}),C=M.audio,X(),await C.play().catch(()=>{})}catch(n){_(n,d.localAvailable?"audioError":"driveError")}}async function dr(e){let a=document.querySelector(`[data-recording-id="${e}"] .rec-player-slot`);if(!a)return;let o=a.querySelector(".rec-text");if(o||(o=document.createElement("div"),o.className="rec-text",o.hidden=!0,a.append(o)),!o.hidden){o.hidden=!0;return}let d=await i.getRecord(e),n=await i.snapshot(d.snapshotId);o.textContent=n?.delta?.ops?.map(D=>typeof D.insert=="string"?D.insert:"").join("")||t("snapshotMissing"),o.hidden=!1}async function cr(e){try{if(R?.id===e&&navigator.canShare?.({files:[R.file]})){await navigator.share({files:[R.file]});return}let a=await i.getRecord(e);if(u&&a.storage==="native"){await u.request("share",e,{title:t("share"),mime:a.mime.split(";")[0]});return}let o=await he(a);if(!o)throw Error(t("audioError"));let d=new File([o],"SePrepare-"+new Date(a.createdAt).toISOString().slice(0,10)+"."+we(a.mime),{type:a.mime});if(navigator.canShare?.({files:[d]}))await navigator.share({files:[d],title:a.title});else{let n=URL.createObjectURL(d),D=document.createElement("a");D.href=n,D.download=d.name,D.click(),setTimeout(()=>URL.revokeObjectURL(n),1e4)}}catch(a){a.name!=="AbortError"&&_(a)}}let W=[];function te(e){if(W=P.filter(o=>e.includes(o.id)&&o.status==="ready"),!W.length)return;let a=W.every(o=>o.localAvailable&&Object.values(o.cloud||{}).some(d=>d.audioId&&d.hash===o.sha256&&!d.deleted));j(),r.openModal(t("confirm"),`<div class="rec-confirm"><p>${W.length} ${p(re(W.length))}</p><p>${p(t("keepHistory"))}</p>${a?h("recording-evict",t("evict"),"HardDrive")+`<p class="help">${p(t("evictHelp"))}</p>`:""}${h("recording-permanent",t("permanent"),"Trash2","","rec-danger")}<p class="help">${p(t("permanentHelp"))}</p></div>`,h("recording-return",t("cancel"),"ArrowLeft")),r.rt.modal="recording-delete"}async function Le(e){let a=W;W=[];try{for(let o of a)e&&await i.patch(o.id,{status:"deleted",deletedAt:Date.now(),updatedAt:Date.now()}),await Ee(o);q.clear(),await B(E||{}),r.toast(t("deleteDone")),e&&O(!1)}catch(o){_(o),await B(E||{})}}async function O(e=!0){try{let a=$e();if(!K()||!a){if(e){let o=document.createElement("button");o.dataset.action="drive-settings",document.body.append(o),o.click(),o.remove()}return}if(!e&&Date.now()-ue<1e4){clearTimeout(ge),ge=setTimeout(()=>void i.setting("autoBackup").then(o=>{o!==!1&&O(!1)}).catch(()=>{}),10050-(Date.now()-ue));return}clearTimeout(ge),ue=Date.now(),oe="",await a.sync(),e&&r.toast(t("syncDone")),await ve()}catch(a){oe=t("driveError"),console.error("Recording Drive sync",a),e&&r.toast(oe),await ve()}}function qe(){let e=l(".version-list")||l(".modal-body");!e||!document.querySelector(".version-list")||l('[data-action="recording-version-list"]')||e.insertAdjacentHTML("afterend",h("recording-version-list",t("versionRehearsals"),"Mic","","rec-version-entry"))}function lr(e,a){if(e==="versions")return queueMicrotask(qe),!1;if(!e?.startsWith("recording-"))return!1;let o=a?.dataset.id;return(async()=>{switch(e){case"recording-listen-latest":C?.closest(".rec-inline-slot")?j():I&&await fe(I.id,!0);break;case"recording-toggle-play":await M?.toggle();break;case"recording-other-audios":{let n=H();await B({speechId:n?.s.id,versionId:n?.s.activeVersionId||n?.v.id});break}case"recording-selection-start":y=!0,$="",V();break;case"recording-selection-done":y=!1,q.clear(),V();break;case"recording-item-menu":{$=$===o?"":o,document.querySelectorAll(".rec-item-menu").forEach(n=>{n.hidden=n.closest("[data-recording-id]").dataset.recordingId!==$}),document.querySelectorAll('[data-action="recording-item-menu"]').forEach(n=>n.setAttribute("aria-expanded",String(n.dataset.id===$)));break}case"recording-start":c?S||w?r.toast(t("busy")):r.toggleTimer():await tr();break;case"recording-cancel":de=null,r.closeModal();break;case"recording-save-leave":{let n=de;de=null,await me()&&(r.closeModal(),n?.());break}case"recording-manager":await B();break;case"recording-version-list":{let n=H();await B({speechId:n?.s.id,versionId:n?.s.activeVersionId||n?.v.id});break}case"recording-open-saved":{let n=await i.getRecord(o);n&&(await B({speechId:n.speechId,versionId:n.versionId}),await fe(o));break}case"recording-play":await fe(o);break;case"recording-text":await dr(o);break;case"recording-share":await cr(o);break;case"recording-seek-back":C&&M?.seek(C.currentTime-10);break;case"recording-seek-forward":C&&M?.seek(C.currentTime+10);break;case"recording-select-all":y=!0,document.querySelectorAll("[data-rec-select]").forEach(n=>q.add(n.dataset.recSelect)),V();break;case"recording-clear":q.clear(),V();break;case"recording-delete":te([o]);break;case"recording-delete-selected":te([...q]);break;case"recording-delete-all":te(P.filter(n=>(!E.speechId||n.speechId===E.speechId)&&(!E.versionId||n.versionId===E.versionId)).map(n=>n.id));break;case"recording-delete-preparation":te(P.filter(n=>n.speechId===o).map(n=>n.id));break;case"recording-delete-version":te(P.filter(n=>n.speechId===o&&n.versionId===a.dataset.version).map(n=>n.id));break;case"recording-evict":await Le(!1);break;case"recording-permanent":await Le(!0);break;case"recording-return":await B(E||{});break;case"recording-sync":await O();break}})().catch(n=>_(n)),!0}function pr(){C?.closest(".rec-inline-slot")||j(),r.rt.modal==="recording-library"&&(E=null)}function Pe(e,a){if((w||S)&&["timer-start","timer-toggle","timer-stop","finish-rehearsal","timer-restart"].includes(e))return r.toast(t("busy")),!0;if(!c&&!S&&!w||e.startsWith("recording-")||["timer-toggle","timer-start","timer-stop","finish-rehearsal","focus"].includes(e))return!1;if(["select-content-version","content-version-options","version-select","version-open","select-version","restore-version","timer-restart","memorize","memorization-open","teleprompter-open","edit","back","drive-settings","speech-menu","memo-mode","memorization-mode","memo-open","presentation-mode","mode-menu","memory-mode-menu","memory-open","memory-confirm-open","teleprompter-open"].includes(e)||e.startsWith("version-")){let o={...a?.dataset};return Re(()=>{let d=document.createElement("button");Object.assign(d.dataset,o),d.dataset.action=e,document.body.append(d),d.click(),d.remove()})}return!1}async function je(){if(!(c||S||w)){try{if(u)for(let e of await u.request("list")){let a=await i.getRecord(e.id);a&&a.status!=="deleted"&&e.status==="ready"&&await i.patch(e.id,{mime:e.mime,bytes:e.bytes,sha256:e.sha256,durationMs:e.durationMs,localAvailable:!!e.localAvailable,status:"ready",interrupted:!!e.interrupted})}if(await i.lease(b)){for(let e of await i.list())if(e.status==="recording"){let a=await i.blob(e.id);a?.size?await i.patch(e.id,{status:"ready",interrupted:!0,durationMs:Math.max(0,(e.heartbeat||e.createdAt)-e.createdAt),bytes:a.size,sha256:await Q(a)}):await i.patch(e.id,{status:"failed"})}await i.lease(b,!0)}}catch(e){console.error("Recording recovery",e),U();return}U(),await i.setting("autoBackup")!==!1&&O(!1)}}return window.addEventListener("nativeBackground",()=>void N()),window.addEventListener("nativeMicError",()=>void N()),window.addEventListener("nativeRecordingInterrupted",()=>void N()),document.addEventListener("visibilitychange",()=>{document.hidden?N():!c&&!w&&je()}),window.addEventListener("pagehide",()=>{c&&N()}),window.addEventListener("beforeunload",e=>{(c||S||w)&&(e.preventDefault(),e.returnValue="")}),window.addEventListener("nativeDrive",()=>{!c&&!w&&i.setting("autoBackup").then(e=>{e!==!1&&O(!1)}).catch(()=>{})}),window.addEventListener("online",()=>{i.setting("autoBackup").then(e=>{e!==!1&&O(!1)}).catch(()=>{})}),document.addEventListener("click",e=>{let a=e.target.closest("[data-action]");a?.dataset.action==="versions"&&setTimeout(qe,0),a&&!a.disabled&&Pe(a.dataset.action,a)&&(e.preventDefault(),e.stopImmediatePropagation())},!0),{start:je,mount:U,tick:ce,timerLabel:ir,handle:lr,guard:Re,guardAction:Pe,interceptFinish:ar,onClose:pr,openManager:B,store:i,getSnapshot:()=>({active:c?{...c}:null,starting:w,saving:!!S}),sync:O}}var Xe=`.reader-primary-timer .rec-start{flex:0 0 auto;min-width:44px;max-width:42%;min-height:46px;padding:10px 14px;border-radius:17px;white-space:nowrap;color:var(--ink);background:var(--paper);border:1px solid var(--line);gap:7px}.reader-primary-timer .rec-start[data-active=true]{color:var(--green);border-color:var(--green)}.reader-primary-timer:has(.rec-start) .start-reading{min-width:0;flex:1 1 auto}.reader-primary-timer:has(.rec-start) .start-reading span:last-child{white-space:normal;text-wrap:balance}.reader-primary-timer:has(.rec-start){align-items:stretch}.rec-dot{display:inline-block;flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:#c6574b;box-shadow:0 0 0 4px #c6574b22;animation:rec-pulse 1.7s ease-in-out infinite;margin:0 4px}.rec-dot[hidden]{display:none}.rec-dot[data-paused=true]{animation:none;background:var(--muted)}@keyframes rec-pulse{50%{opacity:.4}}#toast button{border:0;background:none;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px;padding:4px 8px;cursor:pointer}\r
 .rec-dialog{width:min(740px,calc(100vw - 24px));max-width:740px}.rec-dialog .modal-body{padding-top:4px}.rec-library{min-width:0}.rec-description{color:var(--muted);font-size:.9rem;line-height:1.6;margin:0 0 16px}.rec-stats{display:flex;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);padding-bottom:16px}.rec-stats strong{color:var(--ink)}.rec-search{display:flex;gap:8px;margin-bottom:12px}.rec-search label{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:13px;padding:0 12px;flex:1;min-width:0;background:var(--paper)}.rec-search input{border:0!important;background:none!important;box-shadow:none!important;min-width:0;width:100%;padding:12px 0!important;font:inherit;font-size:.85rem}.rec-search select{max-width:38%;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font:inherit;font-size:.8rem}.rec-library-tools,.rec-scope-tools,.rec-player-tools,.rec-record-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rec-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:transparent;color:var(--ink);font:inherit;font-size:.8rem;line-height:1.35;cursor:pointer;min-height:42px;max-width:100%;text-align:start}.rec-button>svg{width:18px;height:18px;flex:0 0 18px}.rec-button:disabled{opacity:.45;cursor:default}.rec-button:hover:not(:disabled){background:var(--paper)}.rec-button:focus-visible,.rec-group>summary:focus-visible,.rec-version>summary:focus-visible{outline:2px solid var(--green);outline-offset:3px}.rec-library-tools{margin-bottom:16px}.rec-library-tools .rec-button{font-size:.73rem;padding:8px}.rec-group,.rec-version,.rec-drive,.rec-timed{border:1px solid var(--line);border-radius:16px;overflow:clip;margin:12px 0;background:var(--paper)}.rec-group>summary,.rec-version>summary,.rec-drive>summary,.rec-timed>summary{list-style:none;display:flex;align-items:center;gap:11px;cursor:pointer;padding:16px;min-height:60px}.rec-group>summary::-webkit-details-marker,.rec-version>summary::-webkit-details-marker,.rec-drive>summary::-webkit-details-marker,.rec-timed>summary::-webkit-details-marker{display:none}.rec-group>summary>svg,.rec-version>summary>svg,.rec-drive>summary>svg{width:20px;flex:0 0 20px;color:var(--muted)}.rec-group>summary>svg:last-child,.rec-version>summary>svg:last-child,.rec-drive>summary>svg:last-child{margin-inline-start:auto;width:16px}.rec-group[open]>summary>svg:last-child,.rec-version[open]>summary>svg:last-child{transform:rotate(180deg)}.rec-group summary span{min-width:0}.rec-group summary strong{font-size:.9rem;overflow-wrap:anywhere;display:block}.rec-group summary small{display:block;font-size:.75rem;color:var(--muted);margin-top:4px}.rec-version{margin:8px 12px 12px;background:var(--bg)}.rec-version>summary{padding:12px;font-size:.85rem;min-height:52px}.rec-scope-tools{padding:0 12px 6px;justify-content:flex-end}.rec-scope-tools .rec-button{border:0;color:var(--muted);font-size:.7rem;padding:6px 8px;min-height:34px}.rec-item{border-top:1px solid var(--line);padding:14px 12px;min-width:0}.rec-item-line{display:flex;align-items:center;gap:10px}.rec-select{display:flex;align-items:center;flex:0 0 18px}.rec-select input{width:17px;height:17px;margin:0;accent-color:var(--green)}.rec-play{border:1px solid var(--line);background:var(--paper);color:var(--ink);width:43px;height:43px;border-radius:50%;display:grid;place-items:center;flex:0 0 43px;cursor:pointer}.rec-play svg{width:19px}.rec-item-copy{flex:1;min-width:0}.rec-item-copy strong{font-weight:600;font-size:.8rem;display:block;line-height:1.5}.rec-item-copy small{display:block;font-size:.72rem;line-height:1.6;color:var(--muted)}.rec-cloud{display:flex!important;align-items:center;gap:5px}.rec-cloud svg{width:14px;height:14px;flex:0 0 14px}.rec-icon-only{flex:0 0 38px;width:38px;min-height:38px;height:38px;padding:9px;border:0}.rec-icon-only span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.rec-player{margin-top:14px;padding:12px;background:var(--paper);border-radius:13px;border:1px solid var(--line);animation:rec-reveal .2s ease-out}.rec-player audio{display:block;width:100%;height:42px}.rec-player-tools{justify-content:center;flex-wrap:nowrap;margin:8px 0}.rec-player-tools label{font-size:.75rem;display:flex;gap:8px;align-items:center}.rec-player-tools select{border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit;padding:7px}.rec-record-actions{justify-content:center}.rec-record-actions .rec-button{font-size:.73rem;flex:1 1 140px}.rec-text{white-space:pre-wrap;line-height:1.8;font-size:.9rem;margin-top:14px;max-height:340px;overflow:auto;padding:12px;border-top:1px solid var(--line);overflow-wrap:anywhere}.rec-empty{text-align:center;padding:30px 18px;color:var(--muted)}.rec-empty>svg{width:32px;height:32px;margin:auto}.rec-empty h3{font-family:inherit!important;font-size:1rem!important;margin:12px 0 8px!important}.rec-empty p{font-size:.85rem;line-height:1.7}.rec-drive{padding:0 14px 14px}.rec-drive>summary{padding-inline:0;font-size:.9rem}.rec-drive p{font-size:.78rem;color:var(--muted);line-height:1.6}.rec-auto{display:flex;gap:10px;align-items:flex-start;font-size:.8rem;line-height:1.6;margin:8px 0 16px}.rec-auto input{margin-top:5px;accent-color:var(--green);flex:0 0 17px}.rec-delete-all{color:var(--muted);border:0;margin-top:12px}.rec-version-entry{width:100%;margin-top:16px}.rec-confirm{padding:4px 0}.rec-confirm p{font-size:.9rem;line-height:1.7}.rec-confirm .rec-button{width:100%;justify-content:flex-start;margin-top:12px}.rec-primary{background:var(--green)!important;color:var(--paper)!important}.rec-danger{color:#b44339;border-color:#b4433960}.rec-timed-row{display:flex;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted)}.rec-timed>summary{font-size:.8rem}.rec-timed svg{width:18px;height:18px}@keyframes rec-reveal{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}\r
@@ -186,7 +186,7 @@ body.editor-open .editor-shell.editor-scrolled header.editor-top{display:flex}
 .reader-controls .reader-primary-timer.rec-row-dense .rec-start{flex:0 0 44px;width:44px;min-width:44px;max-width:44px;padding:8px}\r
 .reader-controls .reader-primary-timer.rec-timer-icon .start-reading{min-width:44px}\r
 .reader-controls .reader-primary-timer.rec-timer-icon #startTimerLabel{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}\r
-
+\r
 /* Use the whole presentation row; adapt to the space available to the player. */\r
 .reader-controls>.rec-inline-slot{grid-column:1 / -1;container-type:inline-size;margin-top:0}\r
 @media(min-width:800px){\r
@@ -209,7 +209,7 @@ body.editor-open .editor-shell.editor-scrolled header.editor-top{display:flex}
  .rec-transport-inline .rec-other-audios>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}\r
  .rec-transport-inline .rec-other-audios{min-width:44px}\r
  .rec-transport-inline .rec-other-audios>svg:last-child{display:none}\r
-}
+}\r
 `;var Qe=document.createElement("style");Qe.textContent=Xe;document.head.append(Qe);window.SePrepareRecordingFactory=Je;})();
 /* SEPREPARE RECORDINGS BUNDLE END *//* SEPREPARE REVIEW BUNDLE START */(()=>{function U(e,o){return Array.isArray(o?.replacements)&&o.replacements.length>0&&!(e.protect&&o.protected)}function Z(e,o){return U(e,o)&&(e.bulkMode==="all"||e.bulkMode!=="none"&&!!o.safe)}function ee(e,o){if(!(!e||!["all","none","safe"].includes(o))){e.bulkMode=o;for(let p of e.matches)p.selected=U(e,p)&&(o==="all"||o==="safe"&&!!p.safe)}}function ae(e,o="pt-BR"){let p={"pt-BR":{"pt-BR":"Revis\xE3o de portugu\xEAs",en:"Revis\xE3o de ingl\xEAs",es:"Revis\xE3o de espanhol",ja:"Revis\xE3o de japon\xEAs"},en:{"pt-BR":"Portuguese proofreading",en:"English proofreading",es:"Spanish proofreading",ja:"Japanese writing review"},es:{"pt-BR":"Revisi\xF3n de portugu\xE9s",en:"Revisi\xF3n de ingl\xE9s",es:"Revisi\xF3n de espa\xF1ol",ja:"Revisi\xF3n de japon\xE9s"},ja:{"pt-BR":"\u30DD\u30EB\u30C8\u30AC\u30EB\u8A9E\u306E\u6821\u6B63",en:"\u82F1\u8A9E\u306E\u6821\u6B63",es:"\u30B9\u30DA\u30A4\u30F3\u8A9E\u306E\u6821\u6B63",ja:"\u65E5\u672C\u8A9E\u306E\u6821\u6B63"}};return(p[o]||p["pt-BR"])[e]||(p[o]||p["pt-BR"])["pt-BR"]}var te={en:{"Idioma do texto":"Text language","Pacote de revis\xE3o":"Proofreading pack","Revis\xE3o offline em outros idiomas":"Offline proofreading in other languages","Escolha o idioma do texto e baixe somente o pacote que deseja usar.":"Choose the text language and download only the pack you need.","Portugu\xEAs j\xE1 inclu\xEDdo no aplicativo.":"Portuguese is already included.","Verificando o pacote\u2026":"Checking pack\u2026","Revis\xE3o de escrita japonesa com regras e an\xE1lise de palavras.":"Japanese writing checks using rules and word analysis.","Baixar pacote":"Download pack","Cancelar download":"Cancel download","Remover pacote":"Remove pack","Baixando pacote\u2026":"Downloading pack\u2026","Continuar download":"Resume download","Tentar novamente":"Try again","Dispon\xEDvel offline.":"Available offline.","Download cancelado. Voc\xEA pode continuar depois.":"Download cancelled. You can resume later.","Baixe uma vez para revisar sem internet, sem cadastro ou chave.":"Download once to proofread offline. No account or API key.","Preparando o pacote local\u2026":"Preparing local pack\u2026","Pacote ainda n\xE3o baixado.":"Pack has not been downloaded yet.","N\xE3o foi poss\xEDvel concluir a revis\xE3o local.":"Local proofreading could not be completed.","N\xE3o foi poss\xEDvel iniciar a revis\xE3o local.":"Local proofreading could not be started.","A revis\xE3o demorou mais que o esperado. Tente revisar um trecho menor.":"Proofreading took too long. Try a shorter passage.","N\xE3o foi poss\xEDvel baixar o pacote. Confira a conex\xE3o e tente novamente.":"The pack could not be downloaded. Check your connection and try again.","A integridade do pacote n\xE3o p\xF4de ser confirmada. Baixe novamente.":"Pack integrity could not be verified. Download it again.","Selecionar todas":"Select all","Desmarcar todas":"Deselect all","Selecionar sugest\xF5es":"Select suggestions","Selecionar corre\xE7\xF5es seguras":"Select safe corrections","Revis\xE3o ortogr\xE1fica offline no idioma escolhido para o texto.":"Offline spelling checks in the selected text language.","Revis\xE3o offline":"Offline proofreading","O idioma do texto pode ser diferente do idioma dos menus. Baixe somente o pacote que deseja usar.":"The text language can differ from the menu language. Download only the pack you need."},es:{"Idioma do texto":"Idioma del texto","Pacote de revis\xE3o":"Paquete de revisi\xF3n","Revis\xE3o offline em outros idiomas":"Revisi\xF3n sin conexi\xF3n en otros idiomas","Escolha o idioma do texto e baixe somente o pacote que deseja usar.":"Elige el idioma del texto y descarga solo el paquete que necesites.","Portugu\xEAs j\xE1 inclu\xEDdo no aplicativo.":"El portugu\xE9s ya est\xE1 incluido.","Verificando o pacote\u2026":"Comprobando el paquete\u2026","Revis\xE3o de escrita japonesa com regras e an\xE1lise de palavras.":"Revisi\xF3n de escritura japonesa con reglas y an\xE1lisis de palabras.","Baixar pacote":"Descargar paquete","Cancelar download":"Cancelar descarga","Remover pacote":"Eliminar paquete","Baixando pacote\u2026":"Descargando paquete\u2026","Continuar download":"Continuar descarga","Tentar novamente":"Intentar de nuevo","Dispon\xEDvel offline.":"Disponible sin conexi\xF3n.","Download cancelado. Voc\xEA pode continuar depois.":"Descarga cancelada. Puedes continuar despu\xE9s.","Baixe uma vez para revisar sem internet, sem cadastro ou chave.":"Descarga una vez para revisar sin internet, sin cuenta ni clave.","Preparando o pacote local\u2026":"Preparando el paquete local\u2026","Pacote ainda n\xE3o baixado.":"El paquete a\xFAn no se ha descargado.","N\xE3o foi poss\xEDvel concluir a revis\xE3o local.":"No se pudo completar la revisi\xF3n local.","N\xE3o foi poss\xEDvel iniciar a revis\xE3o local.":"No se pudo iniciar la revisi\xF3n local.","A revis\xE3o demorou mais que o esperado. Tente revisar um trecho menor.":"La revisi\xF3n tard\xF3 demasiado. Prueba con un fragmento m\xE1s corto.","N\xE3o foi poss\xEDvel baixar o pacote. Confira a conex\xE3o e tente novamente.":"No se pudo descargar el paquete. Comprueba la conexi\xF3n e int\xE9ntalo de nuevo.","A integridade do pacote n\xE3o p\xF4de ser confirmada. Baixe novamente.":"No se pudo verificar la integridad del paquete. Desc\xE1rgalo de nuevo.","Selecionar todas":"Seleccionar todas","Desmarcar todas":"Desmarcar todas","Selecionar sugest\xF5es":"Seleccionar sugerencias","Selecionar corre\xE7\xF5es seguras":"Seleccionar correcciones seguras","Revis\xE3o ortogr\xE1fica offline no idioma escolhido para o texto.":"Revisi\xF3n ortogr\xE1fica sin conexi\xF3n en el idioma elegido para el texto.","Revis\xE3o offline":"Revisi\xF3n sin conexi\xF3n","O idioma do texto pode ser diferente do idioma dos menus. Baixe somente o pacote que deseja usar.":"El idioma del texto puede ser diferente del idioma de los men\xFAs. Descarga solo el paquete que necesites."},ja:{"Idioma do texto":"\u6587\u7AE0\u306E\u8A00\u8A9E","Pacote de revis\xE3o":"\u6821\u6B63\u30D1\u30C3\u30AF","Revis\xE3o offline em outros idiomas":"\u4ED6\u306E\u8A00\u8A9E\u306E\u30AA\u30D5\u30E9\u30A4\u30F3\u6821\u6B63","Escolha o idioma do texto e baixe somente o pacote que deseja usar.":"\u6587\u7AE0\u306E\u8A00\u8A9E\u3092\u9078\u3073\u3001\u5FC5\u8981\u306A\u30D1\u30C3\u30AF\u3060\u3051\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3057\u3066\u304F\u3060\u3055\u3044\u3002","Portugu\xEAs j\xE1 inclu\xEDdo no aplicativo.":"\u30DD\u30EB\u30C8\u30AC\u30EB\u8A9E\u306F\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u6E08\u307F\u3067\u3059\u3002","Verificando o pacote\u2026":"\u30D1\u30C3\u30AF\u3092\u78BA\u8A8D\u4E2D\u2026","Revis\xE3o de escrita japonesa com regras e an\xE1lise de palavras.":"\u30EB\u30FC\u30EB\u3068\u5F62\u614B\u7D20\u89E3\u6790\u306B\u3088\u308B\u65E5\u672C\u8A9E\u306E\u6587\u7AE0\u6821\u6B63\u3002","Baixar pacote":"\u30D1\u30C3\u30AF\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9","Cancelar download":"\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3092\u4E2D\u6B62","Remover pacote":"\u30D1\u30C3\u30AF\u3092\u524A\u9664","Baixando pacote\u2026":"\u30D1\u30C3\u30AF\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u4E2D\u2026","Continuar download":"\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3092\u518D\u958B","Tentar novamente":"\u518D\u8A66\u884C","Dispon\xEDvel offline.":"\u30AA\u30D5\u30E9\u30A4\u30F3\u3067\u5229\u7528\u3067\u304D\u307E\u3059\u3002","Download cancelado. Voc\xEA pode continuar depois.":"\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3092\u4E2D\u6B62\u3057\u307E\u3057\u305F\u3002\u5F8C\u3067\u518D\u958B\u3067\u304D\u307E\u3059\u3002","Baixe uma vez para revisar sem internet, sem cadastro ou chave.":"\u4E00\u5EA6\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3059\u308B\u3068\u30AA\u30D5\u30E9\u30A4\u30F3\u3067\u6821\u6B63\u3067\u304D\u307E\u3059\u3002\u767B\u9332\u3084API\u30AD\u30FC\u306F\u4E0D\u8981\u3067\u3059\u3002","Preparando o pacote local\u2026":"\u30ED\u30FC\u30AB\u30EB\u30D1\u30C3\u30AF\u3092\u6E96\u5099\u4E2D\u2026","Pacote ainda n\xE3o baixado.":"\u30D1\u30C3\u30AF\u306F\u307E\u3060\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002","N\xE3o foi poss\xEDvel concluir a revis\xE3o local.":"\u30ED\u30FC\u30AB\u30EB\u6821\u6B63\u3092\u5B8C\u4E86\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002","N\xE3o foi poss\xEDvel iniciar a revis\xE3o local.":"\u30ED\u30FC\u30AB\u30EB\u6821\u6B63\u3092\u958B\u59CB\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002","A revis\xE3o demorou mais que o esperado. Tente revisar um trecho menor.":"\u6821\u6B63\u306B\u6642\u9593\u304C\u304B\u304B\u308A\u3059\u304E\u307E\u3057\u305F\u3002\u77ED\u3044\u7BC4\u56F2\u3067\u518D\u8A66\u884C\u3057\u3066\u304F\u3060\u3055\u3044\u3002","N\xE3o foi poss\xEDvel baixar o pacote. Confira a conex\xE3o e tente novamente.":"\u30D1\u30C3\u30AF\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002\u63A5\u7D9A\u3092\u78BA\u8A8D\u3057\u3066\u518D\u8A66\u884C\u3057\u3066\u304F\u3060\u3055\u3044\u3002","A integridade do pacote n\xE3o p\xF4de ser confirmada. Baixe novamente.":"\u30D1\u30C3\u30AF\u306E\u6574\u5408\u6027\u3092\u78BA\u8A8D\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002\u518D\u5EA6\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3057\u3066\u304F\u3060\u3055\u3044\u3002","Selecionar todas":"\u3059\u3079\u3066\u9078\u629E","Desmarcar todas":"\u3059\u3079\u3066\u306E\u9078\u629E\u3092\u89E3\u9664","Selecionar sugest\xF5es":"\u5019\u88DC\u3092\u9078\u629E","Selecionar corre\xE7\xF5es seguras":"\u5B89\u5168\u306A\u4FEE\u6B63\u3092\u9078\u629E","Revis\xE3o ortogr\xE1fica offline no idioma escolhido para o texto.":"\u9078\u629E\u3057\u305F\u6587\u7AE0\u306E\u8A00\u8A9E\u3067\u30AA\u30D5\u30E9\u30A4\u30F3\u306E\u30B9\u30DA\u30EB\u30C1\u30A7\u30C3\u30AF\u3092\u884C\u3044\u307E\u3059\u3002","Revis\xE3o offline":"\u30AA\u30D5\u30E9\u30A4\u30F3\u6821\u6B63","O idioma do texto pode ser diferente do idioma dos menus. Baixe somente o pacote que deseja usar.":"\u6587\u7AE0\u306E\u8A00\u8A9E\u306F\u30E1\u30CB\u30E5\u30FC\u306E\u8A00\u8A9E\u3068\u5225\u306B\u9078\u3079\u307E\u3059\u3002\u5FC5\u8981\u306A\u30D1\u30C3\u30AF\u3060\u3051\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3057\u3066\u304F\u3060\u3055\u3044\u3002"}};var z={en:{version:"1.0.88",bytes:570579,files:[{name:"index.aff",path:"review-packs/v1.0.88/en/index.aff",bytes:3086,sha256:"8ae1f19d4840d957728ad90555d5a8dff6cc5c046279c95ff0c00fc0a0136c7b"},{name:"index.dic",path:"review-packs/v1.0.88/en/index.dic",bytes:551762,sha256:"f0b1a234bd178bdd01875b2a392a9647f888b8fe879f79c52aae62c2759b3647"},{name:"LICENSE.txt",path:"review-packs/v1.0.88/en/LICENSE.txt",bytes:15731,sha256:"2a7e8d8ae9e8facc84818546ae2a8d83aec5e9c80a675ff789acd1c338b53b3d"}]},es:{version:"1.0.88",bytes:875933,files:[{name:"index.aff",path:"review-packs/v1.0.88/es/index.aff",bytes:167135,sha256:"892039d59db11d747061b81c3a92a52d48ba0e055b5835af1943cbd3c2fba85b"},{name:"index.dic",path:"review-packs/v1.0.88/es/index.dic",bytes:706202,sha256:"907f786a8ceb3456722b20ad91dd4dbe99c5c16e45015ea63155e36f26b06d2c"},{name:"LICENSE.txt",path:"review-packs/v1.0.88/es/LICENSE.txt",bytes:2596,sha256:"a21581497f07b5e550e438d26890ea2b1704492357de67740613bd589b1c652a"}]},ja:{version:"1.0.88",bytes:17796219,files:[{name:"base.dat.gz",path:"review-packs/v1.0.88/ja/base.dat.gz",bytes:3956825,sha256:"0803327762e1c93ca731e4319ab8343340f2806bb84941207782cde9d2d5a8eb"},{name:"cc.dat.gz",path:"review-packs/v1.0.88/ja/cc.dat.gz",bytes:1692067,sha256:"02b7631be0d4de3a1a75cd9f9cc51536e4f94c9e6b389b813e06ba0f6e7de765"},{name:"check.dat.gz",path:"review-packs/v1.0.88/ja/check.dat.gz",bytes:3111633,sha256:"193ae0035fff6fe812b58d9ee730e7a7d7ee601d918481ce51075c58114f6cc9"},{name:"tid.dat.gz",path:"review-packs/v1.0.88/ja/tid.dat.gz",bytes:1605820,sha256:"d43d831cb6fb0f0a411739cd287a6d5e998e121a8daca614df14a81a0dcac586"},{name:"tid_map.dat.gz",path:"review-packs/v1.0.88/ja/tid_map.dat.gz",bytes:1485576,sha256:"33efd5ffd87a70f669add093fa39dee44341d58f940844ef107c8fd98bb795b2"},{name:"tid_pos.dat.gz",path:"review-packs/v1.0.88/ja/tid_pos.dat.gz",bytes:5916009,sha256:"60dbfc99a6ab993f30c5dab648bec6ad7f9aaefa5c14e1843837d95e509f8895"},{name:"unk.dat.gz",path:"review-packs/v1.0.88/ja/unk.dat.gz",bytes:10512,sha256:"f7f991cdeb9bfd3e9c0e4577cc50ee0815a11c508cccd444a9d3ab3c81521100"},{name:"unk_char.dat.gz",path:"review-packs/v1.0.88/ja/unk_char.dat.gz",bytes:306,sha256:"9a8e86fd9aff32d323fbb59f5a7006f05927a11f8173c90712cc56293aeb3225"},{name:"unk_compat.dat.gz",path:"review-packs/v1.0.88/ja/unk_compat.dat.gz",bytes:338,sha256:"50f60aa29bc2e86c2903ab8c825bb6fa604d2b294d96941c1d3924259791899d"},{name:"unk_invoke.dat.gz",path:"review-packs/v1.0.88/ja/unk_invoke.dat.gz",bytes:1140,sha256:"6b210889548457c3006913afd12c8b525562255f2709e404604be9614a25e94c"},{name:"unk_map.dat.gz",path:"review-packs/v1.0.88/ja/unk_map.dat.gz",bytes:1190,sha256:"6df12460e5477230bb6fd9641def918b699fc0a8868016b6c9f794488630509b"},{name:"unk_pos.dat.gz",path:"review-packs/v1.0.88/ja/unk_pos.dat.gz",bytes:10540,sha256:"5b183a29f281acc7e0542beca47b83f7985047c0a2d27e78a66f32276be5ad11"},{name:"LICENSE.txt",path:"review-packs/v1.0.88/ja/LICENSE.txt",bytes:4263,sha256:"fab84e2471dada5afa7ea4226b629f3fda414f9b50b62b4f832f8b57fe9addd7"}]}};var $=e=>["pt-BR","en","es","ja"].includes(e)?e:"pt-BR",F=e=>({"pt-BR":"Portugu\xEAs (Brasil)",en:"English",es:"Espa\xF1ol",ja:"\u65E5\u672C\u8A9E"})[$(e)],se=e=>new Promise((o,p)=>{e.onsuccess=()=>o(e.result),e.onerror=()=>p(e.error||Error("Falha de armazenamento."))}),G=e=>new Promise((o,p)=>{e.oncomplete=o,e.onabort=()=>p(e.error||Error("O armazenamento foi cancelado.")),e.onerror=()=>{}}),ce=async e=>Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",e)),o=>o.toString(16).padStart(2,"0")).join("");async function Y(e,o){if(!(e instanceof ArrayBuffer)||e.byteLength!==o.bytes||await ce(e)!==o.sha256)throw Error("A integridade do pacote n\xE3o p\xF4de ser confirmada. Baixe novamente.");return e}function oe({indexedDB:e=globalThis.indexedDB,fetch:o=globalThis.fetch,baseURL:p,notify:j=()=>{}}={}){let y,u,w=new Map;async function S(){if(y)return y;if(!e)throw Error("O armazenamento de dicion\xE1rios n\xE3o est\xE1 dispon\xEDvel neste aparelho.");return u||(u=new Promise((t,d)=>{let i=e.open("seprepare-review-packs-v1",1);i.onupgradeneeded=()=>{for(let l of["files","packs"])i.result.objectStoreNames.contains(l)||i.result.createObjectStore(l)},i.onsuccess=()=>{y=i.result,y.onversionchange=()=>{y.close(),y=null,u=null},t(y)},i.onerror=()=>{u=null,d(i.error)},i.onblocked=()=>{u=null,d(Error("Feche outras abas do SePrepare para preparar o armazenamento de dicion\xE1rios."))}})),u}async function A(t,d){let i=await S();return se(i.transaction(t,"readonly").objectStore(t).get(d))}async function I(t,d,i){let l=await S(),f=l.transaction(t,"readwrite"),k=G(f);f.objectStore(t).put(i,d),await k}async function M(t,d){let i=await S(),l=i.transaction(t,"readwrite"),f=G(l);l.objectStore(t).delete(d),await f}async function W(t){if(t==="pt-BR")return!0;let d=z[t];return d?(await A("packs",t))?.version===d.version:!1}async function P(t){let d=z[t];if(!d||!await W(t))throw Error("Baixe o pacote deste idioma antes de revisar.");let i={};try{for(let l of d.files){let f=await A("files",l.sha256);await Y(f,l),i[l.name]=f}return i}catch(l){throw await M("packs",t),j({code:t,status:"missing"}),l}}async function B(t,d,i,l){let f=await A("files",t.sha256);if(f)try{await Y(f,t),l(f.byteLength);return}catch{await M("files",t.sha256)}if(i.aborted)throw new DOMException("Download cancelado.","AbortError");let k;try{k=await o(new URL(t.path,p),{signal:i,credentials:"omit",cache:"no-cache"})}catch(q){throw q.name==="AbortError"?q:Error("N\xE3o foi poss\xEDvel baixar o pacote. Confira a conex\xE3o e tente novamente.")}if(!k.ok)throw Error("N\xE3o foi poss\xEDvel baixar o pacote. Confira a conex\xE3o e tente novamente.");let b;if(k.body?.getReader){let q=k.body.getReader(),_=[],T=0;try{for(;;){let D=await q.read();if(D.done)break;if(T+=D.value.byteLength,T>t.bytes)throw Error("O arquivo recebido n\xE3o corresponde ao pacote.");_.push(D.value),l(D.value.byteLength)}let m=new Uint8Array(T),C=0;for(let D of _)m.set(D,C),C+=D.byteLength;b=m.buffer}catch(m){throw q.cancel().catch(()=>{}),m}}else b=await k.arrayBuffer(),l(b.byteLength);if(await Y(b,t),i.aborted)throw new DOMException("Download cancelado.","AbortError");await I("files",t.sha256,b)}function O(t){if(t==="pt-BR")return Promise.resolve();if(w.has(t))return w.get(t).promise;let d=z[t];if(!d)return Promise.reject(Error("Idioma inv\xE1lido."));let i=new AbortController,l={controller:i,loaded:0,total:d.bytes,status:"downloading"};return w.set(t,l),l.promise=(async()=>{j({code:t,...l});try{for(let f of d.files)await B(f,t,i.signal,k=>{l.loaded+=k,j({code:t,status:"downloading",loaded:l.loaded,total:l.total})});if(i.signal.aborted)throw new DOMException("Download cancelado.","AbortError");await I("packs",t,{version:d.version,installedAt:Date.now()}),j({code:t,status:"installed"})}catch(f){throw j({code:t,status:f.name==="AbortError"?"cancelled":"error",message:f.message}),f}finally{w.delete(t)}})(),l.promise}function L(t){w.get(t)?.controller.abort()}async function H(t){if(t==="pt-BR")return;L(t);try{await w.get(t)?.promise}catch{}await M("packs",t);let d=await S(),i=d.transaction(["packs","files"],"readwrite"),l=G(i),f=i.objectStore("packs"),k=i.objectStore("files"),b=f.getAllKeys();b.onsuccess=()=>{let q=new Set(b.result.flatMap(m=>z[m]?.files.map(C=>C.sha256)||[])),_=new Set(z[t]?.files.map(m=>m.sha256)||[]);for(let m of w.keys())for(let C of z[m]?.files||[])q.add(C.sha256);let T=k.openCursor();T.onsuccess=()=>{let m=T.result;m&&(_.has(m.key)&&!q.has(m.key)&&m.delete(),m.continue())}},await l,j({code:t,status:"missing"})}return{installed:W,read:P,install:O,cancel:L,remove:H,progress:t=>w.get(t),close(){y?.close(),y=null,u=null}}}var R=e=>String(e??"").replace(/[&<>"']/g,o=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[o]),ne=e=>(e/1e6).toFixed(1)+" MB";function re(e){let o=a=>te[e.getState().settings.language]?.[a]??(e.t||String)(a),p=new Map([["pt-BR",!0]]),j=new Map,y=new Set,u=null,w=null,S=0,A=0,I=0,M=0,W=e.native?"https://app.seprepareapp.com.br/":new URL("./",document.baseURI).href,P=oe({baseURL:W,notify:a=>{j.set(a.code,a),a.status==="installed"&&p.set(a.code,!0),a.status==="missing"&&p.set(a.code,!1),b()}});function B(){try{let a=localStorage.getItem("seprepare-review-language-v1");if(["pt-BR","en","es","ja"].includes(a))return a}catch{}return $(e.getState().settings.language)}function O(a){a=$(a);try{localStorage.setItem("seprepare-review-language-v1",a)}catch{}return i(),window.dispatchEvent(new Event("seprepare-review-language-change")),a}function L(a){let n=z[a];return`<div class="review-pack-state" data-review-pack="${a}"><span class="review-pack-summary">${R(o(a==="pt-BR"?"Portugu\xEAs j\xE1 inclu\xEDdo no aplicativo.":"Verificando o pacote\u2026"))}</span><span class="review-pack-detail">${a==="ja"?R(o("Revis\xE3o de escrita japonesa com regras e an\xE1lise de palavras.")):""}</span><progress class="review-pack-progress" max="100" value="0" hidden></progress><div class="review-pack-buttons"><button type="button" class="btn small secondary" data-action="review-pack-install" data-language="${a}" hidden>${R(o("Baixar pacote"))}${n?" \xB7 "+ne(n.bytes):""}</button><button type="button" class="btn small link" data-action="review-pack-cancel" data-language="${a}" hidden>${R(o("Cancelar download"))}</button><button type="button" class="btn small link" data-action="review-pack-remove" data-language="${a}" hidden>${R(o("Remover pacote"))}</button></div></div>`}function H(a,n){return`<label class="review-language-field" for="${a}"><span>${R(o("Idioma do texto"))}</span><select id="${a}">${["pt-BR","en","es","ja"].map(c=>`<option value="${c}" ${c===n?"selected":""}>${F(c)}</option>`).join("")}</select></label>`}function t(a){let n=a.language||"pt-BR";return`<section class="review-language-controls">${H("reviewTextLanguage",n)}${L(n)}</section>`}function d(){return ae(B(),e.getState().settings.language)}function i(){let a=document.querySelector("#onlineReview"),n=a?.closest(".setting-card");if(!n)return;let c=B(),s=n.querySelector("h3"),r=n.querySelector(":scope > p");if(s){let v=s.querySelector("svg");s.replaceChildren(...v?[v]:[],document.createTextNode(d()))}r&&(r.dataset.portugueseReviewSummary||(r.dataset.portugueseReviewSummary=r.textContent),r.textContent=c==="pt-BR"?r.dataset.portugueseReviewSummary:o(c==="ja"?"Revis\xE3o de escrita japonesa com regras e an\xE1lise de palavras.":"Revis\xE3o ortogr\xE1fica offline no idioma escolhido para o texto."));for(let v of[a?.closest("label"),n.querySelector("#reviewEndpoint")?.closest(".field"),n.querySelector('[data-action="save-review-settings"]')])v&&(v.hidden=c!=="pt-BR");let x=n.querySelector("#reviewSettingsLanguage");if(x&&x.value!==c){x.value=c;let v=n.querySelector("[data-review-pack]"),E=document.createElement("div");E.innerHTML=L(c),v?.replaceWith(E.firstElementChild)}let g=n.closest(".modal");if(g?.dataset.settingsPanel==="review"){let v=g.querySelector("h2");v&&(v.textContent=d())}}function l(a){let n=a.matches.some(r=>U(a,r)),c=a.matches.some(r=>r.safe&&U(a,r)),s=a.matches.some(r=>r.selected);return`<div class="review-selection-controls" role="group" aria-label="${R(o("Selecionar sugest\xF5es"))}"><div class="review-selection-primary"><button type="button" class="btn small secondary" data-action="review-select-all" ${n?"":"disabled"}>${R(o("Selecionar todas"))}</button><button type="button" class="btn small secondary" data-action="review-deselect-all" ${s?"":"disabled"}>${R(o("Desmarcar todas"))}</button></div><button type="button" class="btn link small" data-action="review-select-safe" ${c?"":"disabled"}>${R(o("Selecionar corre\xE7\xF5es seguras"))}</button></div>`}function f(a){let n=document.querySelector(".review-selection-controls");n&&(n.querySelector('[data-action="review-deselect-all"]').disabled=!a.matches.some(c=>c.selected))}function k(a){p.has(a)||y.has(a)||(y.add(a),P.installed(a).then(n=>p.set(a,n)).catch(n=>{p.set(a,!1),j.set(a,{status:"error",message:n.message})}).finally(()=>{y.delete(a),b()}))}function b(){I||(I=setTimeout(()=>{I=0,q()},Math.max(0,90-(performance.now()-M))))}function q(){M=performance.now();for(let a of document.querySelectorAll("[data-review-pack]")){let n=$(a.dataset.reviewPack),c=z[n],s=P.progress(n),r=j.get(n),x=p.get(n),g=a.querySelector(".review-pack-summary"),v=a.querySelector("progress"),E=a.querySelector('[data-action="review-pack-install"]'),V=a.querySelector('[data-action="review-pack-remove"]'),N=a.querySelector('[data-action="review-pack-cancel"]');if(k(n),s){let h=Math.min(100,Math.floor(s.loaded/s.total*100));g.textContent=o("Baixando pacote\u2026")+" "+h+"%",v.hidden=!1,v.value=h,E.hidden=!0,V.hidden=!0,N.hidden=!1}else v.hidden=!0,N.hidden=!0,E.hidden=n==="pt-BR"||x===!0,V.hidden=n==="pt-BR"||x!==!0,E.textContent=o(r?.status==="cancelled"?"Continuar download":r?.status==="error"?"Tentar novamente":"Baixar pacote")+(c?" \xB7 "+ne(c.bytes):""),g.textContent=o(n==="pt-BR"?"Portugu\xEAs j\xE1 inclu\xEDdo no aplicativo.":x===!0?"Dispon\xEDvel offline.":x===void 0?"Verificando o pacote\u2026":r?.status==="error"?r.message:r?.status==="cancelled"?"Download cancelado. Voc\xEA pode continuar depois.":"Baixe uma vez para revisar sem internet, sem cadastro ou chave.")}}function _(a){let n=document.getElementById("reviewTextLanguage");n?.addEventListener("change",()=>{O(n.value),e.startReview()}),b()}function T(){let a=document.querySelector(".language-card");if(a&&!a.querySelector("[data-review-interface-pack]")){let s=document.createElement("section"),r=$(e.getState().settings.language);s.className="review-settings-pack",s.dataset.reviewInterfacePack="true",s.innerHTML=`<h4>${R(o("Pacote de revis\xE3o"))} \xB7 ${F(r)}</h4>${L(r)}`,a.append(s)}let n=document.querySelector("#onlineReview"),c=n?.closest("section");if(c&&!c.querySelector("#reviewSettingsLanguage")){let s=document.createElement("section");s.className="review-settings-pack",s.innerHTML=`<h4>${R(o("Revis\xE3o offline"))}</h4><p class="help">${R(o("O idioma do texto pode ser diferente do idioma dos menus. Baixe somente o pacote que deseja usar."))}</p>${H("reviewSettingsLanguage",B())}${L(B())}`,c.append(s);let r=s.querySelector("select");r.addEventListener("change",()=>{O(r.value);let x=s.querySelector("[data-review-pack]"),g=document.createElement("div");g.innerHTML=L(B()),x.replaceWith(g.firstElementChild),b()})}i(),b()}function m(){A++,clearTimeout(S),S=0,u?.terminate(),u=null,w&&(w(new DOMException("Revis\xE3o cancelada.","AbortError")),w=null)}async function C(){let a=B();if(a==="pt-BR"){e.beginPortuguese();return}m(),e.cancelPortuguese?.();let n=++A,c=e.getEditor();if(!c)return;let s=e.scope(),r=e.plain(c.getContents(s.index,s.length));if(!r.trim()){e.toast(o("Escreva ou cole seu discurso antes de revisar."));return}let x=globalThis.crypto?.randomUUID?.()||"review-"+Date.now()+"-"+Math.random().toString(36).slice(2),g={token:x,language:a,range:s,text:r,baseline:JSON.stringify(c.getContents()),matches:[],loading:!0,remote:!1,remoteDone:!0,engine:o("Preparando o pacote local\u2026"),quotes:e.quoteRanges(r,s),protect:!0,highlight:!1};e.rt.review=g,e.renderReview(),c.blur();let v=()=>A===n&&e.rt.review===g&&e.getEditor()===c;try{let E=await P.installed(a);if(p.set(a,E),!v())return;if(!E){g.loading=!1,g.needsPack=!0,g.engine=o("Pacote ainda n\xE3o baixado."),e.renderReview();return}let V=await P.read(a);if(!v())return;u=new Worker(new URL("review-international-worker.js"+(e.assetVersion?"?v="+e.assetVersion:""),document.baseURI));let N=await new Promise((h,K)=>{w=K;let Q=u,X=S=setTimeout(()=>{Q.terminate(),u===Q&&(u=null),K(Error(o("A revis\xE3o demorou mais que o esperado. Tente revisar um trecho menor.")))},12e4);u.onmessage=J=>{J.data.token===x&&(clearTimeout(X),S=0,w=null,h(J.data))},u.onerror=J=>{clearTimeout(X),S=0,w=null,K(Error(J.message||o("N\xE3o foi poss\xEDvel iniciar a revis\xE3o local.")))},u.postMessage({token:x,text:r,code:a,files:V,vocabulary:e.getState().vocabulary},[...new Set(Object.values(V))])});if(!v())return;if(u?.terminate(),u=null,N.error)throw Error(N.error);g.loading=!1,g.engine=N.engine,g.local=(N.matches||[]).filter(h=>Number.isInteger(h.offset)&&Number.isInteger(h.length)&&h.length>0&&h.offset>=0&&h.offset+h.length<=r.length&&r.slice(h.offset,h.offset+h.length)===h.word),e.mergeReview(),e.rt.modal==="review"&&e.renderReview()}catch(E){if(!v()||(clearTimeout(S),S=0,u?.terminate(),u=null,E.name==="AbortError"))return;g.loading=!1,g.engine=o("N\xE3o foi poss\xEDvel concluir a revis\xE3o local."),g.remoteError=E.message,g.needsPack=!p.get(a),e.rt.modal==="review"&&e.renderReview()}}function D(a,n){let c={"review-select-all":"all","review-deselect-all":"none","review-select-safe":"safe"};if(c[a])return e.rt.review&&(ee(e.rt.review,c[a]),e.renderReview()),!0;if(a==="review")return B()==="pt-BR"?!1:(C(),!0);if(!a.startsWith("review-pack-"))return!1;let s=$(n?.dataset.language);return a==="review-pack-install"?P.install(s).then(()=>{e.rt.modal==="review"&&e.rt.review?.language===s&&e.rt.review.needsPack&&C()}).catch(()=>{}):a==="review-pack-cancel"?P.cancel(s):a==="review-pack-remove"&&(e.rt.review?.language===s&&m(),P.remove(s).then(()=>{p.set(s,!1),e.rt.modal==="review"&&e.rt.review?.language===s&&(e.rt.review.loading=!1,e.rt.review.needsPack=!0,e.rt.review.engine=o("Pacote ainda n\xE3o baixado."),e.renderReview()),b()}).catch(r=>e.toast(r.message))),!0}return{language:B,setLanguage:O,settingsTitle:d,bulkControls:l,updateSelectionControls:f,initialSelection:Z,controls:t,mountReview:_,mountSettings:T,handle:D,begin:C,cancel:m,store:P,label:F}}var ie=`.review-language-controls{padding:13px 14px;margin:0 0 17px;border:1px solid var(--line);border-radius:15px;background:var(--soft)}.review-language-field{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}.review-language-field select{min-width:130px;max-width:210px;width:auto;min-height:39px;font-size:12px}.review-pack-state{margin-top:8px;display:flex;flex-direction:column;gap:7px}.review-pack-summary{font-size:11px;color:var(--muted);line-height:1.6}.review-pack-detail{font-size:11px;color:var(--muted);line-height:1.5}.review-pack-detail:empty{display:none}.review-pack-progress{width:100%;height:7px;accent-color:var(--green,#234c48)}.review-pack-progress[hidden]{display:none}.review-pack-buttons{display:flex;flex-wrap:wrap;gap:6px}.review-pack-buttons .btn{white-space:nowrap;font-size:11px;min-height:36px;padding:7px 12px}.review-pack-buttons [hidden]{display:none}.review-settings-pack{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}.review-settings-pack h4{font-size:13px;line-height:1.5;margin:0 0 10px;font-weight:600}.review-settings-pack>.help{font-size:11px;margin-bottom:12px}.review-settings-pack .review-language-field{margin-bottom:10px}@media(max-width:380px){.review-language-controls{padding:11px}.review-language-field{gap:8px;font-size:11px}.review-language-field select{min-width:115px;max-width:155px}.review-pack-buttons .btn{max-width:100%;white-space:normal;text-align:center}}\r
 \r
@@ -321,676 +321,676 @@ body.editor-open .editor-shell.editor-scrolled header.editor-top{display:flex}
 `;i.attributes?.bold&&typeof i.insert=="string"&&a.push({start:n,end:n+s.length});for(let d=0;d<s.length;d++)if(s[d]===`
 `){let p=t.slice(o,n+d),u=p.search(/\S/u);if(u>=0){let v=o+p.trimEnd().length;r.push({start:o+u,end:v,text:t.slice(o+u,v),attrs:{...i.attributes||{},...typeof i.insert=="object"?{pagebreak:!0}:{}},bold:a.filter(f=>f.end>o&&f.start<v)})}o=n+d+1}n+=s.length}if(o<t.length&&t.slice(o).trim()){let i=o+t.slice(o).search(/\S/u);r.push({start:i,end:t.trimEnd().length,text:t.slice(i).trimEnd(),attrs:{},bold:a.filter(s=>s.end>i)})}let l="";for(let i of r)i.attrs.header&&(l=i.text),i.heading=l,i.hash=Ae(i.text);return{text:t,blocks:r}}var qo=e=>/^(?:bom dia|boa tarde|boa noite|ola\b|oi\b|obrigad[oa]|good morning|good afternoon|hello\b|thank you|buenos dias|buenas tardes|gracias|こんにちは|ありがとう)/iu.test(J(e))&&Se(e).length<12,To=e=>{let t=et(e.text);return t.length?t.map(r=>({...r,start:e.start+r.offset,end:e.start+r.offset+r.length})):[{text:e.text,start:e.start,end:e.end}]};function _t(e,{vectors:t=new Map}={}){let{text:r,blocks:o}=$o(e),n=[];for(let l=0;l<o.length;l++){let i=o[l];if(i.attrs.header||qo(i.text))continue;if(i.attrs.list||/:\s*$/u.test(i.text)&&o[l+1]?.attrs.list){let p=i.end,u=l+1;for(;u<o.length&&o[u].attrs.list&&!o[u].attrs.header;)p=o[u].end,u++;if(p>i.end||i.attrs.list){n.push({...i,end:p,text:r.slice(i.start,p),kind:"steps"}),l=u-1;continue}}let s=To(i),d=null;for(let p of s){let u=/^(?:por exemplo|por isso|assim|isso|essa|esse|esta|este|essas|esses|dessa|deste|pois|porque|for example|therefore|this|because|por ejemplo|por eso|esto|porque|例えば|そのため)/iu.test(p.text),v=d?Se(p.text).filter(f=>f.text.length>3&&!Me.has(J(f.text))&&J(d.text).includes(J(f.text))).length:0;d&&(u||v>=2)&&d.text.length+p.text.length<1e3?(d.end=p.end,d.text=r.slice(d.start,d.end)):(d&&n.push(d),d={...i,start:p.start,end:p.end,text:p.text})}d&&n.push(d)}let a=[];for(let l of n){let i=a.at(-1),s=i&&t.get(i.start),d=t.get(l.start),p=i?Se(l.text).filter(u=>i.text.toLocaleLowerCase().includes(u.text.toLocaleLowerCase())&&!Me.has(J(u.text))).length:0;i&&s&&d&&ce(s,d)>.78&&p>=2&&i.heading===l.heading&&!i.kind&&!l.kind&&i.text.length<140&&i.text.length+l.text.length<700?(i.end=l.end,i.text=r.slice(i.start,i.end)):a.push({...l})}return{text:r,blocks:o,units:a}}function kt(e,t=new Map){let r=e.text,o=[];for(let a of e.bold||[]){let l=r.slice(Math.max(0,a.start-e.start),Math.min(r.length,a.end-e.start)).trim();l.length>=3&&l.length<=72&&o.push({text:l,score:12})}for(let a of fo({text:r,offset:0}))a.text.length<=72&&Se(a.text).length<=5&&o.push({text:a.text,score:(a.score||1)+.4});for(let a of Se(r)){let l=J(a.text);a.text.length<2||Me.has(l)||/^\d+$/.test(l)||o.push({text:a.text,score:1+Math.log(1+e.text.length/Math.max(1,t.get(l)||1))*.1+(e.heading&&J(e.heading).includes(l)?2:0)})}let n=[];for(let a of o.sort((l,i)=>i.score-l.score||r.indexOf(l.text)-r.indexOf(i.text))){let l=J(a.text);if(!(!r.includes(a.text)||n.some(i=>J(i)===l||J(i).includes(l)||l.includes(J(i))))&&(n.push(a.text),n.length===5))break}if(n.length<2){for(let a of Se(r))if(a.text.length>=2&&!Me.has(J(a.text))&&!n.some(l=>J(l)===J(a.text))&&(n.push(a.text),n.length===2))break}return n.slice(0,5)}var mr=e=>e[0]?.toLocaleLowerCase()+e.slice(1);function pr(e,t,{t:r=a=>a,frequencies:o=new Map,now:n=Date.now()}={}){let a=t.slice(e.start,e.end);if(a!==e.text||a.trim().length<8)return null;let l=kt(e,o);if(l.length<2)return null;let i="idea",s=r("Explique esta ideia com suas palavras."),d=(e.heading||l.slice(0,2).join(" \xB7 ")).slice(0,140),p,u=a.match(/^([^.!?:\n]{3,80}?)\s+(é|significa|refere-se a|is|means|es|se define como)\s+(.{8,})/iu),v=a.match(/^([^.!?:\n]{3,80}?)\s+(ajuda a|permite|reduz|aumenta|helps to|allows|reduces|increases|ayuda a|reduce|aumenta)\s+(.{5,})/iu),f=a.match(/^(.{12,}?)\b(?:mas|porém|enquanto|but|whereas|pero|sin embargo)\b(.{12,})/iu);if(e.kind==="steps"||/\b(?:etapas|passos|steps|stages|pasos|段階|手順)\s*[:：]/iu.test(a))i="steps",s=r("Quais itens ou etapas o texto apresenta?");else if(/^(?:portanto|em resumo|para concluir|em conclusao|in conclusion|to conclude|en resumen|para concluir|まとめ|したがって)/iu.test(J(a)))i="conclusion",s=r("Qual \xE9 a conclus\xE3o apresentada neste trecho?");else if(u&&Se(u[1]).length<=10)i="definition",d=u[1],s=r("Como o texto define este conceito?")+" "+u[1];else if(v&&Se(v[1]).length<=10){i="cause",d=v[1];let w=v[2].toLowerCase(),k=v[3].match(/^([\p{L}]+(?:ar|er|ir))\s+.{3,}/u);s=w==="ajuda a"&&k?r("O que {subject} ajuda a {action}?").replace("{subject}",mr(v[1])).replace("{action}",k[1]):r("Que resultados o texto associa a este elemento?")+" "+v[1]}else f?(i="contrast",s=r("Que diferen\xE7a o texto apresenta entre estas ideias?")):/\b(?:por exemplo|for example|por ejemplo|例えば)/iu.test(a)?(i="example",s=r("Que exemplo \xE9 usado para explicar esta ideia?")):a.length<=260&&l[0].length>=4&&a.includes(l[0])&&(i="cloze",s="",p=l[0]);let M=ye(t,e.start,e.end);return{id:"auto-"+M.hash,type:i,question:s,theme:d,keywords:l,hints:[],anchor:M,updatedAt:n,...p?{cloze:p}:{}}}function Lo(e,{existing:t,t:r=a=>a,vectors:o=new Map,now:n=Date.now()}={}){let{text:a,blocks:l,units:i}=_t(e,{vectors:o}),s=new Map;for(let f of i)for(let M of new Set(Se(f.text).filter(h=>!Me.has(J(h.text))).map(h=>J(h.text))))s.set(M,(s.get(M)||0)+1);let d=new Set,p=[];for(let f of i){let M=pr(f,a,{t:r,frequencies:s,now:n});if(!(!M||d.has(M.id))&&(d.add(M.id),p.push(M),p.length>2e3))throw Error("Este discurso cont\xE9m muitas ideias. Crie cart\xF5es por trechos para organizar seu estudo.")}if(!t)return nt(a,p,n);let u=new Map(t.cards.map(f=>[f.id,f]));for(let f of p)u.has(f.id)||u.set(f.id,f);let v={...t,cards:[...u.values()].map(f=>{if(!ke(f))return f;let M=xt(a,f.anchor,l);return M?{...f,anchor:ye(a,M.start,M.end),needsReview:!1}:{...f,needsReview:!0}}),sourceHash:Ae(a),sourceRawHash:ie(a),updatedAt:n};if(v.order){let f=rt(v,{includeUnlinked:!0}).map(M=>M.id);v.order={ids:f,at:n,id:"order-"+ie(f.join(":")+n)}}return v}function He(e,t=!1){let r=$o(e);if(!t)return{...r,blocks:r.blocks.map(i=>({...i,speakerId:""}))};let o=[],n=0;for(let i of e?.ops||[]){let s=typeof i.insert=="string"?i.insert:`
 `,d=i.attributes?.speaker||"";!d&&o.length&&!s.trim()&&(d=o.at(-1).speakerId);let p=o.at(-1);p?.speakerId===d?p.end+=s.length:o.push({start:n,end:n+s.length,speakerId:d}),n+=s.length}let a=[],l=0;for(let i of r.blocks){for(;l<o.length&&o[l].end<=i.start;)l++;for(let s=l;s<o.length;s++){let d=o[s];if(d.end<=i.start)continue;if(d.start>=i.end)break;let p=Math.max(i.start,d.start),u=Math.min(i.end,d.end);for(;p<u&&/\s/u.test(r.text[p]);)p++;for(;u>p&&/\s/u.test(r.text[u-1]);)u--;u>p&&a.push({...i,start:p,end:u,text:r.text.slice(p,u),hash:Ae(r.text.slice(p,u)),speakerId:d.speakerId,turnStart:d.start})}}return{...r,blocks:a}}function qt(e,t=!1){let r=He(e,t);return t?ie(JSON.stringify([r.text,r.blocks.map(o=>[o.start,o.end,o.speakerId])])):ie(r.text)}var $t=e=>new Set(Se(e).filter(t=>t.text.length>2&&!Me.has(J(t.text))).map(t=>J(t.text)));function ur(e,t,r){let o=$t(e.text);return[...$t(t.text)].filter(l=>o.has(l)).length>=2||/^(?:isso|essa|esse|esta|este|portanto|por isso|assim|this|therefore|esto|por eso|そのため)/iu.test(t.text)||e.heading&&e.heading===t.heading||r.get(e.start)&&r.get(t.start)&&ce(r.get(e.start),r.get(t.start))>.68}function Wt(e,{demonstration:t=!1,vectors:r=new Map}={}){let o=He(e,t),n=[];for(let l of o.blocks){if(l.attrs.header||qo(l.text)||Se(l.text).length<2)continue;let i=To(l),s=null;for(let d of i)s&&d.end-s.start<=650?(s.end=d.end,s.text=o.text.slice(s.start,s.end)):(s&&n.push(s),s={...l,...d});s&&n.push(s)}let a=[];for(let l of n){let i=a.at(-1);i&&i.speakerId===l.speakerId&&(!t||i.turnStart===l.turnStart)&&i.heading===l.heading&&l.end-i.start<=650&&ur(i,l,r)?(i.end=l.end,i.text=o.text.slice(i.start,i.end),i.bold=[...i.bold||[],...l.bold||[]]):a.push({...l})}return{...o,units:a}}function We(e,t){return e.concepts?.length?e.concepts.join(", "):Jt(e,t)}function jo(e,{existing:t,demonstration:r=!1,vectors:o=new Map,now:n=Date.now(),analysis:a}={}){if(a)return Kt(e,{existing:t,demonstration:r,now:n,analysis:a});let{text:l,blocks:i,units:s}=Wt(e,{demonstration:r,vectors:o}),d=new Map;for(let w of s)for(let k of $t(w.text))d.set(k,(d.get(k)||0)+1);let p=[],u=new Set;for(let w of s){let k=kt(w,d).slice(0,3);if(!k.length)continue;let $=ye(l,w.start,w.end),x="idea-"+ie((w.speakerId||"")+":"+$.hash);if(u.has(x))continue;u.add(x);let q=(w.heading||k.slice(0,2).join(" \xB7 ")).slice(0,140),D=k.reduce((H,N)=>H+(d.get(J(N))||1),0)+(w.bold?.length?2:0)+(/^(?:portanto|em resumo|in conclusion|en resumen|まとめ)/iu.test(w.text)?3:0);p.push({id:x,type:"idea",idea:!0,question:"",theme:q,keywords:k,hints:[],anchor:$,speakerId:w.speakerId||"",updatedAt:n,score:D})}let v=new Map;for(let w of p){let k=w.speakerId+"|"+w.theme;v.has(k)||v.set(k,[]),v.get(k).push(w)}let f=p.length<=48?p:[];if(p.length>48)for(let w=0;w<48;w++){let k=Math.floor(w*p.length/48),$=Math.floor((w+1)*p.length/48);f.push(p.slice(k,$).sort((x,q)=>q.score-x.score||x.anchor.start-q.anchor.start)[0])}let M=t?JSON.parse(JSON.stringify(t)):nt(l,[],n),h=new Map(M.cards.map(w=>[w.id,w]));for(let w of f.sort((k,$)=>k.anchor.start-$.anchor.start))delete w.score,!h.has(w.id)&&h.size<2e3&&h.set(w.id,w);return M.cards=[...h.values()].map(w=>{if(!ke(w))return w;let k=xt(l,w.anchor,i),$=k&&r&&w.speakerId!==void 0&&i.some(x=>x.start<k.end&&x.end>k.start&&x.speakerId!==w.speakerId);return k?{...w,anchor:ye(l,k.start,k.end),needsReview:!!$}:{...w,needsReview:!0}}),M.ideaBank=f.map(w=>w.id).filter(w=>h.has(w)),M.ideaEngine=2,M.sourceHash=Ae(l),M.sourceRawHash=ie(l),M.ideaSource=qt(e,r),M.updatedAt=n,M}function Po(e,t,{demonstration:r=!1,scope:o=[]}={}){let n=He(t,r).blocks,a=new Set(o),l=rt(e),i=e.contextEngine===3?new Set(e.ideaBank||[]):e.ideaBank?.length?new Set(e.ideaBank):null,s=l.some(p=>p.idea);return l.filter(p=>p.type==="manual"||p.id.startsWith("manual-")||(i?i.has(p.id):p.idea||!s)).filter(p=>{if(!r)return!0;let u=n.filter(v=>v.start<p.anchor.end&&v.end>p.anchor.start);return u.length>0&&u.every(v=>a.has(v.speakerId)&&(p.speakerId===void 0||p.speakerId===v.speakerId))})}var Xt=new Set("\xE9 s\xE3o foi era eram ser\xE1 ser\xE3o tem t\xEAm tinha recebeu recebe receber deu dar faz fazer seja pode deve permite ajuda envolve exige aumenta reduz fortalece facilita compreender perceber identificar ajustar manter explicar desenvolver orienta re\xFAne apresenta consiste significa pertencem pertence fizeram feito praticar preparar ensaiar organizar usar falar lembrar tomar is are was were has have helps allows means es son fue permite ayuda tiene".split(" ")),De=e=>Se(String(e)),Ut=e=>String(e).replace(/^[\s“”"'«»]+|[\s“”"'«».,;:!?]+$/gu,"").replace(/^(?:a|o|as|os|um|uma|the|el|la|los|las)\s+/iu,"").trim(),Io=e=>{let t=De(e);return t.length>0&&t.length<=4&&e.length<=80&&t.some(r=>!Me.has(J(r.text)))&&!t.some(r=>Xt.has(r.text.toLocaleLowerCase()))&&!/[.!?;,·\n]/u.test(e)&&!/^(?:nesta|neste|nessa|nesse|esse|essa|esta|este|isso|this part|o assunto)\s/iu.test(e)};function Jt(e,t){let r=t.slice(e.anchor.start,e.anchor.end),o=[],n=(d,p)=>{let u=Ut(d);Io(u)&&o.push({text:u,score:p})};if(e.type==="manual"||e.id.startsWith("manual-")){let d=Ut(e.theme||"");if(Io(d))return d}let a=Ut(e.theme||""),l=De(a);l.length>0&&l.length<=4&&!/[.!?;,·\n]/u.test(a)&&l.some(d=>!Me.has(J(d.text)))&&!l.some(d=>Xt.has(d.text.toLocaleLowerCase())&&!/(?:ar|er|ir)$/iu.test(d.text))&&o.push({text:a,score:20});for(let d of r.matchAll(/(?:^|[.!?]\s+)([^.!?\n]{2,70}?)\s+(?:é|são|significa|consiste|permite|ajuda|fortalece|reduz|aumenta|is|means|es|son)(?=\s|[.,;:]|$)/giu))n(d[1],17);for(let d of r.matchAll(/\b(?:tod[oa]s?|nenhum[a]?|cada)\s+(?:(?:a|o|as|os)\s+)?[\p{L}][\p{L}\p{M}-]*(?:\s+(?:de|do|da)\s+[\p{L}][\p{L}\p{M}-]*)?/giu))n(d[0],18);for(let d of e.keywords||[])n(d,5);let i=De(r),s=new Map;for(let d of i){let p=J(d.text);s.set(p,(s.get(p)||0)+1)}for(let d=0;d<i.length;d++){let p=i[d],u=J(p.text);if(Me.has(u)||Xt.has(p.text.toLocaleLowerCase())||p.text.length<3||/^\d+$/u.test(p.text))continue;let v=/[çc][aã]o$|[çc][oõ]es$|dade$|dades$|mento$|mentos$|ncia$|ncias$|ança$|tude$|tudes$|logia$|ismo$/iu.test(p.text),f=(s.get(u)||1)*1.5+(v?4:0)-(/(?:ar|er|ir|mente)$/iu.test(p.text)&&!v?4:0)+(d<8?1:0);n(p.text,f);for(let M=2;M<=4&&d+M<=i.length;M++){let h=i[d+M-1],w=r.slice(p.offset,h.offset+h.text.length);if(/[.!?;,:\n]/u.test(w)||Me.has(J(h.text)))continue;let k=i.slice(d,d+M).filter($=>!Me.has(J($.text)));k.length>2||n(w,f+.5*k.length-(M>2&&k.length===M?3:0))}}return o.sort((d,p)=>p.score-d.score||d.text.length-p.text.length||r.indexOf(d.text)-r.indexOf(p.text)),o[0]?.text||De(r).find(d=>!Me.has(J(d.text)))?.text||De(r)[0]?.text||"Ideia"}var fr=[["contrast",/\b(?:mas|porém|entretanto|enquanto|diferente|contrário|não significa|não é|but|whereas|pero|sin embargo)(?=\s|[.,;:]|$)/iu],["cause",/\b(?:porque|por isso|por causa|consequência|portanto|resulta|permite|ajuda|aumenta|reduz|because|therefore|allows|porque|por eso)\b/iu],["example",/\b(?:por exemplo|imagine|pense em|como se|comparação|for example|imagine|por ejemplo)\b/iu],["steps",/\b(?:primeiro|segundo|depois|etapas|passos|por fim|first|next|steps|primero|después)\b/iu],["definition",/(?:^|\s)(?:é|significa|consiste|refere-se|is|means|es|significa)(?=\s|[.,;:]|$)/iu]],Eo={contrast:["Lembre dos dois lados que o trecho coloca em contraste.","Que diferen\xE7a faz a liga\xE7\xE3o entre esses dois lados?"],cause:["Pense na rela\xE7\xE3o entre o que acontece e o seu motivo ou resultado.","Retome mentalmente: o que leva a qu\xEA nesta parte?"],example:["Lembre da situa\xE7\xE3o usada para tornar a ideia mais concreta.","Como essa situa\xE7\xE3o ajuda a explicar o assunto?"],steps:["Reconstrua a ordem do racioc\xEDnio: come\xE7o, desenvolvimento e chegada.","Qual passo prepara o seguinte nesta parte?"],definition:["Pense no significado do conceito, sem tentar repetir a frase.","Como voc\xEA explicaria esse conceito a algu\xE9m que n\xE3o o conhece?"],idea:["Lembre da fun\xE7\xE3o desta parte na sequ\xEAncia do discurso.","Que pensamento ela desenvolve e como se liga ao que vem depois?"]};function No(e,t,{step:r=0,t:o=n=>n}={}){if(e.concepts?.length&&e.retrievalClue){let d={contrast:"Como \u201C{context}\u201D participa da diferen\xE7a apresentada?",cause:"Que motivo ou resultado do trecho envolve \u201C{context}\u201D?",example:"Qual \xE9 o papel de \u201C{context}\u201D no exemplo?",steps:"Como \u201C{context}\u201D se encaixa na sequ\xEAncia?",definition:"Como o conceito se relaciona com \u201C{context}\u201D?",idea:"Lembre da liga\xE7\xE3o desta parte com \u201C{context}\u201D."},p=r===0?d[e.contextRelation]||d.idea:"Que liga\xE7\xE3o entre as ideias do trecho ajuda a explicar \u201C{context}\u201D?";return{kind:e.contextRelation||"idea",text:o(p).replace("{context}",e.retrievalClue)}}let n=t.slice(e.anchor.start,e.anchor.end),a=fr.find(([,d])=>d.test(n))?.[0]||"idea",l=[...Eo[a],...Eo.idea],i=o(l[Math.min(r,1)]);if(/\b(?:recebeu|receber|recebe|concedeu|concedido|dado|delegou|received|recibió)(?=\s|[.,;:]|$)/iu.test(n))i=o(r===0?"Lembre da rela\xE7\xE3o entre quem recebe e quem concede.":"O fato de receber algo ajuda a distinguir quais pap\xE9is nesta parte?");else if(/\b(?:ensaiar|ensaio|prática|praticar|rehearsal|practice|ensayo)(?=\s|[.,;:]|$)/iu.test(n)&&a==="cause"&&!/ensaio|prática|rehearsal|practice|ensayo/iu.test(We(e,t)))i=o(r===0?"Lembre do efeito da pr\xE1tica sobre o assunto deste trecho.":"Pense no que muda depois de praticar e na raz\xE3o dessa mudan\xE7a.");else if(a==="example"){let d=new Set(De(J(We(e,t))).map(u=>u.text)),p=n.match(/\b(?:empresa|família|escola|viagem|ponte|casa|semente|árvore|caminho|corpo|jardim|company|school|family|garden)(?=\s|[.,;:]|$)/iu)?.[0];p&&!d.has(J(p))&&(i=o(r===0?"Relembre o cen\xE1rio do exemplo: {context}.":"Qual liga\xE7\xE3o existe entre {context} e o assunto desta parte?").replace("{context}",p))}return(d=>{let p=De(J(d)).map(v=>v.text),u=" "+De(J(n)).map(v=>v.text).join(" ")+" ";return p.some((v,f)=>p.length-f>=4&&u.includes(" "+p.slice(f,f+4).join(" ")+" "))})(i)&&(i=o("Fa\xE7a uma pausa e reconstrua mentalmente a liga\xE7\xE3o desta parte com o discurso.")),{kind:a,text:i}}function Gt(e,t){let r=t.slice(e.anchor.start,e.anchor.end),o=new Set(et(r).map(n=>n.offset+n.length));for(let n of r.matchAll(/\n+/gu))o.add(n.index+n[0].length);return[...o].filter(n=>r.slice(0,n).trim().length>=8&&r.slice(n).trim().length>=8).sort((n,a)=>n-a)}function Yt(e,t){let r=new Map,o=0,n=null,a=0;for(let l of[...e].sort((i,s)=>i.anchor.start-s.anchor.start)){for(;o<t.length&&t[o].start<=l.anchor.start;)t[o].attrs.header&&(n=t[o]),o++;let i=t.filter(s=>!s.attrs.header&&s.start<l.anchor.end&&s.end>l.anchor.start).map(s=>s.text).join(" ");r.set(l.id,{id:(n?"heading-"+n.start:"section-"+Math.floor(a/3))+"|"+(l.speakerId||""),title:n?.text||"",start:n?.start||0,terms:[...$t(i)].slice(0,80)}),a++}return r}function Kt(e,{existing:t,demonstration:r=!1,now:o=Date.now(),analysis:n}={}){let a=He(e,r),{text:l,blocks:i}=a;if(n||=Ro(Co(a)),n.units.length&&n.coverage?.some(h=>h.kind==="content"&&!h.covered))throw Error("N\xE3o foi poss\xEDvel associar todas as ideias. Revise a divis\xE3o dos cart\xF5es.");let s=t?JSON.parse(JSON.stringify(t)):nt(l,[],o),d=new Map(s.cards.map(h=>[h.id,h])),p=new Map;for(let h of s.cards){let w=(h.speakerId||"")+"|"+h.anchor.hash;p.has(w)||p.set(w,[]),p.get(w).push(h)}let u=new Map;for(let h of n.units){let w=(h.speakerId||"")+"|"+Ae(h.text);u.set(w,(u.get(w)||0)+1)}let v=[],f=new Set;for(let h of n.units){if(!h.concepts?.length||l.slice(h.start,h.end)!==h.text||h.concepts.some(K=>!h.text.includes(K)))continue;let w=ye(l,h.start,h.end),k=(h.speakerId||"")+"|"+w.hash,$=(u.get(k)||0)>1,x=(p.get(k)||[]).filter(K=>K.type!=="manual"&&!K.id.startsWith("manual-")),q=x.filter(K=>K.anchor.start===w.start&&K.anchor.end===w.end),D=q.length===1?q[0]:!$&&x.length===1?x[0]:null,H=D?.id||"ctx-"+ie(k+($?"|"+h.start:""));if(f.has(H))continue;f.add(H);let N={...D,id:H,type:D?.type||"idea",idea:!0,question:D?.question||"",theme:D?.theme||h.concepts.join(", ").slice(0,140),keywords:D?.keywords||h.concepts.filter(K=>K.length<=80).slice(0,5),hints:D?.hints||[],anchor:w,speakerId:h.speakerId||"",concepts:D?.conceptsEdited?D.concepts:h.concepts,conceptConfidence:h.confidence||0,needsConceptReview:D?.conceptsEdited?!1:!!h.needsConceptReview,contextRelation:h.relation||"idea",retrievalClue:h.retrievalClue||"",updatedAt:o};v.push(N)}let M=v;if(M.length>2e3||d.size+M.filter(h=>!d.has(h.id)).length>2e3)throw Error("Este conjunto atingiu o limite de cart\xF5es. Gerencie os cart\xF5es antes de gerar novas ideias.");for(let h of M)(d.has(h.id)||d.size<2e3)&&d.set(h.id,h);if(s.cards=[...d.values()].map(h=>{if(!ke(h))return h;let w=xt(l,h.anchor,i),k=w&&r&&h.speakerId!==void 0&&i.some($=>$.start<w.end&&$.end>w.start&&$.speakerId!==h.speakerId);return w?{...h,anchor:ye(l,w.start,w.end),needsReview:!!k}:{...h,needsReview:!0}}),s.ideaBank=M.map(h=>h.id).filter(h=>d.has(h)),M.length&&!s.ideaBank.length)throw Error("Este conjunto atingiu o limite de cart\xF5es. Gerencie os cart\xF5es antes de gerar novas ideias.");return s.ideaEngine=2,s.contextEngine=3,s.contextRevision=1,s.coverageRevision=1,s.reasoningRevision=1,s.analysisInfo={semantic:!!n.semantic,excluded:n.excluded?.length||0,review:s.cards.filter(h=>s.ideaBank.includes(h.id)&&h.needsConceptReview).length},s.sourceHash=Ae(l),s.sourceRawHash=ie(l),s.ideaSource=qt(e,r),s.updatedAt=o,s}function Oo(){let e=null;function t(){e?.(),e=null}async function r(o,{existing:n,t:a=u=>u,onProgress:l=()=>{},semantic:i=!0,timeout:s=12e3,ideas:d=!1,demonstration:p=!1}={}){t();let u=!1,v,f="memory-"+be();if(e=()=>{u=!0,v?.()},l(a("Separando ideias"),10),await new Promise(k=>setTimeout(k,0)),d){let k=He(o,p),$;try{let q=ht();$=await new Promise(D=>{let H,N,K=G=>{clearTimeout(H),clearTimeout(N),q.removeEventListener("message",j),q.removeEventListener("error",O),v=null,D(G)},_=()=>{clearTimeout(H),H=setTimeout(()=>{q.postMessage({type:"memorization-cancel",token:f}),K(null)},6e4)},j=({data:G})=>{G.token===f&&(G.type==="memorization-progress"?(_(),l(a(G.label),G.value)):G.type==="memorization-context-result"?K(G.result):G.type==="memorization-context-error"&&K(null))},O=()=>K(null);v=()=>{q.postMessage({type:"memorization-cancel",token:f}),K(null)},q.addEventListener("message",j),q.addEventListener("error",O),_(),N=setTimeout(v,18e4),q.postMessage({type:"memorization-context",protocol:2,token:f,parsed:k})})}catch{}if(u)throw Error("MEMORIZATION_CANCELLED");if(!$)throw Error("A an\xE1lise local n\xE3o foi conclu\xEDda. Tente gerar os cart\xF5es novamente.");l(a("Conferindo os conceitos"),95);let x=Kt(o,{existing:n,demonstration:p,analysis:$});return e=null,{deck:x,semantic:!!$?.semantic,provisional:!$?.semantic}}let M=d?Wt(o,{demonstration:p}):_t(o),h=new Map;if(i&&M.units.length>1){l(a("Comparando ideias no aparelho"),30);try{let k=ht(),$=Math.max(1,Math.ceil(M.units.length/128)),x=M.units.filter((D,H)=>H%$===0).slice(0,128),q=await new Promise(D=>{let H,N=j=>{clearTimeout(H),k.removeEventListener("message",K),k.removeEventListener("error",_),v=null,D(j)},K=({data:j})=>{j.token===f&&j.type==="memorization-result"?N(j.vectors):j.token===f&&j.type==="memorization-error"&&N(null)},_=()=>N(null);v=()=>{k.postMessage({type:"memorization-cancel",token:f}),N(null)},H=setTimeout(v,s),k.addEventListener("message",K),k.addEventListener("error",_),k.postMessage({type:"memorization-embeddings",protocol:1,token:f,inputs:x.map(j=>j.text)})});q&&x.forEach((D,H)=>{Array.isArray(q[H])&&q[H].length===384&&h.set(D.start,q[H])})}catch{}}if(u)throw Error("MEMORIZATION_CANCELLED");l(a("Escolhendo cart\xF5es"),65),await new Promise(k=>setTimeout(k,0));let w=d?jo(o,{existing:n,demonstration:p,vectors:h}):Lo(o,{existing:n,t:a,vectors:h});if(u)throw Error("MEMORIZATION_CANCELLED");return l(a("Conferindo respostas"),95),e=null,{deck:w,semantic:h.size>0}}return{generate:r,cancel:t}}var Tt=()=>'<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5a3 3 0 0 0-5.8-1A4 4 0 0 0 4 11.5 4 4 0 0 0 6 19a3 3 0 0 0 6-1Z"/><path d="M12 5a3 3 0 0 1 5.8-1 4 4 0 0 1 2.2 7.5A4 4 0 0 1 18 19a3 3 0 0 1-6-1M8 8a3 3 0 0 1-2 3m10-3a3 3 0 0 0 2 3M7 15a3 3 0 0 1 5 2m5-2a3 3 0 0 0-5 2"/></svg>',C=e=>String(e??"").replace(/[&<>"']/g,t=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[t]),Mt=e=>JSON.parse(JSON.stringify(e)),hr=We;function Do(e){function t(){let c=p();return c?vt(c).map(m=>{let y=c.entries[m];return f().find(A=>A.id===y.cardId&&A.anchor.hash===y.anchorHash&&ke(A)&&!A.needsReview)}).filter(Boolean):[]}function r(c){!p()||!E()||c==="hint"&&j>=2||ve((y,A)=>{let g=y.ideaRounds.find(z=>z.id===o);g.training===2&&ko(y,g,c,A)},!0)&&(c==="hint"&&j++,c==="reveal"&&(_=!_),X())}let o="",n=[],a=!1,l=null,i=30,s=()=>ee().speech?.type==="part",d=()=>ee().version?.participants||ee().speech?.participants||[],p=()=>W()?.ideaRounds?.find(c=>c.id===o),u=c=>d().find(m=>m.id===c)?.name||x("Sem participante"),v=c=>s()?c.map(u).join(" \xB7 "):x("Discurso completo"),f=()=>{let c=je(n),m=ee().version;return(!l||l.cards!==W()?.cards||l.key!==c||l.contentKey!==m.contentKey)&&(l={cards:W()?.cards,key:c,contentKey:m.contentKey,pool:Po(W(),m.delta,{demonstration:s(),scope:n})}),l.pool};function M(){let c=ee().speech?.myParticipantId;return'<div class="memory-participants"><h2>'+C(x("Quais falas voc\xEA quer memorizar?"))+'</h2><p class="help">'+C(x("Escolha suas falas, todas ou os participantes que deseja estudar."))+'</p><div class="memory-scope-shortcuts">'+F("memory-mine","Somente minhas falas","UserRound","",d().some(m=>m.id===c)?"":"disabled")+F("memory-all","Todas as falas","Users")+"</div>"+(c?"":'<p class="notice">'+C(x("Selecione os participantes abaixo ou defina quem \xE9 voc\xEA na demonstra\xE7\xE3o."))+"</p>")+"<h3>"+C(x("Escolher participantes"))+'</h3><div class="memory-participant-list">'+d().map(m=>'<label><input type="checkbox" name="memoryParticipant" value="'+C(m.id)+'" '+(n.includes(m.id)?"checked":"")+"><span>"+C(m.name)+(m.id===c?" \xB7 "+C(x("Voc\xEA")):"")+"</span></label>").join("")+"</div>"+(d().length?"":'<p class="notice">'+C(x("Identifique os participantes e suas falas no editor para come\xE7ar."))+"</p>")+F("memory-scope-start","Come\xE7ar a memorizar","Play","",n.length?"":"disabled")+"</div>"}async function h(){if(re)return;if(s()&&(n=n.filter(m=>d().some(y=>y.id===m))),s()&&!n.length){N="participants",X();return}if((!W()||W().contextEngine!==3||W().contextRevision!==1||W().coverageRevision!==1||W().reasoningRevision!==1||W().ideaSource!==Ee().ideaHash)&&!await Ue()){e.rt.view==="memorization"&&X();return}let c=So(W(),f(),n,Yt(f(),ze()),Et(W()));if(!c){e.toast(x("N\xE3o foram encontradas ideias claras nestas falas. Revise o conte\xFAdo ou crie um cart\xE3o.")),N=s()?"participants":"home",X();return}ve(m=>{if(m.ideaRounds||=[],m.ideaRounds.length>=1e4)throw Error("O hist\xF3rico atingiu o limite de rodadas. Exporte um backup antes de continuar.");m.ideaRounds.push(c)},!0)&&(o=c.id,_=!1,j=0,N="study",X(),window.scrollTo(0,0),document.querySelector("#app")?.scrollTo(0,0))}function w(c,m=!1){let y=p();if(!y||N!=="study")return;let A=y.training===2?y.groups.length:y.entries.length,g=y.cursor.index+c;g<0||ve((z,L)=>{let T=z.ideaRounds.find(V=>V.id===o);m&&T.training===2&&Mo(z,T,L),g>=A?T.finishedAt||=L:T.cursor={id:be(),at:L,index:g},T.updatedAt=L},!0)&&(_=!1,j=0,g>=A&&(N="summary"),X(),document.querySelector(".memory-study-meta")?.scrollIntoView({block:"nearest"}))}function k(c){return'<div class="memory-overview memory-training-overview">'+[[c.independent??c.remembered,"Sem ajuda"],[c.assisted||0,"Com ajuda"],[c.difficult??c.review,"Dif\xEDceis"],[c.unrated,"Sem avalia\xE7\xE3o"]].map(([m,y])=>"<div><strong>"+m+"</strong><span>"+C(x(y))+"</span></div>").join("")+"</div>"}function $(){let c=(W()?.ideaRounds||[]).filter(g=>je(g.scope)===je(n)).sort((g,z)=>z.at-g.at||z.id.localeCompare(g.id)),m=c.filter(g=>g.finishedAt&&Pe(g).percent!==null).slice(0,12).reverse(),y=new Set((W()?.ideaRounds||[]).flatMap(g=>g.answers.map(z=>z.id))),A=(W()?.reviews||[]).filter(g=>!y.has(g.id));return'<div class="memory-section-bar"><div><h2>'+C(x("Minha evolu\xE7\xE3o"))+"</h2><p>"+C(v(n))+" \xB7 "+C(x("Resultados desta vers\xE3o"))+"</p></div>"+F("memory-new-round","Nova rodada","Play","small")+"</div>"+(s()?F("memory-choose-scope","Escolher falas","Users","secondary small")+'<label class="field memory-evolution-filter"><span>'+C(x("Falas desta evolu\xE7\xE3o"))+'</span><select id="memoryEvolutionScope">'+[...new Map([n,...(W()?.ideaRounds||[]).map(g=>g.scope)].map(g=>[je(g),g])).entries()].map(([g,z])=>'<option value="'+C(g)+'" '+(g===je(n)?"selected":"")+">"+C(v(z))+"</option>").join("")+"</select></label>":"")+'<p class="memory-evolution-help">'+C(x("Compare sua autonomia: pistas, consulta ao texto e dificuldades ficam registradas em cada sess\xE3o."))+"</p>"+(m.length?'<div class="memory-evolution-chart" role="img" aria-label="'+C(x("Percentual lembrado nas \xFAltimas rodadas"))+'">'+m.map((g,z)=>{let L=Pe(g).percent;return"<div><span>"+L+'%</span><div class="memory-chart-column"><i style="height:'+Math.max(2,L)+'%"></i></div><small>'+(z+1)+"</small></div>"}).join("")+"</div>":"")+'<div class="memory-round-list">'+(c.length?c.slice(0,i).map(g=>{let z=Pe(g),L=new Date(g.at).toLocaleString(document.documentElement.lang||"pt-BR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});return"<article><div><strong>"+C(L)+"</strong><small>"+C(x(g.finishedAt?"Rodada conclu\xEDda":"Rodada iniciada"))+" \xB7 "+g.entries.length+" "+C(x("cart\xF5es"))+'</small></div><div class="memory-round-result"><strong>'+(z.percent===null?"\u2014":z.percent+"%")+"</strong><small>"+z.remembered+" "+C(x("lembrados"))+" \xB7 "+z.review+" "+C(x("para revisar"))+" \xB7 "+z.unrated+" "+C(x("sem avalia\xE7\xE3o"))+"</small>"+(g.training===2?"<small>"+z.hinted+" "+C(x("com pistas"))+" \xB7 "+z.consulted+" "+C(x("com texto consultado"))+" \xB7 "+z.difficult+" "+C(x("Dif\xEDceis"))+"</small>":"")+"</div></article>"}).join(""):'<div class="memory-empty"><h3>'+C(x("Sua evolu\xE7\xE3o come\xE7a na primeira rodada."))+"</h3><p>"+C(x("Marque Lembrei ou Preciso revisar quando quiser registrar seu resultado."))+"</p></div>")+"</div>"+(c.length>i?F("memory-more-rounds","Mostrar mais rodadas","ChevronDown","secondary small"):"")+(A.length?'<details class="memory-legacy-history"><summary>'+C(x("Hist\xF3rico anterior preservado"))+" \xB7 "+A.length+"</summary><p>"+A.filter(g=>g.rating===2).length+" "+C(x("Lembrei sozinho"))+" \xB7 "+A.filter(g=>g.rating<2).length+" "+C(x("Com ajuda ou para revisar"))+"</p></details>":"")+(p()?F("memory-return-study","Voltar \xE0 rodada","ArrowLeft","secondary"):F("memory-dashboard","Voltar","ArrowLeft","secondary"))}let x=e.t||(c=>c),q=Oo(),D="",H=null,N="home",K=null,_=!1,j=0,O=null,G=20,oe="",re=!1,Q=0,Ie={MonitorPlay:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 7 5 3-5 3V7ZM8 21h8m-4-4v4"/>',MessageCircle:'<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>',BarChart3:'<path d="M4 20V10m8 10V4m8 16v-7M2 22h20"/>',Eye:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',EyeOff:'<path d="m3 3 18 18M10 5a12 12 0 0 1 12 7 17 17 0 0 1-3 4M6 6a17 17 0 0 0-4 6s3 7 10 7c2 0 4-1 5-2M10 10a3 3 0 0 0 4 4"/>'},ae=c=>c==="Brain"?Tt():Ie[c]?'<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+Ie[c]+"</svg>":e.icon(c),F=(c,m,y="",A="secondary",g="")=>`<button type="button" class="btn ${A}" data-action="${c}" ${g}>${y?ae(y):""}<span>${C(x(m))}</span></button>`,Ce=(c,m,y,A)=>`<button type="button" class="icon-btn memory-small-action" data-action="${c}" data-id="${C(A)}" title="${C(x(m))}" aria-label="${C(x(m))}">${ae(y)}</button>`,ee=()=>{let c=e.getSpeech();return{speech:c,version:c?.versions?.find(m=>m.id===c.activeVersionId)}},W=()=>ee().version?.memorization,se=null,Ee=()=>{let{speech:c,version:m}=ee(),y=c?.id+"|"+m?.id+"|"+m?.contentKey;if(!se||se.key!==y||!m?.contentKey&&se.delta!==m?.delta){let A=He(m?.delta,s());se={...A,key:y,delta:m?.delta,rawHash:ie(A.text),ideaHash:qt(m?.delta,s())}}return se},Z=()=>Ee().text,ze=()=>Ee().blocks,$e=()=>rt(W(),{includeUnlinked:!0});function Je(c){let m=ee().version;if(!m)return!1;Re(c);let y=m.memorization;return m.memorization=c,e.persist()===!1?(y===void 0?delete m.memorization:m.memorization=y,!1):!0}function ve(c,m=!1){let y=W()?m?{...W(),reviews:W().reviews.slice(),ideaRounds:(W().ideaRounds||[]).map(g=>g.id===o?Mt(g):g)}:Mt(W()):nt(Z(),[]),A=Et(y);return c(y,A),y.updatedAt=A,Je(y)}let pe=lo({...e,icon:c=>ae(c),selector:Ge,readerBookmark:at,restoreReader:Be,closeMenus:Ne,getModeOrigin:()=>H});function Ge(c="presentation"){return`<div class="memory-mode-wrap"><button type="button" class="memory-mode-selector" data-action="memory-mode-menu" aria-haspopup="menu" aria-expanded="false">${C(x(c==="teleprompter"?"Teleprompter":c==="memory"?"Memorizar":"Apresenta\xE7\xE3o"))}${ae("ChevronDown")}</button></div>`}function Lt(){let c=document.querySelector(".memory-mode-wrap");if(!c)return;let m=c.querySelector("[role=menu]");if(m){m.remove(),c.firstElementChild.setAttribute("aria-expanded","false");return}let y=e.rt.view==="memorization",A=e.rt.view==="teleprompter";c.insertAdjacentHTML("beforeend",`<div class="memory-mode-menu" role="menu" aria-label="${C(x("Modo do discurso"))}">${[["memory-present","BookOpen","Apresenta\xE7\xE3o","Ler e apresentar o discurso.",!y&&!A],["memory-open","Brain","Memorizar","Memorizar as ideias principais.",y],["tele-open","MonitorPlay","Teleprompter","Acompanhar sua fala com rolagem e ritmos.",A]].map(([g,z,L,T,V])=>`<button type="button" role="menuitemradio" aria-checked="${V}" data-action="${g}">${ae(z)}<span><strong>${C(x(L))}</strong><small>${C(x(T))}</small></span>${V?ae("Check"):""}</button>`).join("")}</div>`),c.firstElementChild.setAttribute("aria-expanded","true"),c.querySelector("[role=menuitemradio]")?.focus()}function Ne(){for(let c of document.querySelectorAll(".memory-mode-menu"))c.parentElement.querySelector("button").setAttribute("aria-expanded","false"),c.remove()}document.addEventListener("pointerdown",c=>{c.target.closest(".memory-mode-wrap")||Ne()}),document.addEventListener("keydown",c=>{if(c.key==="Escape"){let m=document.querySelector(".memory-mode-selector[aria-expanded=true]");if(m){Ne(),m.focus(),c.preventDefault(),c.stopImmediatePropagation();return}}e.rt.view==="memorization"&&N==="study"&&/^[12]$/.test(c.key)&&!c.target.closest("input,textarea,select")&&(c.preventDefault(),c.key==="1"?w(1,!0):r("difficult"))},!0);function at(){let c=[...document.querySelectorAll("#app *")].filter(m=>m.scrollTop>0||m.scrollLeft>0).map(m=>{let y=[];for(let A=m;A&&A.id!=="app";A=A.parentElement)y.unshift(A.tagName.toLowerCase()+":nth-child("+([...A.parentElement.children].indexOf(A)+1)+")");return{selector:"#app>"+y.join(">"),top:m.scrollTop,left:m.scrollLeft}});return{page:e.rt.page||0,y:window.scrollY,x:window.scrollX,scrolls:c}}function Be(c){if(!c)return;e.rt.page=c.page,e.renderReaderContent?.();let m=()=>{for(let y of c.scrolls||[]){let A=document.querySelector(y.selector);A&&(A.scrollTop=y.top,A.scrollLeft=y.left)}window.scrollTo(c.x||0,c.y||0)};requestAnimationFrame(()=>requestAnimationFrame(m)),document.fonts?.ready.then(m)}function st(){let{speech:c,version:m}=ee();if(!c||!m||(Ne(),e.rt.view==="memorization"))return;let y=e.rt.view==="teleprompter";if(y&&pe.suspend(),H=y?pe.getOrigin():{view:["teleprompter","reader","editor","home","agenda","categories","settings"].includes(e.rt.view)?e.rt.view:"home",returnTo:e.rt.returnTo,reader:e.rt.view==="reader"?at():null},c.timer?.running||["playing","loading","buffering"].includes(e.rt.audio?.state)||e.isRehearsalRunning?.()){e.openModal(x("Pausar para memorizar?"),'<p class="help">'+C(x("Voc\xEA tem um ensaio em andamento. Deseja paus\xE1-lo para memorizar?"))+"</p>",F("close-modal","Continuar apresenta\xE7\xE3o")+F("memory-confirm-open","Pausar e memorizar","Brain","")),e.rt.modal="memory-pause";return}Oe()}function Oe(){if(e.persist()===!1)return;q.cancel(),Q++,re=!1,o="",O=null,oe="",G=20,_=!1;let c=ee().speech?.myParticipantId;n=s()?d().some(m=>m.id===c)?[c]:d().map(m=>m.id):[],N=s()?"participants":"home",a=!s()&&!!W(),e.closeModal(),e.navigate("memorization")}function Ye(){if(e.rt.view==="teleprompter"||H?.view==="teleprompter"){pe.present();return}q.cancel(),Q++,re=!1,Ne(),e.closeModal(),e.rt.view!=="reader"&&(e.rt.returnTo=H?.view==="reader"?H.returnTo||"home":H?.view||"home",e.navigate("reader"),Be(H?.reader))}function it(){return q.cancel(),Q++,re=!1,e.closeModal(),H?.view==="reader"?(Ye(),!0):(e.navigate(H?.view||"home"),!0)}function Ve(){return'<header class="memory-top"><div class="row">'+Ce("memory-exit","Voltar","ArrowLeft","")+Ge("memory")+'</div><div class="memory-header-actions">'+F("memory-evolution","Minha evolu\xE7\xE3o","BarChart3","secondary small",'aria-label="'+C(x("Minha evolu\xE7\xE3o"))+'" title="'+C(x("Minha evolu\xE7\xE3o"))+'"')+Ce("memory-manage","Gerenciar cart\xF5es","SlidersHorizontal","")+"</div></header>"}document.addEventListener("keydown",c=>{e.rt.view==="memorization"&&N==="study"&&!c.target.closest("input,textarea,select")&&["ArrowLeft","ArrowRight"].includes(c.key)&&(c.preventDefault(),w(c.key==="ArrowLeft"?-1:1))});let jt=c=>`<span class="memory-keyword">${C(c)}</span>`;function X(){if(e.rt.view==="teleprompter"){pe.render();return}let{speech:c,version:m}=ee();if(!c||!m){it();return}let y=c.id+"|"+m.id;if(D&&D!==y&&(q.cancel(),Q++,re=!1,o="",O=null,n=s()?d().some(A=>A.id===c.myParticipantId)?[c.myParticipantId]:d().map(A=>A.id):[],N=s()?"participants":"home",a=!s()&&!!W()),D=y,W()&&!re){let A=xo(W(),Z(),ze(),Ee().rawHash);if(A.changed&&!Je(A.deck))return}if(document.body.classList.add("memorization-open"),document.querySelector("#app").innerHTML='<main class="memory-shell '+(N==="study"?"memory-training":"")+'">'+Ve()+'<section class="memory-heading"><p class="eyebrow">'+C(x("Um pensamento de cada vez"))+"</p><h1>"+C(x(s()?"Memorizar demonstra\xE7\xE3o":"Memorizar discurso"))+'</h1><p class="memory-speech-title">'+C(c.title)+'</p><span class="memory-version">'+ae("Copy")+C(m.name)+'</span></section><section id="memoryContent" class="memory-content" aria-label="'+C(x("Cart\xF5es de ideias"))+'">'+(re?lt():N==="participants"?M():N==="study"?R():N==="summary"?P():N==="evolution"?$():N==="manage"?Fe():N==="form"?Pt():Ke())+"</section></main>",N==="form"&&St(),N==="evolution"&&document.querySelector("#memoryEvolutionScope")?.addEventListener("change",A=>{let g=(W()?.ideaRounds||[]).find(z=>je(z.scope)===A.target.value);g&&(n=[...g.scope],i=30,X())}),N==="participants")for(let A of document.querySelectorAll("[name=memoryParticipant]"))A.addEventListener("change",()=>{n=[...document.querySelectorAll("[name=memoryParticipant]:checked")].map(z=>z.value);let g=document.querySelector("[data-action=memory-scope-start]");g&&(g.disabled=!n.length)});a&&(a=!1,queueMicrotask(()=>{e.rt.view==="memorization"&&h()}))}function lt(){return'<div class="memory-empty memory-loading" role="status"><span class="memory-orbit">'+ae("Brain")+'</span><h2 id="memoryGenerationLabel">'+C(x("Organizando as ideias"))+"</h2><p>"+C(x("Preparando uma rodada curta a partir do seu texto."))+'</p><progress id="memoryGenerationProgress" max="100" value="10"></progress>'+F("memory-cancel-generation","Cancelar","","secondary small")+"</div>"}function Ke(){return'<div class="memory-dashboard memory-welcome"><span class="memory-option-icon">'+ae("Brain")+"</span><h2>"+C(x("Lembre o que voc\xEA quer dizer."))+"</h2><p>"+C(x("Um tema curto, pistas quando precisar e o trecho escondido para voc\xEA tentar lembrar."))+"</p>"+F("memory-generate","Gerar cart\xF5es de ideias","Play","")+'<div class="memory-secondary-actions">'+F("memory-new","Criar meu cart\xE3o","PenLine","secondary")+"</div></div>"}let qe=c=>x("Ideia principal");function Te(){let c=(m,y,A,g,z=!1,L=!1)=>`<button type="button" class="btn ${z?"":"secondary"}" data-action="${m}" aria-label="${C(x(y))}" title="${C(x(y))}" ${L?"disabled":""}>${ae(g)}<span class="memory-action-full">${C(x(y))}</span><span class="memory-action-compact">${C(x(A))}</span></button>`;return`<div class="memory-manage-actions" role="group" aria-label="${C(x("A\xE7\xF5es dos cart\xF5es"))}">${c("memory-study","Come\xE7ar a memorizar","Memorizar","Play",!0,!rt(W()).length)}${c("memory-regenerate","Atualizar cart\xF5es do texto","Atualizar","RotateCcw")}${c("memory-dashboard","Voltar aos cart\xF5es","Voltar","ArrowLeft")}</div>`}function Fe(){let c=$e();return`<div class="memory-section-bar"><div><h2>${c.length} ${C(x("cart\xF5es preparados"))}</h2><p>${C(x("Ajuste as pistas e a ordem sem alterar o discurso."))}</p></div>${F("memory-new","Criar cart\xE3o","Plus","small secondary")}</div>${Te()}<div class="memory-card-list">${c.slice(0,G).map((m,y)=>`<article class="memory-preview-card ${m.needsReview?"needs-review":""}" data-memory-card="${C(m.id)}"><div class="memory-preview-meta"><span>${y+1} \xB7 ${C(qe(m))}</span>${m.needsReview?`<strong>${C(x("Revisar v\xEDnculo"))}</strong>`:""}</div><h3>${C(m.needsReview?m.theme:hr(m,Z(),x))}</h3><div class="memory-keywords">${m.keywords.map(jt).join("")}</div><details class="memory-evidence"><summary>${C(x("Trecho de origem"))}</summary><p>${C(m.needsReview?x("Este trecho mudou. Escolha novamente a parte correspondente do texto."):Z().slice(m.anchor.start,m.anchor.end))}</p></details><footer><div>${F("memory-edit","Editar","PenLine","small secondary",`data-id="${C(m.id)}"`)}</div><div class="row">${Ce("memory-up","Mover para cima","ArrowUp",m.id)}${Ce("memory-down","Mover para baixo","ArrowDown",m.id)}${Ce("memory-card-menu","Mais op\xE7\xF5es","MoreHorizontal",m.id)}</div></footer>${oe===m.id?`<div class="memory-card-menu">${F("memory-split","Dividir cart\xE3o","Scissors","small secondary",`data-id="${C(m.id)}" ${m.needsReview?"disabled":""}`)}${F("memory-merge","Unir com o pr\xF3ximo","Link2","small secondary",`data-id="${C(m.id)}" ${m.needsReview||!c[y+1]||c[y+1].needsReview?"disabled":""}`)}${F("memory-delete","Excluir cart\xE3o","Trash2","small danger",`data-id="${C(m.id)}"`)}</div>`:""}</article>`).join("")}</div>${c.length>G?F("memory-more","Mostrar mais cart\xF5es","ChevronDown","secondary full"):""}`}async function Ue(){if(re)return!1;let{speech:c,version:m}=ee(),y=c.id+"|"+m.id+"|"+Ee().ideaHash,A=++Q;re=!0,X();try{let g=await q.generate(m.delta,{existing:W(),ideas:!0,demonstration:s(),t:x,onProgress:(L,T)=>{if(Q!==A)return;let V=document.querySelector("#memoryGenerationLabel"),te=document.querySelector("#memoryGenerationProgress");V&&(V.textContent=L),te&&(te.value=T)}});if(A!==Q||ee().speech.id+"|"+ee().version.id+"|"+Ee().ideaHash!==y)return!1;let z=yt(W(),g.deck);for(let L of["ideaBank","ideaEngine","contextEngine","contextRevision","coverageRevision","reasoningRevision","analysisInfo","sourceHash","sourceRawHash","ideaSource"])g.deck[L]!==void 0&&(z[L]=Mt(g.deck[L]));return z.updatedAt=Et(z),Je(z)}catch(g){return g.message!=="MEMORIZATION_CANCELLED"&&e.toast(x(g.message)),!1}finally{A===Q&&(re=!1)}}function Qe(c){let m=$e().find(A=>A.id===c),y=ze().filter(A=>!A.attrs.header&&(!s()||n.includes(A.speakerId)));O={id:m?.id||null,anchor:m&&!m.needsReview?Mt(m.anchor):y[0]?ye(Z(),y[0].start,y[0].end):null,question:m?We(m,Z()):"",keywords:m?.keywords||[],hints:m?.hints||[],needsReview:!!m?.needsReview},N="form",X()}function Pt(){let c=ze().filter(m=>!m.attrs.header&&(!s()||n.includes(m.speakerId)));return'<div class="memory-section-bar"><h2>'+C(x(O.id?"Editar cart\xE3o":"Criar cart\xE3o"))+"</h2>"+F("memory-manage","Cancelar","","small secondary")+'</div><form id="memoryCardForm" class="memory-form memory-simple-form"><section><label class="field"><span>'+C(x("Conceitos do cart\xE3o"))+'</span><input id="memoryQuestion" maxlength="600" value="'+C(O.question)+'" placeholder="'+C(x("Separe conceitos complementares por v\xEDrgulas; use o que representar a ideia."))+'"></label><label class="field"><span>'+C(x("Palavras-chave opcionais"))+'</span><input id="memoryKeywords" maxlength="400" value="'+C(O.keywords.join(", "))+'" placeholder="'+C(x("Deixe em branco para selecionar automaticamente."))+'"></label><div class="memory-form-evidence" id="memoryFormEvidence"></div><details class="memory-change-source"><summary>'+C(x("Escolher outro trecho"))+'</summary><label class="field"><span>'+C(x("Trecho do discurso"))+'</span><select id="memorySourceBlock">'+c.map((m,y)=>'<option value="'+y+'" '+(O.anchor?.start>=m.start&&O.anchor?.start<=m.end?"selected":"")+">"+C((s()?u(m.speakerId)+": ":"")+m.text.slice(0,130))+"</option>").join("")+'</select></label></details><p class="memory-form-error" id="memoryFormError" role="alert"></p><button type="submit" class="btn full">'+ae("Check")+"<span>"+C(x("Salvar cart\xE3o"))+"</span></button></section></form>"}function Le(){let c=document.querySelector("#memoryFormEvidence");c&&(c.textContent=O.anchor?Z().slice(O.anchor.start,O.anchor.end):x("Adicione texto ao discurso para escolher um trecho."))}function St(){Le(),document.querySelector("#memoryCardForm").addEventListener("submit",c=>{c.preventDefault(),dt()}),document.querySelector("#memorySourceBlock").addEventListener("change",c=>{let m=ze().filter(A=>!A.attrs.header&&(!s()||n.includes(A.speakerId))),y=m[Number(c.target.value)];y&&(O.anchor=ye(Z(),y.start,y.end),Le())})}function dt(){try{if(!O.anchor)throw Error("Escolha um trecho do discurso.");let c=Z().slice(O.anchor.start,O.anchor.end),m=document.querySelector("#memoryKeywords").value.split(",").map(g=>g.trim()).filter(Boolean),y=m.length?[...new Set(m)]:kt({text:c,start:O.anchor.start,bold:[]}).slice(0,3),A=(document.querySelector("#memoryQuestion").value.trim()||y.slice(0,2).join(" \xB7 ")||c.split(/[.!?\n]/u)[0]).slice(0,140);if(y.length>5||y.some(g=>g.length>80))throw Error("Use at\xE9 cinco palavras-chave curtas.");ve((g,z)=>{let L=g.cards.findIndex(ne=>ne.id===O.id),T=g.cards[L];if(!T&&g.cards.length>=2e3)throw Error("Este conjunto atingiu o limite de cart\xF5es.");let V=document.querySelector("#memoryQuestion").value.split(",").map(ne=>ne.trim()).filter(Boolean),te=[...new Set(g.cards.filter(ne=>ne.concepts?.length&&ne.anchor.start<O.anchor.end&&ne.anchor.end>O.anchor.start).flatMap(ne=>ne.concepts))].slice(0,3),ue=V.length?V:te.length?te:y.slice(0,2);if(!ue.length||ue.length>12||ue.some(ne=>ne.length>160))throw Error("Use conceitos curtos e completos para representar a ideia.");let de={...T,concepts:ue,conceptsEdited:!!V.length,needsConceptReview:V.length?!1:!!T?.needsConceptReview,id:T?.id||"manual-"+be(),type:T?.type||"manual",idea:!0,theme:A,question:T?.question||"",keywords:y,hints:T?.hints||[],anchor:Mt(O.anchor),speakerId:ze().find(ne=>O.anchor.start>=ne.start&&O.anchor.start<ne.end)?.speakerId||"",updatedAt:z};delete de.needsReview,T?g.cards[L]=de:g.cards.push(de),!g.ideaSource&&g.cards.every(ne=>ne.type==="manual")&&(g.ideaSource=Ee().ideaHash)})&&(O=null,N="manage",X())}catch(c){document.querySelector("#memoryFormError").textContent=x(c.message)}}function ct(c,m){let y=$e(),A=y.findIndex(z=>z.id===c),g=A+m;A<0||g<0||g>=y.length||([y[A],y[g]]=[y[g],y[A]],ve((z,L)=>{z.order={ids:y.map(T=>T.id),at:L,id:"order-"+be()}})&&X())}function Nt(c){let m=$e().find(z=>z.id===c);if(!m||m.needsReview)return;let y=Z().slice(m.anchor.start,m.anchor.end),A=Gt(m,Z());if(!A.length){e.toast(x("Este trecho tem uma \xFAnica frase. Edite o v\xEDnculo para ajustar a divis\xE3o."));return}let g=A.reduce((z,L)=>Math.abs(z-y.length/2)<Math.abs(L-y.length/2)?z:L);e.openModal(x("Ajustar divis\xE3o da ideia"),'<p class="help">'+C(x("Escolha onde uma ideia termina e a seguinte come\xE7a. O discurso original permanece igual."))+'</p><label class="field"><span>'+C(x("Dividir depois de"))+'</span><select id="memorySplitPoint">'+A.map(z=>'<option value="'+z+'" '+(z===g?"selected":"")+">"+C(y.slice(Math.max(0,z-100),z))+"</option>").join("")+"</select></label>",F("close-modal","Cancelar")+F("memory-confirm-split","Dividir cart\xE3o","Scissors","",'data-id="'+C(c)+'"')),e.rt.modal="memory-split"}function Ot(c){oe="";let m=$e().find(z=>z.id===c);if(!m||m.needsReview)return;let y=Z().slice(m.anchor.start,m.anchor.end),A=[...y.matchAll(/(?:[.!?]\s+|\n+)/gu)].map(z=>z.index+z[0].length).filter(z=>z>8&&z<y.length-8).sort((z,L)=>Math.abs(z-y.length/2)-Math.abs(L-y.length/2)),g=Number(document.querySelector("#memorySplitPoint")?.value);Gt(m,Z()).includes(g)&&(e.closeModal(),ve((z,L)=>{let T=z.cards.find(te=>te.id===c);T.deleted=!0,T.deletedAt=L,T.updatedAt=L;let V=[];for(let[te,ue]of[[m.anchor.start,m.anchor.start+g],[m.anchor.start+g,m.anchor.end]]){let de=ye(Z(),te,ue),ne={text:Z().slice(de.start,de.end),start:de.start,bold:[]},fe=kt(ne);V.push({id:"manual-"+be(),type:"idea",idea:!0,speakerId:m.speakerId||"",question:x("Explique esta ideia com suas palavras."),theme:m.theme,keywords:fe.length>=2?fe:m.keywords,hints:[],anchor:de,updatedAt:L})}if(z.cards.push(...V),z.order){let te=z.order.ids.filter(de=>de!==c),ue=Math.max(0,z.order.ids.indexOf(c));te.splice(ue,0,...V.map(de=>de.id)),z.order={ids:te,at:L,id:"order-"+be()}}})&&X())}function b(c){oe="";let m=$e(),y=m.findIndex(z=>z.id===c),A=m[y],g=m[y+1];if(!(!A||!g||A.needsReview||g.needsReview)){if(s()&&(A.speakerId!==g.speakerId||ze().some(z=>z.start<Math.max(A.anchor.end,g.anchor.end)&&z.end>Math.min(A.anchor.start,g.anchor.start)&&z.speakerId!==A.speakerId))){e.toast(x("Una somente ideias da mesma fala."));return}ve((z,L)=>{let T=z.cards.find(te=>te.id===c),V=z.cards.find(te=>te.id===g.id);T.anchor=ye(Z(),Math.min(T.anchor.start,V.anchor.start),Math.max(T.anchor.end,V.anchor.end)),T.type="idea",T.idea=!0,T.question=x("Explique como estas ideias se relacionam."),T.keywords=[...new Set([...T.keywords,...V.keywords])].slice(0,5),T.hints=[],delete T.cloze,T.updatedAt=L,V.deleted=!0,V.deletedAt=L,V.updatedAt=L})&&X()}}function I(){h()}function E(){return t()[0]}function R(){let c=p();if(!c)return Ke();let m=t(),y=m[0],A=c.cursor.index,g=c.training===2?c.groups.length:c.entries.length,z=c.level||1,L=Pe(c),T=vt(c),V=T.some(fe=>c.signals?.some(zt=>zt.index===fe&&zt.kind==="difficult")),te=Yt(m,ze()),ue=te.get(y?.id)?.title,de=z===4?x("Seu discurso completo"):z===2&&m.length>1?[...new Set(m.map(fe=>fe.concepts?.[0]||We(fe,Z())))].join(", "):z===3&&ue?Jt({...y,theme:ue,type:"manual"},Z()):y?We(y,Z()):x("Trecho alterado"),ne=["Uma ideia por vez","Conecte duas ideias","Desenvolva uma se\xE7\xE3o","Apresente o discurso completo"];return'<div class="memory-study-meta"><strong>'+C(x(s()?"Treinando a demonstra\xE7\xE3o":"Treinando o discurso"))+"</strong><span>"+(A+1)+" "+C(x("de"))+" "+g+"</span>"+(s()?F("memory-choose-scope","Escolher falas","Users","secondary small memory-training-scope",'aria-label="'+C(x("Escolher falas"))+'" title="'+C(x("Escolher falas"))+'"'):"")+'</div><div class="memory-training-progress" role="progressbar" aria-label="'+C(x("Progresso da rodada"))+'" aria-valuemin="0" aria-valuemax="'+g+'" aria-valuenow="'+(A+1)+'">'+Array.from({length:Math.min(24,g)},(fe,zt)=>'<i class="'+(zt/Math.min(24,g)<(A+1)/g?"on":"")+'"></i>').join("")+'</div><article class="memory-study-card memory-idea-card memory-recall-card" data-card-id="'+C(y?.id||"")+'"><div class="memory-study-kind">'+ae("MessageCircle")+"<span>"+C(x("Sua vez de falar"))+'</span></div><p class="memory-training-stage">'+C(x(ne[z-1]))+(m.length>1?" \xB7 "+m.length+" "+C(x("ideias conectadas")):"")+"</p><h2>"+C(de)+"</h2>"+(y?(y.needsConceptReview?'<p class="memory-concept-review">'+C(x("Conceitos provis\xF3rios: confira ou ajuste no gerenciamento."))+"</p>":"")+'<p class="memory-recall-instruction">'+C(x(m.length>1?"Tente conectar estes pensamentos com suas pr\xF3prias palavras.":"Tente desenvolver esse pensamento com suas pr\xF3prias palavras."))+"</p>"+(s()?'<span class="memory-speaker">'+ae("UserRound")+"<span>"+C([...new Set(m.map(fe=>u(fe.speakerId)))].join(" \xB7 "))+"</span>":"")+(j?'<aside class="memory-retrieval-hint" role="status">'+ae("Lightbulb")+"<div>"+C(m.length>1?x(j===1?"Lembre da liga\xE7\xE3o entre as partes: como uma ideia prepara a seguinte?":"Reconstrua a sequ\xEAncia dos argumentos e as transi\xE7\xF5es entre eles."):No(y,Z(),{step:j-1,t:x}).text)+"</div></aside>":"")+(_?'<section class="memory-idea-text memory-recalled-source" aria-label="'+C(x("Trecho de origem"))+'">'+m.map(fe=>"<p>"+C(Z().slice(fe.anchor.start,fe.anchor.end))+"</p>").join("")+"</section>":"")+'<div class="memory-recall-actions">'+F("memory-hint","Dar uma pista","Lightbulb","secondary",j>=2?"disabled":"")+F("memory-toggle-text",_?"Ocultar trecho":"Ver trecho","BookOpen","secondary")+"</div>"+F("memory-continue","Consegui continuar","ArrowRight","memory-continue"):'<p class="help">'+C(x("Este trecho mudou. Inicie uma nova rodada para conferir o v\xEDnculo."))+"</p>")+'</article><nav class="memory-study-navigation memory-recall-navigation" aria-label="'+C(x("Navega\xE7\xE3o dos cart\xF5es"))+'">'+F("memory-previous","Anterior","ArrowLeft","secondary",A?"":"disabled")+F("memory-difficult",V?"Marcado como dif\xEDcil":"Ainda dif\xEDcil","Flag","secondary",(y?"":"disabled ")+'aria-pressed="'+V+'"')+F("memory-next",A===g-1?"Concluir":"Pular","ChevronRight","secondary")+'</nav><p class="memory-training-privacy">'+C(x("Voc\xEA avalia sua lembran\xE7a. Sem capta\xE7\xE3o de voz."))+"</p>"}function S(c){let m=p();!m||!E()||Pe(m).answers.get(m.cursor.index)?.rating===c||ve((y,A)=>{bo(y,y.ideaRounds.find(g=>g.id===o),m.cursor.index,c,A)},!0)&&X()}function P(){let c=p();if(!c)return Ke();let m=Pe(c);return'<div class="memory-summary"><span class="memory-complete-icon">'+ae("Check")+"</span><h2>"+C(x("Treino conclu\xEDdo"))+"</h2><p>"+m.total+" "+C(x("ideias neste treino"))+" \xB7 "+C(v(c.scope))+"</p>"+k(m)+'<div class="memory-training-feedback"><span>'+m.hinted+" "+C(x("com pistas"))+"</span><span>"+m.consulted+" "+C(x("com texto consultado"))+'</span></div><p class="help">'+C(x("As pr\xF3ximas sess\xF5es priorizam as dificuldades e mant\xEAm revis\xF5es das ideias j\xE1 dominadas."))+'</p><div class="memory-secondary-actions">'+F("memory-new-round","Novo treino","Play","")+F("memory-evolution","Minha evolu\xE7\xE3o","BarChart3")+"</div>"+F("memory-return-study","Voltar \xE0 rodada","ArrowLeft","secondary small")+"</div>"}function B(c,m){if(pe.handle(c,m))return!0;if(!c.startsWith("memory-"))return!1;let y=typeof m=="string"?m:m?.dataset?.id;return c==="memory-mode-menu"?Lt():c==="memory-open"?st():c==="memory-confirm-open"?(e.pauseRehearsal?.(),e.pauseTimer(),e.pauseAudio(),e.persist()!==!1&&Oe()):c==="memory-present"?Ye():c==="memory-exit"?it():["memory-generate","memory-study","memory-new-round","memory-scope-start"].includes(c)?h():c==="memory-mine"?(n=[ee().speech?.myParticipantId].filter(A=>d().some(g=>g.id===A)),h()):c==="memory-all"?(n=d().map(A=>A.id),h()):c==="memory-choose-scope"?(re&&(q.cancel(),Q++,re=!1),N="participants",X()):c==="memory-cancel-generation"?(q.cancel(),Q++,re=!1,N=s()?"participants":"home",X()):c==="memory-continue"?w(1,!0):c==="memory-hint"?r("hint"):c==="memory-difficult"?r("difficult"):c==="memory-next"?w(1):c==="memory-previous"?w(-1):c==="memory-toggle-text"?_?(_=!1,X()):r("reveal"):c==="memory-mark-remember"?S(2):c==="memory-mark-review"?S(0):c==="memory-more-rounds"?(i+=30,X()):c==="memory-evolution"?(re&&(q.cancel(),Q++,re=!1),i=30,N="evolution",X(),window.scrollTo(0,0)):c==="memory-return-study"?(p()&&(n=[...p().scope]),N=p()?"study":"home",X()):c==="memory-dashboard"?(p()&&(n=[...p().scope]),N=p()?"study":s()?"participants":"home",X()):c==="memory-regenerate"?(e.openModal(x("Atualizar as ideias?"),'<p class="help">'+C(x("Seus cart\xF5es editados e o hist\xF3rico ser\xE3o preservados. Uma nova rodada come\xE7a ap\xF3s a atualiza\xE7\xE3o."))+"</p>",F("close-modal","Cancelar")+F("memory-confirm-regenerate","Atualizar ideias","RotateCcw","")),e.rt.modal="memory-regenerate"):c==="memory-confirm-regenerate"?(e.closeModal(),(async()=>await Ue()?await h():X())()):c==="memory-new"?Qe():c==="memory-edit"?Qe(y):c==="memory-manage"?(re&&(q.cancel(),Q++,re=!1),N="manage",oe="",O=null,X(),window.scrollTo(0,0)):c==="memory-card-menu"?(oe=oe===y?"":y,X()):c==="memory-delete"?ve((A,g)=>{let z=A.cards.find(L=>L.id===y);z&&(z.deleted=!0,z.deletedAt=g,z.updatedAt=g)})&&(oe="",X()):c==="memory-up"?ct(y,-1):c==="memory-down"?ct(y,1):c==="memory-confirm-split"?Ot(y):c==="memory-split"?Nt(y):c==="memory-merge"?b(y):c==="memory-more"&&(G+=20,X()),!0}return{open:st,render:X,handle:B,selector:Ge,teleEntry:pe.menuEntry,back:()=>e.rt.view==="teleprompter"?pe.back():it(),dispose(){pe.dispose(),e.rt.view!=="memorization"&&(q.cancel(),Q++,a=!1,document.body.classList.remove("memorization-open"))},brainIcon:Tt}}if(!document.getElementById("seprepare-memorization-style")){let e=document.createElement("style");e.id="seprepare-memorization-style",e.textContent=Zt,document.head.append(e)}window.SePrepareMemorization={createMemorizationUI:Do,memoryBrainIcon:Tt,validateMemorization:Re,copyMemorization:wo,mergeMemorization:yt,mergeDocumentMemorization:yo,getLocalSemanticWorker:ht};if(!document.getElementById("seprepare-teleprompter-style")){let e=document.createElement("style");e.id="seprepare-teleprompter-style",e.textContent=Qt,document.head.append(e)}})();
-/* SEPREPARE MEMORIZATION BUNDLE END *//* SEPREPARE REHEARSAL BUNDLE START */(()=>{var qe=`/* Ensaio interativo \u2014 integrado \xE0 identidade visual do SePrepare 1.0.73 */
-
-.reader-identity {
-  flex-wrap: wrap;
-}
-
-.reader-identity > span {
-  min-width: 140px;
-}
-
-.reader-identity-actions {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
-}
-
-.reader-identity .rehearsal-entry-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 7px 11px;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--green) 28%, var(--line));
-  background: var(--soft);
-  color: var(--green);
-}
-
-.dark .reader-identity .rehearsal-entry-btn {
-  color: var(--ink);
-  border-color: var(--line);
-}
-
-.reader-identity .rehearsal-entry-btn svg {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-}
-
-.reader-identity .rehearsal-entry-btn[data-active="true"] {
-  background: var(--green);
-  color: var(--paper);
-  border-color: var(--green);
-}
-
-.dark .reader-identity .rehearsal-entry-btn[data-active="true"] {
-  color: #18302b;
-}
-
-@media (max-width: 520px) {
-  .reader-identity {
-    margin: 0 16px 16px;
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .reader-identity > span {
-    flex: 1 1 100%;
-  }
-  .reader-identity-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-}
-
-/* Barra compacta do Ensaio interativo durante a apresenta\xE7\xE3o */
-.rehearsal-bar {
-  position: sticky;
-  top: max(8px, env(safe-area-inset-top, 0px));
-  z-index: 26;
-  margin: 0 24px 16px;
-  padding: 10px 12px;
-  border-radius: 15px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper) 95%, var(--bg));
-  box-shadow: 0 8px 24px rgba(24, 48, 43, 0.11);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: grid;
-  gap: 8px;
-}
-
-.rehearsal-bar[hidden] {
-  display: none !important;
-}
-
-@media (max-width: 520px) {
-  .rehearsal-bar {
-    margin: 0 12px 12px;
-    padding: 8px 10px;
-    border-radius: 13px;
-    gap: 7px;
-  }
-}
-
-@media (min-width: 751px) {
-  .rehearsal-bar {
-    margin: 0 0 16px;
-  }
-}
-
-@media (min-width: 1100px) {
-  .reader-sidebar .reader-identity .rehearsal-entry-btn {
-    flex: 1 1 100%;
-    justify-content: center;
-  }
-  body:not(.focus-mode) .rehearsal-bar {
-    top: 76px;
-    max-width: 1060px;
-    margin-inline: auto;
-    margin-bottom: 16px;
-  }
-}
-
-.focus-mode .rehearsal-bar {
-  max-width: 1060px;
-  margin-inline: auto;
-  margin-bottom: 14px;
-  top: max(10px, env(safe-area-inset-top, 0px));
-}
-
-@media (max-width: 750px) {
-  .focus-mode .rehearsal-bar {
-    margin-inline: 10px;
-  }
-}
-
-.rehearsal-bar-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-width: 0;
-}
-
-.rehearsal-status-group {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-  flex: 1;
-}
-
-.rehearsal-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  background: var(--soft);
-  color: var(--ink);
-  flex-shrink: 0;
-}
-
-.rehearsal-badge svg {
-  width: 13px;
-  height: 13px;
-}
-
-.rehearsal-badge.is-user {
-  background: var(--green);
-  color: var(--paper);
-}
-
-.dark .rehearsal-badge.is-user {
-  color: #18302b;
-}
-
-.rehearsal-badge.is-narrating {
-  background: color-mix(in srgb, var(--copper) 18%, var(--soft));
-  color: var(--copper);
-}
-
-.rehearsal-badge.is-listening {
-  background: color-mix(in srgb, var(--green) 20%, var(--soft));
-  color: var(--green);
-}
-
-.dark .rehearsal-badge.is-listening {
-  color: var(--ink);
-}
-
-.rehearsal-speaker-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.rehearsal-turn-counter {
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* Indicador discreto de escuta no modo Autom\xE1tico */
-.rehearsal-mic-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 9px;
-  border-radius: 9px;
-  background: var(--soft);
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.rehearsal-mic-status[hidden] {
-  display: none !important;
-}
-
-.rehearsal-mic-meter {
-  width: 44px;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--line);
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.rehearsal-mic-meter-fill {
-  display: block;
-  height: 100%;
-  width: 8%;
-  border-radius: 999px;
-  background: var(--green);
-  transition: width 120ms linear;
-}
-
-.rehearsal-notice-inline {
-  font-size: 11px;
-  line-height: 1.4;
-  padding: 6px 9px;
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--copper) 14%, var(--soft));
-  color: var(--ink);
-}
-
-.rehearsal-actions-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-  position: relative;
-}
-
-.rehearsal-primary-btn {
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 38px;
-  padding: 7px 12px;
-  border-radius: 11px;
-  font-size: 12px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: var(--green);
-  color: var(--paper);
-  border: 1px solid transparent;
-}
-
-.dark .rehearsal-primary-btn {
-  color: #18302b;
-}
-
-.rehearsal-primary-btn.secondary {
-  background: var(--soft);
-  color: var(--ink);
-  border-color: var(--line);
-}
-
-.rehearsal-primary-btn svg {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-}
-
-.rehearsal-primary-btn span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rehearsal-icon-action {
-  width: 38px;
-  min-width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--ink);
-  display: inline-grid;
-  place-items: center;
-  flex-shrink: 0;
-  padding: 0;
-}
-
-.rehearsal-icon-action svg {
-  width: 16px;
-  height: 16px;
-}
-
-.rehearsal-icon-action[disabled] {
-  opacity: 0.42;
-}
-
-.rehearsal-desktop-only {
-  display: none;
-}
-
-@media (min-width: 720px) {
-  .rehearsal-desktop-only {
-    display: inline-flex;
-  }
-  .rehearsal-primary-btn {
-    flex: 0 1 auto;
-    padding-inline: 14px;
-  }
-  .rehearsal-actions-spacer {
-    flex: 1 1 auto;
-  }
-}
-
-/* Menu contextual secund\xE1rio compacto */
-.rehearsal-more-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  z-index: 35;
-  min-width: min(250px, calc(100vw - 32px));
-  padding: 6px;
-  border-radius: 13px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  box-shadow: 0 12px 30px rgba(20, 38, 35, 0.18);
-  display: grid;
-  gap: 3px;
-}
-
-.rehearsal-more-menu[hidden] {
-  display: none !important;
-}
-
-.rehearsal-menu-item {
-  width: 100%;
-  min-height: 38px;
-  padding: 7px 10px;
-  border-radius: 9px;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-  font-size: 12px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.rehearsal-menu-item:hover,
-.rehearsal-menu-item:focus-visible {
-  background: var(--soft);
-}
-
-.rehearsal-menu-item.danger {
-  color: #a34943;
-}
-
-.dark .rehearsal-menu-item.danger {
-  color: #e48f88;
-}
-
-.rehearsal-menu-item svg {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-}
-
-/* Destaque discreto no texto da apresenta\xE7\xE3o */
-#readerText .reading-turn.is-rehearsal-current {
-  border-left-width: 4px;
-  border-radius: 0 14px 14px 0;
-  padding: 0.7em 0.75em 0.25em;
-  transition: background-color 180ms ease, border-color 180ms ease;
-}
-
-#readerText .reading-turn.is-rehearsal-other {
-  background: color-mix(in srgb, var(--copper) 9%, var(--paper));
-  border-left-color: var(--copper);
-}
-
-#readerText .reading-turn.is-rehearsal-mine {
-  background: color-mix(in srgb, var(--green) 11%, var(--soft));
-  border-left-color: var(--green);
-  box-shadow: 0 2px 12px rgba(32, 61, 58, 0.06);
-}
-
-#readerText .reading-turn .rehearsal-turn-tag {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--copper);
-  color: #ffffff;
-}
-
-#readerText .reading-turn.is-rehearsal-mine .rehearsal-turn-tag {
-  background: var(--green);
-  color: var(--paper);
-}
-
-.dark #readerText .reading-turn.is-rehearsal-mine .rehearsal-turn-tag {
-  color: #18302b;
-}
-
-/* Oculta\xE7\xE3o tempor\xE1ria para memoriza\xE7\xE3o (n\xE3o altera o documento nem onlyMine) */
-#readerText .reading-turn-body.is-memorization-hidden {
-  display: none;
-}
-
-.rehearsal-memorization-box {
-  margin: 0.2em 0 0.75em;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px dashed var(--line);
-  background: color-mix(in srgb, var(--paper) 75%, var(--soft));
-  font-family: Inter, Arial, sans-serif;
-}
-
-.rehearsal-memorization-note {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--muted);
-}
-
-.rehearsal-hint-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--copper);
-  margin-bottom: 5px;
-}
-
-.rehearsal-hint-excerpt {
-  margin: 0;
-  font-family: var(--speech-font, Inter, sans-serif);
-  font-size: calc(var(--speech-size, 24px) * 0.88);
-  line-height: var(--speech-line, 1.6);
-  color: var(--ink);
-  white-space: pre-wrap;
-}
-
-.rehearsal-inline-hint-btn {
-  margin-top: 9px;
-}
-
-/* Modal de configura\xE7\xE3o inicial e vozes por participante */
-.rehearsal-mode-cards {
-  display: grid;
-  gap: 8px;
-}
-
-.rehearsal-mode-card {
-  display: grid;
-  grid-template-columns: 20px minmax(0, 1fr);
-  align-items: start;
-  gap: 10px;
-  padding: 11px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  cursor: pointer;
-}
-
-.rehearsal-mode-card input[type="radio"] {
-  width: 20px;
-  min-width: 20px;
-  max-width: 20px;
-  height: 20px;
-  min-height: 20px;
-  margin: 0;
-  padding: 0;
-  appearance: none;
-  -webkit-appearance: none;
-  display: grid;
-  place-items: center;
-  border: 2px solid var(--muted);
-  border-radius: 50%;
-  background: var(--paper);
-}
-
-.rehearsal-mode-card input[type="radio"]::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  transform: scale(0);
-}
-
-.rehearsal-mode-card input[type="radio"]:checked {
-  border-color: var(--green);
-}
-
-.rehearsal-mode-card input[type="radio"]:checked::before {
-  transform: scale(1);
-}
-
-.rehearsal-mode-card > span {
-  min-width: 0;
-}
-
-.rehearsal-mode-card.is-selected {
-  border-color: var(--green);
-  background: var(--soft);
-}
-
-.rehearsal-mode-card strong {
-  display: block;
-  font-size: 13px;
-  color: var(--ink);
-}
-
-.rehearsal-mode-card small {
-  display: block;
-  margin-top: 2px;
-  font-size: 11px;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
-.rehearsal-silence-group {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
-}
-
-.rehearsal-silence-pill {
-  min-height: 40px;
-  padding: 7px 6px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-}
-
-.rehearsal-silence-pill[aria-pressed="true"] {
-  border-color: var(--green);
-  background: var(--green);
-  color: var(--paper);
-}
-
-.dark .rehearsal-silence-pill[aria-pressed="true"] {
-  color: #18302b;
-}
-
-.rehearsal-silence-pill small {
-  display: block;
-  font-size: 10px;
-  font-weight: 400;
-  opacity: 0.85;
-}
-
-.rehearsal-privacy-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 9px 11px;
-  border-radius: 11px;
-  background: var(--soft);
-  font-size: 11px;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
-.rehearsal-privacy-note svg {
-  width: 15px;
-  height: 15px;
-  color: var(--green);
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.rehearsal-warning-card {
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--copper) 45%, var(--line));
-  background: color-mix(in srgb, var(--copper) 11%, var(--soft));
-  display: grid;
-  gap: 8px;
-}
-
-.rehearsal-warning-card p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--ink);
-}
-
-.rehearsal-voices-list {
-  display: grid;
-  gap: 10px;
-}
-
-.rehearsal-voice-card {
-  padding: 11px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  display: grid;
-  gap: 8px;
-}
-
-.rehearsal-voice-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.rehearsal-voice-head strong {
-  font-size: 13px;
-  color: var(--ink);
-}
-
-/* Rodap\xE9 discreto de vers\xE3o em Ajustes */
-.settings-version-footer {
-  margin: 18px auto 6px;
-  text-align: center;
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.2px;
-}
-`;var Pe="speech-rhythm",pt=e=>typeof e=="string"&&/^[A-Za-z0-9_-]{1,100}$/.test(e);function ft(e){if(!e||!pt(e.id)||typeof e.name!="string"||!e.name.trim()||e.name.trim().length>80||!Number.isSafeInteger(e.ppm)||e.ppm<=0)throw Error("Informe um nome e uma quantidade v\xE1lida de palavras por minuto.");return{id:e.id,name:e.name.trim(),ppm:e.ppm,.../^#[\da-f]{6}$/i.test(e.color||"")?{color:e.color.toLowerCase()}:{}}}function He(e){try{return typeof e!="string"||e.length>1e3?null:ft(JSON.parse(e))}catch{return null}}var ke=e=>Number.isSafeInteger(e)&&e>=0&&e<=864e13,ht={ppm:[30,400],fontSize:[20,80],line:[1.2,2.5],width:[45,100],band:[20,65],countdown:[0,10]};function We(e){if(e===void 0)return;let i=r=>{if(!r)throw Error("Dados de teleprompter inv\xE1lidos.")},n=r=>i(r&&Number.isSafeInteger(r.offset)&&r.offset>=0&&r.offset<=600001&&typeof r.before=="string"&&r.before.length<=48&&typeof r.after=="string"&&r.after.length<=48&&/^[a-f0-9]{8}$/.test(r.hash)&&ke(r.at));i(e&&e.schema===1&&ke(e.updatedAt)&&ke(e.preferencesAt)&&e.preferences&&typeof e.preferences=="object"&&!Array.isArray(e.preferences));for(let[r,[l,o]]of Object.entries(ht))e.preferences[r]!==void 0&&i(Number.isFinite(e.preferences[r])&&e.preferences[r]>=l&&e.preferences[r]<=o);for(let r of["mirrorX","mirrorY","showRhythms","showTime"])e.preferences[r]!==void 0&&i(typeof e.preferences[r]=="boolean");for(let[r,l]of Object.entries({mode:["auto","rhythms","manual"],font:["Inter","Lora","Georgia","Arial","Verdana"],theme:["system","light","dark","contrast"],scope:["all","mine"]}))e.preferences[r]!==void 0&&i(l.includes(e.preferences[r]));e.bookmark!==void 0&&n(e.bookmark),i(Array.isArray(e.pauses)&&e.pauses.length<=300);let t=new Set;for(let r of e.pauses)i(r&&typeof r.id=="string"&&/^[A-Za-z0-9_.:-]{1,160}$/.test(r.id)&&!t.has(r.id)&&ke(r.updatedAt)&&Number.isInteger(r.seconds)&&r.seconds>=1&&r.seconds<=60),t.add(r.id),n(r.anchor),r.deleted!==void 0&&i(typeof r.deleted=="boolean");return e}var mt=new Set(["idea","definition","steps","cause","contrast","example","cloze","conclusion","manual"]),se=e=>typeof e=="string"&&/^[A-Za-z0-9_.:-]{1,160}$/.test(e)&&!["__proto__","constructor","prototype"].includes(e),pe=e=>Number.isSafeInteger(e)&&e>=0&&e<=864e13,xe=e=>typeof e=="string"&&/^[a-f0-9]{16}$/.test(e),ce=(e,i)=>typeof e=="string"&&e.length<=i,C=e=>{if(!e)throw Error("Dados de memoriza\xE7\xE3o inv\xE1lidos.")};function Xe(e){if(e===void 0)return e;C(e&&typeof e=="object"&&!Array.isArray(e)&&e.schema===1&&xe(e.sourceHash)&&xe(e.sourceRawHash)),C(Array.isArray(e.cards)&&e.cards.length<=2e3&&Array.isArray(e.reviews)&&e.reviews.length<=1e5&&pe(e.updatedAt));let i=new Set;for(let t of e.cards){C(t&&se(t.id)&&!i.has(t.id)&&mt.has(t.type)&&ce(t.question,400)&&ce(t.theme,140)&&Array.isArray(t.keywords)&&t.keywords.length<=5&&t.keywords.every(l=>ce(l,80))&&Array.isArray(t.hints)&&t.hints.length<=5&&t.hints.every(l=>ce(l,300))&&pe(t.updatedAt)),i.add(t.id);let r=t.anchor;C(r&&Number.isSafeInteger(r.start)&&r.start>=0&&Number.isSafeInteger(r.end)&&r.end>r.start&&r.end<=600001&&xe(r.hash)&&ce(r.prefix,32)&&ce(r.suffix,32)&&ce(r.before,48)&&ce(r.after,48)),C(t.deletedAt===void 0||pe(t.deletedAt)&&t.deleted===!0),C(t.deleted===void 0||typeof t.deleted=="boolean"),C(t.needsReview===void 0||typeof t.needsReview=="boolean"),C(t.cloze===void 0||ce(t.cloze,80)),C(t.idea===void 0||typeof t.idea=="boolean"),C(t.speakerId===void 0||ce(t.speakerId,100)),t.concepts!==void 0&&C(Array.isArray(t.concepts)&&t.concepts.length>0&&t.concepts.length<=12&&t.concepts.every(l=>ce(l,160)&&l.trim().length>0)),C(t.retrievalClue===void 0||ce(t.retrievalClue,160)),C(t.conceptsEdited===void 0||typeof t.conceptsEdited=="boolean"),C(t.needsConceptReview===void 0||typeof t.needsConceptReview=="boolean"),C(t.conceptConfidence===void 0||Number.isFinite(t.conceptConfidence)&&t.conceptConfidence>=0&&t.conceptConfidence<=2),C(t.contextRelation===void 0||["idea","definition","contrast","cause","steps","example"].includes(t.contextRelation))}let n=new Set;for(let t of e.reviews)C(t&&se(t.id)&&!n.has(t.id)&&se(t.cardId)&&xe(t.anchorHash)&&pe(t.at)&&[0,1,2].includes(t.rating)),n.add(t.id);if(e.order!==void 0&&C(e.order&&Array.isArray(e.order.ids)&&e.order.ids.length<=2e3&&e.order.ids.every(se)&&pe(e.order.at)&&se(e.order.id)),e.session!==void 0){let t=e.session;C(t&&se(t.id)&&pe(t.updatedAt)&&["normal","difficult"].includes(t.mode)&&Array.isArray(t.queue)&&t.queue.length<=2e3*3&&t.queue.every(se)&&Number.isSafeInteger(t.position)&&t.position>=0&&t.position<=t.queue.length&&Array.isArray(t.answers)&&t.answers.length<=2e3*3&&t.answers.every(se))}if(e.ideaSource!==void 0&&C(xe(e.ideaSource)),e.ideaEngine!==void 0&&C(e.ideaEngine===2),e.coverageRevision!==void 0&&C(e.coverageRevision===1),e.reasoningRevision!==void 0&&C(e.reasoningRevision===1),e.contextRevision!==void 0&&C(e.contextRevision===1),e.contextEngine!==void 0&&C(e.contextEngine===3),e.analysisInfo!==void 0&&C(e.analysisInfo&&typeof e.analysisInfo.semantic=="boolean"&&Number.isInteger(e.analysisInfo.excluded)&&e.analysisInfo.excluded>=0&&Number.isInteger(e.analysisInfo.review)&&e.analysisInfo.review>=0),e.ideaBank!==void 0&&C(Array.isArray(e.ideaBank)&&e.ideaBank.length<=2e3&&e.ideaBank.every(se)&&new Set(e.ideaBank).size===e.ideaBank.length),e.ideaRounds!==void 0){C(Array.isArray(e.ideaRounds)&&e.ideaRounds.length<=1e4);let t=new Set;for(let r of e.ideaRounds)gt(r),C(!t.has(r.id)),t.add(r.id)}return e}function gt(e){C(e&&se(e.id)&&pe(e.at)&&pe(e.updatedAt)&&xe(e.sourceHash)&&Array.isArray(e.scope)&&e.scope.length<=50&&e.scope.every(n=>ce(n,100))&&new Set(e.scope).size===e.scope.length),C(Array.isArray(e.entries)&&e.entries.length>0&&e.entries.length<=(e.training===2?2e3:12)&&e.entries.every(n=>n&&se(n.cardId)&&xe(n.anchorHash))&&new Set(e.entries.map(n=>n.cardId)).size===e.entries.length),C(Array.isArray(e.answers)&&e.answers.length<=6e3);let i=new Set;for(let n of e.answers)C(n&&se(n.id)&&!i.has(n.id)&&pe(n.at)&&Number.isInteger(n.index)&&n.index>=0&&n.index<e.entries.length&&(e.training===2?[0,1,2]:[0,2]).includes(n.rating)),i.add(n.id);if(C(e.cursor&&se(e.cursor.id)&&pe(e.cursor.at)&&Number.isInteger(e.cursor.index)&&e.cursor.index>=0&&e.cursor.index<(e.training===2?e.groups?.length:e.entries.length)),C(e.finishedAt===void 0||pe(e.finishedAt)),e.training!==void 0){C(e.training===2&&[1,2,3,4].includes(e.level)&&Array.isArray(e.groups)&&e.groups.length>0&&e.groups.length<=2e3);let n=e.groups.flat();C(e.groups.every(r=>Array.isArray(r)&&r.length>0&&r.every(l=>Number.isInteger(l)&&l>=0&&l<e.entries.length))&&n.length===e.entries.length&&new Set(n).size===n.length&&n.every((r,l)=>r===l)),C(Array.isArray(e.signals)&&e.signals.length<=12e3);let t=new Set;for(let r of e.signals)C(r&&se(r.id)&&!t.has(r.id)&&pe(r.at)&&Number.isInteger(r.index)&&r.index>=0&&r.index<e.entries.length&&["hint","reveal","difficult"].includes(r.kind)),t.add(r.id)}return e}var ze="speech-time",Ve="speech-time-point";function je(e){if(typeof e!="string"||!/^\d{1,6}(?:@[A-Za-z0-9_-]{1,80})?$/.test(e))return null;let i=Number(e.split("@")[0]);return Number.isSafeInteger(i)&&i<=999999?i:null}var Xt=Uint32Array.from([1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298]);var yt="presenter-note",vt=e=>typeof e=="string"&&/^[a-zA-Z0-9_-]{1,100}$/.test(e);function De(e){if(e===void 0)return[];if(!Array.isArray(e)||e.length>1e3)throw Error("Lista de anota\xE7\xF5es inv\xE1lida.");let i=new Set,n=t=>Number.isFinite(Number(t))?Math.max(0,Number(t)):0;return e.map(t=>{if(!vt(t?.id)||i.has(t.id)||typeof t.text!="string"||!t.text.trim()||t.text.length>2e3)throw Error("Anota\xE7\xE3o privada inv\xE1lida.");return i.add(t.id),{id:t.id,text:t.text,createdAt:n(t.createdAt),updatedAt:n(t.updatedAt),...t.archived===!0?{archived:!0}:{}}})}function Te(e){return{ops:(e?.ops||[]).map(i=>{let n={...i};if(i.attributes){let t={...i.attributes};delete t[yt],Object.keys(t).length?n.attributes=t:delete n.attributes}return n})}}var Je=e=>JSON.parse(JSON.stringify(e));var bt=e=>(e?.ops||[]).map(i=>typeof i.insert=="string"?i.insert:i.insert?.pagebreak?`
-`:"").join("");var Ne=e=>e?.type==="part";var Ye=(e,i)=>e.participants?.find(n=>n.id===i)?.name||"Sem participante";function Ge(e){if(!Array.isArray(e.participants)||e.participants.length>50)throw Error("Use at\xE9 50 participantes nesta parte.");let i=new Set;if(e.participants=e.participants.map(n=>{if(typeof n?.id!="string"||!n.id||n.id.length>100||i.has(n.id)||typeof n.name!="string"||!n.name.trim())throw Error("Participante inv\xE1lido.");return i.add(n.id),{id:n.id,name:n.name.trim().slice(0,80)}}),e.partFormat!==void 0&&e.partFormat!==1&&e.partFormat!==2)throw Error("Esta parte usa um formato mais recente. Atualize o aplicativo.");if(e.partFormat!==2){if(!Array.isArray(e.turns)||e.turns.length>500)throw Error("Falas inv\xE1lidas na parte antiga.");let n=new Set,t=[];for(let r of e.turns){if(typeof r?.id!="string"||n.has(r.id)||!i.has(r.participantId))throw Error("Fala sem participante v\xE1lido.");n.add(r.id),Ee(r.delta);for(let l of r.delta.ops)t.push({...Je(l),...typeof l.insert=="string"?{attributes:{...l.attributes,speaker:r.participantId}}:{}});(typeof t.at(-1)?.insert!="string"||!t.at(-1).insert.endsWith(`
+/* SEPREPARE MEMORIZATION BUNDLE END *//* SEPREPARE REHEARSAL BUNDLE START */(()=>{var Ge=`/* Ensaio interativo \u2014 integrado \xE0 identidade visual do SePrepare 1.0.73 */\r
+\r
+.reader-identity {\r
+  flex-wrap: wrap;\r
+}\r
+\r
+.reader-identity > span {\r
+  min-width: 140px;\r
+}\r
+\r
+.reader-identity-actions {\r
+  display: flex;\r
+  align-items: center;\r
+  gap: 7px;\r
+  flex-wrap: wrap;\r
+}\r
+\r
+.reader-identity .rehearsal-entry-btn {\r
+  display: inline-flex;\r
+  align-items: center;\r
+  gap: 6px;\r
+  min-height: 36px;\r
+  padding: 7px 11px;\r
+  font-size: 11px;\r
+  font-weight: 600;\r
+  border-radius: 10px;\r
+  border: 1px solid color-mix(in srgb, var(--green) 28%, var(--line));\r
+  background: var(--soft);\r
+  color: var(--green);\r
+}\r
+\r
+.dark .reader-identity .rehearsal-entry-btn {\r
+  color: var(--ink);\r
+  border-color: var(--line);\r
+}\r
+\r
+.reader-identity .rehearsal-entry-btn svg {\r
+  width: 15px;\r
+  height: 15px;\r
+  flex-shrink: 0;\r
+}\r
+\r
+.reader-identity .rehearsal-entry-btn[data-active="true"] {\r
+  background: var(--green);\r
+  color: var(--paper);\r
+  border-color: var(--green);\r
+}\r
+\r
+.dark .reader-identity .rehearsal-entry-btn[data-active="true"] {\r
+  color: #18302b;\r
+}\r
+\r
+@media (max-width: 520px) {\r
+  .reader-identity {\r
+    margin: 0 16px 16px;\r
+    padding: 10px 12px;\r
+    gap: 8px;\r
+  }\r
+  .reader-identity > span {\r
+    flex: 1 1 100%;\r
+  }\r
+  .reader-identity-actions {\r
+    width: 100%;\r
+    justify-content: flex-start;\r
+  }\r
+}\r
+\r
+/* Barra compacta do Ensaio interativo durante a apresenta\xE7\xE3o */\r
+.rehearsal-bar {\r
+  position: sticky;\r
+  top: max(8px, env(safe-area-inset-top, 0px));\r
+  z-index: 26;\r
+  margin: 0 24px 16px;\r
+  padding: 10px 12px;\r
+  border-radius: 15px;\r
+  border: 1px solid var(--line);\r
+  background: color-mix(in srgb, var(--paper) 95%, var(--bg));\r
+  box-shadow: 0 8px 24px rgba(24, 48, 43, 0.11);\r
+  backdrop-filter: blur(8px);\r
+  -webkit-backdrop-filter: blur(8px);\r
+  display: grid;\r
+  gap: 8px;\r
+}\r
+\r
+.rehearsal-bar[hidden] {\r
+  display: none !important;\r
+}\r
+\r
+@media (max-width: 520px) {\r
+  .rehearsal-bar {\r
+    margin: 0 12px 12px;\r
+    padding: 8px 10px;\r
+    border-radius: 13px;\r
+    gap: 7px;\r
+  }\r
+}\r
+\r
+@media (min-width: 751px) {\r
+  .rehearsal-bar {\r
+    margin: 0 0 16px;\r
+  }\r
+}\r
+\r
+@media (min-width: 1100px) {\r
+  .reader-sidebar .reader-identity .rehearsal-entry-btn {\r
+    flex: 1 1 100%;\r
+    justify-content: center;\r
+  }\r
+  body:not(.focus-mode) .rehearsal-bar {\r
+    top: 76px;\r
+    max-width: 1060px;\r
+    margin-inline: auto;\r
+    margin-bottom: 16px;\r
+  }\r
+}\r
+\r
+.focus-mode .rehearsal-bar {\r
+  max-width: 1060px;\r
+  margin-inline: auto;\r
+  margin-bottom: 14px;\r
+  top: max(10px, env(safe-area-inset-top, 0px));\r
+}\r
+\r
+@media (max-width: 750px) {\r
+  .focus-mode .rehearsal-bar {\r
+    margin-inline: 10px;\r
+  }\r
+}\r
+\r
+.rehearsal-bar-head {\r
+  display: flex;\r
+  align-items: center;\r
+  justify-content: space-between;\r
+  gap: 8px;\r
+  min-width: 0;\r
+}\r
+\r
+.rehearsal-status-group {\r
+  display: flex;\r
+  align-items: center;\r
+  gap: 7px;\r
+  min-width: 0;\r
+  flex: 1;\r
+}\r
+\r
+.rehearsal-badge {\r
+  display: inline-flex;\r
+  align-items: center;\r
+  gap: 5px;\r
+  padding: 3px 8px;\r
+  border-radius: 999px;\r
+  font-size: 11px;\r
+  font-weight: 700;\r
+  letter-spacing: 0.2px;\r
+  background: var(--soft);\r
+  color: var(--ink);\r
+  flex-shrink: 0;\r
+}\r
+\r
+.rehearsal-badge svg {\r
+  width: 13px;\r
+  height: 13px;\r
+}\r
+\r
+.rehearsal-badge.is-user {\r
+  background: var(--green);\r
+  color: var(--paper);\r
+}\r
+\r
+.dark .rehearsal-badge.is-user {\r
+  color: #18302b;\r
+}\r
+\r
+.rehearsal-badge.is-narrating {\r
+  background: color-mix(in srgb, var(--copper) 18%, var(--soft));\r
+  color: var(--copper);\r
+}\r
+\r
+.rehearsal-badge.is-listening {\r
+  background: color-mix(in srgb, var(--green) 20%, var(--soft));\r
+  color: var(--green);\r
+}\r
+\r
+.dark .rehearsal-badge.is-listening {\r
+  color: var(--ink);\r
+}\r
+\r
+.rehearsal-speaker-name {\r
+  font-size: 12px;\r
+  font-weight: 600;\r
+  color: var(--ink);\r
+  white-space: nowrap;\r
+  overflow: hidden;\r
+  text-overflow: ellipsis;\r
+  min-width: 0;\r
+}\r
+\r
+.rehearsal-turn-counter {\r
+  font-size: 11px;\r
+  color: var(--muted);\r
+  white-space: nowrap;\r
+  flex-shrink: 0;\r
+}\r
+\r
+/* Indicador discreto de escuta no modo Autom\xE1tico */\r
+.rehearsal-mic-status {\r
+  display: flex;\r
+  align-items: center;\r
+  gap: 8px;\r
+  padding: 5px 9px;\r
+  border-radius: 9px;\r
+  background: var(--soft);\r
+  font-size: 11px;\r
+  color: var(--muted);\r
+}\r
+\r
+.rehearsal-mic-status[hidden] {\r
+  display: none !important;\r
+}\r
+\r
+.rehearsal-mic-meter {\r
+  width: 44px;\r
+  height: 5px;\r
+  border-radius: 999px;\r
+  background: var(--line);\r
+  overflow: hidden;\r
+  flex-shrink: 0;\r
+}\r
+\r
+.rehearsal-mic-meter-fill {\r
+  display: block;\r
+  height: 100%;\r
+  width: 8%;\r
+  border-radius: 999px;\r
+  background: var(--green);\r
+  transition: width 120ms linear;\r
+}\r
+\r
+.rehearsal-notice-inline {\r
+  font-size: 11px;\r
+  line-height: 1.4;\r
+  padding: 6px 9px;\r
+  border-radius: 9px;\r
+  background: color-mix(in srgb, var(--copper) 14%, var(--soft));\r
+  color: var(--ink);\r
+}\r
+\r
+.rehearsal-actions-row {\r
+  display: flex;\r
+  align-items: center;\r
+  gap: 6px;\r
+  min-width: 0;\r
+  position: relative;\r
+}\r
+\r
+.rehearsal-primary-btn {\r
+  flex: 1 1 auto;\r
+  min-width: 0;\r
+  min-height: 38px;\r
+  padding: 7px 12px;\r
+  border-radius: 11px;\r
+  font-size: 12px;\r
+  font-weight: 600;\r
+  display: inline-flex;\r
+  align-items: center;\r
+  justify-content: center;\r
+  gap: 6px;\r
+  background: var(--green);\r
+  color: var(--paper);\r
+  border: 1px solid transparent;\r
+}\r
+\r
+.dark .rehearsal-primary-btn {\r
+  color: #18302b;\r
+}\r
+\r
+.rehearsal-primary-btn.secondary {\r
+  background: var(--soft);\r
+  color: var(--ink);\r
+  border-color: var(--line);\r
+}\r
+\r
+.rehearsal-primary-btn svg {\r
+  width: 15px;\r
+  height: 15px;\r
+  flex-shrink: 0;\r
+}\r
+\r
+.rehearsal-primary-btn span {\r
+  white-space: nowrap;\r
+  overflow: hidden;\r
+  text-overflow: ellipsis;\r
+}\r
+\r
+.rehearsal-icon-action {\r
+  width: 38px;\r
+  min-width: 38px;\r
+  height: 38px;\r
+  border-radius: 10px;\r
+  border: 1px solid var(--line);\r
+  background: var(--paper);\r
+  color: var(--ink);\r
+  display: inline-grid;\r
+  place-items: center;\r
+  flex-shrink: 0;\r
+  padding: 0;\r
+}\r
+\r
+.rehearsal-icon-action svg {\r
+  width: 16px;\r
+  height: 16px;\r
+}\r
+\r
+.rehearsal-icon-action[disabled] {\r
+  opacity: 0.42;\r
+}\r
+\r
+.rehearsal-desktop-only {\r
+  display: none;\r
+}\r
+\r
+@media (min-width: 720px) {\r
+  .rehearsal-desktop-only {\r
+    display: inline-flex;\r
+  }\r
+  .rehearsal-primary-btn {\r
+    flex: 0 1 auto;\r
+    padding-inline: 14px;\r
+  }\r
+  .rehearsal-actions-spacer {\r
+    flex: 1 1 auto;\r
+  }\r
+}\r
+\r
+/* Menu contextual secund\xE1rio compacto */\r
+.rehearsal-more-menu {\r
+  position: absolute;\r
+  right: 0;\r
+  top: calc(100% + 6px);\r
+  z-index: 35;\r
+  min-width: min(250px, calc(100vw - 32px));\r
+  padding: 6px;\r
+  border-radius: 13px;\r
+  border: 1px solid var(--line);\r
+  background: var(--paper);\r
+  box-shadow: 0 12px 30px rgba(20, 38, 35, 0.18);\r
+  display: grid;\r
+  gap: 3px;\r
+}\r
+\r
+.rehearsal-more-menu[hidden] {\r
+  display: none !important;\r
+}\r
+\r
+.rehearsal-menu-item {\r
+  width: 100%;\r
+  min-height: 38px;\r
+  padding: 7px 10px;\r
+  border-radius: 9px;\r
+  border: 0;\r
+  background: transparent;\r
+  color: var(--ink);\r
+  font-size: 12px;\r
+  text-align: left;\r
+  display: flex;\r
+  align-items: center;\r
+  gap: 8px;\r
+}\r
+\r
+.rehearsal-menu-item:hover,\r
+.rehearsal-menu-item:focus-visible {\r
+  background: var(--soft);\r
+}\r
+\r
+.rehearsal-menu-item.danger {\r
+  color: #a34943;\r
+}\r
+\r
+.dark .rehearsal-menu-item.danger {\r
+  color: #e48f88;\r
+}\r
+\r
+.rehearsal-menu-item svg {\r
+  width: 15px;\r
+  height: 15px;\r
+  flex-shrink: 0;\r
+}\r
+\r
+/* Destaque discreto no texto da apresenta\xE7\xE3o */\r
+#readerText .reading-turn.is-rehearsal-current {\r
+  border-left-width: 4px;\r
+  border-radius: 0 14px 14px 0;\r
+  padding: 0.7em 0.75em 0.25em;\r
+  transition: background-color 180ms ease, border-color 180ms ease;\r
+}\r
+\r
+#readerText .reading-turn.is-rehearsal-other {\r
+  background: color-mix(in srgb, var(--copper) 9%, var(--paper));\r
+  border-left-color: var(--copper);\r
+}\r
+\r
+#readerText .reading-turn.is-rehearsal-mine {\r
+  background: color-mix(in srgb, var(--green) 11%, var(--soft));\r
+  border-left-color: var(--green);\r
+  box-shadow: 0 2px 12px rgba(32, 61, 58, 0.06);\r
+}\r
+\r
+#readerText .reading-turn .rehearsal-turn-tag {\r
+  font-size: 10px;\r
+  font-weight: 700;\r
+  letter-spacing: 0.3px;\r
+  padding: 2px 7px;\r
+  border-radius: 999px;\r
+  background: var(--copper);\r
+  color: #ffffff;\r
+}\r
+\r
+#readerText .reading-turn.is-rehearsal-mine .rehearsal-turn-tag {\r
+  background: var(--green);\r
+  color: var(--paper);\r
+}\r
+\r
+.dark #readerText .reading-turn.is-rehearsal-mine .rehearsal-turn-tag {\r
+  color: #18302b;\r
+}\r
+\r
+/* Oculta\xE7\xE3o tempor\xE1ria para memoriza\xE7\xE3o (n\xE3o altera o documento nem onlyMine) */\r
+#readerText .reading-turn-body.is-memorization-hidden {\r
+  display: none;\r
+}\r
+\r
+.rehearsal-memorization-box {\r
+  margin: 0.2em 0 0.75em;\r
+  padding: 12px 14px;\r
+  border-radius: 12px;\r
+  border: 1px dashed var(--line);\r
+  background: color-mix(in srgb, var(--paper) 75%, var(--soft));\r
+  font-family: Inter, Arial, sans-serif;\r
+}\r
+\r
+.rehearsal-memorization-note {\r
+  margin: 0;\r
+  font-size: 13px;\r
+  line-height: 1.5;\r
+  color: var(--muted);\r
+}\r
+\r
+.rehearsal-hint-label {\r
+  display: block;\r
+  font-size: 11px;\r
+  font-weight: 600;\r
+  color: var(--copper);\r
+  margin-bottom: 5px;\r
+}\r
+\r
+.rehearsal-hint-excerpt {\r
+  margin: 0;\r
+  font-family: var(--speech-font, Inter, sans-serif);\r
+  font-size: calc(var(--speech-size, 24px) * 0.88);\r
+  line-height: var(--speech-line, 1.6);\r
+  color: var(--ink);\r
+  white-space: pre-wrap;\r
+}\r
+\r
+.rehearsal-inline-hint-btn {\r
+  margin-top: 9px;\r
+}\r
+\r
+/* Modal de configura\xE7\xE3o inicial e vozes por participante */\r
+.rehearsal-mode-cards {\r
+  display: grid;\r
+  gap: 8px;\r
+}\r
+\r
+.rehearsal-mode-card {\r
+  display: grid;\r
+  grid-template-columns: 20px minmax(0, 1fr);\r
+  align-items: start;\r
+  gap: 10px;\r
+  padding: 11px 12px;\r
+  border-radius: 12px;\r
+  border: 1px solid var(--line);\r
+  background: var(--paper);\r
+  cursor: pointer;\r
+}\r
+\r
+.rehearsal-mode-card input[type="radio"] {\r
+  width: 20px;\r
+  min-width: 20px;\r
+  max-width: 20px;\r
+  height: 20px;\r
+  min-height: 20px;\r
+  margin: 0;\r
+  padding: 0;\r
+  appearance: none;\r
+  -webkit-appearance: none;\r
+  display: grid;\r
+  place-items: center;\r
+  border: 2px solid var(--muted);\r
+  border-radius: 50%;\r
+  background: var(--paper);\r
+}\r
+\r
+.rehearsal-mode-card input[type="radio"]::before {\r
+  content: '';\r
+  width: 8px;\r
+  height: 8px;\r
+  border-radius: 50%;\r
+  background: var(--green);\r
+  transform: scale(0);\r
+}\r
+\r
+.rehearsal-mode-card input[type="radio"]:checked {\r
+  border-color: var(--green);\r
+}\r
+\r
+.rehearsal-mode-card input[type="radio"]:checked::before {\r
+  transform: scale(1);\r
+}\r
+\r
+.rehearsal-mode-card > span {\r
+  min-width: 0;\r
+}\r
+\r
+.rehearsal-mode-card.is-selected {\r
+  border-color: var(--green);\r
+  background: var(--soft);\r
+}\r
+\r
+.rehearsal-mode-card strong {\r
+  display: block;\r
+  font-size: 13px;\r
+  color: var(--ink);\r
+}\r
+\r
+.rehearsal-mode-card small {\r
+  display: block;\r
+  margin-top: 2px;\r
+  font-size: 11px;\r
+  line-height: 1.45;\r
+  color: var(--muted);\r
+}\r
+\r
+.rehearsal-silence-group {\r
+  display: grid;\r
+  grid-template-columns: repeat(3, minmax(0, 1fr));\r
+  gap: 7px;\r
+}\r
+\r
+.rehearsal-silence-pill {\r
+  min-height: 40px;\r
+  padding: 7px 6px;\r
+  border-radius: 10px;\r
+  border: 1px solid var(--line);\r
+  background: var(--paper);\r
+  color: var(--ink);\r
+  font-size: 12px;\r
+  font-weight: 600;\r
+  text-align: center;\r
+}\r
+\r
+.rehearsal-silence-pill[aria-pressed="true"] {\r
+  border-color: var(--green);\r
+  background: var(--green);\r
+  color: var(--paper);\r
+}\r
+\r
+.dark .rehearsal-silence-pill[aria-pressed="true"] {\r
+  color: #18302b;\r
+}\r
+\r
+.rehearsal-silence-pill small {\r
+  display: block;\r
+  font-size: 10px;\r
+  font-weight: 400;\r
+  opacity: 0.85;\r
+}\r
+\r
+.rehearsal-privacy-note {\r
+  display: flex;\r
+  align-items: flex-start;\r
+  gap: 8px;\r
+  padding: 9px 11px;\r
+  border-radius: 11px;\r
+  background: var(--soft);\r
+  font-size: 11px;\r
+  line-height: 1.45;\r
+  color: var(--muted);\r
+}\r
+\r
+.rehearsal-privacy-note svg {\r
+  width: 15px;\r
+  height: 15px;\r
+  color: var(--green);\r
+  flex-shrink: 0;\r
+  margin-top: 1px;\r
+}\r
+\r
+.rehearsal-warning-card {\r
+  padding: 10px 12px;\r
+  border-radius: 12px;\r
+  border: 1px solid color-mix(in srgb, var(--copper) 45%, var(--line));\r
+  background: color-mix(in srgb, var(--copper) 11%, var(--soft));\r
+  display: grid;\r
+  gap: 8px;\r
+}\r
+\r
+.rehearsal-warning-card p {\r
+  margin: 0;\r
+  font-size: 12px;\r
+  line-height: 1.45;\r
+  color: var(--ink);\r
+}\r
+\r
+.rehearsal-voices-list {\r
+  display: grid;\r
+  gap: 10px;\r
+}\r
+\r
+.rehearsal-voice-card {\r
+  padding: 11px 12px;\r
+  border-radius: 12px;\r
+  border: 1px solid var(--line);\r
+  background: var(--paper);\r
+  display: grid;\r
+  gap: 8px;\r
+}\r
+\r
+.rehearsal-voice-head {\r
+  display: flex;\r
+  align-items: center;\r
+  justify-content: space-between;\r
+  gap: 8px;\r
+}\r
+\r
+.rehearsal-voice-head strong {\r
+  font-size: 13px;\r
+  color: var(--ink);\r
+}\r
+\r
+/* Rodap\xE9 discreto de vers\xE3o em Ajustes */\r
+.settings-version-footer {\r
+  margin: 18px auto 6px;\r
+  text-align: center;\r
+  font-size: 11px;\r
+  color: var(--muted);\r
+  letter-spacing: 0.2px;\r
+}\r
+`;var Ve="speech-rhythm",ht=e=>typeof e=="string"&&/^[A-Za-z0-9_-]{1,100}$/.test(e);function mt(e){if(!e||!ht(e.id)||typeof e.name!="string"||!e.name.trim()||e.name.trim().length>80||!Number.isSafeInteger(e.ppm)||e.ppm<=0)throw Error("Informe um nome e uma quantidade v\xE1lida de palavras por minuto.");return{id:e.id,name:e.name.trim(),ppm:e.ppm,.../^#[\da-f]{6}$/i.test(e.color||"")?{color:e.color.toLowerCase()}:{}}}function je(e){try{return typeof e!="string"||e.length>1e3?null:mt(JSON.parse(e))}catch{return null}}var Ee=e=>Number.isSafeInteger(e)&&e>=0&&e<=864e13,gt={ppm:[30,400],fontSize:[20,80],line:[1.2,2.5],width:[45,100],band:[20,65],countdown:[0,10]};function Ye(e){if(e===void 0)return;let i=r=>{if(!r)throw Error("Dados de teleprompter inv\xE1lidos.")},n=r=>i(r&&Number.isSafeInteger(r.offset)&&r.offset>=0&&r.offset<=600001&&typeof r.before=="string"&&r.before.length<=48&&typeof r.after=="string"&&r.after.length<=48&&/^[a-f0-9]{8}$/.test(r.hash)&&Ee(r.at));i(e&&e.schema===1&&Ee(e.updatedAt)&&Ee(e.preferencesAt)&&e.preferences&&typeof e.preferences=="object"&&!Array.isArray(e.preferences));for(let[r,[l,o]]of Object.entries(gt))e.preferences[r]!==void 0&&i(Number.isFinite(e.preferences[r])&&e.preferences[r]>=l&&e.preferences[r]<=o);for(let r of["mirrorX","mirrorY","showRhythms","showTime"])e.preferences[r]!==void 0&&i(typeof e.preferences[r]=="boolean");for(let[r,l]of Object.entries({mode:["auto","rhythms","manual"],font:["Inter","Lora","Georgia","Arial","Verdana"],theme:["system","light","dark","contrast"],scope:["all","mine"]}))e.preferences[r]!==void 0&&i(l.includes(e.preferences[r]));e.bookmark!==void 0&&n(e.bookmark),i(Array.isArray(e.pauses)&&e.pauses.length<=300);let t=new Set;for(let r of e.pauses)i(r&&typeof r.id=="string"&&/^[A-Za-z0-9_.:-]{1,160}$/.test(r.id)&&!t.has(r.id)&&Ee(r.updatedAt)&&Number.isInteger(r.seconds)&&r.seconds>=1&&r.seconds<=60),t.add(r.id),n(r.anchor),r.deleted!==void 0&&i(typeof r.deleted=="boolean");return e}var yt=new Set(["idea","definition","steps","cause","contrast","example","cloze","conclusion","manual"]),se=e=>typeof e=="string"&&/^[A-Za-z0-9_.:-]{1,160}$/.test(e)&&!["__proto__","constructor","prototype"].includes(e),fe=e=>Number.isSafeInteger(e)&&e>=0&&e<=864e13,Se=e=>typeof e=="string"&&/^[a-f0-9]{16}$/.test(e),de=(e,i)=>typeof e=="string"&&e.length<=i,C=e=>{if(!e)throw Error("Dados de memoriza\xE7\xE3o inv\xE1lidos.")};function Ze(e){if(e===void 0)return e;C(e&&typeof e=="object"&&!Array.isArray(e)&&e.schema===1&&Se(e.sourceHash)&&Se(e.sourceRawHash)),C(Array.isArray(e.cards)&&e.cards.length<=2e3&&Array.isArray(e.reviews)&&e.reviews.length<=1e5&&fe(e.updatedAt));let i=new Set;for(let t of e.cards){C(t&&se(t.id)&&!i.has(t.id)&&yt.has(t.type)&&de(t.question,400)&&de(t.theme,140)&&Array.isArray(t.keywords)&&t.keywords.length<=5&&t.keywords.every(l=>de(l,80))&&Array.isArray(t.hints)&&t.hints.length<=5&&t.hints.every(l=>de(l,300))&&fe(t.updatedAt)),i.add(t.id);let r=t.anchor;C(r&&Number.isSafeInteger(r.start)&&r.start>=0&&Number.isSafeInteger(r.end)&&r.end>r.start&&r.end<=600001&&Se(r.hash)&&de(r.prefix,32)&&de(r.suffix,32)&&de(r.before,48)&&de(r.after,48)),C(t.deletedAt===void 0||fe(t.deletedAt)&&t.deleted===!0),C(t.deleted===void 0||typeof t.deleted=="boolean"),C(t.needsReview===void 0||typeof t.needsReview=="boolean"),C(t.cloze===void 0||de(t.cloze,80)),C(t.idea===void 0||typeof t.idea=="boolean"),C(t.speakerId===void 0||de(t.speakerId,100)),t.concepts!==void 0&&C(Array.isArray(t.concepts)&&t.concepts.length>0&&t.concepts.length<=12&&t.concepts.every(l=>de(l,160)&&l.trim().length>0)),C(t.retrievalClue===void 0||de(t.retrievalClue,160)),C(t.conceptsEdited===void 0||typeof t.conceptsEdited=="boolean"),C(t.needsConceptReview===void 0||typeof t.needsConceptReview=="boolean"),C(t.conceptConfidence===void 0||Number.isFinite(t.conceptConfidence)&&t.conceptConfidence>=0&&t.conceptConfidence<=2),C(t.contextRelation===void 0||["idea","definition","contrast","cause","steps","example"].includes(t.contextRelation))}let n=new Set;for(let t of e.reviews)C(t&&se(t.id)&&!n.has(t.id)&&se(t.cardId)&&Se(t.anchorHash)&&fe(t.at)&&[0,1,2].includes(t.rating)),n.add(t.id);if(e.order!==void 0&&C(e.order&&Array.isArray(e.order.ids)&&e.order.ids.length<=2e3&&e.order.ids.every(se)&&fe(e.order.at)&&se(e.order.id)),e.session!==void 0){let t=e.session;C(t&&se(t.id)&&fe(t.updatedAt)&&["normal","difficult"].includes(t.mode)&&Array.isArray(t.queue)&&t.queue.length<=2e3*3&&t.queue.every(se)&&Number.isSafeInteger(t.position)&&t.position>=0&&t.position<=t.queue.length&&Array.isArray(t.answers)&&t.answers.length<=2e3*3&&t.answers.every(se))}if(e.ideaSource!==void 0&&C(Se(e.ideaSource)),e.ideaEngine!==void 0&&C(e.ideaEngine===2),e.coverageRevision!==void 0&&C(e.coverageRevision===1),e.reasoningRevision!==void 0&&C(e.reasoningRevision===1),e.contextRevision!==void 0&&C(e.contextRevision===1),e.contextEngine!==void 0&&C(e.contextEngine===3),e.analysisInfo!==void 0&&C(e.analysisInfo&&typeof e.analysisInfo.semantic=="boolean"&&Number.isInteger(e.analysisInfo.excluded)&&e.analysisInfo.excluded>=0&&Number.isInteger(e.analysisInfo.review)&&e.analysisInfo.review>=0),e.ideaBank!==void 0&&C(Array.isArray(e.ideaBank)&&e.ideaBank.length<=2e3&&e.ideaBank.every(se)&&new Set(e.ideaBank).size===e.ideaBank.length),e.ideaRounds!==void 0){C(Array.isArray(e.ideaRounds)&&e.ideaRounds.length<=1e4);let t=new Set;for(let r of e.ideaRounds)vt(r),C(!t.has(r.id)),t.add(r.id)}return e}function vt(e){C(e&&se(e.id)&&fe(e.at)&&fe(e.updatedAt)&&Se(e.sourceHash)&&Array.isArray(e.scope)&&e.scope.length<=50&&e.scope.every(n=>de(n,100))&&new Set(e.scope).size===e.scope.length),C(Array.isArray(e.entries)&&e.entries.length>0&&e.entries.length<=(e.training===2?2e3:12)&&e.entries.every(n=>n&&se(n.cardId)&&Se(n.anchorHash))&&new Set(e.entries.map(n=>n.cardId)).size===e.entries.length),C(Array.isArray(e.answers)&&e.answers.length<=6e3);let i=new Set;for(let n of e.answers)C(n&&se(n.id)&&!i.has(n.id)&&fe(n.at)&&Number.isInteger(n.index)&&n.index>=0&&n.index<e.entries.length&&(e.training===2?[0,1,2]:[0,2]).includes(n.rating)),i.add(n.id);if(C(e.cursor&&se(e.cursor.id)&&fe(e.cursor.at)&&Number.isInteger(e.cursor.index)&&e.cursor.index>=0&&e.cursor.index<(e.training===2?e.groups?.length:e.entries.length)),C(e.finishedAt===void 0||fe(e.finishedAt)),e.training!==void 0){C(e.training===2&&[1,2,3,4].includes(e.level)&&Array.isArray(e.groups)&&e.groups.length>0&&e.groups.length<=2e3);let n=e.groups.flat();C(e.groups.every(r=>Array.isArray(r)&&r.length>0&&r.every(l=>Number.isInteger(l)&&l>=0&&l<e.entries.length))&&n.length===e.entries.length&&new Set(n).size===n.length&&n.every((r,l)=>r===l)),C(Array.isArray(e.signals)&&e.signals.length<=12e3);let t=new Set;for(let r of e.signals)C(r&&se(r.id)&&!t.has(r.id)&&fe(r.at)&&Number.isInteger(r.index)&&r.index>=0&&r.index<e.entries.length&&["hint","reveal","difficult"].includes(r.kind)),t.add(r.id)}return e}var De="speech-time",Be="speech-time-point";function Je(e){if(typeof e!="string"||!/^\d{1,6}(?:@[A-Za-z0-9_-]{1,80})?$/.test(e))return null;let i=Number(e.split("@")[0]);return Number.isSafeInteger(i)&&i<=999999?i:null}var Yt=Uint32Array.from([1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298]);var bt="presenter-note",xt=e=>typeof e=="string"&&/^[a-zA-Z0-9_-]{1,100}$/.test(e);function Ue(e){if(e===void 0)return[];if(!Array.isArray(e)||e.length>1e3)throw Error("Lista de anota\xE7\xF5es inv\xE1lida.");let i=new Set,n=t=>Number.isFinite(Number(t))?Math.max(0,Number(t)):0;return e.map(t=>{if(!xt(t?.id)||i.has(t.id)||typeof t.text!="string"||!t.text.trim()||t.text.length>2e3)throw Error("Anota\xE7\xE3o privada inv\xE1lida.");return i.add(t.id),{id:t.id,text:t.text,createdAt:n(t.createdAt),updatedAt:n(t.updatedAt),...t.archived===!0?{archived:!0}:{}}})}function Ne(e){return{ops:(e?.ops||[]).map(i=>{let n={...i};if(i.attributes){let t={...i.attributes};delete t[bt],Object.keys(t).length?n.attributes=t:delete n.attributes}return n})}}var Fe=e=>JSON.parse(JSON.stringify(e));var wt=e=>(e?.ops||[]).map(i=>typeof i.insert=="string"?i.insert:i.insert?.pagebreak?`
+`:"").join("");var Oe=e=>e?.type==="part";var et=(e,i)=>e.participants?.find(n=>n.id===i)?.name||"Sem participante";function Qe(e){if(!Array.isArray(e.participants)||e.participants.length>50)throw Error("Use at\xE9 50 participantes nesta parte.");let i=new Set;if(e.participants=e.participants.map(n=>{if(typeof n?.id!="string"||!n.id||n.id.length>100||i.has(n.id)||typeof n.name!="string"||!n.name.trim())throw Error("Participante inv\xE1lido.");return i.add(n.id),{id:n.id,name:n.name.trim().slice(0,80)}}),e.partFormat!==void 0&&e.partFormat!==1&&e.partFormat!==2)throw Error("Esta parte usa um formato mais recente. Atualize o aplicativo.");if(e.partFormat!==2){if(!Array.isArray(e.turns)||e.turns.length>500)throw Error("Falas inv\xE1lidas na parte antiga.");let n=new Set,t=[];for(let r of e.turns){if(typeof r?.id!="string"||n.has(r.id)||!i.has(r.participantId))throw Error("Fala sem participante v\xE1lido.");n.add(r.id),Re(r.delta);for(let l of r.delta.ops)t.push({...Fe(l),...typeof l.insert=="string"?{attributes:{...l.attributes,speaker:r.participantId}}:{}});(typeof t.at(-1)?.insert!="string"||!t.at(-1).insert.endsWith(`
 `))&&t.push({insert:`
 `})}e.delta={ops:t.length?t:[{insert:`
-`}]}}Ee(e.delta);for(let n of e.delta.ops){let t=n.attributes?.speaker;if(t!==void 0&&(typeof t!="string"||!i.has(t)))throw Error("Trecho com participante inv\xE1lido.")}return(!e.delta.ops.length||typeof e.delta.ops.at(-1).insert!="string"||!e.delta.ops.at(-1).insert.endsWith(`
+`}]}}Re(e.delta);for(let n of e.delta.ops){let t=n.attributes?.speaker;if(t!==void 0&&(typeof t!="string"||!i.has(t)))throw Error("Trecho com participante inv\xE1lido.")}return(!e.delta.ops.length||typeof e.delta.ops.at(-1).insert!="string"||!e.delta.ops.at(-1).insert.endsWith(`
 `))&&e.delta.ops.push({insert:`
-`}),e.partFormat=2,delete e.turns,e.myParticipantId=i.has(e.myParticipantId)?e.myParticipantId:"",e}function Ze(e){let i=[],n=[],t=0,r=["align","blockquote","header","indent","list","speech-kind","ordinal","direction"];for(let l of e.delta?.ops||[]){let o=typeof l.insert=="string"?l.insert:`
-`,y=typeof l.insert=="string"?l.insert.length:1;if(typeof l.insert=="string"){for(let N=0;N<o.length;N++)if(o[N]===`
-`){let V={};for(let T of r)l.attributes?.[T]!==void 0&&(V[T]=l.attributes[T]);n.push({at:t+N,attributes:V})}}let x=l.attributes?.speaker||"";!x&&i.length&&(typeof l.insert!="string"||!o.trim())&&(x=i.at(-1).participantId);let d=i.at(-1);(!d||d.participantId!==x)&&(d={id:"segment-"+t,participantId:x,start:t,end:t,text:"",delta:{ops:[]}},i.push(d));let v=Je(l);v.attributes&&(delete v.attributes.speaker,Object.keys(v.attributes).length||delete v.attributes),d.delta.ops.push(v),d.text+=o,t+=y,d.end=t}for(let l of i){let o=l.delta.ops.at(-1);if(typeof o?.insert!="string"||!o.insert.endsWith(`
-`)){let y=n.find(d=>d.at>=l.end-1),x=y?.attributes||{};l.delta.ops.push({insert:`
-`,...Object.keys(x).length?{attributes:x}:{}})}}return i}function Ee(e){if(!Array.isArray(e?.ops)||e.ops.length>3e4)throw Error("Documento inv\xE1lido.");for(let i of e.ops){if(i.attributes?.[Ve]!==void 0&&(je(i.attributes[Ve])===null||typeof i.insert!="string")||i.attributes?.[ze]!==void 0&&(je(i.attributes[ze])===null||typeof i.insert!="string"||!i.insert.includes(`
-`)))throw Error("Marca\xE7\xE3o de tempo inv\xE1lida.");if(i.attributes?.[Pe]!==void 0&&!He(i.attributes[Pe]))throw Error("Marca\xE7\xE3o de ritmo inv\xE1lida.");if(typeof i.insert!="string"&&!(i.insert&&i.insert.pagebreak===!0))throw Error("O documento cont\xE9m um elemento n\xE3o suportado.");if(i.attributes&&(typeof i.attributes!="object"||Array.isArray(i.attributes)))throw Error("Formata\xE7\xE3o inv\xE1lida.")}if(bt(e).length>6e5)throw Error("O discurso ultrapassa 600 mil caracteres.")}var Ue=["presenterNotes","delta","participants","partFormat","myParticipantId","history","rehearsals","timer"];function xt(e={}){return e||={},{...e,active:e.active===!0,running:e.running===!0,elapsedMs:Math.max(0,Number(e.elapsedMs)||0),startedAt:Math.max(0,Number(e.startedAt)||0)}}var Be=e=>Array.isArray(e)?e.map(Be):e&&typeof e=="object"?Object.fromEntries(Object.keys(e).sort().map(i=>[i,Be(e[i])])):e;function Re(e){let i=[];for(let l of Te(e.delta).ops){let o=Be(l.attributes||{}),y=i.at(-1);y&&typeof y.insert=="string"&&typeof l.insert=="string"&&JSON.stringify(y.attributes)===JSON.stringify(o)?y.insert+=l.insert:i.push({insert:l.insert,attributes:o})}let n=JSON.stringify({ops:i,participants:e.participants?.map(l=>({id:l.id,name:l.name}))||[]}),t=2166136261,r=2246822519;for(let l=0;l<n.length;l++)t=Math.imul(t^n.charCodeAt(l),16777619),r=Math.imul(r^n.charCodeAt(l),3266489917);return(t>>>0).toString(16).padStart(8,"0")+(r>>>0).toString(16).padStart(8,"0")}var ye=e=>e?.versions?.find(i=>i.id===e.activeVersionId);function wt(e,i=e.activeVersionId){let n=e.versions.find(t=>t.id===i);if(!n)throw Error("Esta vers\xE3o n\xE3o est\xE1 dispon\xEDvel.");e.activeVersionId=n.id;for(let t of Ue)t in n?e[t]=n[t]:["participants","partFormat","myParticipantId"].includes(t)&&delete e[t];return n}function St(e){if(e.versionSchema!==void 0&&e.versionSchema!==1)throw Error("As vers\xF5es usam um formato mais recente. Atualize o aplicativo.");if(e.versions===void 0){let t={id:"legacy-"+Array.from(String(e.id)).reduce((r,l)=>Math.imul(r^l.charCodeAt(0),16777619)>>>0,2166136261).toString(16)+"-"+Math.max(0,Number(e.createdAt)||0).toString(36),name:"Vers\xE3o original",createdAt:e.createdAt||0,updatedAt:e.updatedAt||0,revision:1};for(let r of Ue)r in e&&(t[r]=Je(e[r]));e.versions=[t],e.activeVersionId=t.id}else if(!Array.isArray(e.versions)||!e.versions.length||e.versions.length>1e3)throw Error("Lista de vers\xF5es inv\xE1lida.");let i=new Set;for(let n of e.versions){if(typeof n.id!="string"||!n.id||n.id.length>100||i.has(n.id)||typeof n.name!="string"||!n.name.trim())throw Error("Vers\xE3o inv\xE1lida.");i.add(n.id),n.name=n.name.trim().slice(0,80),Ee(n.delta),Ne(e)&&Ge(n),n.presenterNotes=De(n.presenterNotes),n.history=Array.isArray(n.history)?n.history.slice(-15):[];for(let t of n.history)Ee(t.delta),t.presenterNotes=De(t.presenterNotes),t.type==="part"&&Ge(t);n.rehearsals=Array.isArray(n.rehearsals)?n.rehearsals:[],n.rehearsals=n.rehearsals.map(t=>({...t,versionId:n.id,versionName:t.versionName||n.name,...t.contentKey?{}:{legacy:!0}})),n.timer=xt(n.timer),n.timer.versionId=n.id,(n.timer.running||n.timer.elapsedMs)&&!n.timer.contentKey&&(n.timer.legacy=!0),n.revision=Math.max(1,Math.floor(Number(n.revision)||1)),n.contentKey=Re(n),n.memorization!==void 0&&Xe(n.memorization),n.teleprompter!==void 0&&We(n.teleprompter)}return e.versionSchema=1,i.has(e.activeVersionId)||(e.activeVersionId=e.versions[0].id),wt(e),e}function Mt(e){return e.versions||St(e),ye(e)}function Qe(e){let i=Mt(e),n=Re(e);i.contentKey!==n&&(i.revision++,i.contentKey=n,i.updatedAt=Date.now(),(e.timer?.running||e.timer?.elapsedMs)&&e.timer.contentKey&&e.timer.contentKey!==n&&(e.timer.contentChanged=!0));for(let t of Ue)t in e&&(i[t]=e[t]);return i.timer.versionId=i.id,i}var et=Object.freeze(["idle","preparing","narrating","waiting-user","listening","paused","completed","error"]),ve=Object.freeze([2,3,5]);function At(e){let i=Te(e),n="";for(let t of i.ops||[])typeof t.insert=="string"?n+=t.insert:t.insert&&t.insert.pagebreak===!0&&(n+=`
+`}),e.partFormat=2,delete e.turns,e.myParticipantId=i.has(e.myParticipantId)?e.myParticipantId:"",e}function tt(e){let i=[],n=[],t=0,r=["align","blockquote","header","indent","list","speech-kind","ordinal","direction"];for(let l of e.delta?.ops||[]){let o=typeof l.insert=="string"?l.insert:`
+`,g=typeof l.insert=="string"?l.insert.length:1;if(typeof l.insert=="string"){for(let E=0;E<o.length;E++)if(o[E]===`
+`){let D={};for(let T of r)l.attributes?.[T]!==void 0&&(D[T]=l.attributes[T]);n.push({at:t+E,attributes:D})}}let w=l.attributes?.speaker||"";!w&&i.length&&(typeof l.insert!="string"||!o.trim())&&(w=i.at(-1).participantId);let d=i.at(-1);(!d||d.participantId!==w)&&(d={id:"segment-"+t,participantId:w,start:t,end:t,text:"",delta:{ops:[]}},i.push(d));let y=Fe(l);y.attributes&&(delete y.attributes.speaker,Object.keys(y.attributes).length||delete y.attributes),d.delta.ops.push(y),d.text+=o,t+=g,d.end=t}for(let l of i){let o=l.delta.ops.at(-1);if(typeof o?.insert!="string"||!o.insert.endsWith(`
+`)){let g=n.find(d=>d.at>=l.end-1),w=g?.attributes||{};l.delta.ops.push({insert:`
+`,...Object.keys(w).length?{attributes:w}:{}})}}return i}function Re(e){if(!Array.isArray(e?.ops)||e.ops.length>3e4)throw Error("Documento inv\xE1lido.");for(let i of e.ops){if(i.attributes?.[Be]!==void 0&&(Je(i.attributes[Be])===null||typeof i.insert!="string")||i.attributes?.[De]!==void 0&&(Je(i.attributes[De])===null||typeof i.insert!="string"||!i.insert.includes(`
+`)))throw Error("Marca\xE7\xE3o de tempo inv\xE1lida.");if(i.attributes?.[Ve]!==void 0&&!je(i.attributes[Ve]))throw Error("Marca\xE7\xE3o de ritmo inv\xE1lida.");if(typeof i.insert!="string"&&!(i.insert&&i.insert.pagebreak===!0))throw Error("O documento cont\xE9m um elemento n\xE3o suportado.");if(i.attributes&&(typeof i.attributes!="object"||Array.isArray(i.attributes)))throw Error("Formata\xE7\xE3o inv\xE1lida.")}if(wt(e).length>6e5)throw Error("O discurso ultrapassa 600 mil caracteres.")}var Ke=["presenterNotes","delta","participants","partFormat","myParticipantId","history","rehearsals","timer"];function St(e={}){return e||={},{...e,active:e.active===!0,running:e.running===!0,elapsedMs:Math.max(0,Number(e.elapsedMs)||0),startedAt:Math.max(0,Number(e.startedAt)||0)}}var _e=e=>Array.isArray(e)?e.map(_e):e&&typeof e=="object"?Object.fromEntries(Object.keys(e).sort().map(i=>[i,_e(e[i])])):e;function Ce(e){let i=[];for(let l of Ne(e.delta).ops){let o=_e(l.attributes||{}),g=i.at(-1);g&&typeof g.insert=="string"&&typeof l.insert=="string"&&JSON.stringify(g.attributes)===JSON.stringify(o)?g.insert+=l.insert:i.push({insert:l.insert,attributes:o})}let n=JSON.stringify({ops:i,participants:e.participants?.map(l=>({id:l.id,name:l.name}))||[]}),t=2166136261,r=2246822519;for(let l=0;l<n.length;l++)t=Math.imul(t^n.charCodeAt(l),16777619),r=Math.imul(r^n.charCodeAt(l),3266489917);return(t>>>0).toString(16).padStart(8,"0")+(r>>>0).toString(16).padStart(8,"0")}var be=e=>e?.versions?.find(i=>i.id===e.activeVersionId);function Mt(e,i=e.activeVersionId){let n=e.versions.find(t=>t.id===i);if(!n)throw Error("Esta vers\xE3o n\xE3o est\xE1 dispon\xEDvel.");e.activeVersionId=n.id;for(let t of Ke)t in n?e[t]=n[t]:["participants","partFormat","myParticipantId"].includes(t)&&delete e[t];return n}function At(e){if(e.versionSchema!==void 0&&e.versionSchema!==1)throw Error("As vers\xF5es usam um formato mais recente. Atualize o aplicativo.");if(e.versions===void 0){let t={id:"legacy-"+Array.from(String(e.id)).reduce((r,l)=>Math.imul(r^l.charCodeAt(0),16777619)>>>0,2166136261).toString(16)+"-"+Math.max(0,Number(e.createdAt)||0).toString(36),name:"Vers\xE3o original",createdAt:e.createdAt||0,updatedAt:e.updatedAt||0,revision:1};for(let r of Ke)r in e&&(t[r]=Fe(e[r]));e.versions=[t],e.activeVersionId=t.id}else if(!Array.isArray(e.versions)||!e.versions.length||e.versions.length>1e3)throw Error("Lista de vers\xF5es inv\xE1lida.");let i=new Set;for(let n of e.versions){if(typeof n.id!="string"||!n.id||n.id.length>100||i.has(n.id)||typeof n.name!="string"||!n.name.trim())throw Error("Vers\xE3o inv\xE1lida.");i.add(n.id),n.name=n.name.trim().slice(0,80),Re(n.delta),Oe(e)&&Qe(n),n.presenterNotes=Ue(n.presenterNotes),n.history=Array.isArray(n.history)?n.history.slice(-15):[];for(let t of n.history)Re(t.delta),t.presenterNotes=Ue(t.presenterNotes),t.type==="part"&&Qe(t);n.rehearsals=Array.isArray(n.rehearsals)?n.rehearsals:[],n.rehearsals=n.rehearsals.map(t=>({...t,versionId:n.id,versionName:t.versionName||n.name,...t.contentKey?{}:{legacy:!0}})),n.timer=St(n.timer),n.timer.versionId=n.id,(n.timer.running||n.timer.elapsedMs)&&!n.timer.contentKey&&(n.timer.legacy=!0),n.revision=Math.max(1,Math.floor(Number(n.revision)||1)),n.contentKey=Ce(n),n.memorization!==void 0&&Ze(n.memorization),n.teleprompter!==void 0&&Ye(n.teleprompter)}return e.versionSchema=1,i.has(e.activeVersionId)||(e.activeVersionId=e.versions[0].id),Mt(e),e}function It(e){return e.versions||At(e),be(e)}function rt(e){let i=It(e),n=Ce(e);i.contentKey!==n&&(i.revision++,i.contentKey=n,i.updatedAt=Date.now(),(e.timer?.running||e.timer?.elapsedMs)&&e.timer.contentKey&&e.timer.contentKey!==n&&(e.timer.contentChanged=!0));for(let t of Ke)t in e&&(i[t]=e[t]);return i.timer.versionId=i.id,i}var nt=Object.freeze(["idle","preparing","narrating","waiting-user","listening","paused","completed","error"]),xe=Object.freeze([2,3,5]);function kt(e){let i=Ne(e),n="";for(let t of i.ops||[])typeof t.insert=="string"?n+=t.insert:t.insert&&t.insert.pagebreak===!0&&(n+=`
 `);return n.replace(/\r\n?/g,`
 `).replace(/[ \t]+\n/g,`
 `).replace(/\n{3,}/g,`
 
-`).trim()}function It(e){let i=String(e??"").match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu);return i?i.length:0}function kt(e,i){let n=i,t=[n];for(let r of e?.ops||[])r.insert&&r.insert.pagebreak===!0&&(n+=1,t.push(n));return{pages:t,endPage:n}}function Se(e){if(!Ne(e))return!1;let i=ye(e);return(Array.isArray(e?.participants)?e.participants:Array.isArray(i?.participants)?i.participants:[]).length>0}var Ae={key:"",value:null};function we(e,i={}){if(!e||!Ne(e))return{valid:!1,reason:"not-part",versionId:"",versionName:"",contentKey:"",myParticipantId:"",participants:[],turns:[],unassignedSegments:[],totalWords:0};let n=ye(e),t=e.delta||n?.delta||{ops:[{insert:`
-`}]},r=Array.isArray(e.participants)?e.participants.map(m=>({id:m.id,name:m.name})):Array.isArray(n?.participants)?n.participants.map(m=>({id:m.id,name:m.name})):[],l=new Set(r.map(m=>m.id)),o=i.myParticipantId!==void 0?String(i.myParticipantId||""):String(e.myParticipantId||n?.myParticipantId||""),y=l.has(o)?o:"",x=String(n?.id||e.activeVersionId||"default"),d=String(n?.name||"Vers\xE3o original"),v=Re({delta:t,participants:r}),N=`${e.id||""}|${x}|${v}|${y}`;if(!i.bypassCache&&Ae.key===N&&Ae.value)return Ae.value;let V={delta:t,participants:r,myParticipantId:y,type:"part",partFormat:2},T=Ze(V),Y=[],c=[],f=0,I=0,b=!1;T.forEach((m,D)=>{let X=l.has(m.participantId)?m.participantId:"",S=Ye(V,X),E=(X?S+`:
-`:"")+m.text.trimEnd(),u=f;f+=E.length+(D<T.length-1?2:0);let _=f,Z=kt(m.delta,I);I=Z.endPage;let F=At(m.delta);if(!F)return;let K=It(F);if(!X){b=!1,Y.push({segmentIndex:D,id:m.id,start:m.start,end:m.end,audioStart:u,audioEnd:_,page:Z.pages[0],pages:Z.pages,wordCount:K,preview:F.length>96?F.slice(0,93).trimEnd()+"\u2026":F});return}let Q=c.at(-1);if(b&&Q&&Q.participantId===X){Q.end=m.end,Q.audioEnd=_,Q.segmentIndices.push(D),Q.audioStarts.push(u),Q.spokenText=`${Q.spokenText}
+`).trim()}function Tt(e){let i=String(e??"").match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu);return i?i.length:0}function Et(e,i){let n=i,t=[n];for(let r of e?.ops||[])r.insert&&r.insert.pagebreak===!0&&(n+=1,t.push(n));return{pages:t,endPage:n}}function Ie(e){if(!Oe(e))return!1;let i=be(e);return(Array.isArray(e?.participants)?e.participants:Array.isArray(i?.participants)?i.participants:[]).length>0}var ke={key:"",value:null};function Me(e,i={}){if(!e||!Oe(e))return{valid:!1,reason:"not-part",versionId:"",versionName:"",contentKey:"",myParticipantId:"",participants:[],turns:[],unassignedSegments:[],totalWords:0};let n=be(e),t=e.delta||n?.delta||{ops:[{insert:`
+`}]},r=Array.isArray(e.participants)?e.participants.map(h=>({id:h.id,name:h.name})):Array.isArray(n?.participants)?n.participants.map(h=>({id:h.id,name:h.name})):[],l=new Set(r.map(h=>h.id)),o=i.myParticipantId!==void 0?String(i.myParticipantId||""):String(e.myParticipantId||n?.myParticipantId||""),g=l.has(o)?o:"",w=String(n?.id||e.activeVersionId||"default"),d=String(n?.name||"Vers\xE3o original"),y=Ce({delta:t,participants:r}),E=`${e.id||""}|${w}|${y}|${g}`;if(!i.bypassCache&&ke.key===E&&ke.value)return ke.value;let D={delta:t,participants:r,myParticipantId:g,type:"part",partFormat:2},T=tt(D),Q=[],c=[],M=0,m=0,b=!1;T.forEach((h,z)=>{let V=l.has(h.participantId)?h.participantId:"",j=et(D,V),x=(V?j+`:
+`:"")+h.text.trimEnd(),p=M;M+=x.length+(z<T.length-1?2:0);let ee=M,B=Et(h.delta,m);m=B.endPage;let q=kt(h.delta);if(!q)return;let _=Tt(q);if(!V){b=!1,Q.push({segmentIndex:z,id:h.id,start:h.start,end:h.end,audioStart:p,audioEnd:ee,page:B.pages[0],pages:B.pages,wordCount:_,preview:q.length>96?q.slice(0,93).trimEnd()+"\u2026":q});return}let G=c.at(-1);if(b&&G&&G.participantId===V){G.end=h.end,G.audioEnd=ee,G.segmentIndices.push(z),G.audioStarts.push(p),G.spokenText=`${G.spokenText}
 
-${F}`,Q.wordCount+=K;for(let le of Z.pages)Q.pages.includes(le)||Q.pages.push(le);return}b=!0;let de=!!(y&&X===y);c.push({index:c.length,id:`turn-${c.length}-${m.start}`,participantId:X,participantName:S,isUser:de,role:de?"user":"other",spokenText:F,wordCount:K,start:m.start,end:m.end,audioStart:u,audioEnd:_,audioStarts:[u],segmentIndices:[D],page:Z.pages[0],pages:[...Z.pages]})});let z=[...new Set(c.map(m=>m.participantId))],M=c.filter(m=>m.isUser).length,L=c.filter(m=>!m.isUser).length,$=c.reduce((m,D)=>m+D.wordCount,0),j=[];Y.length>0&&j.push("unassigned-segments"),y&&c.length>0&&M===0&&j.push("no-user-turns"),y&&c.length>0&&L===0&&j.push("no-other-turns");let w="";r.length<2?w="need-two-participants":c.length===0?w=Y.length>0?"all-unassigned":"empty-turns":y||(w="missing-identity");let A=Object.freeze({valid:w==="",reason:w,warnings:j,versionId:x,versionName:d,contentKey:v,myParticipantId:y,participants:r,usedParticipantIds:z,turns:c,userTurnCount:M,otherTurnCount:L,unassignedSegments:Y,hasUnassigned:Y.length>0,totalWords:$});return Ae.key=N,Ae.value=A,A}function _e(e,i=0){let n=String(e??"").trim(),t=Math.max(0,Math.min(3,Math.floor(Number(i)||0)));if(!n||t<=0)return{level:0,maxLevel:3,text:"",complete:!1};if(t>=3)return{level:3,maxLevel:3,text:n,complete:!0};let r=[...n.matchAll(/\S+/g)],l=r.length;if(l===0)return{level:3,maxLevel:3,text:n,complete:!0};if(l===1){let V=r[0][0];if(V.length<=3||t===2)return{level:t,maxLevel:3,text:n,complete:!0};let T=Math.max(1,Math.ceil(V.length*.45));return{level:1,maxLevel:3,text:`${V.slice(0,T)}\u2026`,complete:!1}}if(l===2){if(t===1){let V=r[0].index+r[0][0].length;return{level:1,maxLevel:3,text:`${n.slice(0,V)}\u2026`,complete:!1}}return{level:2,maxLevel:3,text:n,complete:!0}}let o=Math.min(4,Math.max(1,Math.min(l-2,Math.ceil(l*.22)))),y=Math.min(l-1,Math.max(o+1,Math.ceil(l*.58))),d=r[(t===1?o:y)-1],v=d.index+d[0].length,N=n.slice(0,v).replace(/[,;:\-–—]+$/,"").trimEnd();return{level:t,maxLevel:3,text:`${N}\u2026`,complete:!1}}var tt="seprepare-interactive-rehearsal-v1";var Ke=null;function Ie(e,i=1){let n=Number(e);return Number.isFinite(n)?Math.round(Math.max(.5,Math.min(1.8,n))*10)/10:Math.max(.5,Math.min(1.8,Number(i)||1))}function rt(e){let i=Number(e);return[2,3,5].includes(i)?i:3}function Tt(){return{mode:"manual",silenceSeconds:3,hideMyLines:!1,showHints:!0,participantVoices:{}}}function Et(){try{if(typeof localStorage<"u"&&localStorage){let e=localStorage.getItem(tt);if(e)return JSON.parse(e)}}catch{}return Ke?JSON.parse(JSON.stringify(Ke)):null}function Nt(e){Ke=JSON.parse(JSON.stringify(e));try{typeof localStorage<"u"&&localStorage&&localStorage.setItem(tt,JSON.stringify(e))}catch{}}function he(){let e=Et();if(!e||typeof e!="object")return Tt();let i={};if(e.participantVoices&&typeof e.participantVoices=="object"){let n=Object.entries(e.participantVoices).slice(-300);for(let[t,r]of n)r&&typeof r=="object"&&(i[t]={voice:typeof r.voice=="string"?r.voice.slice(0,300):"",locale:typeof r.locale=="string"?r.locale.slice(0,40):"",rate:Ie(r.rate,1),updatedAt:Number(r.updatedAt)||0})}return{mode:e.mode==="auto"?"auto":"manual",silenceSeconds:rt(e.silenceSeconds),hideMyLines:e.hideMyLines===!0,showHints:e.showHints!==!1,participantVoices:i}}function fe(e={}){let i=he(),n={mode:e.mode!==void 0?e.mode==="auto"?"auto":"manual":i.mode,silenceSeconds:e.silenceSeconds!==void 0?rt(e.silenceSeconds):i.silenceSeconds,hideMyLines:e.hideMyLines!==void 0?e.hideMyLines===!0:i.hideMyLines,showHints:e.showHints!==void 0?e.showHints!==!1:i.showHints,participantVoices:{...i.participantVoices,...e.participantVoices||{}}},t=Object.keys(n.participantVoices);return t.length>300&&t.sort((r,l)=>(n.participantVoices[r]?.updatedAt||0)-(n.participantVoices[l]?.updatedAt||0)).slice(0,t.length-300).forEach(r=>delete n.participantVoices[r]),Nt(n),n}function Fe(e,i){return`${String(e||"global")}:${String(i||"")}`}function Oe({player:e,getSettings:i,t:n=t=>t}){let t=0,r=null,l="idle",o=null,y=()=>{let f=(typeof i=="function"?i():{})||{},I=String(f.audioLanguage||"").trim();if(I)return I;let b=String(f.language||"pt-BR").split("-")[0].toLowerCase();return{pt:"pt-BR",en:"en-US",es:"es-ES",ja:"ja-JP"}[b]||"pt-BR"},x=()=>{let f=(typeof i=="function"?i():{})||{};return Ie(f.rate,1)};e&&typeof e.setExternalInterruptHandler=="function"&&e.setExternalInterruptHandler(f=>{t+=1,r=null;let I=l!=="idle";l="idle",I&&typeof o=="function"&&o(f||"external-audio")});function d(f){let I=f||y();if(e&&typeof e.getAvailableVoices=="function"){let b=e.getAvailableVoices(I);if(b&&Array.isArray(b.voices))return{status:b.status||"ready",locale:b.locale||I,voices:b.voices,allVoices:Array.isArray(b.allVoices)&&b.allVoices.length?b.allVoices:b.voices}}return{status:"ready",locale:I,voices:[],allVoices:[]}}function v(f=[],I=""){let b=he(),z=d(),M=String(z.locale||"pt-BR").split(/[-_]/)[0].toLowerCase(),L=z.voices.filter(m=>String(m.locale||"").split(/[-_]/)[0].toLowerCase()===M),$=L.length?L:z.voices,j=z.allVoices||$,w=x(),A=new Map;return f.forEach((m,D)=>{let X=Fe(I,m.id),S=b.participantVoices[X]||null,E=S?Ie(S.rate,w):w,u=$.length?$[D%$.length]:null;if(S&&S.voice){let _=j.find(Z=>Z.name===S.voice||S.locale&&Z.name===S.voice&&Z.locale===S.locale||`${Z.name}${Z.locale}`===S.voice);if(_){A.set(m.id,{participantId:m.id,voice:_.name,locale:_.locale||z.locale,label:_.label||`${_.name} \xB7 ${_.locale}`,rate:E,source:"manual",fallbackUsed:!1});return}}u?A.set(m.id,{participantId:m.id,voice:u.name,locale:u.locale||z.locale,label:u.label||`${u.name} \xB7 ${u.locale}`,rate:E,source:S?.voice?"fallback":"auto",fallbackUsed:!!S?.voice}):A.set(m.id,{participantId:m.id,voice:"",locale:z.locale,label:n("Autom\xE1tica (idioma do aplicativo)"),rate:E,source:S?.voice?"fallback":"system",fallbackUsed:!!S?.voice})}),{locale:z.locale,status:z.status,voices:$,allVoices:j,assignments:A}}function N(f,I,{voice:b="",locale:z="",rate:M}={}){let L=he(),$=Fe(f,I),j={...L.participantVoices},w=String(b||"").trim(),A=String(z||"").trim(),m=Ie(M,x());return!w&&m===x()?delete j[$]:j[$]={voice:w,locale:A,rate:m,updatedAt:Date.now()},fe({participantVoices:j})}function V(f,I){return he().participantVoices[Fe(f,I)]||null}function T(){t+=1;let f=r;r=null,l="idle",f&&e&&typeof e.cancelSegment=="function"&&e.cancelSegment(f)}function Y({turn:f,participants:I=[],speechId:b="",title:z="",offset:M=0,onStart:L,onBoundary:$,onEnd:j,onError:w,onBlocked:A,onPaused:m}){if(T(),!f||!f.spokenText)return queueMicrotask(()=>j?.()),{sessionToken:t,started:!0};if(!e||typeof e.speakSegment!="function"){let F={code:"synthesis-unavailable",message:n("Este dispositivo n\xE3o disponibilizou leitura em voz alta.")};return w?.(F),{sessionToken:t,started:!1}}let D=++t;l="turn";let X=Array.isArray(I)&&I.length?I:[{id:f.participantId,name:f.participantName}],{assignments:S,locale:E}=v(X,b),u=S.get(f.participantId)||{voice:"",locale:E,rate:x()},_=!1,Z=e.speakSegment({title:z||f.participantName||n("Ensaio interativo"),text:f.spokenText,offset:Math.max(0,Number(M)||0),voice:u.voice,locale:u.locale||E,rate:u.rate,onStart:()=>{D!==t||_||L?.({voice:u})},onBoundary:F=>{D!==t||_||$?.(F)},onEnd:()=>{D!==t||_||(_=!0,r=null,l="idle",j?.())},onPaused:()=>{D!==t||_||(_=!0,r=null,l="idle",m?.())},onError:F=>{if(D!==t||_)return;_=!0,r=null,l="idle";let K=String(F?.code||"synthesis-failed");K==="not-allowed"||K==="startup-timeout"?A?.({code:K,message:F?.message||n("A reprodu\xE7\xE3o autom\xE1tica foi bloqueada pelo navegador. Toque em Reproduzir fala para continuar.")}):w?.({code:K,message:F?.message||n("N\xE3o foi poss\xEDvel reproduzir esta fala.")})}});return Z?(!_&&D===t&&(r=Z),{sessionToken:D,started:!0}):(!_&&D===t&&(l="idle"),{sessionToken:D,started:!1})}function c({voice:f="",locale:I="",rate:b=1,sampleText:z="",onEnd:M,onError:L}){if(T(),!e||typeof e.speakSegment!="function")return L?.({code:"synthesis-unavailable",message:n("Leitura em voz alta indispon\xEDvel.")}),!1;let $=++t;l="preview";let j=String(z||"").trim()||n("Ol\xE1! Esta \xE9 uma fala de teste para o ensaio interativo."),w=e.speakSegment({title:n("Teste de voz"),text:j,offset:0,voice:f,locale:I||y(),rate:Ie(b,x()),onEnd:()=>{$===t&&(r=null,l="idle",M?.())},onPaused:()=>{$===t&&(r=null,l="idle",M?.())},onError:A=>{$===t&&(r=null,l="idle",L?.(A))}});return w?(r=w,!0):(l="idle",!1)}return{listCatalog:d,resolveParticipantVoices:v,setParticipantVoice:N,getSavedParticipantVoice:V,speakTurn:Y,previewVoice:c,cancel:T,isSpeaking:()=>l!=="idle",getActiveKind:()=>l,onExternalInterrupt:f=>{o=typeof f=="function"?f:null}}}function Rt(e=globalThis.navigator?.mediaDevices){let i=null,n=null,t=new Set;function r(){if(!(t.size||n)){for(let o of i?.getTracks?.()||[])o.stop();i=null}}async function l(o){if(!e?.getUserMedia)throw new DOMException("Microphone unavailable","NotFoundError");i?.getAudioTracks?.().some(v=>v.readyState==="live")||(n||(n=e.getUserMedia(o).then(v=>i=v).finally(()=>{n=null})),await n);let y=i.clone(),x={stream:y};t.add(x);let d=y.getTracks().length;for(let v of y.getTracks()){let N=v.stop.bind(v),V=!1,T=()=>{V||(V=!0,--d===0&&(t.delete(x),r()))};v.stop=()=>{N(),T()},v.addEventListener("ended",T,{once:!0})}return y}return{getUserMedia:l,activeLeases:()=>t.size}}var nt=Symbol.for("SePrepare.sharedMicrophone"),it=globalThis[nt]||(globalThis[nt]=Rt());function at({silenceTargetMs:e=3e3}={}){let i=!1,n=!1,t=0,r=0,l=0,o=!1;function y({probability:x,dt:d=32}={}){if(!Number.isFinite(x)||x<0||x>1||!Number.isFinite(d)||d<=0||d>64)throw new Error("Invalid classified audio frame");if(!o){let v=x>=(n?.45:.65);v?(r=0,t+=d,t>=160?(i=!0,n=!0,l=0):i&&(l+=d)):(r+=d,r>64&&(t=0,n=!1),i&&(l+=d)),o=i&&l>=e&&(!v||n)}return{hasStartedSpeaking:i,phase:o?"complete":i?l>0?"silence-countdown":"speaking":"waiting-voice",silenceStreakMs:l,complete:o,level:x}}return{push:y}}function ot({WorkerClass:e=globalThis.Worker,baseURL:i=typeof document<"u"?new URL("./voice/v1.0.74/",document.baseURI).href:"",setTimeoutFn:n=setTimeout,clearTimeoutFn:t=clearTimeout}={}){let r,l,o=0,y=0,x=0,d=new Map,v,N;function V(c,f={},I=2e4){return new Promise((b,z)=>{let M=++o,L=n(()=>{d.delete(M),z(Error("Speech engine timeout"))},I);d.set(M,{resolve:b,reject:z,timeout:L}),r.postMessage({type:c,id:M,...f})})}function T(){N?.({code:"classifier-failed"})}function Y(){return l||(l=(async()=>{if(!e)throw Error("Speech worker unavailable");r=new e(new URL("speech-worker.js",i)),r.onerror=()=>{for(let c of d.values())t(c.timeout),c.reject(Error("Speech worker failed"));d.clear(),T()},r.onmessage=({data:c})=>{if(c.id&&d.has(c.id)){let f=d.get(c.id);d.delete(c.id),t(f.timeout),c.type==="error"?f.reject(Error("Speech engine failed")):f.resolve()}else c.type==="result"&&c.token===y?(x=Math.max(0,x-1),v?.(c.probability)):c.type==="error"&&c.token===y&&T()},await V("init")})(),l)}return{ensure:Y,async startTurn(c,f,I){await Y(),y=c,x=0,v=f,N=I,await V("reset",{token:c},3e3)},push(c,f){if(!(!r||f!==y)){if(++x>24){T();return}r.postMessage({type:"frame",token:f,samples:c},[c.buffer])}},stopTurn(){y=0,x=0,v=N=null},release(){this.stopTurn();for(let c of d.values())t(c.timeout),c.reject(Error("Speech session cancelled"));d.clear(),r?.terminate(),r=null,l=null}}}var Ce=class{constructor(i,n){if(!(i>=8e3&&i<=192e3))throw Error("Invalid sample rate");this.ratio=i/16e3,this.emit=n,this.reset()}reset(){this.frame=new Float32Array(512),this.count=0,this.fill=0,this.sum=0}push(i){for(let n=0;n<i.length;n++){let t=Number.isFinite(i[n])?Math.max(-1,Math.min(1,i[n])):0,r=1;for(;r>1e-9;){let l=Math.min(r,this.ratio-this.fill);this.sum+=l*t,this.fill+=l,r-=l,this.fill>=this.ratio-1e-9&&(this.frame[this.count++]=this.sum/this.ratio,this.sum=this.fill=0,this.count===512&&(this.emit(this.frame),this.frame=new Float32Array(512),this.count=0))}}}};function Le(e={}){let{mediaDevices:i=it,AudioContextClass:n=globalThis.AudioContext||globalThis.webkitAudioContext,AudioWorkletNodeClass:t=globalThis.AudioWorkletNode,createClassifier:r=()=>ot(),secureContext:l=globalThis.isSecureContext!==!1,baseURL:o=typeof document<"u"?new URL("./voice/v1.0.74/",document.baseURI).href:"",now:y=()=>Date.now(),setIntervalFn:x=setInterval,clearIntervalFn:d=clearInterval,setTimeoutFn:v=setTimeout,clearTimeoutFn:N=clearTimeout,t:V=B=>B}=e,T=1,Y=0,c,f,I,b,z,M,L,$,j,w=!1,A,m,D=()=>{},X=()=>{};function S(B){let q=String(B?.name||B?.code||""),W=/NotAllowed|PermissionDenied|Security/.test(q)?["permission-denied","Permita o microfone nos ajustes do navegador ou do sistema para usar o modo Autom\xE1tico. Continuando no modo Manual."]:/NotFound|DevicesNotFound|Overconstrained/.test(q)?["mic-unavailable","Nenhum microfone dispon\xEDvel foi encontrado. Continuando no modo Manual."]:/NotReadable|TrackStart|Abort|mic-busy/.test(q)?["mic-busy","O microfone est\xE1 ocupado ou indispon\xEDvel. Confira outros aplicativos e os ajustes do sistema. Continuando no modo Manual."]:/audio-blocked/.test(q)?["audio-blocked","Toque novamente em Autom\xE1tico para ativar o \xE1udio neste dispositivo. Continuando no modo Manual."]:/insecure/.test(q)?["insecure-context","Abra o SePrepare pelo endere\xE7o HTTPS para usar o microfone. Continuando no modo Manual."]:["audio-error","A detec\xE7\xE3o de fala n\xE3o p\xF4de ser iniciada. Continuando no modo Manual."];return{code:W[0],message:V(W[1])}}function E(){return l&&typeof i?.getUserMedia=="function"&&typeof n=="function"}function u(B){for(let q of f?.getAudioTracks?.()||[])q.enabled=B}function _(){if(b?.port){b.port.onmessage=null;try{b.port.postMessage({active:!1,token:0})}catch{}}b&&(b.onaudioprocess=null);for(let B of[I,b,z])try{B?.disconnect()}catch{}I=b=z=M=null}function Z(){Y++,w=!1,m!=null&&d(m),m=null,L?.stopTurn(),u(!1),_()}function F(){D(),D=()=>{};for(let B of f?.getTracks?.()||[])try{B.stop()}catch{}f=null}function K(){T++,Z(),$=null,F(),X(),X=()=>{};let B=c;c=null,j=null;try{Promise.resolve(B?.close()).catch(()=>{})}catch{}L?.release(),L=null,A=null}function Q(B){let q=A;K(),q?.(S(B))}function de(B){return new Promise(q=>v(q,B))}async function le(B){let q=[{audio:{channelCount:{ideal:1},echoCancellation:!0,noiseSuppression:!0,autoGainControl:!1},video:!1},{audio:{autoGainControl:!1},video:!1},{audio:!0,video:!1}],W;for(let ne=0;ne<q.length;ne++){if(ne&&await de(ne*100),B!==T)return null;try{let ee=await i.getUserMedia(q[ne]);if(B!==T){for(let G of ee.getTracks())G.stop();return null}if(ee.getAudioTracks().some(G=>G.readyState!=="ended"))return ee;for(let G of ee.getTracks())G.stop();W={name:"NotReadableError"}}catch(ee){if(W=ee,/NotAllowed|PermissionDenied|Security/.test(ee?.name||""))break}}throw W||Error("Microphone unavailable")}function ue({onStreamLost:B}={}){if(B&&(A=B),!E())return Promise.resolve({ok:!1,...S({code:l?"unsupported":"insecure"})});if($)return $;let q=T;try{if(!c||c.state==="closed"){c=new n;let G=c,ie=()=>{w&&G.state==="closed"&&Q({code:"stream-lost"})};G.addEventListener?.("statechange",ie),X=()=>G.removeEventListener?.("statechange",ie)}c.state!=="running"&&Promise.resolve(c.resume()).catch(()=>{}),L||=r();let W=L.ensure();W.catch(()=>{});let ee=f?.getAudioTracks?.().some(G=>G.readyState!=="ended")?Promise.resolve(f):le(q);return $=(async()=>{try{let G=await ee;if(q!==T||!G)return{ok:!1,code:"cancelled",message:""};if(G!==f){F(),f=G,u(!1);let ie=[];for(let a of f.getAudioTracks()){let p=()=>{if(q===T){if(!w){F();return}Q({code:"stream-lost"})}};a.addEventListener?.("ended",p),ie.push(()=>a.removeEventListener?.("ended",p))}D=()=>ie.forEach(a=>a())}if(await W,q!==T)return{ok:!1,code:"cancelled",message:""};if(c.state!=="running"){if(await Promise.race([Promise.resolve(c.resume()),de(700)]),q!==T)return{ok:!1,code:"cancelled",message:""};if(c.state!=="running")throw{code:"audio-blocked"}}return{ok:!0}}catch(G){if(q!==T)return{ok:!1,code:"cancelled",message:""};let ie=S(G);return K(),{ok:!1,...ie}}finally{q===T&&($=null)}})(),$}catch(W){let ne=S(W);return K(),Promise.resolve({ok:!1,...ne})}}async function me({silenceSeconds:B=3,onStateChange:q,onSpeechComplete:W,onError:ne}={}){Z();let ee=Y,G=T,ie=await ue({onStreamLost:ne});if(!ie.ok)return ie.code!=="cancelled"&&ne?.(ie),{started:!1,reason:ie.code};if(ee!==Y||G!==T)return{started:!1,reason:"cancelled"};let a=at({silenceTargetMs:([2,3,5].includes(Number(B))?Number(B):3)*1e3}),p=([2,3,5].includes(Number(B))?Number(B):3)*1e3,s=y(),h=0,R="",H=()=>ee===Y&&G===T&&w,k=J=>{H()&&Q(J)},O=J=>{H()&&c.state==="running"&&!f.getAudioTracks().some(U=>U.muted)&&L.push(J,ee)};try{if(await L.startTurn(ee,J=>{if(!H())return;let U;try{U=a.push({probability:J,dt:32})}catch{k({code:"classifier-failed"});return}if(s=y(),U.complete){Z(),W?.();return}(U.phase!==R||y()-h>=180)&&(R=U.phase,h=y(),q?.({...U,silenceTargetMs:p,silenceRemainingMs:Math.max(0,p-U.silenceStreakMs)}))},k),ee!==Y||G!==T)return{started:!1,reason:"cancelled"};if(I=c.createMediaStreamSource(f),c.audioWorklet&&t)try{if(j||=c.audioWorklet.addModule(new URL("pcm-capture-worklet.js",o)),await j,ee!==Y||G!==T)return{started:!1,reason:"cancelled"};b=new t(c,"seprepare-speech-capture",{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]}),b.port.onmessage=({data:J})=>{J.type==="frame"&&J.token===ee&&O(J.samples)},b.port.postMessage({active:!0,token:ee})}catch{b=null}if(!b){if(typeof c.createScriptProcessor!="function")throw Error("PCM capture unavailable");b=c.createScriptProcessor(2048,1,1),M=new Ce(c.sampleRate,O),b.onaudioprocess=J=>{J.outputBuffer.getChannelData(0).fill(0),H()&&M.push(J.inputBuffer.getChannelData(0))}}return z=c.createGain(),z.gain.value=0,I.connect(b),b.connect(z),z.connect(c.destination),w=!0,s=y(),u(!0),q?.({phase:"waiting-voice",hasStartedSpeaking:!1,level:0,silenceTargetMs:p,silenceRemainingMs:p}),m=x(()=>{H()&&y()-s>2500&&k({code:"capture-stalled"})},500),{started:!0}}catch(J){if(ee===Y&&G===T){let U=S(J);K(),ne?.(U)}return{started:!1,reason:"audio-error"}}}return{isSupported:E,ensureSession:ue,startListeningTurn:me,stopListening:Z,release:K,isActive:()=>!!f,getBackend:()=>b?.port?"worklet":b?"script-processor":null}}function $e({audio:e,vad:i,timer:n={},t=d=>d,onChange:r,onTurnChange:l,onVadChange:o,onNotice:y,onComplete:x}={}){let d="idle",v=0,N=0,V=!1,T="",Y="",c=null,f="manual",I=3,b=!1,z=!0,M=0,L=0,$=0,j=null,w=null,A="",m=null,D=!1;e&&typeof e.onExternalInterrupt=="function"&&e.onExternalInterrupt(()=>{["narrating","waiting-user","listening","preparing"].includes(d)&&de({externalAudio:!0})});function X(){return!c||!Array.isArray(c.turns)?null:c.turns[M]||null}function S(){let s=X(),h=s&&s.isUser?_e(s.spokenText,$):{level:0,maxLevel:3,text:"",complete:!1};return{state:d,isActive:d!=="idle",isRunning:["preparing","narrating","waiting-user","listening"].includes(d),mode:f,silenceSeconds:I,hideMyLines:b,showHints:z,speechId:T,speechTitle:Y,versionId:c?.versionId||"",versionName:c?.versionName||"",contentKey:c?.contentKey||"",plan:c,currentTurnIndex:M,totalTurns:c?.turns?.length||0,currentTurn:s,narrationCharOffset:L,hintLevel:$,currentHint:h,blockedPlayback:j,vadStatus:w,fallbackNotice:A,error:m,completedSaved:D}}function E(){r?.(S())}function u(s){if(!et.includes(s))throw new Error(`Invalid rehearsal state: ${s}`);d=s}function _(){e?.cancel?.(),i?.release?.(),w=null}async function Z({speech:s,mode:h,silenceSeconds:R,hideMyLines:H,showHints:k}={}){let O=he(),J=h==="auto"?"auto":h==="manual"?"manual":O.mode,U=ve.includes(Number(R))?Number(R):O.silenceSeconds,P=H!==void 0?!!H:O.hideMyLines,ae=k!==void 0?!!k:O.showHints;fe({mode:J,silenceSeconds:U,hideMyLines:P,showHints:ae}),_();let g=we(s,{bypassCache:!0});if(T=String(s?.id||""),Y=String(s?.title||""),c=g,f=J,I=U,b=P,z=ae,M=0,L=0,$=0,j=null,A="",m=null,D=!1,!g.valid)return v+=1,N+=1,u("error"),m={code:g.reason,message:Ot(g.reason,t)},E(),{ok:!1,reason:g.reason,plan:g};let te=++v,oe=++N;if(u("preparing"),E(),f==="auto")if(!i)f="manual",A=t("Detec\xE7\xE3o de voz indispon\xEDvel. Continuando no modo Manual."),y?.(A);else{let re=await i.ensureSession({onStreamLost:be=>F(te,be)});if(te!==v||oe!==N)return i.release?.(),{ok:!1,reason:"cancelled",plan:g};re.ok||(f="manual",A=re.message||t("Microfone indispon\xEDvel. Continuando no modo Manual."),y?.(A))}return n?.ensureRunning?.(),await K(0,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),{ok:!0,plan:g,mode:f}}function F(s,h){s!==v||d==="idle"||d==="completed"||(i?.release?.(),f="manual",w=null,A=h?.message||t("O microfone n\xE3o est\xE1 mais dispon\xEDvel. Continuando no modo Manual."),y?.(A),d==="listening"&&(N+=1,u("waiting-user")),E())}async function K(s,{resetHint:h=!0,resumeOffset:R=0,notifyTurn:H=!0}={}){if(!c||!c.valid||V)return;V=!0;let k=v,O=++N;try{if(e?.cancel?.(),i?.stopListening?.(),w=null,j=null,m=null,s>=c.turns.length){M=Math.max(0,c.turns.length-1),L=0,i?.release?.(),u("completed"),n?.pauseIfRunning?.(),V=!1,E(),x?.(S());return}let J=Math.max(0,Math.min(s,c.turns.length-1)),U=J!==M;M=J,L=Math.max(0,Number(R)||0),(h||U)&&($=0);let P=c.turns[M];if(!P.isUser){u("narrating"),V=!1,(H||U)&&l?.(S()),E(),e?.speakTurn?.({turn:P,participants:c.participants,speechId:T,title:`${P.participantName} \xB7 ${Y||t("Ensaio interativo")}`,offset:L,onStart:()=>{},onBoundary:({offset:g})=>{k!==v||O!==N||d!=="narrating"||(L=Math.max(0,Number(g)||0))},onEnd:()=>{k!==v||O!==N||d!=="narrating"||(L=0,K(M+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}))},onPaused:()=>{k!==v||O!==N||d!=="narrating"||de({fromAudio:!0})},onBlocked:g=>{k!==v||O!==N||(j={code:g?.code||"not-allowed",message:g?.message||t("Toque em Reproduzir fala para autorizar o \xE1udio neste dispositivo.")},n?.pauseIfRunning?.(),u("paused"),E())},onError:g=>{k!==v||O!==N||(m={code:g?.code||"synthesis-failed",message:g?.message||t("N\xE3o foi poss\xEDvel reproduzir esta fala.")},n?.pauseIfRunning?.(),u("error"),E())}});return}if(L=0,f==="manual"){u("waiting-user"),V=!1,(H||U)&&l?.(S()),E();return}if(u("listening"),w={phase:"waiting-voice",hasStartedSpeaking:!1,level:0,silenceRemainingMs:I*1e3,silenceTargetMs:I*1e3},V=!1,(H||U)&&l?.(S()),E(),!i){F(k,{code:"unsupported",message:t("Microfone indispon\xEDvel. Continuando no modo Manual.")});return}let ae=await i.startListeningTurn({silenceSeconds:I,onStateChange:g=>{k!==v||O!==N||d!=="listening"||(w=g,o?.(g,S()))},onSpeechComplete:()=>{k!==v||O!==N||d!=="listening"||(w=null,K(M+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}))},onError:g=>{k!==v||O!==N||F(k,g)}});!ae?.started&&k===v&&O===N&&d==="listening"&&F(k,{code:ae?.reason||"audio-error",message:t("N\xE3o foi poss\xEDvel ativar o microfone. Continuando no modo Manual.")})}finally{V=!1}}function Q(){return["waiting-user","listening"].includes(d)?(i?.stopListening?.(),w=null,K(M+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),!0):!1}function de({externalAudio:s=!1,fromAudio:h=!1}={}){return["preparing","narrating","waiting-user","listening"].includes(d)?(N+=1,h||e?.cancel?.(),i?.release?.(),w=null,s||n?.pauseIfRunning?.(),u("paused"),E(),!0):!1}async function le(){if(!["paused","error"].includes(d)||!c||!c.valid)return!1;let s=v;if(j=null,m=null,f==="auto"&&i){let h=await i.ensureSession({onStreamLost:R=>F(s,R)});if(s!==v)return!1;h.ok||(f="manual",A=h.message||t("Microfone indispon\xEDvel. Continuando no modo Manual."),y?.(A))}return n?.ensureRunning?.(),await K(M,{resetHint:!1,resumeOffset:L,notifyTurn:!1}),!0}function ue(){if(!c||!c.valid||d==="idle")return!1;let s=d==="completed"?Math.max(0,c.turns.length-1):Math.max(0,M-1);return L=0,$=0,d==="paused"?(M=s,j=null,m=null,l?.(S()),E(),!0):(d==="completed"&&n?.ensureRunning?.(),K(s,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),!0)}function me(){if(!c||!c.valid||d==="idle")return!1;let s=X(),h=M;return s?.isUser&&M>0&&!c.turns[M-1].isUser&&(h=M-1),L=0,(d==="paused"||d==="completed"||d==="error")&&n?.ensureRunning?.(),K(h,{resetHint:h!==M,resumeOffset:0,notifyTurn:!0}),!0}function B(){return!c||!c.valid||["idle","completed"].includes(d)?!1:(L=0,$=0,d==="paused"?(M+1>=c.turns.length?K(c.turns.length,{resetHint:!0}):(M+=1,j=null,m=null,l?.(S()),E()),!0):(K(M+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),!0))}function q(){let s=X();return!s||!s.isUser||d==="idle"?null:($=Math.min(3,$+1),E(),_e(s.spokenText,$))}function W(s){b=!!s,fe({hideMyLines:b}),d!=="idle"&&E()}function ne(s){z=!!s,fe({showHints:z}),d!=="idle"&&E()}function ee(s){ve.includes(Number(s))&&(I=Number(s),fe({silenceSeconds:I}),d==="listening"?K(M,{resetHint:!1,resumeOffset:0,notifyTurn:!1}):d!=="idle"&&E())}async function G(s){let h=s==="auto"?"auto":"manual";if(h===f&&d!=="error")return!0;if(fe({mode:h}),h==="manual")return i?.release?.(),w=null,f="manual",A="",d==="listening"&&(N+=1,u("waiting-user")),E(),!0;let R=v;if(f="auto",d==="idle")return!0;if(!i)return f="manual",A=t("Microfone indispon\xEDvel neste dispositivo. Mantendo modo Manual."),y?.(A),E(),!1;let H=await i.ensureSession({onStreamLost:k=>F(R,k)});return R!==v?!1:H.ok?(A="",d==="waiting-user"?await K(M,{resetHint:!1,resumeOffset:0,notifyTurn:!1}):E(),!0):(f="manual",A=H.message||t("Microfone indispon\xEDvel. Continuando no modo Manual."),y?.(A),E(),!1)}function ie(){D=!0,d!=="idle"&&E()}function a({pauseTimer:s=!0}={}){if(d==="idle"){_();return}let h=["preparing","narrating","waiting-user","listening"].includes(d);v+=1,N+=1,_(),s&&h&&n?.pauseIfRunning?.(),c=null,M=0,L=0,$=0,j=null,A="",m=null,D=!1,u("idle"),E()}function p(s){d==="idle"||d==="completed"||(!s&&["narrating","waiting-user","listening"].includes(d)?de({externalAudio:!0}):s&&d==="paused"&&!j&&le())}return{getSnapshot:S,isActive:()=>d!=="idle",start:Z,finishUserTurn:Q,pause:de,resume:le,previousTurn:ue,repeatLastTurn:me,skipTurn:B,revealHint:q,setHideMyLines:W,setShowHints:ne,setSilenceSeconds:ee,switchMode:G,markCompletedSaved:ie,syncTimerState:p,stop:a}}function Ot(e,i){switch(e){case"not-part":return i("O Ensaio interativo est\xE1 dispon\xEDvel apenas para demonstra\xE7\xF5es com participantes.");case"need-two-participants":return i("Adicione pelo menos dois participantes \xE0 demonstra\xE7\xE3o para iniciar o Ensaio interativo.");case"all-unassigned":return i("Identifique quem fala nos trechos do documento antes de iniciar o ensaio.");case"empty-turns":return i("Escreva as falas dos participantes antes de iniciar o ensaio.");case"missing-identity":return i('Selecione sua identidade em "Quem sou eu" para iniciar o ensaio.');default:return i("N\xE3o foi poss\xEDvel preparar as falas desta demonstra\xE7\xE3o.")}}function st({$:e,$$:i,rt:n,icon:t,esc:r,btn:l,t:o=w=>w,tr:y=(w,...A)=>w.reduce((m,D,X)=>m+D+(X<A.length?A[X]:""),""),getActive:x,getSettings:d,audioPlayer:v,openModal:N,closeModal:V,persist:T,toast:Y,openEditor:c,refreshIdentity:f,renderReaderContent:I,ensureTimerRunning:b,pauseTimerIfRunning:z,finishRehearsalRecord:M,setReaderPage:L,mediaDevices:$,AudioContextClass:j}){let w=!1,A=null,m="",D="",X="",S=Oe({player:v,getSettings:d,t:o}),E=Le({...$?{mediaDevices:$}:{},...j?{AudioContextClass:j}:{},t:o}),u=$e({audio:S,vad:E,t:o,timer:{ensureRunning:()=>b?.(),pauseIfRunning:()=>z?.()},onChange:a=>{_(a),Q(a),le({scrollToTurn:!1})},onTurnChange:a=>{let p=x?.();p&&p.layout==="pages"&&a.currentTurn&&Array.isArray(a.currentTurn.pages)&&(a.currentTurn.pages.includes(n.page)||L?.(a.currentTurn.page)),Q(a),le({scrollToTurn:!0})},onVadChange:a=>{K(a)},onNotice:a=>{a&&Y?.(a)},onComplete:()=>{w=!1,Q(u.getSnapshot()),le({scrollToTurn:!1})}});function _(a=u.getSnapshot()){let p=e('[data-action="open-interactive-rehearsal"]');p&&(p.dataset.active=String(a.isActive),p.setAttribute("aria-pressed",String(a.isActive)))}function Z(a){if(!Se(a))return"";let p=u.isActive()&&u.getSnapshot().speechId===a.id,s=o(p?"Ensaio ativo":"Ensaio interativo");return`<button type="button" class="btn small soft rehearsal-entry-btn" data-action="open-interactive-rehearsal" data-active="${p}" aria-pressed="${p}">${t("Mic")}<span>${r(s)}</span></button>`}function F(){let a=e(".reader-paper");if(!a||!a.parentNode)return;let p=e("#rehearsalBar");p||(p=document.createElement("section"),p.id="rehearsalBar",p.className="rehearsal-bar",p.setAttribute("role","region"),p.setAttribute("aria-label",o("Controles do Ensaio interativo")),p.hidden=!0,a.parentNode.insertBefore(p,a));let s=x?.();if(u.isActive()){let h=u.getSnapshot();if(!s||s.id!==h.speechId||String(s.activeVersionId||"default")!==String(h.versionId||"default")||X&&String(ye(s)?.contentKey||"")!==X||(s.myParticipantId||"")!==(h.plan?.myParticipantId||"")){u.stop({pauseTimer:!0});return}Q(h),le({scrollToTurn:!1})}else p.hidden=!0,p.innerHTML=""}function K(a){if(!e("#rehearsalMicStatus")||!a)return;let s=e("#rehearsalMicFill"),h=e("#rehearsalMicLabel");if(s){let R=Math.max(8,Math.min(100,Math.round((a.level||0)*100)));s.style.width=`${R}%`}if(h)if(!a.hasStartedSpeaking)h.textContent=o("Microfone ouvindo \xB7 comece sua fala quando estiver pronto");else if(a.phase==="silence-countdown"){let R=Math.max(1,Math.ceil((a.silenceRemainingMs||0)/1e3));h.textContent=y`Pausa detectada · avançando em ${R} s (ou continue falando)`}else h.textContent=o("Voz detectada \xB7 ouvindo sua fala\u2026")}function Q(a=u.getSnapshot()){let p=e("#rehearsalBar");if(!p)return;if(!a.isActive){p.hidden=!0,p.innerHTML="";return}p.hidden=!1;let s=a.currentTurn,h=Math.min(a.currentTurnIndex+1,Math.max(1,a.totalTurns)),R="",H="Mic",k=o("Preparando"),O=s?s.participantName:"";a.state==="narrating"?(R="is-narrating",H="Volume2",k=o("Narrando")):a.state==="waiting-user"?(R="is-user",H="UserRound",k=o("Sua vez")):a.state==="listening"?(R="is-user",H="Mic",k=o("Sua vez")):a.state==="paused"?(H="Pause",k=a.blockedPlayback?o("\xC1udio aguardando toque"):o("Pausado")):a.state==="completed"?(R="is-listening",H="CheckCircle2",k=o("Ensaio conclu\xEDdo"),O=o("Todas as falas foram praticadas")):a.state==="error"&&(H="AlertCircle",k=o("Aten\xE7\xE3o"));let J=!!(s?.isUser&&["waiting-user","listening"].includes(a.state)),U=!!(s?.isUser&&a.showHints&&(a.hideMyLines||a.hintLevel<3)&&a.hintLevel<3&&a.state!=="completed"),P="";a.state==="completed"?P=a.completedSaved?`<button type="button" class="rehearsal-primary-btn secondary" data-action="rehearsal-end">${t("Check")}<span>${r(o("Concluir e fechar"))}</span></button>`:`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-save-finish">${t("Check")}<span>${r(o("Salvar ensaio"))}</span></button>`:a.blockedPlayback?P=`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-pause-resume">${t("Play")}<span>${r(o("Reproduzir fala"))}</span></button>`:a.state==="paused"||a.state==="error"?P=`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-pause-resume">${t("Play")}<span>${r(o("Continuar"))}</span></button>`:J?P=`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-done-speaking">${t("Check")}<span>${r(o("Terminei minha fala"))}</span></button>`:P=`<button type="button" class="rehearsal-primary-btn secondary" data-action="rehearsal-pause-resume">${t("Pause")}<span>${r(o("Pausar"))}</span></button>`;let ae=a.state==="listening"?`<div class="rehearsal-mic-status" id="rehearsalMicStatus"><span class="rehearsal-mic-meter" aria-hidden="true"><span class="rehearsal-mic-meter-fill" id="rehearsalMicFill"></span></span><span id="rehearsalMicLabel">${r(o("Microfone ouvindo \xB7 comece sua fala quando estiver pronto"))}</span></div>`:"",g=a.blockedPlayback?.message||a.error?.message||"",te=g?`<div class="rehearsal-notice-inline" role="status">${r(g)}</div>`:"",oe=`
-      <div class="rehearsal-more-menu" id="rehearsalMoreMenu" role="menu" ${w?"":"hidden"}>
+${q}`,G.wordCount+=_;for(let le of B.pages)G.pages.includes(le)||G.pages.push(le);return}b=!0;let ue=!!(g&&V===g);c.push({index:c.length,id:`turn-${c.length}-${h.start}`,participantId:V,participantName:j,isUser:ue,role:ue?"user":"other",spokenText:q,wordCount:_,start:h.start,end:h.end,audioStart:p,audioEnd:ee,audioStarts:[p],segmentIndices:[z],page:B.pages[0],pages:[...B.pages]})});let N=[...new Set(c.map(h=>h.participantId))],v=c.filter(h=>h.isUser).length,L=c.filter(h=>!h.isUser).length,U=c.reduce((h,z)=>h+z.wordCount,0),P=[];Q.length>0&&P.push("unassigned-segments"),g&&c.length>0&&v===0&&P.push("no-user-turns"),g&&c.length>0&&L===0&&P.push("no-other-turns");let S="";r.length<2?S="need-two-participants":c.length===0?S=Q.length>0?"all-unassigned":"empty-turns":g||(S="missing-identity");let A=Object.freeze({valid:S==="",reason:S,warnings:P,versionId:w,versionName:d,contentKey:y,myParticipantId:g,participants:r,usedParticipantIds:N,turns:c,userTurnCount:v,otherTurnCount:L,unassignedSegments:Q,hasUnassigned:Q.length>0,totalWords:U});return ke.key=E,ke.value=A,A}function qe(e,i=0){let n=String(e??"").trim(),t=Math.max(0,Math.min(3,Math.floor(Number(i)||0)));if(!n||t<=0)return{level:0,maxLevel:3,text:"",complete:!1};if(t>=3)return{level:3,maxLevel:3,text:n,complete:!0};let r=[...n.matchAll(/\S+/g)],l=r.length;if(l===0)return{level:3,maxLevel:3,text:n,complete:!0};if(l===1){let D=r[0][0];if(D.length<=3||t===2)return{level:t,maxLevel:3,text:n,complete:!0};let T=Math.max(1,Math.ceil(D.length*.45));return{level:1,maxLevel:3,text:`${D.slice(0,T)}\u2026`,complete:!1}}if(l===2){if(t===1){let D=r[0].index+r[0][0].length;return{level:1,maxLevel:3,text:`${n.slice(0,D)}\u2026`,complete:!1}}return{level:2,maxLevel:3,text:n,complete:!0}}let o=Math.min(4,Math.max(1,Math.min(l-2,Math.ceil(l*.22)))),g=Math.min(l-1,Math.max(o+1,Math.ceil(l*.58))),d=r[(t===1?o:g)-1],y=d.index+d[0].length,E=n.slice(0,y).replace(/[,;:\-–—]+$/,"").trimEnd();return{level:t,maxLevel:3,text:`${E}\u2026`,complete:!1}}var it="seprepare-interactive-rehearsal-v1";var Xe=null;function Te(e,i=1){let n=Number(e);return Number.isFinite(n)?Math.round(Math.max(.5,Math.min(1.8,n))*10)/10:Math.max(.5,Math.min(1.8,Number(i)||1))}function at(e){let i=Number(e);return[2,3,5].includes(i)?i:3}function Nt(){return{mode:"manual",silenceSeconds:3,hideMyLines:!1,showHints:!0,participantVoices:{}}}function Rt(){try{if(typeof localStorage<"u"&&localStorage){let e=localStorage.getItem(it);if(e)return JSON.parse(e)}}catch{}return Xe?JSON.parse(JSON.stringify(Xe)):null}function Ot(e){Xe=JSON.parse(JSON.stringify(e));try{typeof localStorage<"u"&&localStorage&&localStorage.setItem(it,JSON.stringify(e))}catch{}}function ge(){let e=Rt();if(!e||typeof e!="object")return Nt();let i={};if(e.participantVoices&&typeof e.participantVoices=="object"){let n=Object.entries(e.participantVoices).slice(-300);for(let[t,r]of n)r&&typeof r=="object"&&(i[t]={voice:typeof r.voice=="string"?r.voice.slice(0,300):"",locale:typeof r.locale=="string"?r.locale.slice(0,40):"",rate:Te(r.rate,1),updatedAt:Number(r.updatedAt)||0})}return{mode:e.mode==="auto"?"auto":"manual",silenceSeconds:at(e.silenceSeconds),hideMyLines:e.hideMyLines===!0,showHints:e.showHints!==!1,participantVoices:i}}function he(e={}){let i=ge(),n={mode:e.mode!==void 0?e.mode==="auto"?"auto":"manual":i.mode,silenceSeconds:e.silenceSeconds!==void 0?at(e.silenceSeconds):i.silenceSeconds,hideMyLines:e.hideMyLines!==void 0?e.hideMyLines===!0:i.hideMyLines,showHints:e.showHints!==void 0?e.showHints!==!1:i.showHints,participantVoices:{...i.participantVoices,...e.participantVoices||{}}},t=Object.keys(n.participantVoices);return t.length>300&&t.sort((r,l)=>(n.participantVoices[r]?.updatedAt||0)-(n.participantVoices[l]?.updatedAt||0)).slice(0,t.length-300).forEach(r=>delete n.participantVoices[r]),Ot(n),n}function We(e,i){return`${String(e||"global")}:${String(i||"")}`}function Le({player:e,getSettings:i,t:n=t=>t}){let t=0,r=null,l="idle",o=null,g=()=>{let m=(typeof i=="function"?i():{})||{},b=String(m.audioLanguage||"").trim();if(b)return b;let N=String(m.language||"pt-BR").split("-")[0].toLowerCase();return{pt:"pt-BR",en:"en-US",es:"es-ES",ja:"ja-JP"}[N]||"pt-BR"},w=()=>{let m=(typeof i=="function"?i():{})||{};return Te(m.rate,1)};e&&typeof e.setExternalInterruptHandler=="function"&&e.setExternalInterruptHandler(m=>{t+=1,r=null;let b=l!=="idle";l="idle",b&&typeof o=="function"&&o(m||"external-audio")});function d(m){let b=m||g();if(e&&typeof e.getAvailableVoices=="function"){let N=e.getAvailableVoices(b);if(N&&Array.isArray(N.voices))return{status:N.status||"ready",locale:N.locale||b,voices:N.voices,allVoices:Array.isArray(N.allVoices)&&N.allVoices.length?N.allVoices:N.voices}}return{status:"ready",locale:b,voices:[],allVoices:[]}}function y(m=[],b=""){let N=ge(),v=d(),L=String(v.locale||"pt-BR").split(/[-_]/)[0].toLowerCase(),U=v.voices.filter(z=>String(z.locale||"").split(/[-_]/)[0].toLowerCase()===L),P=U.length?U:v.voices,S=v.allVoices||P,A=w(),h=new Map;return m.forEach((z,V)=>{let j=We(b,z.id),x=N.participantVoices[j]||null,p=x?Te(x.rate,A):A,ee=P.length?P[V%P.length]:null;if(x&&x.voice){let B=S.find(q=>q.name===x.voice||x.locale&&q.name===x.voice&&q.locale===x.locale||`${q.name}${q.locale}`===x.voice);if(B){h.set(z.id,{participantId:z.id,voice:B.name,locale:B.locale||v.locale,label:B.label||`${B.name} \xB7 ${B.locale}`,rate:p,source:"manual",fallbackUsed:!1});return}}ee?h.set(z.id,{participantId:z.id,voice:ee.name,locale:ee.locale||v.locale,label:ee.label||`${ee.name} \xB7 ${ee.locale}`,rate:p,source:x?.voice?"fallback":"auto",fallbackUsed:!!x?.voice}):h.set(z.id,{participantId:z.id,voice:"",locale:v.locale,label:n("Autom\xE1tica (idioma do aplicativo)"),rate:p,source:x?.voice?"fallback":"system",fallbackUsed:!!x?.voice})}),{locale:v.locale,status:v.status,voices:P,allVoices:S,assignments:h}}function E(m,b,{voice:N="",locale:v="",rate:L}={}){let U=ge(),P=We(m,b),S={...U.participantVoices},A=String(N||"").trim(),h=String(v||"").trim(),z=Te(L,w());return!A&&z===w()?delete S[P]:S[P]={voice:A,locale:h,rate:z,updatedAt:Date.now()},he({participantVoices:S})}function D(m,b){return ge().participantVoices[We(m,b)]||null}function T(){t+=1;let m=r;r=null,l="idle",m&&e&&typeof e.cancelSegment=="function"&&e.cancelSegment(m)}function Q(){e?.unlock?.()}function c({turn:m,participants:b=[],speechId:N="",title:v="",offset:L=0,onStart:U,onBoundary:P,onEnd:S,onError:A,onBlocked:h,onPaused:z}){if(T(),!m||!m.spokenText)return queueMicrotask(()=>S?.()),{sessionToken:t,started:!0};if(!e||typeof e.speakSegment!="function"){let _={code:"synthesis-unavailable",message:n("Este dispositivo n\xE3o disponibilizou leitura em voz alta.")};return A?.(_),{sessionToken:t,started:!1}}let V=++t;l="turn";let j=Array.isArray(b)&&b.length?b:[{id:m.participantId,name:m.participantName}],{assignments:x,locale:p}=y(j,N),ee=x.get(m.participantId)||{voice:"",locale:p,rate:w()},B=!1,q=e.speakSegment({title:v||m.participantName||n("Ensaio interativo"),text:m.spokenText,offset:Math.max(0,Number(L)||0),voice:ee.voice,locale:ee.locale||p,rate:ee.rate,onStart:()=>{V!==t||B||U?.({voice:ee})},onBoundary:_=>{V!==t||B||P?.(_)},onEnd:()=>{V!==t||B||(B=!0,r=null,l="idle",S?.())},onPaused:()=>{V!==t||B||(B=!0,r=null,l="idle",z?.())},onError:_=>{if(V!==t||B)return;B=!0,r=null,l="idle";let G=String(_?.code||"synthesis-failed");G==="not-allowed"||G==="startup-timeout"?h?.({code:G,message:_?.message||n("A reprodu\xE7\xE3o autom\xE1tica foi bloqueada pelo navegador. Toque em Reproduzir fala para continuar.")}):A?.({code:G,message:_?.message||n("N\xE3o foi poss\xEDvel reproduzir esta fala.")})}});return q?(!B&&V===t&&(r=q),{sessionToken:V,started:!0}):(!B&&V===t&&(l="idle"),{sessionToken:V,started:!1})}function M({voice:m="",locale:b="",rate:N=1,sampleText:v="",onEnd:L,onError:U}){if(T(),!e||typeof e.speakSegment!="function")return U?.({code:"synthesis-unavailable",message:n("Leitura em voz alta indispon\xEDvel.")}),!1;let P=++t;l="preview";let S=String(v||"").trim()||n("Ol\xE1! Esta \xE9 uma fala de teste para o ensaio interativo."),A=e.speakSegment({title:n("Teste de voz"),text:S,offset:0,voice:m,locale:b||g(),rate:Te(N,w()),onEnd:()=>{P===t&&(r=null,l="idle",L?.())},onPaused:()=>{P===t&&(r=null,l="idle",L?.())},onError:h=>{P===t&&(r=null,l="idle",U?.(h))}});return A?(r=A,!0):(l="idle",!1)}return{listCatalog:d,resolveParticipantVoices:y,setParticipantVoice:E,getSavedParticipantVoice:D,speakTurn:c,previewVoice:M,cancel:T,unlock:Q,isSpeaking:()=>l!=="idle",getActiveKind:()=>l,onExternalInterrupt:m=>{o=typeof m=="function"?m:null}}}function Ct(e=globalThis.navigator?.mediaDevices){let i=null,n=null,t=new Set;function r(){if(!(t.size||n)){for(let o of i?.getTracks?.()||[])o.stop();i=null}}async function l(o){if(!e?.getUserMedia)throw new DOMException("Microphone unavailable","NotFoundError");i?.getAudioTracks?.().some(y=>y.readyState==="live")||(n||(n=e.getUserMedia(o).then(y=>i=y).finally(()=>{n=null})),await n);let g=i.clone(),w={stream:g};t.add(w);let d=g.getTracks().length;for(let y of g.getTracks()){let E=y.stop.bind(y),D=!1,T=()=>{D||(D=!0,--d===0&&(t.delete(w),r()))};y.stop=()=>{E(),T()},y.addEventListener("ended",T,{once:!0})}return g}return{getUserMedia:l,activeLeases:()=>t.size}}var ot=Symbol.for("SePrepare.sharedMicrophone"),st=globalThis[ot]||(globalThis[ot]=Ct());function lt({silenceTargetMs:e=3e3}={}){let i=!1,n=!1,t=0,r=0,l=0,o=!1;function g({probability:w,dt:d=32}={}){if(!Number.isFinite(w)||w<0||w>1||!Number.isFinite(d)||d<=0||d>64)throw new Error("Invalid classified audio frame");if(!o){let y=w>=(n?.45:.65);y?(r=0,t+=d,t>=160?(i=!0,n=!0,l=0):i&&(l+=d)):(r+=d,r>64&&(t=0,n=!1),i&&(l+=d)),o=i&&l>=e&&(!y||n)}return{hasStartedSpeaking:i,phase:o?"complete":i?l>0?"silence-countdown":"speaking":"waiting-voice",silenceStreakMs:l,complete:o,level:w}}return{push:g}}function ct({WorkerClass:e=globalThis.Worker,baseURL:i=typeof document<"u"?new URL("./voice/v1.0.74/",document.baseURI).href:"",setTimeoutFn:n=setTimeout,clearTimeoutFn:t=clearTimeout}={}){let r,l,o=0,g=0,w=0,d=new Map,y,E;function D(c,M={},m=2e4){return new Promise((b,N)=>{let v=++o,L=n(()=>{d.delete(v),N(Error("Speech engine timeout"))},m);d.set(v,{resolve:b,reject:N,timeout:L}),r.postMessage({type:c,id:v,...M})})}function T(){E?.({code:"classifier-failed"})}function Q(){return l||(l=(async()=>{if(!e)throw Error("Speech worker unavailable");r=new e(new URL("speech-worker.js",i)),r.onerror=()=>{for(let c of d.values())t(c.timeout),c.reject(Error("Speech worker failed"));d.clear(),T()},r.onmessage=({data:c})=>{if(c.id&&d.has(c.id)){let M=d.get(c.id);d.delete(c.id),t(M.timeout),c.type==="error"?M.reject(Error("Speech engine failed")):M.resolve()}else c.type==="result"&&c.token===g?(w=Math.max(0,w-1),y?.(c.probability)):c.type==="error"&&c.token===g&&T()},await D("init")})(),l)}return{ensure:Q,async startTurn(c,M,m){await Q(),g=c,w=0,y=M,E=m,await D("reset",{token:c},3e3)},push(c,M){if(!(!r||M!==g)){if(++w>24){T();return}r.postMessage({type:"frame",token:M,samples:c},[c.buffer])}},stopTurn(){g=0,w=0,y=E=null},release(){this.stopTurn();for(let c of d.values())t(c.timeout),c.reject(Error("Speech session cancelled"));d.clear(),r?.terminate(),r=null,l=null}}}var $e=class{constructor(i,n){if(!(i>=8e3&&i<=192e3))throw Error("Invalid sample rate");this.ratio=i/16e3,this.emit=n,this.reset()}reset(){this.frame=new Float32Array(512),this.count=0,this.fill=0,this.sum=0}push(i){for(let n=0;n<i.length;n++){let t=Number.isFinite(i[n])?Math.max(-1,Math.min(1,i[n])):0,r=1;for(;r>1e-9;){let l=Math.min(r,this.ratio-this.fill);this.sum+=l*t,this.fill+=l,r-=l,this.fill>=this.ratio-1e-9&&(this.frame[this.count++]=this.sum/this.ratio,this.sum=this.fill=0,this.count===512&&(this.emit(this.frame),this.frame=new Float32Array(512),this.count=0))}}}};function Pe(e={}){let{mediaDevices:i=st,AudioContextClass:n=globalThis.AudioContext||globalThis.webkitAudioContext,AudioWorkletNodeClass:t=globalThis.AudioWorkletNode,createClassifier:r=()=>ct(),secureContext:l=globalThis.isSecureContext!==!1,baseURL:o=typeof document<"u"?new URL("./voice/v1.0.74/",document.baseURI).href:"",now:g=()=>Date.now(),setIntervalFn:w=setInterval,clearIntervalFn:d=clearInterval,setTimeoutFn:y=setTimeout,clearTimeoutFn:E=clearTimeout,t:D=F=>F}=e,T=1,Q=0,c,M,m,b,N,v,L,U,P,S=!1,A,h,z=()=>{},V=()=>{};function j(F){let X=String(F?.name||F?.code||""),Y=/NotAllowed|PermissionDenied|Security/.test(X)?["permission-denied","Permita o microfone nos ajustes do navegador ou do sistema para usar o modo Autom\xE1tico. Continuando no modo Manual."]:/NotFound|DevicesNotFound|Overconstrained/.test(X)?["mic-unavailable","Nenhum microfone dispon\xEDvel foi encontrado. Continuando no modo Manual."]:/NotReadable|TrackStart|Abort|mic-busy/.test(X)?["mic-busy","O microfone est\xE1 ocupado ou indispon\xEDvel. Confira outros aplicativos e os ajustes do sistema. Continuando no modo Manual."]:/audio-blocked/.test(X)?["audio-blocked","Toque novamente em Autom\xE1tico para ativar o \xE1udio neste dispositivo. Continuando no modo Manual."]:/insecure/.test(X)?["insecure-context","Abra o SePrepare pelo endere\xE7o HTTPS para usar o microfone. Continuando no modo Manual."]:["audio-error","A detec\xE7\xE3o de fala n\xE3o p\xF4de ser iniciada. Continuando no modo Manual."];return{code:Y[0],message:D(Y[1])}}function x(){return l&&typeof i?.getUserMedia=="function"&&typeof n=="function"}function p(F){for(let X of M?.getAudioTracks?.()||[])X.enabled=F}function ee(){if(b?.port){b.port.onmessage=null;try{b.port.postMessage({active:!1,token:0})}catch{}}b&&(b.onaudioprocess=null);for(let F of[m,b,N])try{F?.disconnect()}catch{}m=b=N=v=null}function B(){Q++,S=!1,h!=null&&d(h),h=null,L?.stopTurn(),p(!1),ee()}function q(){z(),z=()=>{};for(let F of M?.getTracks?.()||[])try{F.stop()}catch{}M=null}function _(){T++,B(),U=null,q(),V(),V=()=>{};let F=c;c=null,P=null;try{Promise.resolve(F?.close()).catch(()=>{})}catch{}L?.release(),L=null,A=null}function G(F){let X=A;_(),X?.(j(F))}function ue(F){return new Promise(X=>y(X,F))}async function le(F){let X=[{audio:{channelCount:{ideal:1},echoCancellation:!0,noiseSuppression:!0,autoGainControl:!1},video:!1},{audio:{autoGainControl:!1},video:!1},{audio:!0,video:!1}],Y;for(let ne=0;ne<X.length;ne++){if(ne&&await ue(ne*100),F!==T)return null;try{let te=await i.getUserMedia(X[ne]);if(F!==T){for(let Z of te.getTracks())Z.stop();return null}if(te.getAudioTracks().some(Z=>Z.readyState!=="ended"))return te;for(let Z of te.getTracks())Z.stop();Y={name:"NotReadableError"}}catch(te){if(Y=te,/NotAllowed|PermissionDenied|Security/.test(te?.name||""))break}}throw Y||Error("Microphone unavailable")}function pe({onStreamLost:F}={}){if(F&&(A=F),!x())return Promise.resolve({ok:!1,...j({code:l?"unsupported":"insecure"})});if(U)return U;let X=T;try{if(!c||c.state==="closed"){c=new n;let Z=c,ie=()=>{S&&Z.state==="closed"&&G({code:"stream-lost"})};Z.addEventListener?.("statechange",ie),V=()=>Z.removeEventListener?.("statechange",ie)}c.state!=="running"&&Promise.resolve(c.resume()).catch(()=>{}),L||=r();let Y=L.ensure();Y.catch(()=>{});let te=M?.getAudioTracks?.().some(Z=>Z.readyState!=="ended")?Promise.resolve(M):le(X);return U=(async()=>{try{let Z=await te;if(X!==T||!Z)return{ok:!1,code:"cancelled",message:""};if(Z!==M){q(),M=Z,p(!1);let ie=[];for(let a of M.getAudioTracks()){let u=()=>{if(X===T){if(!S){q();return}G({code:"stream-lost"})}};a.addEventListener?.("ended",u),ie.push(()=>a.removeEventListener?.("ended",u))}z=()=>ie.forEach(a=>a())}if(await Y,X!==T)return{ok:!1,code:"cancelled",message:""};if(c.state!=="running"){if(await Promise.race([Promise.resolve(c.resume()),ue(700)]),X!==T)return{ok:!1,code:"cancelled",message:""};if(c.state!=="running")throw{code:"audio-blocked"}}return{ok:!0}}catch(Z){if(X!==T)return{ok:!1,code:"cancelled",message:""};let ie=j(Z);return _(),{ok:!1,...ie}}finally{X===T&&(U=null)}})(),U}catch(Y){let ne=j(Y);return _(),Promise.resolve({ok:!1,...ne})}}async function ye({silenceSeconds:F=3,onStateChange:X,onSpeechComplete:Y,onError:ne}={}){B();let te=Q,Z=T,ie=await pe({onStreamLost:ne});if(!ie.ok)return ie.code!=="cancelled"&&ne?.(ie),{started:!1,reason:ie.code};if(te!==Q||Z!==T)return{started:!1,reason:"cancelled"};let a=lt({silenceTargetMs:([2,3,5].includes(Number(F))?Number(F):3)*1e3}),u=([2,3,5].includes(Number(F))?Number(F):3)*1e3,s=g(),f=0,I="",H=()=>te===Q&&Z===T&&S,k=K=>{H()&&G(K)},R=K=>{H()&&c.state==="running"&&!M.getAudioTracks().some(W=>W.muted)&&L.push(K,te)};try{if(await L.startTurn(te,K=>{if(!H())return;let W;try{W=a.push({probability:K,dt:32})}catch{k({code:"classifier-failed"});return}if(s=g(),W.complete){B(),Y?.();return}(W.phase!==I||g()-f>=180)&&(I=W.phase,f=g(),X?.({...W,silenceTargetMs:u,silenceRemainingMs:Math.max(0,u-W.silenceStreakMs)}))},k),te!==Q||Z!==T)return{started:!1,reason:"cancelled"};if(m=c.createMediaStreamSource(M),c.audioWorklet&&t)try{if(P||=c.audioWorklet.addModule(new URL("pcm-capture-worklet.js",o)),await P,te!==Q||Z!==T)return{started:!1,reason:"cancelled"};b=new t(c,"seprepare-speech-capture",{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]}),b.port.onmessage=({data:K})=>{K.type==="frame"&&K.token===te&&R(K.samples)},b.port.postMessage({active:!0,token:te})}catch{b=null}if(!b){if(typeof c.createScriptProcessor!="function")throw Error("PCM capture unavailable");b=c.createScriptProcessor(2048,1,1),v=new $e(c.sampleRate,R),b.onaudioprocess=K=>{K.outputBuffer.getChannelData(0).fill(0),H()&&v.push(K.inputBuffer.getChannelData(0))}}return N=c.createGain(),N.gain.value=0,m.connect(b),b.connect(N),N.connect(c.destination),S=!0,s=g(),p(!0),X?.({phase:"waiting-voice",hasStartedSpeaking:!1,level:0,silenceTargetMs:u,silenceRemainingMs:u}),h=w(()=>{H()&&g()-s>2500&&k({code:"capture-stalled"})},500),{started:!0}}catch(K){if(te===Q&&Z===T){let W=j(K);_(),ne?.(W)}return{started:!1,reason:"audio-error"}}}return{isSupported:x,ensureSession:pe,startListeningTurn:ye,stopListening:B,release:_,isActive:()=>!!M,getBackend:()=>b?.port?"worklet":b?"script-processor":null}}function He({audio:e,vad:i,timer:n={},t=d=>d,onChange:r,onTurnChange:l,onVadChange:o,onNotice:g,onComplete:w}={}){let d="idle",y=0,E=0,D=!1,T="",Q="",c=null,M="manual",m=3,b=!1,N=!0,v=0,L=0,U=0,P=null,S=null,A="",h=null,z=!1;e&&typeof e.onExternalInterrupt=="function"&&e.onExternalInterrupt(()=>{["narrating","waiting-user","listening","preparing"].includes(d)&&ue({externalAudio:!0})});function V(){return!c||!Array.isArray(c.turns)?null:c.turns[v]||null}function j(){let s=V(),f=s&&s.isUser?qe(s.spokenText,U):{level:0,maxLevel:3,text:"",complete:!1};return{state:d,isActive:d!=="idle",isRunning:["preparing","narrating","waiting-user","listening"].includes(d),mode:M,silenceSeconds:m,hideMyLines:b,showHints:N,speechId:T,speechTitle:Q,versionId:c?.versionId||"",versionName:c?.versionName||"",contentKey:c?.contentKey||"",plan:c,currentTurnIndex:v,totalTurns:c?.turns?.length||0,currentTurn:s,narrationCharOffset:L,hintLevel:U,currentHint:f,blockedPlayback:P,vadStatus:S,fallbackNotice:A,error:h,completedSaved:z}}function x(){r?.(j())}function p(s){if(!nt.includes(s))throw new Error(`Invalid rehearsal state: ${s}`);d=s}function ee(){e?.cancel?.(),i?.release?.(),S=null}async function B({speech:s,mode:f,silenceSeconds:I,hideMyLines:H,showHints:k}={}){let R=ge(),K=f==="auto"?"auto":f==="manual"?"manual":R.mode,W=xe.includes(Number(I))?Number(I):R.silenceSeconds,$=H!==void 0?!!H:R.hideMyLines,oe=k!==void 0?!!k:R.showHints;he({mode:K,silenceSeconds:W,hideMyLines:$,showHints:oe}),ee();let J=Me(s,{bypassCache:!0});if(T=String(s?.id||""),Q=String(s?.title||""),c=J,M=K,m=W,b=$,N=oe,v=0,L=0,U=0,P=null,A="",h=null,z=!1,!J.valid)return y+=1,E+=1,p("error"),h={code:J.reason,message:Lt(J.reason,t)},x(),{ok:!1,reason:J.reason,plan:J};let O=++y,ae=++E;if(p("preparing"),x(),(M==="auto"||J.turns[0]?.isUser)&&e?.unlock?.(),M==="auto")if(!i)M="manual",A=t("Detec\xE7\xE3o de voz indispon\xEDvel. Continuando no modo Manual."),g?.(A);else{let re=await i.ensureSession({onStreamLost:ve=>q(O,ve)});if(O!==y||ae!==E)return i.release?.(),{ok:!1,reason:"cancelled",plan:J};re.ok||(M="manual",A=re.message||t("Microfone indispon\xEDvel. Continuando no modo Manual."),g?.(A))}return n?.ensureRunning?.(),await _(0,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),{ok:!0,plan:J,mode:M}}function q(s,f){s!==y||d==="idle"||d==="completed"||(i?.release?.(),M="manual",S=null,A=f?.message||t("O microfone n\xE3o est\xE1 mais dispon\xEDvel. Continuando no modo Manual."),g?.(A),d==="listening"&&(E+=1,p("waiting-user")),x())}async function _(s,{resetHint:f=!0,resumeOffset:I=0,notifyTurn:H=!0}={}){if(!c||!c.valid||D)return;D=!0;let k=y,R=++E;try{if(e?.cancel?.(),i?.stopListening?.(),S=null,P=null,h=null,s>=c.turns.length){v=Math.max(0,c.turns.length-1),L=0,i?.release?.(),p("completed"),n?.pauseIfRunning?.(),D=!1,x(),w?.(j());return}let K=Math.max(0,Math.min(s,c.turns.length-1)),W=K!==v;v=K,L=Math.max(0,Number(I)||0),(f||W)&&(U=0);let $=c.turns[v];if(!$.isUser){p("narrating"),D=!1,(H||W)&&l?.(j()),x(),e?.speakTurn?.({turn:$,participants:c.participants,speechId:T,title:`${$.participantName} \xB7 ${Q||t("Ensaio interativo")}`,offset:L,onStart:()=>{},onBoundary:({offset:J})=>{k!==y||R!==E||d!=="narrating"||(L=Math.max(0,Number(J)||0))},onEnd:()=>{k!==y||R!==E||d!=="narrating"||(L=0,_(v+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}))},onPaused:()=>{k!==y||R!==E||d!=="narrating"||ue({fromAudio:!0})},onBlocked:J=>{k!==y||R!==E||(P={code:J?.code||"not-allowed",message:J?.message||t("Toque em Reproduzir fala para autorizar o \xE1udio neste dispositivo.")},n?.pauseIfRunning?.(),p("paused"),x())},onError:J=>{k!==y||R!==E||(h={code:J?.code||"synthesis-failed",message:J?.message||t("N\xE3o foi poss\xEDvel reproduzir esta fala.")},n?.pauseIfRunning?.(),p("error"),x())}});return}if(L=0,M==="manual"){p("waiting-user"),D=!1,(H||W)&&l?.(j()),x();return}if(p("listening"),S={phase:"waiting-voice",hasStartedSpeaking:!1,level:0,silenceRemainingMs:m*1e3,silenceTargetMs:m*1e3},D=!1,(H||W)&&l?.(j()),x(),!i){q(k,{code:"unsupported",message:t("Microfone indispon\xEDvel. Continuando no modo Manual.")});return}let oe=await i.startListeningTurn({silenceSeconds:m,onStateChange:J=>{k!==y||R!==E||d!=="listening"||(S=J,o?.(J,j()))},onSpeechComplete:()=>{k!==y||R!==E||d!=="listening"||(S=null,_(v+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}))},onError:J=>{k!==y||R!==E||q(k,J)}});!oe?.started&&k===y&&R===E&&d==="listening"&&q(k,{code:oe?.reason||"audio-error",message:t("N\xE3o foi poss\xEDvel ativar o microfone. Continuando no modo Manual.")})}finally{D=!1}}function G(){return["waiting-user","listening"].includes(d)?(i?.stopListening?.(),S=null,_(v+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),!0):!1}function ue({externalAudio:s=!1,fromAudio:f=!1}={}){return["preparing","narrating","waiting-user","listening"].includes(d)?(E+=1,f||e?.cancel?.(),i?.release?.(),S=null,s||n?.pauseIfRunning?.(),p("paused"),x(),!0):!1}async function le(){if(!["paused","error"].includes(d)||!c||!c.valid)return!1;let s=y;if(P=null,h=null,(M==="auto"||c.turns[v]?.isUser)&&e?.unlock?.(),M==="auto"&&i){let f=await i.ensureSession({onStreamLost:I=>q(s,I)});if(s!==y)return!1;f.ok||(M="manual",A=f.message||t("Microfone indispon\xEDvel. Continuando no modo Manual."),g?.(A))}return n?.ensureRunning?.(),await _(v,{resetHint:!1,resumeOffset:L,notifyTurn:!1}),!0}function pe(){if(!c||!c.valid||d==="idle")return!1;let s=d==="completed"?Math.max(0,c.turns.length-1):Math.max(0,v-1);return L=0,U=0,d==="paused"?(v=s,P=null,h=null,l?.(j()),x(),!0):(d==="completed"&&n?.ensureRunning?.(),_(s,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),!0)}function ye(){if(!c||!c.valid||d==="idle")return!1;let s=V(),f=v;return s?.isUser&&v>0&&!c.turns[v-1].isUser&&(f=v-1),L=0,(d==="paused"||d==="completed"||d==="error")&&n?.ensureRunning?.(),_(f,{resetHint:f!==v,resumeOffset:0,notifyTurn:!0}),!0}function F(){return!c||!c.valid||["idle","completed"].includes(d)?!1:(L=0,U=0,d==="paused"?(v+1>=c.turns.length?_(c.turns.length,{resetHint:!0}):(v+=1,P=null,h=null,l?.(j()),x()),!0):(_(v+1,{resetHint:!0,resumeOffset:0,notifyTurn:!0}),!0))}function X(){let s=V();return!s||!s.isUser||d==="idle"?null:(U=Math.min(3,U+1),x(),qe(s.spokenText,U))}function Y(s){b=!!s,he({hideMyLines:b}),d!=="idle"&&x()}function ne(s){N=!!s,he({showHints:N}),d!=="idle"&&x()}function te(s){xe.includes(Number(s))&&(m=Number(s),he({silenceSeconds:m}),d==="listening"?_(v,{resetHint:!1,resumeOffset:0,notifyTurn:!1}):d!=="idle"&&x())}async function Z(s){let f=s==="auto"?"auto":"manual";if(f===M&&d!=="error")return!0;if(he({mode:f}),f==="manual")return i?.release?.(),S=null,M="manual",A="",d==="listening"&&(E+=1,p("waiting-user")),x(),!0;let I=y;if(M="auto",d==="idle")return!0;if(!i)return M="manual",A=t("Microfone indispon\xEDvel neste dispositivo. Mantendo modo Manual."),g?.(A),x(),!1;e?.unlock?.();let H=await i.ensureSession({onStreamLost:k=>q(I,k)});return I!==y?!1:H.ok?(A="",d==="waiting-user"?await _(v,{resetHint:!1,resumeOffset:0,notifyTurn:!1}):x(),!0):(M="manual",A=H.message||t("Microfone indispon\xEDvel. Continuando no modo Manual."),g?.(A),x(),!1)}function ie(){z=!0,d!=="idle"&&x()}function a({pauseTimer:s=!0}={}){if(d==="idle"){ee();return}let f=["preparing","narrating","waiting-user","listening"].includes(d);y+=1,E+=1,ee(),s&&f&&n?.pauseIfRunning?.(),c=null,v=0,L=0,U=0,P=null,A="",h=null,z=!1,p("idle"),x()}function u(s){d==="idle"||d==="completed"||(!s&&["narrating","waiting-user","listening"].includes(d)?ue({externalAudio:!0}):s&&d==="paused"&&!P&&le())}return{getSnapshot:j,isActive:()=>d!=="idle",start:B,finishUserTurn:G,pause:ue,resume:le,previousTurn:pe,repeatLastTurn:ye,skipTurn:F,revealHint:X,setHideMyLines:Y,setShowHints:ne,setSilenceSeconds:te,switchMode:Z,markCompletedSaved:ie,syncTimerState:u,stop:a}}function Lt(e,i){switch(e){case"not-part":return i("O Ensaio interativo est\xE1 dispon\xEDvel apenas para demonstra\xE7\xF5es com participantes.");case"need-two-participants":return i("Adicione pelo menos dois participantes \xE0 demonstra\xE7\xE3o para iniciar o Ensaio interativo.");case"all-unassigned":return i("Identifique quem fala nos trechos do documento antes de iniciar o ensaio.");case"empty-turns":return i("Escreva as falas dos participantes antes de iniciar o ensaio.");case"missing-identity":return i('Selecione sua identidade em "Quem sou eu" para iniciar o ensaio.');default:return i("N\xE3o foi poss\xEDvel preparar as falas desta demonstra\xE7\xE3o.")}}function dt({$:e,$$:i,rt:n,icon:t,esc:r,btn:l,t:o=S=>S,tr:g=(S,...A)=>S.reduce((h,z,V)=>h+z+(V<A.length?A[V]:""),""),getActive:w,getSettings:d,audioPlayer:y,openModal:E,closeModal:D,persist:T,toast:Q,openEditor:c,refreshIdentity:M,renderReaderContent:m,ensureTimerRunning:b,pauseTimerIfRunning:N,finishRehearsalRecord:v,setReaderPage:L,mediaDevices:U,AudioContextClass:P}){let S=!1,A=null,h="",z="",V="",j=Le({player:y,getSettings:d,t:o}),x=Pe({...U?{mediaDevices:U}:{},...P?{AudioContextClass:P}:{},t:o}),p=He({audio:j,vad:x,t:o,timer:{ensureRunning:()=>b?.(),pauseIfRunning:()=>N?.()},onChange:a=>{ee(a),G(a),le({scrollToTurn:!1})},onTurnChange:a=>{let u=w?.();u&&u.layout==="pages"&&a.currentTurn&&Array.isArray(a.currentTurn.pages)&&(a.currentTurn.pages.includes(n.page)||L?.(a.currentTurn.page)),G(a),le({scrollToTurn:!0})},onVadChange:a=>{_(a)},onNotice:a=>{a&&Q?.(a)},onComplete:()=>{S=!1,G(p.getSnapshot()),le({scrollToTurn:!1})}});function ee(a=p.getSnapshot()){let u=e('[data-action="open-interactive-rehearsal"]');u&&(u.dataset.active=String(a.isActive),u.setAttribute("aria-pressed",String(a.isActive)))}function B(a){if(!Ie(a))return"";let u=p.isActive()&&p.getSnapshot().speechId===a.id,s=o(u?"Ensaio ativo":"Ensaio interativo");return`<button type="button" class="btn small soft rehearsal-entry-btn" data-action="open-interactive-rehearsal" data-active="${u}" aria-pressed="${u}">${t("Mic")}<span>${r(s)}</span></button>`}function q(){let a=e(".reader-paper");if(!a||!a.parentNode)return;let u=e("#rehearsalBar");u||(u=document.createElement("section"),u.id="rehearsalBar",u.className="rehearsal-bar",u.setAttribute("role","region"),u.setAttribute("aria-label",o("Controles do Ensaio interativo")),u.hidden=!0,a.parentNode.insertBefore(u,a));let s=w?.();if(p.isActive()){let f=p.getSnapshot();if(!s||s.id!==f.speechId||String(s.activeVersionId||"default")!==String(f.versionId||"default")||V&&String(be(s)?.contentKey||"")!==V||(s.myParticipantId||"")!==(f.plan?.myParticipantId||"")){p.stop({pauseTimer:!0});return}G(f),le({scrollToTurn:!1})}else u.hidden=!0,u.innerHTML=""}function _(a){if(!e("#rehearsalMicStatus")||!a)return;let s=e("#rehearsalMicFill"),f=e("#rehearsalMicLabel");if(s){let I=Math.max(8,Math.min(100,Math.round((a.level||0)*100)));s.style.width=`${I}%`}if(f)if(!a.hasStartedSpeaking)f.textContent=o("Microfone ouvindo \xB7 comece sua fala quando estiver pronto");else if(a.phase==="silence-countdown"){let I=Math.max(1,Math.ceil((a.silenceRemainingMs||0)/1e3));f.textContent=g`Pausa detectada · avançando em ${I} s (ou continue falando)`}else f.textContent=o("Voz detectada \xB7 ouvindo sua fala\u2026")}function G(a=p.getSnapshot()){let u=e("#rehearsalBar");if(!u)return;if(!a.isActive){u.hidden=!0,u.innerHTML="";return}u.hidden=!1;let s=a.currentTurn,f=Math.min(a.currentTurnIndex+1,Math.max(1,a.totalTurns)),I="",H="Mic",k=o("Preparando"),R=s?s.participantName:"";a.state==="narrating"?(I="is-narrating",H="Volume2",k=o("Narrando")):a.state==="waiting-user"?(I="is-user",H="UserRound",k=o("Sua vez")):a.state==="listening"?(I="is-user",H="Mic",k=o("Sua vez")):a.state==="paused"?(H="Pause",k=a.blockedPlayback?o("\xC1udio aguardando toque"):o("Pausado")):a.state==="completed"?(I="is-listening",H="CheckCircle2",k=o("Ensaio conclu\xEDdo"),R=o("Todas as falas foram praticadas")):a.state==="error"&&(H="AlertCircle",k=o("Aten\xE7\xE3o"));let K=!!(s?.isUser&&["waiting-user","listening"].includes(a.state)),W=!!(s?.isUser&&a.showHints&&(a.hideMyLines||a.hintLevel<3)&&a.hintLevel<3&&a.state!=="completed"),$="";a.state==="completed"?$=a.completedSaved?`<button type="button" class="rehearsal-primary-btn secondary" data-action="rehearsal-end">${t("Check")}<span>${r(o("Concluir e fechar"))}</span></button>`:`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-save-finish">${t("Check")}<span>${r(o("Salvar ensaio"))}</span></button>`:a.blockedPlayback?$=`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-pause-resume">${t("Play")}<span>${r(o("Reproduzir fala"))}</span></button>`:a.state==="paused"||a.state==="error"?$=`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-pause-resume">${t("Play")}<span>${r(o("Continuar"))}</span></button>`:K?$=`<button type="button" class="rehearsal-primary-btn" data-action="rehearsal-done-speaking">${t("Check")}<span>${r(o("Terminei minha fala"))}</span></button>`:$=`<button type="button" class="rehearsal-primary-btn secondary" data-action="rehearsal-pause-resume">${t("Pause")}<span>${r(o("Pausar"))}</span></button>`;let oe=a.state==="listening"?`<div class="rehearsal-mic-status" id="rehearsalMicStatus"><span class="rehearsal-mic-meter" aria-hidden="true"><span class="rehearsal-mic-meter-fill" id="rehearsalMicFill"></span></span><span id="rehearsalMicLabel">${r(o("Microfone ouvindo \xB7 comece sua fala quando estiver pronto"))}</span></div>`:"",J=a.blockedPlayback?.message||a.error?.message||"",O=J?`<div class="rehearsal-notice-inline" role="status">${r(J)}</div>`:"",ae=`
+      <div class="rehearsal-more-menu" id="rehearsalMoreMenu" role="menu" ${S?"":"hidden"}>
         ${a.state!=="completed"?`<button type="button" class="rehearsal-menu-item" data-action="rehearsal-pause-resume">${t(a.isRunning?"Pause":"Play")}<span>${r(a.isRunning?o("Pausar ensaio"):o("Continuar ensaio"))}</span></button>`:""}
         <button type="button" class="rehearsal-menu-item" data-action="rehearsal-repeat">${t("RotateCcw")}<span>${r(o("Repetir \xFAltima fala"))}</span></button>
         <button type="button" class="rehearsal-menu-item" data-action="rehearsal-prev" ${a.currentTurnIndex===0&&a.state!=="completed"?"disabled":""}>${t("ArrowLeft")}<span>${r(o("Voltar uma fala"))}</span></button>
@@ -1000,56 +1000,56 @@ ${F}`,Q.wordCount+=K;for(let le of Z.pages)Q.pages.includes(le)||Q.pages.push(le
         <button type="button" class="rehearsal-menu-item" data-action="rehearsal-open-voices-live">${t("Headphones")}<span>${r(o("Vozes dos participantes"))}</span></button>
         <button type="button" class="rehearsal-menu-item danger" data-action="rehearsal-end">${t("Square")}<span>${r(o("Encerrar ensaio"))}</span></button>
       </div>
-    `;p.innerHTML=`
+    `;u.innerHTML=`
       <div class="rehearsal-bar-head">
         <div class="rehearsal-status-group">
-          <span class="rehearsal-badge ${R}">${t(H)}<span>${r(k)}</span></span>
-          <span class="rehearsal-speaker-name">${r(O)}</span>
+          <span class="rehearsal-badge ${I}">${t(H)}<span>${r(k)}</span></span>
+          <span class="rehearsal-speaker-name">${r(R)}</span>
         </div>
-        <span class="rehearsal-turn-counter">${r(a.state==="completed"?`${a.totalTurns}/${a.totalTurns}`:y`Fala ${h}/${a.totalTurns}`)}</span>
+        <span class="rehearsal-turn-counter">${r(a.state==="completed"?`${a.totalTurns}/${a.totalTurns}`:g`Fala ${f}/${a.totalTurns}`)}</span>
       </div>
-      ${ae}
-      ${te}
+      ${oe}
+      ${O}
       <div class="rehearsal-actions-row">
         <button type="button" class="rehearsal-icon-action" data-action="rehearsal-prev" aria-label="${r(o("Voltar uma fala"))}" title="${r(o("Voltar uma fala"))}" ${a.currentTurnIndex===0&&a.state!=="completed"?"disabled":""}>${t("ArrowLeft")}</button>
-        ${P}
-        ${U?`<button type="button" class="rehearsal-icon-action" data-action="rehearsal-hint" aria-label="${r(o("Mostrar dica"))}" title="${r(o("Mostrar dica"))}">${t("Lightbulb")}</button>`:""}
+        ${$}
+        ${W?`<button type="button" class="rehearsal-icon-action" data-action="rehearsal-hint" aria-label="${r(o("Mostrar dica"))}" title="${r(o("Mostrar dica"))}">${t("Lightbulb")}</button>`:""}
         <button type="button" class="rehearsal-icon-action rehearsal-desktop-only" data-action="rehearsal-repeat" aria-label="${r(o("Repetir \xFAltima fala"))}" title="${r(o("Repetir \xFAltima fala"))}">${t("RotateCcw")}</button>
         ${a.state!=="completed"?`<button type="button" class="rehearsal-icon-action rehearsal-desktop-only" data-action="rehearsal-skip" aria-label="${r(o("Pular para a pr\xF3xima fala"))}" title="${r(o("Pular para a pr\xF3xima fala"))}">${t("ArrowRight")}</button>`:""}
         <span class="rehearsal-actions-spacer rehearsal-desktop-only"></span>
-        <button type="button" class="rehearsal-icon-action" data-action="rehearsal-toggle-more" aria-expanded="${w}" aria-label="${r(o("Mais controles do ensaio"))}" title="${r(o("Mais controles"))}">${t("MoreHorizontal")}</button>
-        ${oe}
+        <button type="button" class="rehearsal-icon-action" data-action="rehearsal-toggle-more" aria-expanded="${S}" aria-label="${r(o("Mais controles do ensaio"))}" title="${r(o("Mais controles"))}">${t("MoreHorizontal")}</button>
+        ${ae}
       </div>
-    `,a.state==="listening"&&a.vadStatus&&K(a.vadStatus)}function de(){for(let a of i("#readerText .reading-turn"))a.classList.remove("is-rehearsal-current","is-rehearsal-other","is-rehearsal-mine"),a.querySelector(".rehearsal-turn-tag")?.remove(),a.querySelector(".reading-turn-body")?.classList.remove("is-memorization-hidden"),a.querySelector(".rehearsal-memorization-box")?.remove()}function le({scrollToTurn:a=!1}={}){if(!e("#readerText"))return;let s=u.getSnapshot();if(!s.isActive||!s.plan){de();return}let h=s.currentTurn,R=new Set(h?.audioStarts||[]),H=s.plan.myParticipantId,k=null;for(let O of i("#readerText .reading-turn")){let J=Number(O.dataset.audioStart),U=O.dataset.participant||"",P=s.state!=="completed"&&R.has(J),ae=!!(H&&U===H);O.classList.toggle("is-rehearsal-current",P),O.classList.toggle("is-rehearsal-other",P&&!ae),O.classList.toggle("is-rehearsal-mine",P&&ae);let g=O.querySelector(".speaker-label"),te=g?.querySelector(".rehearsal-turn-tag");P&&g?(te||(te=document.createElement("span"),te.className="rehearsal-turn-tag",g.append(te)),te.textContent=ae?o("Sua vez"):s.state==="narrating"?o("Narrando"):o("Turno atual"),k||(k=O)):te&&te.remove();let oe=O.querySelector(".reading-turn-body"),re=O.querySelector(".rehearsal-memorization-box");if(!!(ae&&s.hideMyLines&&s.state!=="completed"&&!(P&&s.currentHint?.complete))&&oe)if(oe.classList.add("is-memorization-hidden"),re||(re=document.createElement("div"),re.className="rehearsal-memorization-box",O.append(re)),P)if(s.hintLevel>0&&s.currentHint?.text){let Me=s.hintLevel===1?o("Mostrar trecho maior"):o("Revelar texto completo");re.innerHTML=`
-              <span class="rehearsal-hint-label">${r(y`Dica ${s.hintLevel} de 3`)}</span>
+    `,a.state==="listening"&&a.vadStatus&&_(a.vadStatus)}function ue(){for(let a of i("#readerText .reading-turn"))a.classList.remove("is-rehearsal-current","is-rehearsal-other","is-rehearsal-mine"),a.querySelector(".rehearsal-turn-tag")?.remove(),a.querySelector(".reading-turn-body")?.classList.remove("is-memorization-hidden"),a.querySelector(".rehearsal-memorization-box")?.remove()}function le({scrollToTurn:a=!1}={}){if(!e("#readerText"))return;let s=p.getSnapshot();if(!s.isActive||!s.plan){ue();return}let f=s.currentTurn,I=new Set(f?.audioStarts||[]),H=s.plan.myParticipantId,k=null;for(let R of i("#readerText .reading-turn")){let K=Number(R.dataset.audioStart),W=R.dataset.participant||"",$=s.state!=="completed"&&I.has(K),oe=!!(H&&W===H);R.classList.toggle("is-rehearsal-current",$),R.classList.toggle("is-rehearsal-other",$&&!oe),R.classList.toggle("is-rehearsal-mine",$&&oe);let J=R.querySelector(".speaker-label"),O=J?.querySelector(".rehearsal-turn-tag");$&&J?(O||(O=document.createElement("span"),O.className="rehearsal-turn-tag",J.append(O)),O.textContent=oe?o("Sua vez"):s.state==="narrating"?o("Narrando"):o("Turno atual"),k||(k=R)):O&&O.remove();let ae=R.querySelector(".reading-turn-body"),re=R.querySelector(".rehearsal-memorization-box");if(!!(oe&&s.hideMyLines&&s.state!=="completed"&&!($&&s.currentHint?.complete))&&ae)if(ae.classList.add("is-memorization-hidden"),re||(re=document.createElement("div"),re.className="rehearsal-memorization-box",R.append(re)),$)if(s.hintLevel>0&&s.currentHint?.text){let Ae=s.hintLevel===1?o("Mostrar trecho maior"):o("Revelar texto completo");re.innerHTML=`
+              <span class="rehearsal-hint-label">${r(g`Dica ${s.hintLevel} de 3`)}</span>
               <p class="rehearsal-hint-excerpt">${r(s.currentHint.text)}</p>
-              ${s.showHints?`<button type="button" class="btn small soft rehearsal-inline-hint-btn" data-action="rehearsal-hint">${t("Lightbulb")}<span>${r(Me)}</span></button>`:""}
+              ${s.showHints?`<button type="button" class="btn small soft rehearsal-inline-hint-btn" data-action="rehearsal-hint">${t("Lightbulb")}<span>${r(Ae)}</span></button>`:""}
             `}else re.innerHTML=`
               <p class="rehearsal-memorization-note">${r(o("Sua fala est\xE1 oculta para memoriza\xE7\xE3o. Pronuncie sua parte!"))}</p>
               ${s.showHints?`<button type="button" class="btn small soft rehearsal-inline-hint-btn" data-action="rehearsal-hint">${t("Lightbulb")}<span>${r(o("Mostrar dica"))}</span></button>`:""}
-            `;else re.innerHTML=`<p class="rehearsal-memorization-note">${r(o("Fala oculta para memoriza\xE7\xE3o"))}</p>`;else oe?.classList.remove("is-memorization-hidden"),re?.remove()}if(a&&k&&typeof k.scrollIntoView=="function")try{k.scrollIntoView({behavior:"smooth",block:"center"})}catch{k.scrollIntoView()}}function ue(a){let p=he();return!A||A.speechId!==a.id?A={speechId:a.id,speechMyId:a.myParticipantId||"",myParticipantId:a.myParticipantId||a.participants?.[0]?.id||"",mode:p.mode,silenceSeconds:p.silenceSeconds,hideMyLines:p.hideMyLines,showHints:p.showHints}:(a.myParticipantId||"")!==A.speechMyId&&(A.speechMyId=a.myParticipantId||"",a.myParticipantId&&(A.myParticipantId=a.myParticipantId)),A}function me(){let a=x?.();if(!a||!Se(a))return;u.isActive()&&u.getSnapshot().speechId===a.id&&u.getSnapshot().isRunning&&u.pause();let p=ue(a),s=we(a,{myParticipantId:p.myParticipantId,bypassCache:!0}),h=a.participants.map(P=>`<option value="${r(P.id)}" ${P.id===p.myParticipantId?"selected":""}>${r(P.name)}</option>`).join(""),R=[];a.participants.length<2?R.push(`
+            `;else re.innerHTML=`<p class="rehearsal-memorization-note">${r(o("Fala oculta para memoriza\xE7\xE3o"))}</p>`;else ae?.classList.remove("is-memorization-hidden"),re?.remove()}if(a&&k&&typeof k.scrollIntoView=="function")try{k.scrollIntoView({behavior:"smooth",block:"center"})}catch{k.scrollIntoView()}}function pe(a){let u=ge();return!A||A.speechId!==a.id?A={speechId:a.id,speechMyId:a.myParticipantId||"",myParticipantId:a.myParticipantId||a.participants?.[0]?.id||"",mode:u.mode,silenceSeconds:u.silenceSeconds,hideMyLines:u.hideMyLines,showHints:u.showHints}:(a.myParticipantId||"")!==A.speechMyId&&(A.speechMyId=a.myParticipantId||"",a.myParticipantId&&(A.myParticipantId=a.myParticipantId)),A}function ye(){let a=w?.();if(!a||!Ie(a))return;p.isActive()&&p.getSnapshot().speechId===a.id&&p.getSnapshot().isRunning&&p.pause();let u=pe(a),s=Me(a,{myParticipantId:u.myParticipantId,bypassCache:!0}),f=a.participants.map($=>`<option value="${r($.id)}" ${$.id===u.myParticipantId?"selected":""}>${r($.name)}</option>`).join(""),I=[];a.participants.length<2?I.push(`
         <div class="rehearsal-warning-card" role="status">
           <p>${r(o("Esta demonstra\xE7\xE3o tem apenas um participante cadastrado. Adicione pelo menos dois participantes no editor para praticar o di\xE1logo."))}</p>
           ${l("rehearsal-fix-unassigned",o("Abrir editor da demonstra\xE7\xE3o"),"PenLine","small secondary")}
         </div>
-      `):s.hasUnassigned?R.push(`
+      `):s.hasUnassigned?I.push(`
         <div class="rehearsal-warning-card" role="status">
-          <p>${r(y`Há ${s.unassignedSegments.length} trecho(s) sem participante definido nesta versão. Você pode corrigir a identificação no editor antes de iniciar.`)}</p>
+          <p>${r(g`Há ${s.unassignedSegments.length} trecho(s) sem participante definido nesta versão. Você pode corrigir a identificação no editor antes de iniciar.`)}</p>
           ${l("rehearsal-fix-unassigned",o("Corrigir identifica\xE7\xE3o no editor"),"PenLine","small secondary")}
         </div>
-      `):s.turns.length===0&&R.push(`
+      `):s.turns.length===0&&I.push(`
         <div class="rehearsal-warning-card" role="status">
           <p>${r(o("Escreva e identifique as falas dos participantes no editor antes de iniciar o ensaio."))}</p>
           ${l("rehearsal-fix-unassigned",o("Identificar falas no editor"),"PenLine","small secondary")}
         </div>
-      `);let H={2:o("r\xE1pido"),3:o("padr\xE3o"),5:o("tolerante")},k=p.mode==="auto"?`
+      `);let H={2:o("r\xE1pido"),3:o("padr\xE3o"),5:o("tolerante")},k=u.mode==="auto"?`
         <div class="field" id="rehearsalAutoOptions">
           <label>${r(o("Pausa na fala para avan\xE7ar"))}</label>
           <div class="rehearsal-silence-group" role="group" aria-label="${r(o("Pausa na fala"))}">
-            ${ve.map(P=>`
-                <button type="button" class="rehearsal-silence-pill" data-action="rehearsal-select-silence" data-seconds="${P}" aria-pressed="${p.silenceSeconds===P}">
-                  ${P} s
-                  <small>${r(H[P])}</small>
+            ${xe.map($=>`
+                <button type="button" class="rehearsal-silence-pill" data-action="rehearsal-select-silence" data-seconds="${$}" aria-pressed="${u.silenceSeconds===$}">
+                  ${$} s
+                  <small>${r(H[$])}</small>
                 </button>
               `).join("")}
           </div>
@@ -1058,29 +1058,29 @@ ${F}`,Q.wordCount+=K;for(let le of Z.pages)Q.pages.includes(le)||Q.pages.push(le
             <span>${r(o("A detec\xE7\xE3o local de fala usa o microfone apenas na sua vez. Ru\xEDdos de fundo n\xE3o precisam desaparecer para avan\xE7ar. Nenhum \xE1udio \xE9 gravado ou enviado."))}</span>
           </div>
         </div>
-      `:"",O=`
+      `:"",R=`
       <p class="help">${r(o("Pratique sua demonstra\xE7\xE3o com o SePrepare interpretando os outros participantes."))}</p>
       <div class="stack">
-        ${R.join("")}
+        ${I.join("")}
         <div class="field">
           <label for="rehearsalIdentitySelect">${r(o("Quem sou eu"))}</label>
           <select id="rehearsalIdentitySelect">
-            <option value="" ${p.myParticipantId?"":"selected"}>${r(o("Selecione seu participante\u2026"))}</option>
-            ${h}
+            <option value="" ${u.myParticipantId?"":"selected"}>${r(o("Selecione seu participante\u2026"))}</option>
+            ${f}
           </select>
         </div>
         <div class="field">
           <label>${r(o("Modo do ensaio"))}</label>
           <div class="rehearsal-mode-cards" role="radiogroup" aria-label="${r(o("Modo do ensaio"))}">
-            <label class="rehearsal-mode-card ${p.mode==="manual"?"is-selected":""}" data-action="rehearsal-select-mode" data-mode="manual">
-              <input type="radio" name="rehearsalMode" value="manual" ${p.mode==="manual"?"checked":""}>
+            <label class="rehearsal-mode-card ${u.mode==="manual"?"is-selected":""}" data-action="rehearsal-select-mode" data-mode="manual">
+              <input type="radio" name="rehearsalMode" value="manual" ${u.mode==="manual"?"checked":""}>
               <span>
                 <strong>${r(o("Manual"))}</strong>
                 <small>${r(o("Voc\xEA indica quando terminou de falar. N\xE3o usa o microfone."))}</small>
               </span>
             </label>
-            <label class="rehearsal-mode-card ${p.mode==="auto"?"is-selected":""}" data-action="rehearsal-select-mode" data-mode="auto">
-              <input type="radio" name="rehearsalMode" value="auto" ${p.mode==="auto"?"checked":""}>
+            <label class="rehearsal-mode-card ${u.mode==="auto"?"is-selected":""}" data-action="rehearsal-select-mode" data-mode="auto">
+              <input type="radio" name="rehearsalMode" value="auto" ${u.mode==="auto"?"checked":""}>
               <span>
                 <strong>${r(o("Autom\xE1tico"))}</strong>
                 <small>${r(o("O aplicativo identifica quando voc\xEA terminou de falar pelo microfone."))}</small>
@@ -1090,37 +1090,37 @@ ${F}`,Q.wordCount+=K;for(let le of Z.pages)Q.pages.includes(le)||Q.pages.push(le
         </div>
         ${k}
         <label class="check-label">
-          <input type="checkbox" id="rehearsalHideMine" ${p.hideMyLines?"checked":""}>
+          <input type="checkbox" id="rehearsalHideMine" ${u.hideMyLines?"checked":""}>
           ${r(o("Ocultar minhas falas"))}
         </label>
         <label class="check-label">
-          <input type="checkbox" id="rehearsalShowHints" ${p.showHints?"checked":""}>
+          <input type="checkbox" id="rehearsalShowHints" ${u.showHints?"checked":""}>
           ${r(o("Mostrar dicas durante o ensaio"))}
         </label>
         ${l("rehearsal-open-voices",o("Configurar as vozes dos participantes"),"Headphones","secondary")}
       </div>
-    `,J=a.participants.length>=2&&s.turns.length>0&&!!p.myParticipantId,U=l("rehearsal-start",o("Iniciar ensaio"),"Play","",J?"":"disabled");N(o("Ensaio interativo"),O,U),n.modal="interactive-rehearsal-setup",e("#rehearsalIdentitySelect")?.addEventListener("change",P=>{p.myParticipantId=P.target.value,me()}),e("#rehearsalHideMine")?.addEventListener("change",P=>{p.hideMyLines=P.target.checked}),e("#rehearsalShowHints")?.addEventListener("change",P=>{p.showHints=P.target.checked})}function B({returnToLive:a=!1}={}){let p=x?.();if(!p||!Se(p))return;let h=ue(p).myParticipantId||p.myParticipantId||"",R=S.resolveParticipantVoices(p.participants,p.id),H=R.allVoices||[],k=p.participants.map(g=>{let te=g.id===h,oe=S.getSavedParticipantVoice(p.id,g.id),re=R.assignments.get(g.id),be=Number(oe?.rate||re?.rate||d()?.rate||1).toFixed(1),Me=oe?.voice||"",lt=[`<option value="">${r(o("Autom\xE1tica para o idioma"))}</option>`,...H.map(ge=>{let ct=ge.label||`${ge.name} \xB7 ${ge.locale}`,dt=Me&&(ge.name===Me||`${ge.name}${ge.locale}`===Me);return`<option value="${r(ge.name)}" data-locale="${r(ge.locale||"")}" ${dt?"selected":""}>${r(ct)}</option>`})].join("");return`
-          <div class="rehearsal-voice-card" data-participant-voice-card="${r(g.id)}">
+    `,K=a.participants.length>=2&&s.turns.length>0&&!!u.myParticipantId,W=l("rehearsal-start",o("Iniciar ensaio"),"Play","",K?"":"disabled");E(o("Ensaio interativo"),R,W),n.modal="interactive-rehearsal-setup",e("#rehearsalIdentitySelect")?.addEventListener("change",$=>{u.myParticipantId=$.target.value,ye()}),e("#rehearsalHideMine")?.addEventListener("change",$=>{u.hideMyLines=$.target.checked}),e("#rehearsalShowHints")?.addEventListener("change",$=>{u.showHints=$.target.checked})}function F({returnToLive:a=!1}={}){let u=w?.();if(!u||!Ie(u))return;let f=pe(u).myParticipantId||u.myParticipantId||"",I=j.resolveParticipantVoices(u.participants,u.id),H=I.voices?.length?I.voices:I.allVoices||[],k=I.allVoices||H,R=u.participants.map(O=>{let ae=O.id===f,re=j.getSavedParticipantVoice(u.id,O.id),ve=I.assignments.get(O.id),Ae=Number(re?.rate||ve?.rate||d()?.rate||1).toFixed(1),we=re?.voice||"",ze=[...H];if(we){let ce=k.find(me=>me.name===we||re?.locale&&me.name===we&&me.locale===re.locale||`${me.name}${me.locale}`===we);ce&&!ze.some(me=>me.name===ce.name&&me.locale===ce.locale)&&ze.push(ce)}let ut=[`<option value="">${r(o("Autom\xE1tica para o idioma"))}</option>`,...ze.map(ce=>{let me=ce.label||`${ce.name} \xB7 ${ce.locale}`,pt=we&&(ce.name===we||`${ce.name}${ce.locale}`===we);return`<option value="${r(ce.name)}" data-locale="${r(ce.locale||"")}" ${pt?"selected":""}>${r(me)}</option>`})].join("");return`
+          <div class="rehearsal-voice-card" data-participant-voice-card="${r(O.id)}">
             <div class="rehearsal-voice-head">
-              <strong>${r(g.name)}${te?` \xB7 ${r(o("Voc\xEA"))}`:""}</strong>
-              <button type="button" class="btn small soft" data-action="rehearsal-test-voice" data-id="${r(g.id)}">${t("Play")}<span>${r(o("Testar"))}</span></button>
+              <strong>${r(O.name)}${ae?` \xB7 ${r(o("Voc\xEA"))}`:""}</strong>
+              <button type="button" class="btn small soft" data-action="rehearsal-test-voice" data-id="${r(O.id)}">${t("Play")}<span>${r(o("Testar"))}</span></button>
             </div>
             <div class="field">
-              <label for="pVoice_${r(g.id)}">${r(o("Voz sintetizada"))}</label>
-              <select id="pVoice_${r(g.id)}" data-participant-voice-select="${r(g.id)}">${lt}</select>
+              <label for="pVoice_${r(O.id)}">${r(o("Voz sintetizada"))}</label>
+              <select id="pVoice_${r(O.id)}" data-participant-voice-select="${r(O.id)}">${ut}</select>
             </div>
             <div class="field">
               <div class="range-line">
-                <label for="pRate_${r(g.id)}">${r(o("Velocidade"))}</label>
-                <output id="pRateOut_${r(g.id)}">${be}\xD7</output>
+                <label for="pRate_${r(O.id)}">${r(o("Velocidade"))}</label>
+                <output id="pRateOut_${r(O.id)}">${Ae}\xD7</output>
               </div>
-              <input id="pRate_${r(g.id)}" data-participant-rate-input="${r(g.id)}" type="range" min="0.5" max="1.8" step="0.1" value="${be}">
+              <input id="pRate_${r(O.id)}" data-participant-rate-input="${r(O.id)}" type="range" min="0.5" max="1.8" step="0.1" value="${Ae}">
             </div>
           </div>
-        `}).join(""),O=H.length<=1?o("Mesmo quando h\xE1 apenas uma voz dispon\xEDvel no dispositivo, o ensaio funciona normalmente com ela."):o("As prefer\xEAncias de voz ficam salvas neste aparelho com fallback autom\xE1tico caso uma voz n\xE3o esteja instalada."),J=`
-      <p class="help">${r(O)}</p>
-      <div class="rehearsal-voices-list">${k}</div>
-    `,U=a?"rehearsal-close-voices-live":"rehearsal-back-setup",P=o(a?"Concluir ajustes de voz":"Voltar para o ensaio");N(o("Vozes dos participantes"),J,l(U,P,"Check")),n.modal="interactive-rehearsal-voices";let ae=g=>typeof CSS<"u"&&typeof CSS.escape=="function"?CSS.escape(g):String(g).replace(/["\\]/g,"\\$&");for(let g of i("[data-participant-voice-select]"))g.addEventListener("change",()=>{let te=g.dataset.participantVoiceSelect,oe=g.selectedOptions?.[0],re=e(`[data-participant-rate-input="${ae(te)}"]`);S.setParticipantVoice(p.id,te,{voice:g.value,locale:oe?.dataset?.locale||"",rate:Number(re?.value||1)})});for(let g of i("[data-participant-rate-input]"))g.addEventListener("input",()=>{let te=g.dataset.participantRateInput,oe=e(`#pRateOut_${ae(te)}`);oe&&(oe.textContent=`${Number(g.value).toFixed(1)}\xD7`);let re=e(`[data-participant-voice-select="${ae(te)}"]`),be=re?.selectedOptions?.[0];S.setParticipantVoice(p.id,te,{voice:re?.value||"",locale:be?.dataset?.locale||"",rate:Number(g.value)})})}async function q(){let a=x?.();if(!a)return;let p=ue(a);if(!p.myParticipantId||!a.participants.some(s=>s.id===p.myParticipantId)){Y?.(o('Escolha seu participante em "Quem sou eu" para iniciar.'));return}a.myParticipantId!==p.myParticipantId&&(a.myParticipantId=p.myParticipantId,p.speechMyId=a.myParticipantId,Qe(a),T?.(!0),f?.()),m=a.id,D=String(a.activeVersionId||"default"),X=String(ye(a)?.contentKey||""),w=!1,V?.(),I?.(),F(),await u.start({speech:a,mode:p.mode,silenceSeconds:p.silenceSeconds,hideMyLines:p.hideMyLines,showHints:p.showHints})}function W(){if(!w)return;w=!1;let a=e("#rehearsalMoreMenu");a&&(a.hidden=!0),e('[data-action="rehearsal-toggle-more"]')?.setAttribute("aria-expanded","false")}function ne(a,p){switch(a){case"open-interactive-rehearsal":return me(),!0;case"rehearsal-select-mode":{let s=x?.();if(!s)return!0;let h=ue(s),R=p?.dataset?.mode==="auto"?"auto":"manual";return h.mode!==R&&(h.mode=R,h.hideMyLines=!!(e("#rehearsalHideMine")?.checked??h.hideMyLines),h.showHints=!!(e("#rehearsalShowHints")?.checked??h.showHints),me()),!0}case"rehearsal-select-silence":{let s=x?.();if(!s)return!0;let h=ue(s),R=Number(p?.dataset?.seconds||3);if(ve.includes(R)){h.silenceSeconds=R;for(let H of i(".rehearsal-silence-pill"))H.setAttribute("aria-pressed",String(Number(H.dataset.seconds)===R))}return!0}case"rehearsal-open-voices":{let s=x?.();if(s){let h=ue(s);h.hideMyLines=!!(e("#rehearsalHideMine")?.checked??h.hideMyLines),h.showHints=!!(e("#rehearsalShowHints")?.checked??h.showHints)}return B({returnToLive:!1}),!0}case"rehearsal-open-voices-live":return W(),u.getSnapshot().isRunning&&u.pause(),B({returnToLive:!0}),!0;case"rehearsal-back-setup":return S.cancel(),me(),!0;case"rehearsal-close-voices-live":return S.cancel(),V?.(),!0;case"rehearsal-test-voice":{let s=x?.(),h=p?.dataset?.id||"";if(!s||!h)return!0;let k=we(s,{myParticipantId:s.myParticipantId}).turns.find(U=>U.participantId===h)?.spokenText?.slice(0,160)||o("Bom dia! Gostaria de compartilhar uma ideia breve com voc\xEA."),O=S.resolveParticipantVoices(s.participants,s.id),J=O.assignments.get(h);return S.previewVoice({voice:J?.voice||"",locale:J?.locale||O.locale,rate:J?.rate||1,sampleText:k,onError:U=>Y?.(U?.message||o("N\xE3o foi poss\xEDvel reproduzir o teste de voz."))}),!0}case"rehearsal-fix-unassigned":{let s=x?.();return V?.(),s&&c?.(s.id),!0}case"rehearsal-start":{let s=x?.();if(s){let h=ue(s);h.hideMyLines=!!(e("#rehearsalHideMine")?.checked??h.hideMyLines),h.showHints=!!(e("#rehearsalShowHints")?.checked??h.showHints),fe({mode:h.mode,silenceSeconds:h.silenceSeconds,hideMyLines:h.hideMyLines,showHints:h.showHints})}return q(),!0}case"rehearsal-done-speaking":return W(),u.finishUserTurn(),!0;case"rehearsal-pause-resume":return W(),u.getSnapshot().isRunning?u.pause():u.resume(),!0;case"rehearsal-prev":return W(),u.previousTurn(),!0;case"rehearsal-repeat":return W(),u.repeatLastTurn(),!0;case"rehearsal-skip":return W(),u.skipTurn(),!0;case"rehearsal-hint":return W(),u.revealHint(),!0;case"rehearsal-toggle-more":return w=!w,Q(),!0;case"rehearsal-toggle-hide-mine":return W(),u.setHideMyLines(!u.getSnapshot().hideMyLines),!0;case"rehearsal-switch-mode":{W();let s=u.getSnapshot().mode==="auto"?"manual":"auto";return u.switchMode(s),!0}case"rehearsal-save-finish":{W();let s=u.getSnapshot().mode;return u.markCompletedSaved(),u.stop({pauseTimer:!1}),M?.({mode:"interactive",interactionMode:s}),I?.(),!0}case"rehearsal-end":{W();let s=u.isActive();return u.stop({pauseTimer:!0}),s&&I?.(),!0}default:return!1}}typeof document<"u"&&(document.addEventListener("click",a=>{w&&(a.target?.closest?.('#rehearsalMoreMenu, [data-action="rehearsal-toggle-more"]')||W())}),document.addEventListener("visibilitychange",()=>{document.hidden&&u.isActive()&&(u.getSnapshot().isRunning?u.pause():E.release())})),typeof window<"u"&&(window.addEventListener("pagehide",()=>{u.isActive()&&(u.getSnapshot().isRunning?u.pause():E.release())}),window.addEventListener("nativeBackground",()=>{u.isActive()&&(u.getSnapshot().isRunning?u.pause():E.release())}));function ee(a){a==="interactive-rehearsal-voices"&&S.cancel()}function G(){if(!u.isActive())return;let a=x?.();(n.view!=="reader"&&!(n.view==="memorization"&&u.getSnapshot().state==="paused")||!a||a.id!==m||String(a.activeVersionId||"default")!==D||X&&String(ye(a)?.contentKey||"")!==X||(a.myParticipantId||"")!==(u.getSnapshot().plan?.myParticipantId||""))&&u.stop({pauseTimer:!0})}function ie(){if(!u.isActive())return;let a=u.getSnapshot().mode;return u.stop({pauseTimer:!1}),setTimeout(()=>I?.(),0),{mode:"interactive",interactionMode:a}}return{controller:u,audio:S,vad:E,isActive:()=>u.isActive(),shouldShowAllLines:()=>u.isActive(),entryButtonHTML:Z,mountBar:F,syncReaderDom:le,openSetupModal:me,handle:ne,onModalClosed:ee,checkContextContinuity:G,syncTimerState:a=>u.syncTimerState(a),consumeFinishMetadata:ie,dispose:()=>{w=!1,S.cancel(),u.stop({pauseTimer:!1})}}}if(typeof document<"u"&&!document.getElementById("seprepare-rehearsal-style")){let e=document.createElement("style");e.id="seprepare-rehearsal-style",e.textContent=qe;let i=document.getElementById("seprepare-timing-style");i&&i.parentNode?i.parentNode.insertBefore(e,i):document.head.append(e)}window.SePrepareRehearsal={SILENCE_OPTIONS:ve,canOfferInteractiveRehearsal:Se,buildRehearsalPlan:we,loadRehearsalPreferences:he,saveRehearsalPreferences:fe,createRehearsalAudio:Oe,createRehearsalVad:Le,createRehearsalController:$e,createInteractiveRehearsalUI:st};})();
+        `}).join(""),K=H.length<=1?o("Mesmo quando h\xE1 apenas uma voz dispon\xEDvel no dispositivo, o ensaio funciona normalmente com ela."):o("As prefer\xEAncias de voz ficam salvas neste aparelho com fallback autom\xE1tico caso uma voz n\xE3o esteja instalada."),W=`
+      <p class="help">${r(K)}</p>
+      <div class="rehearsal-voices-list">${R}</div>
+    `,$=a?"rehearsal-close-voices-live":"rehearsal-back-setup",oe=o(a?"Concluir ajustes de voz":"Voltar para o ensaio");E(o("Vozes dos participantes"),W,l($,oe,"Check")),n.modal="interactive-rehearsal-voices";let J=O=>typeof CSS<"u"&&typeof CSS.escape=="function"?CSS.escape(O):String(O).replace(/["\\]/g,"\\$&");for(let O of i("[data-participant-voice-select]"))O.addEventListener("change",()=>{let ae=O.dataset.participantVoiceSelect,re=O.selectedOptions?.[0],ve=e(`[data-participant-rate-input="${J(ae)}"]`);j.setParticipantVoice(u.id,ae,{voice:O.value,locale:re?.dataset?.locale||"",rate:Number(ve?.value||1)})});for(let O of i("[data-participant-rate-input]"))O.addEventListener("input",()=>{let ae=O.dataset.participantRateInput,re=e(`#pRateOut_${J(ae)}`);re&&(re.textContent=`${Number(O.value).toFixed(1)}\xD7`);let ve=e(`[data-participant-voice-select="${J(ae)}"]`),Ae=ve?.selectedOptions?.[0];j.setParticipantVoice(u.id,ae,{voice:ve?.value||"",locale:Ae?.dataset?.locale||"",rate:Number(O.value)})})}async function X(){let a=w?.();if(!a)return;let u=pe(a);if(!u.myParticipantId||!a.participants.some(s=>s.id===u.myParticipantId)){Q?.(o('Escolha seu participante em "Quem sou eu" para iniciar.'));return}a.myParticipantId!==u.myParticipantId&&(a.myParticipantId=u.myParticipantId,u.speechMyId=a.myParticipantId,rt(a),T?.(!0),M?.()),h=a.id,z=String(a.activeVersionId||"default"),V=String(be(a)?.contentKey||""),S=!1,D?.(),m?.(),q(),await p.start({speech:a,mode:u.mode,silenceSeconds:u.silenceSeconds,hideMyLines:u.hideMyLines,showHints:u.showHints})}function Y(){if(!S)return;S=!1;let a=e("#rehearsalMoreMenu");a&&(a.hidden=!0),e('[data-action="rehearsal-toggle-more"]')?.setAttribute("aria-expanded","false")}function ne(a,u){switch(a){case"open-interactive-rehearsal":return ye(),!0;case"rehearsal-select-mode":{let s=w?.();if(!s)return!0;let f=pe(s),I=u?.dataset?.mode==="auto"?"auto":"manual";return f.mode!==I&&(f.mode=I,f.hideMyLines=!!(e("#rehearsalHideMine")?.checked??f.hideMyLines),f.showHints=!!(e("#rehearsalShowHints")?.checked??f.showHints),ye()),!0}case"rehearsal-select-silence":{let s=w?.();if(!s)return!0;let f=pe(s),I=Number(u?.dataset?.seconds||3);if(xe.includes(I)){f.silenceSeconds=I;for(let H of i(".rehearsal-silence-pill"))H.setAttribute("aria-pressed",String(Number(H.dataset.seconds)===I))}return!0}case"rehearsal-open-voices":{let s=w?.();if(s){let f=pe(s);f.hideMyLines=!!(e("#rehearsalHideMine")?.checked??f.hideMyLines),f.showHints=!!(e("#rehearsalShowHints")?.checked??f.showHints)}return F({returnToLive:!1}),!0}case"rehearsal-open-voices-live":return Y(),p.getSnapshot().isRunning&&p.pause(),F({returnToLive:!0}),!0;case"rehearsal-back-setup":return j.cancel(),ye(),!0;case"rehearsal-close-voices-live":return j.cancel(),D?.(),!0;case"rehearsal-test-voice":{let s=w?.(),f=u?.dataset?.id||"";if(!s||!f)return!0;let k=Me(s,{myParticipantId:s.myParticipantId}).turns.find(W=>W.participantId===f)?.spokenText?.slice(0,160)||o("Bom dia! Gostaria de compartilhar uma ideia breve com voc\xEA."),R=j.resolveParticipantVoices(s.participants,s.id),K=R.assignments.get(f);return j.previewVoice({voice:K?.voice||"",locale:K?.locale||R.locale,rate:K?.rate||1,sampleText:k,onError:W=>Q?.(W?.message||o("N\xE3o foi poss\xEDvel reproduzir o teste de voz."))}),!0}case"rehearsal-fix-unassigned":{let s=w?.();return D?.(),s&&c?.(s.id),!0}case"rehearsal-start":{let s=w?.();if(s){let f=pe(s);f.hideMyLines=!!(e("#rehearsalHideMine")?.checked??f.hideMyLines),f.showHints=!!(e("#rehearsalShowHints")?.checked??f.showHints),he({mode:f.mode,silenceSeconds:f.silenceSeconds,hideMyLines:f.hideMyLines,showHints:f.showHints})}return X(),!0}case"rehearsal-done-speaking":return Y(),p.finishUserTurn(),!0;case"rehearsal-pause-resume":return Y(),p.getSnapshot().isRunning?p.pause():p.resume(),!0;case"rehearsal-prev":return Y(),p.previousTurn(),!0;case"rehearsal-repeat":return Y(),p.repeatLastTurn(),!0;case"rehearsal-skip":return Y(),p.skipTurn(),!0;case"rehearsal-hint":return Y(),p.revealHint(),!0;case"rehearsal-toggle-more":return S=!S,G(),!0;case"rehearsal-toggle-hide-mine":return Y(),p.setHideMyLines(!p.getSnapshot().hideMyLines),!0;case"rehearsal-switch-mode":{Y();let s=p.getSnapshot().mode==="auto"?"manual":"auto";return p.switchMode(s),!0}case"rehearsal-save-finish":{Y();let s=p.getSnapshot().mode;return p.markCompletedSaved(),p.stop({pauseTimer:!1}),v?.({mode:"interactive",interactionMode:s}),m?.(),!0}case"rehearsal-end":{Y();let s=p.isActive();return p.stop({pauseTimer:!0}),s&&m?.(),!0}default:return!1}}typeof document<"u"&&(document.addEventListener("click",a=>{S&&(a.target?.closest?.('#rehearsalMoreMenu, [data-action="rehearsal-toggle-more"]')||Y())}),document.addEventListener("visibilitychange",()=>{document.hidden&&p.isActive()&&(p.getSnapshot().isRunning?p.pause():x.release())})),typeof window<"u"&&(window.addEventListener("pagehide",()=>{p.isActive()&&(p.getSnapshot().isRunning?p.pause():x.release())}),window.addEventListener("nativeBackground",()=>{p.isActive()&&(p.getSnapshot().isRunning?p.pause():x.release())}));function te(a){a==="interactive-rehearsal-voices"&&j.cancel()}function Z(){if(!p.isActive())return;let a=w?.();(n.view!=="reader"&&!(n.view==="memorization"&&p.getSnapshot().state==="paused")||!a||a.id!==h||String(a.activeVersionId||"default")!==z||V&&String(be(a)?.contentKey||"")!==V||(a.myParticipantId||"")!==(p.getSnapshot().plan?.myParticipantId||""))&&p.stop({pauseTimer:!0})}function ie(){if(!p.isActive())return;let a=p.getSnapshot().mode;return p.stop({pauseTimer:!1}),setTimeout(()=>m?.(),0),{mode:"interactive",interactionMode:a}}return{controller:p,audio:j,vad:x,isActive:()=>p.isActive(),shouldShowAllLines:()=>p.isActive(),entryButtonHTML:B,mountBar:q,syncReaderDom:le,openSetupModal:ye,handle:ne,onModalClosed:te,checkContextContinuity:Z,syncTimerState:a=>p.syncTimerState(a),consumeFinishMetadata:ie,dispose:()=>{S=!1,j.cancel(),p.stop({pauseTimer:!1})}}}if(typeof document<"u"&&!document.getElementById("seprepare-rehearsal-style")){let e=document.createElement("style");e.id="seprepare-rehearsal-style",e.textContent=Ge;let i=document.getElementById("seprepare-timing-style");i&&i.parentNode?i.parentNode.insertBefore(e,i):document.head.append(e)}window.SePrepareRehearsal={SILENCE_OPTIONS:xe,canOfferInteractiveRehearsal:Ie,buildRehearsalPlan:Me,loadRehearsalPreferences:ge,saveRehearsalPreferences:he,createRehearsalAudio:Le,createRehearsalVad:Pe,createRehearsalController:He,createInteractiveRehearsalUI:dt};})();
 /* SEPREPARE REHEARSAL BUNDLE END *//* SEPREPARE TIMING BUNDLE START */(()=>{var R="speech-time",A="speech-time-point";function Y(e,h){let o=Math.max(0,Math.min(h,e.getLength()-1)),[i,d]=e.getLine(o);if(!i||i.domNode?.tagName==="HR")return null;let c=Math.min(e.getLength()-1,o-d+i.length()-1),l=e.getBounds(o,0);if(!l)return c;let r=o,g=c;for(;r<g;){let p=Math.floor((r+g)/2),f=e.getBounds(p,1);f&&f.top>l.top+1?g=p:r=p+1}let s=e.getBounds(r,1);return s&&s.top>l.top+1?r:c}var st=15,dt=105;function O(e){if(typeof e!="string"||!/^\d{1,6}(?:@[A-Za-z0-9_-]{1,80})?$/.test(e))return null;let h=Number(e.split("@")[0]);return Number.isSafeInteger(h)&&h<=999999?h:null}function L(e){if(!Number.isSafeInteger(e)||e<0)throw Error("Tempo inv\xE1lido.");return String(Math.floor(e/60)).padStart(2,"0")+":"+String(e%60).padStart(2,"0")}function X(e,h,o=st){if(![e,h,o].every(Number.isFinite)||e<0||h<0||o<0)throw Error("Tempo inv\xE1lido.");let i=h-e;return Math.abs(i)<=o?{state:"on-time",difference:i,intensity:0}:{state:i<0?"early":"late",difference:i,intensity:Math.min(1,(Math.abs(i)-o)/dt)}}function tt(e,h){let o=Math.max(0,Math.min(1,h)),i=(d,c)=>"#"+d.map((l,r)=>Math.round(l+(c[r]-l)*o).toString(16).padStart(2,"0")).join("");if(e==="early")return{background:i([255,226,187],[246,168,138]),foreground:"#602500"};if(e==="late"){let d=i([252,219,215],[123,27,28]),c=g=>{let s=g.match(/[a-f0-9]{2}/gi).map(p=>parseInt(p,16)/255).map(p=>p<=.04045?p/12.92:((p+.055)/1.055)**2.4);return s[0]*.2126+s[1]*.7152+s[2]*.0722},l=c(d),r=c("#190205");return{background:d,foreground:(l+.05)/(r+.05)>=1.05/(l+.05)?"#190205":"#ffffff"}}return{background:"#dcebdc",foreground:"#234d2c"}}function K(e){let h=0,o=[];for(let i of e?.ops||[]){let d=typeof i.insert=="string"?i.insert:null,c=O(i.attributes?.[R]),l=O(i.attributes?.[A]);if(l!==null&&d!==null){let r=o.at(-1);r?.attribute===A&&r.value===i.attributes[A]&&r.position+r.length===h?r.length+=d.length:o.push({position:h,seconds:l,attribute:A,value:i.attributes[A],length:d.length})}if(c!==null&&d!==null)for(let r=0;r<d.length;r++)d[r]===`
 `&&o.push({position:h+r,seconds:c,attribute:R,length:1});h+=d===null?1:d.length}return o}var lt="speech-rhythm",ct=e=>typeof e=="string"&&/^[A-Za-z0-9_-]{1,100}$/.test(e);function et(e){if(!e||!ct(e.id)||typeof e.name!="string"||!e.name.trim()||e.name.trim().length>80||!Number.isSafeInteger(e.ppm)||e.ppm<=0)throw Error("Informe um nome e uma quantidade v\xE1lida de palavras por minuto.");return{id:e.id,name:e.name.trim(),ppm:e.ppm,.../^#[\da-f]{6}$/i.test(e.color||"")?{color:e.color.toLowerCase()}:{}}}function pt(e){try{return typeof e!="string"||e.length>1e3?null:et(JSON.parse(e))}catch{return null}}var mt=e=>JSON.stringify(et(e));function ht(e){let h=0,o=[];for(let i of e?.ops||[]){let d=typeof i.insert=="string"?i.insert:`
 `,c=pt(i.attributes?.[lt]),l=c?mt(c):"",r=o.at(-1);r&&r.key===l?(r.text+=d,r.end+=d.length):o.push({key:l,rhythm:c,text:d,start:h,end:h+d.length,words:0,seconds:0}),h+=d.length}return o}function rt(e,h=125){let o=Math.max(70,Number(h)||125),i=ht(e),d=i.map(s=>s.text).join(""),c=0,l=0;for(let s of d.matchAll(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)){c++;let p=s.index,f=p+s[0].length;for(;l<i.length&&i[l].end<=p;)l++;for(let w=l;w<i.length&&i[w].start<f;w++){let M=i[w],k=(Math.min(f,M.end)-Math.max(p,M.start))/s[0].length;M.words+=k,M.seconds+=k*60/(M.rhythm?.ppm||o)}}let r=new Map;for(let s of i){if(!s.words)continue;let p=s.key,f=r.get(p)||{key:p,rhythm:s.rhythm,words:0,seconds:0};f.words+=s.words,f.seconds+=s.seconds,r.set(p,f)}let g=i.reduce((s,p)=>s+p.seconds,0);return{words:c,seconds:g,roundedSeconds:Math.round(g),groups:[...r.values()],segments:i.filter(s=>s.text.trim())}}function ot(e){let{$:h,rt:o}=e,i=null,d=null,c=[],l=null,r=null,g=null,s=null,p=null,f=null,w=null,M=0,k=0,H="[data-speech-time-point],[data-speech-time]",_=(t,n,a)=>{t.dataset[n]!==a&&(t.dataset[n]=a)};function S(t){_(t.badge,"timeLabel",L(t.seconds)),_(t.badge,"timeState","neutral"),t.badge.title="Tempo previsto: "+L(t.seconds)}function U(t,n){t.querySelector(".time-mark-layer")?.remove();let a=document.createElement("div");return a.className="time-mark-layer time-mark-layer-"+n,t.append(a),a}function C(t,n,a){let u=document.createElement(a?"button":"span");return u.className="time-mark-badge",a?(u.type="button",u.setAttribute("aria-label","Selecionar refer\xEAncia de tempo "+L(n))):u.setAttribute("aria-hidden","true"),t.append(u),u}function E(){let t=h("#editorTimeAction");if(!t)return;let n=e.t(g?"Remover tempo":"Marcar tempo");t.dataset.action=g?"time-mark-remove":"time-mark",t.innerHTML=e.icon(g?"Trash2":"Clock")+"<span>"+e.esc(n)+"</span>",t.setAttribute("aria-label",n),t.title=g?n+" \xB7 "+L(g.seconds):n}function I(t,n){if(!o.q)return;let a=o.q,u=a.getBounds(t.index,0)?.top;g=(n||K(a.getContents())).find(x=>{let m=x.position;if(x.attribute===R){let[b,q]=a.getLine(m);m-=q}let T=a.getBounds(m,0);return u!==void 0&&T&&Math.abs(T.top-u)<=1})||null,E()}function G(){let t=o.q,n=t?.root.closest(".editor-page");if(!t||!n)return;let a=K(t.getContents());I(t.getSelection()||o.selection||{index:0,length:0},a),t.root.classList.toggle("has-time-points",!!a.length),i=U(n,"editor"),i.style.right=Math.max(0,n.getBoundingClientRect().right-t.root.getBoundingClientRect().right)+"px";let u=t.root.getBoundingClientRect().top-n.getBoundingClientRect().top;for(let x of a){let m=x.position;if(x.attribute===R){let[W,$]=t.getLine(m);m-=$}let T=t.getBounds(m,1);if(!T)continue;let b=C(i,x.seconds,!0),q={...x,badge:b};S(q),b.style.top=Math.max(0,u+T.top)+"px",b.addEventListener("pointerdown",W=>W.preventDefault()),b.addEventListener("click",()=>{t.setSelection(m,0,"silent"),o.selection={index:m,length:0},g=x,E()})}}function B(){M||(M=requestAnimationFrame(()=>{M=0,o.view==="editor"?G():o.view==="reader"&&z()}))}function N(){let t=o.q;t&&(s!==t&&(p?.disconnect(),s=t,p=new ResizeObserver(B),p.observe(t.root),t.on("selection-change",n=>{n&&t===o.q&&I(n)}),g=null,E()),B())}function j(){let t=o.q;if(!t)return;let n=t.getSelection()||o.selection||{index:0,length:0},a=Math.max(0,Math.min(n.index,t.getLength()-1)),u=Y(t,a);if(u===null){e.toast("Posicione o cursor no texto para marcar o tempo.");return}let x=Math.round(rt(t.getContents(0,u),e.getState().settings.pace).seconds);if(x>999999){e.toast("A estimativa ultrapassa o limite de tempo da marca\xE7\xE3o.");return}let m=a,T=1,b=A;if(t.getText(m,1)===`
