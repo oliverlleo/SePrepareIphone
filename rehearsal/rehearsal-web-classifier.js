@@ -29,7 +29,7 @@ export function createWebSpeechClassifier({
       worker.onmessage = ({data}) => {
         if (data.id && requests.has(data.id)) {
           const req = requests.get(data.id); requests.delete(data.id); clearTimeoutFn(req.timeout);
-          if (data.type === 'error') req.reject(Error('Speech engine failed')); else req.resolve();
+          if (data.type === 'error') req.reject(Error(data.message || 'Speech engine failed')); else req.resolve();
         } else if (data.type === 'result' && data.token === activeToken) {
           pendingFrames = Math.max(0,pendingFrames-1);
           onResult?.(data.probability);
@@ -48,7 +48,7 @@ export function createWebSpeechClassifier({
     },
     push(samples,token) {
       if (!worker || token !== activeToken) return;
-      if (++pendingFrames > 24) { fail(); return; }
+      if (++pendingFrames > 48) { fail(); return; }
       worker.postMessage({type:'frame',token,samples},[samples.buffer]);
     },
     stopTurn() { activeToken=0; pendingFrames=0; onResult=onError=null; },

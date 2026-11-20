@@ -220,5 +220,6 @@ for(const [name,expected] of Object.entries(voiceMeta.files)) {
  if(createHash('sha256').update(bytes).digest('hex')!==expected)throw Error('Voice asset integrity: '+name);
  copyFileSync(path.join(here,'voice',name),path.join(voiceDir,name));
 }
-for(const name of ['pcm-resampler.js','pcm-capture-worklet.js','upstream.json'])copyFileSync(path.join(here,'voice',name),path.join(voiceDir,name));
+for(const name of ['pcm-resampler.js','upstream.json'])copyFileSync(path.join(here,'voice',name),path.join(voiceDir,name));
+await build({absWorkingDir:here,entryPoints:['voice/pcm-capture-worklet.js'],outfile:path.join(voiceDir,'pcm-capture-worklet.js'),bundle:true,minify:true,format:'iife',target:'safari15.4',legalComments:'eof'});
 await build({absWorkingDir:here,entryPoints:['voice/worker-entry.js'],outfile:path.join(voiceDir,'speech-worker.js'),bundle:true,minify:true,format:'iife',target:'safari15.4',legalComments:'eof'});

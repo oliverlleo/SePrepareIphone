@@ -306,12 +306,13 @@ assert(appJs.includes('SePrepareRehearsalRuntime'));
 assert(appJs.includes('1.0.74'));
 check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contratos do PWA');
 
-// 11. Synchronous audio.unlock() before async VAD ensureSession in start(), resume(), and switchMode()
+// 11. Synchronous audio.unlock({forRecording}) before async VAD ensureSession in start(), resume(), switchMode(), and repeatLastTurn()
 {
   const timeline = [];
+  const unlockOpts = [];
   let resolveMic;
   const fakePlayer = createFakePlayer();
-  fakePlayer.unlock = () => timeline.push('unlock');
+  fakePlayer.unlock = opts => { timeline.push('unlock'); unlockOpts.push(opts); };
   const audio = createRehearsalAudio({ player: fakePlayer, getSettings: () => ({ language: 'pt-BR', rate: 1 }) });
   const fakeVad = {
     ensureSession() {
@@ -331,25 +332,40 @@ check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contrato
 
   const startPromise = controller.start({ speech: makeThreeSpeakerPart('p1'), mode: 'auto', silenceSeconds: 3 });
   assert.deepEqual(timeline.slice(0, 2), ['unlock', 'ensureSession-start']);
+  assert.deepEqual(unlockOpts[0], { forRecording: true });
   resolveMic();
   await startPromise;
 
   controller.pause();
   timeline.length = 0;
+  unlockOpts.length = 0;
   const resumePromise = controller.resume();
   assert.deepEqual(timeline.slice(0, 2), ['unlock', 'ensureSession-start']);
+  assert.deepEqual(unlockOpts[0], { forRecording: true });
   resolveMic();
   await resumePromise;
+
+  controller.pause();
+  timeline.length = 0;
+  unlockOpts.length = 0;
+  controller.repeatLastTurn();
+  assert.deepEqual(timeline.slice(0, 2), ['unlock', 'ensureSession-start']);
+  assert.deepEqual(unlockOpts[0], { forRecording: true });
+  resolveMic();
   controller.stop();
 
   timeline.length = 0;
+  unlockOpts.length = 0;
   await controller.start({ speech: makeThreeSpeakerPart('p1'), mode: 'manual', silenceSeconds: 3 });
   assert.deepEqual(timeline, ['unlock']);
+  assert.deepEqual(unlockOpts[0], { forRecording: false });
   timeline.length = 0;
+  unlockOpts.length = 0;
   const switchPromise = controller.switchMode('auto');
   assert.deepEqual(timeline.slice(0, 2), ['unlock', 'ensureSession-start']);
+  assert.deepEqual(unlockOpts[0], { forRecording: true });
   resolveMic();
   await switchPromise;
   controller.stop();
-  check('Ensaio desbloqueia áudio sincronamente antes de aguardar microfone no start, resume e switchMode');
+  check('Ensaio desbloqueia áudio com forRecording adequado antes do microfone em start, resume, repeat e switchMode');
 }

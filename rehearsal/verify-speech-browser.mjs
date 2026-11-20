@@ -111,6 +111,55 @@ for(const rate of [8000,16000,44100,48000]) {
  const vad=createRehearsalVad(h.options);const result=await vad.ensureSession();
  check('Modelo indisponível não ativa detector por volume',()=>{assert.equal(result.ok,false);assert.equal(vad.isActive(),false);});
 }
+{
+ const prevDesc=Object.getOwnPropertyDescriptor(globalThis.navigator,'audioSession');
+ const session={type:'playback'};
+ try{
+  Object.defineProperty(globalThis.navigator,'audioSession',{value:session,configurable:true});
+  const h=harness({mediaDevices:{async getUserMedia(){if(session.type==='playback')throw {name:'InvalidStateError'};const t={enabled:true,readyState:'live',stop(){this.readyState='ended';},addEventListener(){},removeEventListener(){}};return {getAudioTracks:()=>[t],getTracks:()=>[t]};}}});
+  const vad=createRehearsalVad(h.options);const res=await vad.ensureSession();
+  check('VAD promove audioSession de playback para play-and-record antes do getUserMedia',()=>{assert.equal(res.ok,true);assert.equal(session.type,'play-and-record');});
+  vad.release();
+  check('release() do VAD restaura audioSession após liberar o microfone',()=>assert.equal(session.type,'auto'));
+ }finally{
+  if(prevDesc)Object.defineProperty(globalThis.navigator,'audioSession',prevDesc);
+  else delete globalThis.navigator.audioSession;
+ }
+}
+{
+ let resumes=0;
+ const h=harness({setTimeoutFn:fn=>{fn();return 1;}});
+ class Context extends h.Context{async resume(){resumes++;this.state=resumes>=2?'running':'interrupted';log.push('resume');}}
+ h.options.AudioContextClass=Context;
+ const vad=createRehearsalVad(h.options);const res=await vad.ensureSession();
+ check('AudioContext transitoriamente interrupted após diálogo de permissão se recupera nas tentativas seguintes',()=>{assert.equal(res.ok,true);assert(resumes>=2);});
+ vad.release();
+}
+{
+ const stopOrder=[];
+ const h=harness({mediaDevices:{async getUserMedia(){stopOrder.push('gum');const t={enabled:true,muted:false,readyState:'live',stop(){stopOrder.push('stop');this.readyState='ended';},addEventListener(){},removeEventListener(){}};h.tracks.push(t);return {getAudioTracks:()=>[t],getTracks:()=>[t]};}}});
+ const vad=createRehearsalVad(h.options);
+ await vad.startListeningTurn();vad.stopListening();
+ h.tracks[0].muted=true;
+ await vad.startListeningTurn();
+ check('Faixa silenciada no intervalo libera captura anterior antes de readquirir o microfone',()=>assert.deepEqual(stopOrder,['gum','stop','gum']));
+ vad.release();
+}
+{
+ let ctxRef,resumes=0;
+ const h=harness();
+ class Context extends h.Context{
+  constructor(){super();ctxRef=this;this._listeners={};}
+  addEventListener(type,fn){(this._listeners[type] ||= []).push(fn);}
+  removeEventListener(){}
+  async resume(){resumes++;this.state='running';}
+ }
+ h.options.AudioContextClass=Context;
+ const vad=createRehearsalVad(h.options);await vad.startListeningTurn();
+ const before=resumes;ctxRef.state='interrupted';ctxRef._listeners.statechange?.forEach(fn=>fn());
+ check('Contexto interrompido durante a escuta tenta retomar automaticamente em statechange',()=>assert.equal(resumes,before+1));
+ vad.release();
+}
 for(const seconds of [2,3,5]) {
  const gate=createClassifiedSpeechGate({silenceTargetMs:seconds*1000});
  for(let i=0;i<100;i++)gate.push({probability:.01});
