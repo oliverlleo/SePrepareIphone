@@ -207,7 +207,7 @@ export function createRehearsalController({
     }
   }
 
-  async function enterTurn(index, { resetHint = true, resumeOffset = 0, notifyTurn = true } = {}) {
+  async function enterTurn(index, { resetHint = true, resumeOffset = 0, notifyTurn = true, afterNarration = false } = {}) {
     if (!plan || !plan.valid || inTransition) return;
     inTransition = true;
     const mySession = sessionId;
@@ -262,7 +262,7 @@ export function createRehearsalController({
           onEnd: () => {
             if (mySession !== sessionId || myEpoch !== epoch || state !== 'narrating') return;
             narrationCharOffset = 0;
-            void enterTurn(currentTurnIndex + 1, { resetHint: true, resumeOffset: 0, notifyTurn: true });
+            void enterTurn(currentTurnIndex + 1, { resetHint: true, resumeOffset: 0, notifyTurn: true, afterNarration: true });
           },
           onPaused: () => {
             if (mySession !== sessionId || myEpoch !== epoch || state !== 'narrating') return;
@@ -270,6 +270,9 @@ export function createRehearsalController({
           },
           onBlocked: info => {
             if (mySession !== sessionId || myEpoch !== epoch) return;
+            if (!/[\p{L}\p{N}]/u.test(String(turn?.spokenText || '').slice(narrationCharOffset))) {
+              narrationCharOffset = 0;
+            }
             blockedPlayback = {
               code: info?.code || 'not-allowed',
               message:
@@ -283,6 +286,9 @@ export function createRehearsalController({
           },
           onError: err => {
             if (mySession !== sessionId || myEpoch !== epoch) return;
+            if (!/[\p{L}\p{N}]/u.test(String(turn?.spokenText || '').slice(narrationCharOffset))) {
+              narrationCharOffset = 0;
+            }
             errorInfo = {
               code: err?.code || 'synthesis-failed',
               message: err?.message || t('Não foi possível reproduzir esta fala.')
@@ -329,6 +335,7 @@ export function createRehearsalController({
 
       const listenResult = await vad.startListeningTurn({
         silenceSeconds,
+        echoGuardMs: afterNarration ? 500 : 0,
         onStateChange: status => {
           if (mySession !== sessionId || myEpoch !== epoch || state !== 'listening') return;
           vadStatus = status;

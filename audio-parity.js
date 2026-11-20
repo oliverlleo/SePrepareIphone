@@ -54,7 +54,7 @@
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
     let missingVoiceHandler=options.onMissingVoice;
-    let candidates=[],browserList=[],activeUtterance=null,primerUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null,chunkPauseTimer=null,activeSegment=null,externalInterrupt=null;
+    let candidates=[],browserList=[],activeUtterance=null,primerUtterance=null,request=0,previewing=false,previewUtterance=null,dragged=false,startupTimer=null,chunkPauseTimer=null,activeSegment=null,externalInterrupt=null,inUtteranceEnd=false;
     let audioCtx=null,silentAudioEl=null,silentAudioUrl='',previousSessionType=null,sessionRestoreTimer=null;
     const lang=() => String(o.getSettings().language || 'pt-BR').slice(0,2).toLowerCase();
     const t=i => (translations[lang()] || translations.pt)[i];
@@ -133,9 +133,9 @@
       else if(tier==='premium') score+=60;
       else if(tier==='neural') score+=55;
       else if(tier==='enhanced') score+=45;
-      else if(uri.includes('super-compact')) score+=10;
+      else if(uri.includes('super-compact')) score+=18;
       else if(uri.includes('com.apple.voice.') || uri.includes('com.apple.ttsbundle.')) score+=20;
-      if(v.default) score+=5;
+      if(v.default) score+=8;
       return score;
     }
 
@@ -309,14 +309,32 @@
         candidates.find(v=>cleanVoiceBase(v.name)===base && (!loc||v.lang.toLowerCase()===loc)) || null;
     }
     function automaticVoice(preferred=locale()) {
+      const pref=String(preferred||'pt-BR').replace(/_/g,'-').toLowerCase();
       const available=candidates.filter(v=>!failedVoices.has(voiceKey(v)));
       const ranked=voicesForLocale(preferred,available);
-      if(ranked.length)return ranked[0];
-      const language=String(preferred||'pt-BR').split(/[-_]/)[0].toLowerCase();
-      return available.find(v=>v.lang.toLowerCase()===String(preferred||'').toLowerCase()&&v.default) ||
-        available.find(v=>v.lang.toLowerCase()===String(preferred||'').toLowerCase()) ||
+      if(ranked.length) {
+        const topExact=String(ranked[0].lang||'').replace(/_/g,'-').toLowerCase()===pref;
+        const hadExact=candidates.some(v=>String(v.lang||'').replace(/_/g,'-').toLowerCase()===pref && isReliableNatural(v));
+        if(isIOS && hadExact && !topExact && !failedSystemLocales.has(pref)) return null;
+        return ranked[0];
+      }
+      const language=pref.split('-')[0];
+      return available.find(v=>v.lang.toLowerCase()===pref&&v.default) ||
+        available.find(v=>v.lang.toLowerCase()===pref) ||
         available.find(v=>v.lang.toLowerCase().split(/[-_]/)[0]===language&&v.default) ||
         available.find(v=>v.lang.toLowerCase().split(/[-_]/)[0]===language) || null;
+    }
+    function nextFallbackVoice(preferred, attempted) {
+      const pref=String(preferred||'pt-BR').replace(/_/g,'-').toLowerCase();
+      const available=candidates.filter(v=>isReliableNatural(v)&&!failedVoices.has(voiceKey(v))&&!attempted.has(voiceKey(v)));
+      const ranked=voicesForLocale(preferred,available);
+      if(ranked.length) {
+        const topExact=String(ranked[0].lang||'').replace(/_/g,'-').toLowerCase()===pref;
+        const hadExact=candidates.some(v=>String(v.lang||'').replace(/_/g,'-').toLowerCase()===pref && isReliableNatural(v));
+        if(isIOS && hadExact && !topExact && !attempted.has('system-default')) return null;
+        return ranked[0];
+      }
+      return !attempted.has('system-default') ? null : undefined;
     }
     function selectedVoice(form=false) {
       const settings=o.getSettings();
@@ -465,7 +483,7 @@
         let line=parts[i].line;
         const hasNext=i<parts.length-1;
         if((hasNext || addTerminalPause) && !/[.!?:;。！？…]$/.test(line)) line+='.';
-        if(i>0) out+=parts[i].blankBefore ? '\n\n' : '\n';
+        if(i>0) out+=isIOS ? ' ' : (parts[i].blankBefore ? '\n\n' : '\n');
         out+=line;
       }
       return out;
@@ -503,7 +521,7 @@
       return 0;
     }
     function planSpeechChunk(fullText, startAt, rate) {
-      const TARGET_CHUNK=220, MAX_SENTENCE_CHUNK=250, CLAUSE_MAX=220, MIN_BREAK=40;
+      const TARGET_CHUNK=isIOS?150:220, MAX_SENTENCE_CHUNK=isIOS?185:250, CLAUSE_MAX=isIOS?150:220, MIN_BREAK=40;
       const SENTENCE_RE=/[.!?…]["'”’)\]]*(?=\s|$)|[。！？…]["'”’」』）\]]*/g;
       const CLAUSE_RE=/[;,:—–]["'”’)\]]*(?=\s|$)|\)(?=\s|$)|[、；：]/g;
       let cursor=startAt, pendingBreak='end';
@@ -534,13 +552,13 @@
               end=cursor+wholeEnd;
               boundaryKind='sentence';
             } else {
-              const clauseEnd=lastRegexEnd(slice,80,CLAUSE_MAX,CLAUSE_RE);
+              const clauseEnd=lastRegexEnd(slice,isIOS?60:80,CLAUSE_MAX,CLAUSE_RE);
               if(clauseEnd) {
                 end=cursor+clauseEnd;
                 boundaryKind='clause';
               } else {
                 const wordsEnd=slice.slice(0,CLAUSE_MAX).lastIndexOf(' ');
-                end=cursor+(wordsEnd>=100 ? wordsEnd+1 : CLAUSE_MAX);
+                end=cursor+(wordsEnd>=(isIOS?70:100) ? wordsEnd+1 : CLAUSE_MAX);
                 boundaryKind='clause';
               }
             }
@@ -580,6 +598,9 @@
       const seg=activeSegment;
       if(!seg)return;
       activeSegment=null;
+      if(seg.utterance) {
+        seg.utterance.onstart=seg.utterance.onboundary=seg.utterance.onend=seg.utterance.onerror=null;
+      }
       seg.utterance=null;
       activeUtterance=null;
       clearTimeout(seg.startupTimer);
@@ -613,6 +634,7 @@
     }
     function speakSegment(spec={}) {
       const {text='',offset=0,voice='',locale:preferredLocale='',rate=1,onStart,onBoundary,onEnd,onPaused,onError}=spec;
+      const fromEndedUtterance=inUtteranceEnd;
       if(previewing) stopPreview();
       if(audio.state==='playing'||audio.state==='starting') {
         request++;cancelActiveSpeech();
@@ -639,7 +661,7 @@
       }
       request++;
       const id=request, reqId='rehearsal-'+id;
-      const cancelledOnStart=cancelActiveSpeech();
+      const cancelledOnStart=fromEndedUtterance ? false : cancelActiveSpeech();
       acquireIOSAudioSession();
       const fullText=String(text||'');
       const startAt=clamp(Number(offset)||0,0,fullText.length);
@@ -647,28 +669,25 @@
       const seg={requestId:reqId,id,started:false,startupTimer:0,pauseTimer:0,utterance:null};
       const attempted=new Set();
       let fallbackCount=0,currentVoice=chosen,chunkIndex=0;
-      const sameLanguage=v=>v && v.lang && v.lang.split(/[-_]/)[0].toLowerCase()===loc.split(/[-_]/)[0].toLowerCase();
       activeSegment=seg;
       function fallbackSegmentVoice() {
         if(fallbackCount>=2)return false;
         attempted.add(voiceKey(currentVoice));
         refreshVoices();
-        const alternatives=candidates.filter(v=>sameLanguage(v)&&!failedVoices.has(voiceKey(v))&&!attempted.has(voiceKey(v)))
-          .sort((a,b)=>voiceQualityScore(b)-voiceQualityScore(a));
-        const alternate=alternatives[0]||(!attempted.has('system-default')?null:undefined);
+        const alternate=nextFallbackVoice(loc, attempted);
         if(alternate===undefined)return false;
         currentVoice=alternate;
         fallbackCount++;
         return true;
       }
-      function failSegment(code,at) {
+      function failSegment(code,at,{afterRetry=false}={}) {
         if(activeSegment!==seg || id!==request) return;
         clearTimeout(seg.startupTimer);
         clearTimeout(seg.pauseTimer);
         seg.pauseTimer=0;
         const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout'].includes(code);
         if(isIOS && retryable) {
-          if(!seg.started) {
+          if(!seg.started && !(code==='startup-timeout' && afterRetry)) {
             if(currentVoice) failedVoices.add(voiceKey(currentVoice));
             else failedSystemLocales.add(loc.toLowerCase());
           }
@@ -703,23 +722,27 @@
         seg.utterance=utterance;
         activeUtterance=utterance;
         let chunkStarted=false;
+        const isCurrent=()=>activeSegment===seg && id===request && seg.utterance===utterance;
+        const detach=()=>{utterance.onstart=utterance.onboundary=utterance.onend=utterance.onerror=null;};
         const armStallWatchdog=()=>{
           clearTimeout(seg.startupTimer);
           seg.startupTimer=setTimeout(()=>{
-            if(activeSegment!==seg || id!==request) return;
+            if(!isCurrent()) return;
+            detach();
+            seg.utterance=null;activeUtterance=null;
             cancelActiveSpeech();
-            failSegment('startup-timeout',plan.start);
+            failSegment('startup-timeout',plan.start,{afterRetry:retried});
           },10000+Math.ceil(plan.spoken.length*180/cleanRate));
         };
         clearTimeout(seg.startupTimer);
         utterance.onstart=()=>{
-          if(activeSegment!==seg || id!==request) return;
+          if(!isCurrent()) return;
           chunkStarted=true;
           if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
           armStallWatchdog();
         };
         utterance.onboundary=ev=>{
-          if(activeSegment!==seg || id!==request) return;
+          if(!isCurrent()) return;
           chunkStarted=true;
           if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
           armStallWatchdog();
@@ -728,15 +751,25 @@
           if(typeof onBoundary==='function') onBoundary({offset:pos,end:pos});
         };
         utterance.onend=()=>{
-          if(activeSegment!==seg || id!==request) return;
+          if(!isCurrent()) return;
+          detach();
           clearTimeout(seg.startupTimer);
           if(!seg.started){seg.started=true;if(typeof onStart==='function')onStart();}
           chunkIndex+=1;
-          if(plan.nextAt<fullText.length) seg.pauseTimer=setTimeout(()=>nextChunk(plan.nextAt),plan.pauseMs);
-          else {activeSegment=null;seg.utterance=null;activeUtterance=null;scheduleIOSAudioSessionRelease();if(typeof onEnd==='function')onEnd();}
+          if(plan.nextAt<fullText.length) {
+            seg.utterance=null;activeUtterance=null;
+            seg.pauseTimer=setTimeout(()=>nextChunk(plan.nextAt),plan.pauseMs);
+          } else {
+            activeSegment=null;seg.utterance=null;activeUtterance=null;
+            scheduleIOSAudioSessionRelease();
+            inUtteranceEnd=true;
+            try { if(typeof onEnd==='function')onEnd(); }
+            finally { inUtteranceEnd=false; }
+          }
         };
         utterance.onerror=ev=>{
-          if(activeSegment!==seg || id!==request) return;
+          if(!isCurrent()) return;
+          detach();
           clearTimeout(seg.startupTimer);
           const errCode=String(ev?.error||'');
           if(errCode==='canceled'||errCode==='interrupted') {
@@ -747,31 +780,38 @@
             }
             return;
           }
-          failSegment(errCode||'synthesis-failed',plan.start);
+          seg.utterance=null;activeUtterance=null;
+          failSegment(errCode||'synthesis-failed',plan.start,{afterRetry:retried});
         };
         try {
           if(synth.paused&&typeof synth.resume==='function')synth.resume();
           synth.speak(utterance);
-          if(!chunkStarted && activeSegment===seg && id===request) {
-            const canRecoverIOS=isIOS && !retried && (chunkIndex>0 || (chunkIndex===0 && cancelledOnStart));
+          if(!chunkStarted && isCurrent()) {
+            const canRecoverIOS=isIOS && !retried;
             seg.startupTimer=setTimeout(()=>{
-              if(activeSegment!==seg || id!==request || chunkStarted) return;
+              if(!isCurrent() || chunkStarted) return;
+              detach();
+              seg.utterance=null;activeUtterance=null;
+              cancelActiveSpeech();
               if(canRecoverIOS) {
-                seg.utterance=null;activeUtterance=null;
-                cancelActiveSpeech();
+                if(!seg.started && !cancelledOnStart && currentVoice) {
+                  fallbackSegmentVoice();
+                }
                 seg.pauseTimer=setTimeout(()=>nextChunk(plan.start,{retried:true}),100);
                 return;
               }
-              cancelActiveSpeech();
-              failSegment('startup-timeout',plan.start);
+              failSegment('startup-timeout',plan.start,{afterRetry:retried});
             },canRecoverIOS?2200:5500);
           }
         } catch {
           clearTimeout(seg.startupTimer);
-          failSegment('synthesis-failed',plan.start);
+          detach();
+          seg.utterance=null;activeUtterance=null;
+          failSegment('synthesis-failed',plan.start,{afterRetry:retried});
         }
       }
-      nextChunk(startAt);
+      if(isIOS && fromEndedUtterance) seg.pauseTimer=setTimeout(()=>nextChunk(startAt),60);
+      else nextChunk(startAt);
       return reqId;
     }
     function cancelSegment(reqId) {
@@ -828,32 +868,30 @@
       acquireIOSAudioSession();
       const attempted=new Set();
       let fallbackCount=0,currentVoice=voice||null,anyChunkStarted=false,chunkIndex=0;
-      const sameLanguage=v=>v && v.lang && v.lang.split(/[-_]/)[0].toLowerCase()===preferredLocale.split(/[-_]/)[0].toLowerCase();
       const valid=()=>id===request && (isPreview?previewing:['starting','playing'].includes(audio.state));
       let currentUtterance=null;
 
       function fallback() {
         if(fallbackCount>=2)return false;
-        // Retry only with a voice of the same language; never silently switch
-        // a Japanese/Spanish presentation to Portuguese or English.
+        // Retry only with a reliable voice of the same language or system default; never switch
+        // a regional locale to another variant or novelty/Eloquence voice on iOS.
         attempted.add(voiceKey(currentVoice));
         refreshVoices();
-        const alternatives=candidates.filter(v=>sameLanguage(v)&&!attempted.has(voiceKey(v)))
-          .sort((a,b)=>voiceQualityScore(b)-voiceQualityScore(a));
-        const alternate=alternatives[0]||(!attempted.has('system-default')?null:undefined);
+        const alternate=nextFallbackVoice(preferredLocale, attempted);
         if(alternate===undefined)return false;
         currentVoice=alternate;
         fallbackCount++;
         return true;
       }
-      function fail(code,at) {
+      function fail(code,at,{afterRetry=false}={}) {
         if(!valid())return;
         clearStartupTimer();
         const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout','preview-timeout'].includes(code);
         // A retry from an asynchronous callback loses the user's tap gesture
-        // on iOS. Use a different voice only on the next explicit tap, and never blacklist a working voice.
+        // on iOS. Use a different voice only on the next explicit tap, and never blacklist a working voice
+        // or the sole exact-locale voice after a transient timeout retry.
         if(isIOS&&retryable) {
-          if(!anyChunkStarted) {
+          if(!anyChunkStarted && !(code==='startup-timeout' && afterRetry)) {
             if(currentVoice)failedVoices.add(voiceKey(currentVoice));
             else failedSystemLocales.add(preferredLocale.toLowerCase());
           }
@@ -902,13 +940,19 @@
         utterance.volume=1;
         utterance.pitch=1;
         const isCurrent=()=>valid()&&currentUtterance===utterance;
+        const detach=()=>{utterance.onstart=utterance.onboundary=utterance.onend=utterance.onerror=null;};
         const armStallTimer=()=>{
           clearStartupTimer();
           const ms=isPreview
             ? 8000+Math.ceil(plan.spoken.length*160/utterance.rate)
             : 10000+Math.ceil(plan.spoken.length*180/utterance.rate);
           startupTimer=setTimeout(()=>{
-            if(isCurrent())fail(isPreview?'preview-timeout':'startup-timeout',plan.start);
+            if(!isCurrent())return;
+            detach();
+            currentUtterance=null;
+            if(isPreview)previewUtterance=null;else activeUtterance=null;
+            cancelActiveSpeech();
+            fail(isPreview?'preview-timeout':'startup-timeout',plan.start,{afterRetry:retried});
           },ms);
         };
         let started=false;
@@ -933,15 +977,18 @@
         };
         utterance.onend=()=>{
           if(!isCurrent())return;
+          detach();
           anyChunkStarted=true;
           clearStartupTimer();
           chunkIndex+=1;
           if(plan.nextAt<text.length) {
+            currentUtterance=null;
             if(!isPreview)audio.offset=plan.nextAt;
             update();dispatch();
             // On iOS a short breathing pause between chunks avoids flat run-on speech and queue stalls.
             chunkPauseTimer=setTimeout(()=>{chunkPauseTimer=null;nextChunk(plan.nextAt);},plan.pauseMs);
           } else {
+            currentUtterance=null;
             if(isPreview){previewing=false;previewUtterance=null;const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);}
             else {audio.state='finished';audio.offset=audio.text.length;activeUtterance=null;}
             scheduleIOSAudioSessionRelease();
@@ -950,8 +997,18 @@
         };
         utterance.onerror=ev=>{
           if(!isCurrent())return;
+          detach();
           clearStartupTimer();
-          fail(ev.error||'synthesis-failed',plan.start);
+          const errCode=String(ev?.error||'');
+          if(errCode==='canceled'||errCode==='interrupted') {
+            if(errCode==='interrupted') {
+              if(isPreview) stopPreview();
+              else { currentUtterance=null;activeUtterance=null;audio.state='paused';scheduleIOSAudioSessionRelease();update();dispatch(); }
+            }
+            return;
+          }
+          currentUtterance=null;
+          fail(errCode||'synthesis-failed',plan.start,{afterRetry:retried});
         };
         currentUtterance=utterance;
         if(isPreview)previewUtterance=utterance;else activeUtterance=utterance;
@@ -959,22 +1016,32 @@
           if(synth.paused&&typeof synth.resume==='function')synth.resume();
           synth.speak(utterance);
           if(!started && isCurrent()) {
-            // Safari can silently drop speak(): recover once after post-cancel/chunk handoff, or fail cleanly.
-            const canRecoverIOS=isIOS && !retried && (chunkIndex>0 || (chunkIndex===0 && cancelledOnStart));
+            // Safari can silently drop speak(): recover once cleanly, or fail with clear message.
+            const canRecoverIOS=isIOS && !retried && (!isPreview || chunkIndex>0 || (chunkIndex===0 && cancelledOnStart));
             startupTimer=setTimeout(()=>{
               startupTimer=null;
               if(!isCurrent()||started)return;
               if(canRecoverIOS) {
+                detach();
+                currentUtterance=null;
+                if(isPreview)previewUtterance=null;else activeUtterance=null;
                 cancelActiveSpeech();
+                if(!anyChunkStarted && !cancelledOnStart && currentVoice) {
+                  fallback();
+                }
                 chunkPauseTimer=setTimeout(()=>{chunkPauseTimer=null;nextChunk(plan.start,{retried:true});},100);
                 return;
               }
-              fail('startup-timeout',plan.start);
+              detach();
+              fail('startup-timeout',plan.start,{afterRetry:retried});
             },canRecoverIOS?2200:5500);
           }
         } catch(error) {
           console.warn('SePrepare: speechSynthesis.speak threw',error);
-          fail('synthesis-failed',plan.start);
+          detach();
+          currentUtterance=null;
+          if(isPreview)previewUtterance=null;else activeUtterance=null;
+          fail('synthesis-failed',plan.start,{afterRetry:retried});
         }
       }
       nextChunk(offset);

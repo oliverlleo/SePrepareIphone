@@ -17,7 +17,7 @@ export function createRehearsalVad(options = {}) {
     t = value => value
   } = options;
   let generation = 1, turn = 0, ctx, stream, source, capture, gain, resampler;
-  let classifier, pending, workletReady, listening = false, sessionLossCallback, interval;
+  let classifier, pending, workletReady, listening = false, sessionLossCallback, interval, guardTimer = null;
   let detachTrackListeners = () => {}, detachContextListener = () => {};
   let audioSessionClaimed = false, previousSessionType = null;
 
@@ -49,6 +49,7 @@ export function createRehearsalVad(options = {}) {
   function stopListening() {
     turn++;listening=false;
     if(interval!=null)clearIntervalFn(interval);interval=null;
+    if(guardTimer!=null)clearTimeoutFn(guardTimer);guardTimer=null;
     classifier?.stopTurn();
     enabled(false);disconnect();
   }
@@ -202,7 +203,7 @@ export function createRehearsalVad(options = {}) {
       return pending;
     } catch(error) {const info=errorInfo(error);release();return Promise.resolve({ok:false,...info});}
   }
-  async function startListeningTurn({silenceSeconds=3,onStateChange,onSpeechComplete,onError}={}) {
+  async function startListeningTurn({silenceSeconds=3,echoGuardMs=0,onStateChange,onSpeechComplete,onError}={}) {
     stopListening();
     const myTurn=turn, mine=generation;
     const prepared=await ensureSession({onStreamLost:onError});
@@ -210,7 +211,8 @@ export function createRehearsalVad(options = {}) {
     if(myTurn!==turn||mine!==generation)return {started:false,reason:'cancelled'};
     const gate=createClassifiedSpeechGate({silenceTargetMs:([2,3,5].includes(Number(silenceSeconds))?Number(silenceSeconds):3)*1000});
     const silenceTargetMs=([2,3,5].includes(Number(silenceSeconds))?Number(silenceSeconds):3)*1000;
-    let lastData=now(),lastEmit=0,lastPhase='';
+    const guardMs=Math.max(0,Number(echoGuardMs)||0);
+    let lastData=now(),lastEmit=0,lastPhase='',guardUntil=0;
     const valid=()=>myTurn===turn&&mine===generation&&listening;
     const fail=error=>{if(valid())lost(error);};
     const frame=samples=>{
@@ -219,9 +221,15 @@ export function createRehearsalVad(options = {}) {
     try {
       await classifier.startTurn(myTurn,probability=>{
         if(!valid())return;
+        lastData=now();
+        if(guardUntil) {
+          if(now()<guardUntil)return;
+          guardUntil=0;
+          if(guardTimer!=null){clearTimeoutFn(guardTimer);guardTimer=null;}
+          enabled(true);
+        }
         let status;
         try {status=gate.push({probability,dt:32});}catch{fail({code:'classifier-failed'});return;}
-        lastData=now();
         if(status.complete){stopListening();onSpeechComplete?.();return;}
         if(status.phase!==lastPhase || now()-lastEmit>=180) {
           lastPhase=status.phase;lastEmit=now();
@@ -260,7 +268,17 @@ export function createRehearsalVad(options = {}) {
       }
       gain=ctx.createGain();gain.gain.value=0;
       source.connect(capture);capture.connect(gain);gain.connect(ctx.destination);
-      listening=true;lastData=now();enabled(true);
+      listening=true;lastData=now();
+      if(guardMs>0) {
+        guardUntil=now()+guardMs;
+        enabled(false);
+        guardTimer=setTimeoutFn(()=>{
+          guardTimer=null;
+          if(valid())enabled(true);
+        },guardMs);
+      } else {
+        enabled(true);
+      }
       onStateChange?.({phase:'waiting-voice',hasStartedSpeaking:false,level:0,silenceTargetMs,silenceRemainingMs:silenceTargetMs});
       interval=setIntervalFn(()=>{
         if(!valid())return;

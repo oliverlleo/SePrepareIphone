@@ -168,4 +168,33 @@ for(const seconds of [2,3,5]) {
  for(let i=0;i<Math.ceil(seconds*1000/32)+15;i++)result=gate.push({probability:i%7===0?.9:.01});
  check('Ruídos isolados não reiniciam nem congelam a pausa de '+seconds+' s',()=>assert.equal(result.complete,true));
 }
+{
+ let t=0;const timers=[];let pushCb=null;
+ const h=harness({
+  now:()=>t,
+  setTimeoutFn:(fn,ms)=>{timers.push({fn,ms,cleared:false});return timers.length;},
+  clearTimeoutFn:id=>{if(timers[id-1])timers[id-1].cleared=true;},
+  createClassifier:()=>({ensure:async()=>{},async startTurn(tok,fn){pushCb=fn;},push(){},stopTurn(){pushCb=null;},release(){pushCb=null;}})
+ });
+ const vad=createRehearsalVad(h.options);
+ let done=0,errors=0;
+ await vad.startListeningTurn({silenceSeconds:2,echoGuardMs:500,onSpeechComplete:()=>done++,onError:()=>errors++});
+ const echoCheckTrack=h.tracks[0].enabled;
+ for(let i=0;i<10;i++){t+=32;pushCb?.(.95);}
+ const enabledDuringGuard=h.tracks[0].enabled;
+ for(let i=0;i<80;i++){t+=32;pushCb?.(.01);}
+ const enabledAfterGuard=h.tracks[0].enabled;
+ const doneAfterEchoAndSilence=done;
+ for(let i=0;i<15;i++){t+=32;pushCb?.(.95);}
+ for(let i=0;i<64;i++){t+=32;pushCb?.(.01);}
+ check('Janela echoGuardMs de 500 ms ignora eco residual da fala anterior e detecta fala real depois',()=>{
+  assert.equal(echoCheckTrack,false);
+  assert.equal(enabledDuringGuard,false);
+  assert.equal(enabledAfterGuard,true);
+  assert.equal(doneAfterEchoAndSilence,0);
+  assert.equal(done,1);
+  assert.equal(errors,0);
+ });
+ vad.release();
+}
 console.log(`OK ${checks} verificações da captura e detecção de fala no navegador`);
