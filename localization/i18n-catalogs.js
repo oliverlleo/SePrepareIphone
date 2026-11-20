@@ -6196,7 +6196,8 @@ const appleSheetCopy=[
  ["Seu caderno é salvo automaticamente neste aparelho.","Your notebook is saved automatically on this device.","Tu cuaderno se guarda automáticamente en este dispositivo.","ノートはこの端末に自動保存されます。"],
  ["Exporte um backup para guardar uma cópia fora do SePrepare.","Export a backup to keep a copy outside SePrepare.","Exporta una copia de seguridad para guardarla fuera de SePrepare.","SePrepareの外にコピーを残すには、バックアップを書き出してください。"],
  ["Cópias de recuperação","Recovery copies","Copias de recuperación","復元用コピー"],
- ["Nenhuma cópia de recuperação ainda.","No recovery copies yet.","Aún no hay copias de recuperación.","復元用コピーはまだありません。"]
+ ["Nenhuma cópia de recuperação ainda.","No recovery copies yet.","Aún no hay copias de recuperación.","復元用コピーはまだありません。"],
+ ["Sem som? Desative o Modo Silencioso do iPhone e aumente o volume.","No sound? Turn off Silent Mode on iPhone and turn up the volume.","¿Sin sonido? Desactiva el modo Silencio del iPhone y sube el volumen.","音が出ないときは、iPhoneの消音モードをオフにして音量を上げてください。"]
 ];
 for(const [source,en,es,ja] of appleSheetCopy){
  catalogs.en[source]=en;

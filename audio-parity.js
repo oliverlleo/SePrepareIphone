@@ -66,6 +66,12 @@
       es:['Cómo añadir voces','Abre Ajustes → Accesibilidad → Lectura y voz → Voces (o Contenido leído). Si no hay sonido, revisa también el interruptor de silencio y el volumen.'],
       ja:['音声の追加方法','「設定」→「アクセシビリティ」→「リーダーと読み上げ」→「声」（または「読み上げコンテンツ」）を開きます。音が出ない場合は消音スイッチと音量もご確認ください。']
     };
+    const appleSilentHint={
+      pt:'Sem som? Desative o Modo Silencioso do iPhone e aumente o volume.',
+      en:'No sound? Turn off Silent Mode on iPhone and turn up the volume.',
+      es:'¿Sin sonido? Desactiva el modo Silencio del iPhone y sube el volumen.',
+      ja:'音が出ないときは、iPhoneの消音モードをオフにして音量を上げてください。'
+    };
     const normalizedName=name => String(name||'').replace(/(?:\s*\(?(?:online|offline|network)\)?|-network|-local)$/i,'').trim();
     const baseVoiceLabel=name => normalizedName(name).replace(/\s*\(.*$/g,'').trim().toLowerCase();
     const cleanVoiceBase=name => normalizedName(name)
@@ -300,6 +306,7 @@
         '<div class="field audio-preview-field"><label for="voicePreviewText">'+escape(t(3))+'</label>'+
         '<textarea id="voicePreviewText" rows="3" maxlength="2000">'+escape(t(19))+'</textarea><small>'+escape(t(4))+'</small></div>'+
         '<button type="button" class="btn soft" data-action="test-voice"><span id="audioTestLabel" aria-live="polite">'+escape(t(5))+'</span></button>'+
+        (isIOS ? '<p class="help audio-silent-hint">'+escape(appleSilentHint[lang()]||appleSilentHint.pt)+'</p>' : '')+
         '</div>';
     }
     function bindSettings() {
@@ -769,7 +776,9 @@
     function progressHTML() {
       return '<div class="audio-progress" id="audioProgress" hidden><div class="range-line"><label for="audioSeek">'+escape(t(9))+'</label>'+
         '<output id="audioSeekValue">0%</output></div><input type="range" id="audioSeek" min="0" max="1000" step="1" value="0" aria-label="'+escape(t(10))+'">'+
-        '<small>'+escape(t(11))+'</small></div>';
+        '<small>'+escape(t(11))+'</small>'+
+        (isIOS ? '<small class="audio-silent-hint">'+escape(appleSilentHint[lang()]||appleSilentHint.pt)+'</small>' : '')+
+        '</div>';
     }
     let floating=document.getElementById('floatingAudioStop'),pos=null,ignoreClick=false,pointer=null;
     try{const value=JSON.parse(localStorage.getItem('seprepare-audio-control-position')||'null');if(value&&Number.isFinite(value.x)&&Number.isFinite(value.y))pos=value;}catch{}

@@ -18,3 +18,5 @@
 .audio-settings-actions>.btn>svg{flex-shrink:0}
 .audio-settings-actions>.audio-voice-help{margin:0;line-height:1.6;overflow-wrap:break-word}
 .audio-settings-actions>.audio-voice-help[hidden]{display:none}
+.audio-silent-hint{margin:4px 0 0;font-size:11px;line-height:1.45;color:var(--muted)}
+.audio-progress .audio-silent-hint{margin-top:6px;padding-top:6px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);font-size:10.5px}

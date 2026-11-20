@@ -168,5 +168,16 @@ check('Teste sem fim, mesmo após iniciar, limpa a fila e libera nova tentativa'
  }finally{h.close();}
 });
 for(const language of ['pt-BR','en','es','ja'])check('Ajuda Apple legível e acessível: '+language,()=>{const h=harness({language});try{let legacy=0;h.w.document.addEventListener('click',()=>legacy++);const button=h.w.document.querySelector('[data-action=install-voices]');button.click();assert.equal(legacy,0);assert.equal(button.getAttribute('aria-expanded'),'true');const help=h.w.document.getElementById(button.getAttribute('aria-controls'));assert(!help.hidden);assert(help.textContent.length>15);button.click();assert(help.hidden);}finally{h.close();}});
-check('iPad em modo desktop recebe a mesma ajuda Apple',()=>{const h=harness({ipad:true});try{const b=h.w.document.querySelector('[data-action=install-voices]');b.click();assert.equal(b.getAttribute('aria-expanded'),'true');}finally{h.close();}});
-check('Navegador Windows preserva a ação de gerenciamento existente',()=>{const h=harness({ios:false});try{let legacy=0;h.w.document.addEventListener('click',()=>legacy++);h.w.document.querySelector('[data-action=install-voices]').click();assert.equal(legacy,1);}finally{h.close();}});
+for(const language of ['pt-BR','en','es','ja'])check('Dica discreta de Modo Silencioso aparece no iPhone em '+language,()=>{
+ const h=harness({language});
+ try{
+  const settingsHint=h.w.document.querySelector('.audio-silent-hint');
+  assert(settingsHint&&settingsHint.textContent.trim().length>15);
+  const progressDom=new JSDOM(h.api.progressHTML());
+  const progressHint=progressDom.window.document.querySelector('.audio-silent-hint');
+  assert(progressHint&&progressHint.textContent.trim()===settingsHint.textContent.trim());
+  progressDom.window.close();
+ }finally{h.close();}
+});
+check('iPad em modo desktop recebe a mesma ajuda Apple',()=>{const h=harness({ipad:true});try{const b=h.w.document.querySelector('[data-action=install-voices]');b.click();assert.equal(b.getAttribute('aria-expanded'),'true');assert(h.w.document.querySelector('.audio-silent-hint'));}finally{h.close();}});
+check('Navegador Windows preserva a ação de gerenciamento existente e não mostra dica de iPhone',()=>{const h=harness({ios:false});try{let legacy=0;h.w.document.addEventListener('click',()=>legacy++);h.w.document.querySelector('[data-action=install-voices]').click();assert.equal(legacy,1);assert.equal(h.w.document.querySelector('.audio-silent-hint'),null);assert(!h.api.progressHTML().includes('audio-silent-hint'));}finally{h.close();}});
