@@ -43,6 +43,10 @@ export function createInteractiveRehearsalUI({
   let trackedSpeechId = '';
   let trackedVersionId = '';
   let trackedContentKey = '';
+  const isAppleTouch = typeof navigator !== 'undefined' && (
+    /iPhone|iPad|iPod/i.test(navigator.userAgent || '') ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
 
   const audio = createRehearsalAudio({
     player: audioPlayer,
@@ -230,6 +234,9 @@ export function createInteractiveRehearsalUI({
     const noticeHTML = inlineMessage
       ? `<div class="rehearsal-notice-inline" role="status">${esc(inlineMessage)}</div>`
       : '';
+    const silentHintHTML = isAppleTouch && snap.state !== 'completed'
+      ? `<p class="rehearsal-silent-hint">${icon('Volume2')}<span>${esc(t('Sem som? Desative o Modo Silencioso do iPhone e aumente o volume.'))}</span></p>`
+      : '';
 
     const moreMenuHTML = `
       <div class="rehearsal-more-menu" id="rehearsalMoreMenu" role="menu" ${moreMenuOpen ? '' : 'hidden'}>
@@ -264,6 +271,7 @@ export function createInteractiveRehearsalUI({
         <button type="button" class="rehearsal-icon-action" data-action="rehearsal-toggle-more" aria-expanded="${moreMenuOpen}" aria-label="${esc(t('Mais controles do ensaio'))}" title="${esc(t('Mais controles'))}">${icon('MoreHorizontal')}</button>
         ${moreMenuHTML}
       </div>
+      ${silentHintHTML}
     `;
 
     if (snap.state === 'listening' && snap.vadStatus) {
