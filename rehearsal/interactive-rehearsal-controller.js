@@ -161,6 +161,10 @@ export function createRehearsalController({
     setState('preparing');
     emit();
 
+    if (activeMode === 'auto' || nextPlan.turns[0]?.isUser) {
+      audio?.unlock?.();
+    }
+
     if (activeMode === 'auto') {
       if (!vad) {
         activeMode = 'manual';
@@ -379,6 +383,10 @@ export function createRehearsalController({
     blockedPlayback = null;
     errorInfo = null;
 
+    if (activeMode === 'auto' || plan.turns[currentTurnIndex]?.isUser) {
+      audio?.unlock?.();
+    }
+
     if (activeMode === 'auto' && vad) {
       const res = await vad.ensureSession({
         onStreamLost: err => handleVadFailure(mySession, err)
@@ -520,6 +528,8 @@ export function createRehearsalController({
       emit();
       return false;
     }
+
+    audio?.unlock?.();
 
     const res = await vad.ensureSession({
       onStreamLost: err => handleVadFailure(mySession, err)

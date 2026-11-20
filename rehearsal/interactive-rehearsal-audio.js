@@ -246,6 +246,10 @@ export function createRehearsalAudio({ player, getSettings, t = s => s }) {
     }
   }
 
+  function unlock() {
+    player?.unlock?.();
+  }
+
   function speakTurn({
     turn,
     participants = [],
@@ -400,6 +404,7 @@ export function createRehearsalAudio({ player, getSettings, t = s => s }) {
     speakTurn,
     previewVoice,
     cancel,
+    unlock,
     isSpeaking: () => activeKind !== 'idle',
     getActiveKind: () => activeKind,
     onExternalInterrupt: fn => {

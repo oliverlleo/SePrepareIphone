@@ -538,7 +538,8 @@ export function createInteractiveRehearsalUI({
     const draft = ensureDraftForSpeech(s);
     const myId = draft.myParticipantId || s.myParticipantId || '';
     const resolved = audio.resolveParticipantVoices(s.participants, s.id);
-    const voicePool = resolved.allVoices || [];
+    const basePool = resolved.voices?.length ? resolved.voices : (resolved.allVoices || []);
+    const allVoices = resolved.allVoices || basePool;
 
     const rowsHTML = s.participants
       .map(p => {
@@ -547,6 +548,18 @@ export function createInteractiveRehearsalUI({
         const assigned = resolved.assignments.get(p.id);
         const currentRate = Number(saved?.rate || assigned?.rate || getSettings()?.rate || 1).toFixed(1);
         const selectedVoice = saved?.voice || '';
+        const voicePool = [...basePool];
+        if (selectedVoice) {
+          const savedMatch = allVoices.find(
+            v =>
+              v.name === selectedVoice ||
+              (saved?.locale && v.name === selectedVoice && v.locale === saved.locale) ||
+              `${v.name}\u001f${v.locale}` === selectedVoice
+          );
+          if (savedMatch && !voicePool.some(v => v.name === savedMatch.name && v.locale === savedMatch.locale)) {
+            voicePool.push(savedMatch);
+          }
+        }
         const optionsHTML = [
           `<option value="">${esc(t('Automática para o idioma'))}</option>`,
           ...voicePool.map(v => {
@@ -578,7 +591,7 @@ export function createInteractiveRehearsalUI({
       })
       .join('');
 
-    const helperNote = voicePool.length <= 1
+    const helperNote = basePool.length <= 1
       ? t('Mesmo quando há apenas uma voz disponível no dispositivo, o ensaio funciona normalmente com ela.')
       : t('As preferências de voz ficam salvas neste aparelho com fallback automático caso uma voz não esteja instalada.');
 
