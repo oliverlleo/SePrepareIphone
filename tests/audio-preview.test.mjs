@@ -1,10 +1,10 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';
 import {JSDOM} from '../qa/time-dom/node_modules/jsdom/lib/api.js';
 const source=fs.readFileSync(new URL('../audio-parity.js',import.meta.url),'utf8'),checks=[];
-function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false,pending=false,language='pt-BR',voices,audioSession,withAudioCtx=false,activeMicLeases=0,captureAllTimers=false}={}){
- const timers=[],shortTimers=[];const dom=new JSDOM('<div class="modal"><div class="modal-body"></div></div>',{url:'https://audio.test/',runScripts:'outside-only'}),w=dom.window,log=[],utterances=[],toasts=[],settings={language,voice:'',audioLanguage:'',rate:1};let inGesture=true;
- w.setTimeout=(fn,ms)=>{if(ms>=4500){timers.push(fn);return timers.length;}if(captureAllTimers){shortTimers.push(fn);return 100+shortTimers.length;}return 0;};
- w.clearTimeout=()=>{};
+function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false,pending=false,language='pt-BR',voices,audioSession,withAudioCtx=false,activeMicLeases=0,captureAllTimers=false,savedVoice='',savedAudioLanguage='',speechText='Texto do discurso.'}={}){
+ const timers=[],shortTimers=[],shortDelays=[];const dom=new JSDOM('<div class="modal"><div class="modal-body"></div></div>',{url:'https://audio.test/',runScripts:'outside-only'}),w=dom.window,log=[],utterances=[],toasts=[],settings={language,voice:savedVoice,audioLanguage:savedAudioLanguage,rate:1};let inGesture=true;
+ w.setTimeout=(fn,ms)=>{if(ms>=4500){timers.push(fn);return timers.length;}if(captureAllTimers){const id=100+shortTimers.length;shortDelays.push({id,fn,ms,cleared:false});shortTimers.push(fn);return id;}return 0;};
+ w.clearTimeout=id=>{for(const item of shortDelays)if(item.id===id)item.cleared=true;};
  w.matchMedia=()=>({matches:false});Object.defineProperty(w.navigator,'userAgent',{value:ios?(ipad?'Mozilla/5.0 Macintosh AppleWebKit Safari':'Mozilla/5.0 iPhone AppleWebKit Safari'):'Windows Chrome'});Object.defineProperty(w.navigator,'platform',{value:ipad?'MacIntel':ios?'iPhone':'Win32'});Object.defineProperty(w.navigator,'maxTouchPoints',{value:ipad?5:1});
  if(audioSession)Object.defineProperty(w.navigator,'audioSession',{value:audioSession,configurable:true});
  const ctxLog={created:0,resumed:0,suspended:0,started:0};
@@ -21,9 +21,9 @@ function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false
  const defaultVoices=[{name:'Local PT',lang:'pt-BR',localService:true,default:true,voiceURI:'fixture'}];
  const synth={paused,speaking:false,pending:false,getVoices:()=>empty?[]:(voices||defaultVoices),addEventListener(){},cancel(){log.push('cancel');this.speaking=false;this.pending=false;},resume(){log.push('resume');this.paused=false;},speak(u){log.push({action:'speak',inGesture});utterances.push(u);this.pending=true;if(!this.paused&&!pending){this.pending=false;this.speaking=true;u.onstart?.();}}};
  Object.defineProperty(w,'speechSynthesis',{value:unavailable?undefined:synth});w.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
- w.eval(source);const audio={state:'idle',text:'',offset:0,speechId:null};const api=w.SePrepareAudio.create({audio,getSettings:()=>settings,setVoices(){},icon:()=>'<svg></svg>',getSpeech:()=>({id:'fixture',text:'Texto do discurso.'}),isReader:()=>false,sync(){},toast:msg=>toasts.push(msg),noSpeechMessage:()=>''});
+ w.eval(source);const audio={state:'idle',text:'',offset:0,speechId:null};const api=w.SePrepareAudio.create({audio,getSettings:()=>settings,setVoices(){},icon:()=>'<svg></svg>',getSpeech:()=>({id:'fixture',text:speechText}),isReader:()=>false,sync(){},toast:msg=>toasts.push(msg),noSpeechMessage:()=>''});
  w.document.querySelector('.modal-body').innerHTML=api.settingsHTML()+'<button class="btn secondary" data-action="install-voices"><svg></svg><span>Instalar ou gerenciar vozes</span></button>';api.bindSettings();
- return {w,dom,api,timers,shortTimers,synth,log,utterances,toasts,settings,audio,ctxLog,label:()=>w.document.querySelector('#audioTestLabel').textContent,close:()=>dom.window.close()};
+ return {w,dom,api,timers,shortTimers,shortDelays,synth,log,utterances,toasts,settings,audio,ctxLog,label:()=>w.document.querySelector('#audioTestLabel').textContent,close:()=>dom.window.close()};
 }
 function check(name,fn){fn();checks.push(name);console.log('PASS '+name);}
 check('Botão só anuncia teste iniciado após o evento real do sintetizador',()=>{const h=harness({pending:true});try{h.api.preview();assert.equal(h.label(),'Iniciando teste…');h.utterances[0].onstart();assert.equal(h.label(),'Parar teste');h.api.preview();assert.equal(h.label(),'Testar voz');}finally{h.close();}});
@@ -208,5 +208,123 @@ check('unlock({forRecording:true}) muda para play-and-record, suspende AudioCont
   h.utterances[2].onend();
   h.shortTimers.forEach(fn=>fn());
   assert.equal(session.type,'play-and-record');
+ }finally{h.close();}
+});
+check('Padrão ignora voz salva de outro idioma, prioriza voz localizada mais realista e respeita escolha manual no idioma',()=>{
+ const mixed=[
+  {name:'Joana',lang:'pt-PT',localService:true,default:true,voiceURI:'com.apple.voice.compact.pt-PT.Joana'},
+  {name:'Luciana',lang:'pt-BR',localService:true,default:true,voiceURI:'com.apple.voice.compact.pt-BR.Luciana'},
+  {name:'Luciana (Aprimorada)',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.enhanced.pt-BR.Luciana'},
+  {name:'Felipe (Aprimorado)',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.enhanced.pt-BR.Felipe'},
+  {name:'Felipe',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.compact.pt-BR.Felipe'},
+  {name:'Samantha (Enhanced)',lang:'en-US',localService:true,default:false,voiceURI:'com.apple.voice.enhanced.en-US.Samantha'}
+ ];
+ const staleWrongLang=harness({voices:mixed,language:'pt-BR',savedVoice:'Samantha (Enhanced)',savedAudioLanguage:'en-US'});
+ try{
+  assert.equal(staleWrongLang.w.document.querySelector('#voiceName').value,'');
+  staleWrongLang.api.play();
+  assert.equal(staleWrongLang.utterances[0].lang,'pt-BR');
+  assert.equal(staleWrongLang.utterances[0].voice.voiceURI,'com.apple.voice.enhanced.pt-BR.Felipe');
+  staleWrongLang.api.preview();
+  assert.equal(staleWrongLang.utterances[1].voice.voiceURI,'com.apple.voice.enhanced.pt-BR.Felipe');
+ }finally{staleWrongLang.close();}
+
+ const tiered=[
+  {name:'Rafael',lang:'pt-BR',localService:true,default:true,voiceURI:'com.apple.voice.compact.pt-BR.Rafael'},
+  {name:'Felipe (Aprimorado)',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.enhanced.pt-BR.Felipe'},
+  {name:'Siri (Voz 1)',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.ttsbundle.siri_pt-BR_1'},
+  {name:'Luciana (Premium)',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.premium.pt-BR.Luciana'}
+ ];
+ const topTier=harness({voices:tiered,language:'pt-BR'});
+ try{
+  topTier.api.play();
+  assert.equal(topTier.utterances[0].voice.voiceURI,'com.apple.voice.premium.pt-BR.Luciana');
+  const names=[...topTier.w.document.querySelectorAll('#voiceName option')].map(o=>o.textContent);
+  assert.deepEqual(names,['Automática (idioma do aplicativo)','Luciana (Premium) · pt-BR','Siri (Voz 1) · pt-BR','Felipe (Aprimorado) · pt-BR','Rafael · pt-BR']);
+ }finally{topTier.close();}
+
+ const manualOk=harness({voices:tiered,language:'pt-BR',savedVoice:'Rafael',savedAudioLanguage:'pt-BR'});
+ try{
+  manualOk.api.play();
+  assert.equal(manualOk.utterances[0].voice.name,'Rafael');
+ }finally{manualOk.close();}
+});
+check('Aviso de qualidade da voz aparece apenas no iPhone quando usa voz compacta e se oculta quando voz realista está ativa',()=>{
+ const compactOnly=[{name:'Luciana',lang:'pt-BR',localService:true,default:true,voiceURI:'com.apple.voice.compact.pt-BR.Luciana'}];
+ for(const language of ['pt-BR','en','es','ja']){
+  const h=harness({language,voices:[{name:'Compact',lang:language==='en'?'en-US':language==='es'?'es-ES':language==='ja'?'ja-JP':'pt-BR',localService:true,default:true,voiceURI:'com.apple.voice.compact.test'}]});
+  try{
+   const q=h.w.document.querySelector('#audioQualityHint');
+   assert(q&&!q.hidden&&q.textContent.trim().length>20);
+  }finally{h.close();}
+ }
+ const withEnhanced=harness({voices:[...compactOnly,{name:'Felipe (Aprimorado)',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.enhanced.pt-BR.Felipe'}]});
+ try{
+  const select=withEnhanced.w.document.querySelector('#voiceName');
+  const q=withEnhanced.w.document.querySelector('#audioQualityHint');
+  assert(q&&q.hidden);
+  select.value='Luciana\u001fpt-BR';
+  select.dispatchEvent(new withEnhanced.w.Event('change'));
+  assert.equal(q.hidden,false);
+  assert(q.textContent.includes('Automática'));
+  select.value='';
+  select.dispatchEvent(new withEnhanced.w.Event('change'));
+  assert.equal(q.hidden,true);
+ }finally{withEnhanced.close();}
+ const win=harness({ios:false,voices:compactOnly});
+ try{assert.equal(win.w.document.querySelector('#audioQualityHint'),null);}finally{win.close();}
+});
+check('Leitura preserva frases inteiras até 360 chars, insere pausas naturais entre parágrafos, limpa símbolos e cancela pausa ao pausar',()=>{
+ const longSentence='A preparação cuidadosa de uma apresentação ajuda quem fala a manter o ritmo calmo, dar ênfase às ideias principais com clareza e responder às necessidades reais de cada pessoa presente na reunião sem tropeçar nas próprias anotações durante todo o discurso do início até a conclusão.';
+ assert(longSentence.length>250&&longSentence.length<350);
+ const speech='Introdução\n\n---\n\n• Primeiro ponto — com pausa natural... Fim.\n\n'+longSentence;
+ const h=harness({speechText:speech,captureAllTimers:true});
+ try{
+  h.api.play();
+  assert.equal(h.utterances.length,1);
+  assert.equal(h.utterances[0].text,'Introdução');
+  h.utterances[0].onend();
+  const p1=h.shortDelays.at(-1);
+  assert(p1&&p1.ms>=250&&!p1.cleared);
+  p1.fn();
+  assert.equal(h.utterances.length,2);
+  assert.equal(h.utterances[1].text,'Primeiro ponto, com pausa natural… Fim.');
+  assert.equal(h.audio.text,speech);
+  h.utterances[1].onend();
+  const p2=h.shortDelays.at(-1);
+  assert(p2&&p2.ms>=250&&!p2.cleared);
+  p2.fn();
+  assert.equal(h.utterances.length,3);
+  assert.equal(h.utterances[2].text,longSentence);
+
+  h.api.stopPreview();
+  h.api.pause();
+  h.audio.offset=0;
+  h.api.play();
+  const countBeforePause=h.utterances.length;
+  h.utterances.at(-1).onend();
+  const pendingPause=h.shortDelays.at(-1);
+  assert(!pendingPause.cleared);
+  h.api.pause();
+  assert.equal(pendingPause.cleared,true);
+  pendingPause.fn();
+  assert.equal(h.utterances.length,countBeforePause);
+ }finally{h.close();}
+});
+check('speakSegment também respeita pausas entre parágrafos e cancelSegment limpa pausa pendente',()=>{
+ const h=harness({captureAllTimers:true});
+ try{
+  let ended=0;
+  const reqId=h.api.speakSegment({text:'Primeira fala.\n\nSegunda fala.',locale:'pt-BR',onEnd:()=>ended++});
+  assert.equal(h.utterances.length,1);
+  assert.equal(h.utterances[0].text,'Primeira fala.');
+  h.utterances[0].onend();
+  const p=h.shortDelays.at(-1);
+  assert(p&&p.ms>=250&&!p.cleared);
+  h.api.cancelSegment(reqId);
+  assert.equal(p.cleared,true);
+  p.fn();
+  assert.equal(h.utterances.length,1);
+  assert.equal(ended,0);
  }finally{h.close();}
 });

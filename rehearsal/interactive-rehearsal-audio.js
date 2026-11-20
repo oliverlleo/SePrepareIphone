@@ -143,11 +143,16 @@ export function createRehearsalAudio({ player, getSettings, t = s => s }) {
   function resolveParticipantVoices(participants = [], speechId = '') {
     const prefs = loadRehearsalPreferences();
     const catalog = listCatalog();
-    const langPrefix = String(catalog.locale || 'pt-BR').split(/[-_]/)[0].toLowerCase();
+    const exactLoc = String(catalog.locale || 'pt-BR').replace(/_/g, '-').toLowerCase();
+    const langPrefix = exactLoc.split('-')[0];
     const localeVoices = catalog.voices.filter(
-      v => String(v.locale || '').split(/[-_]/)[0].toLowerCase() === langPrefix
+      v => String(v.locale || '').replace(/_/g, '-').split('-')[0].toLowerCase() === langPrefix
     );
     const pool = localeVoices.length ? localeVoices : catalog.voices;
+    const exactVoices = pool.filter(
+      v => String(v.locale || '').replace(/_/g, '-').toLowerCase() === exactLoc
+    );
+    const autoPool = exactVoices.length ? exactVoices : pool;
     const allVoices = catalog.allVoices || pool;
     const defaultRate = baseRate();
 
@@ -156,7 +161,7 @@ export function createRehearsalAudio({ player, getSettings, t = s => s }) {
       const key = voiceEntryKey(speechId, p.id);
       const saved = prefs.participantVoices[key] || null;
       const rate = saved ? clampRate(saved.rate, defaultRate) : defaultRate;
-      const autoCandidate = pool.length ? pool[idx % pool.length] : null;
+      const autoCandidate = autoPool.length ? autoPool[idx % autoPool.length] : null;
 
       if (saved && saved.voice) {
         const exact = allVoices.find(
