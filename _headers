@@ -9,3 +9,5 @@
   Cache-Control: no-cache
 /*.wasm
   Content-Type: application/wasm
+/voice/local-v0.2.1/synthesize.mjs
+  Content-Type: text/javascript; charset=utf-8

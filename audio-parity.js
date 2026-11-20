@@ -15,6 +15,7 @@
   function create(options) {
     const o=options, synth=global.speechSynthesis, audio=o.audio;
     const isIOS=/iPhone|iPad|iPod/i.test(global.navigator?.userAgent||'') || (global.navigator?.platform==='MacIntel'&&global.navigator?.maxTouchPoints>1);
+    const localVoice=isIOS ? global.SePrepareLocalVoice?.create() : null;
     const failedVoices=new Set(),failedSystemLocales=new Set();
     const voiceKey=v=>v?(v.voiceURI||v.name+'|'+v.lang):'system-default';
     let missingVoiceHandler=options.onMissingVoice;
@@ -23,6 +24,12 @@
     const t=i => (translations[lang()] || translations.pt)[i];
     const locale=() => normalized(o.getSettings().language);
     const startingLabel=()=>({pt:'Iniciando teste…',en:'Starting test…',es:'Iniciando prueba…',ja:'テストを開始中…'}[lang()]||'Starting test…');
+    const localVoiceDescription={
+      pt:'A voz automática é gerada no aparelho.',
+      en:'The automatic voice is generated on your device.',
+      es:'La voz automática se genera en el dispositivo.',
+      ja:'自動音声は端末で生成されます。'
+    };
     const appleVoiceHelp={
       pt:['Como adicionar vozes','Abra Ajustes → Acessibilidade → Leitura e Fala → Vozes. Em versões anteriores, procure Conteúdo Falado.'],
       en:['How to add voices','Open Settings → Accessibility → Read & Speak → Voices. On earlier versions, look for Spoken Content.'],
@@ -98,9 +105,9 @@
     function settingsHTML() {
       refreshVoices();
       const s=o.getSettings();
-      return '<p class="help">'+escape(t(8))+'</p><div class="stack">'+
+      return '<p class="help">'+escape(localVoice ? localVoiceDescription[lang()] || localVoiceDescription.pt : t(8))+'</p><div class="stack">'+
         '<div class="field"><label for="voiceName">'+escape(t(1))+'</label><select id="voiceName">'+voiceOptions()+'</select>'+
-        '<small>'+escape(candidates.length ? t(18) : t(7))+'</small></div>'+
+        (localVoice ? '' : '<small>'+escape(candidates.length ? t(18) : t(7))+'</small>')+'</div>'+
         '<div class="field"><div class="range-line"><label for="voiceRate">'+escape(t(2))+'</label><output id="voiceRateValue">'+Number(s.rate||1).toFixed(1)+'×</output></div>'+
         '<input type="range" id="voiceRate" min=".5" max="1.8" step=".1" value="'+escape(s.rate||1)+'"></div>'+
         '<div class="field audio-preview-field"><label for="voicePreviewText">'+escape(t(3))+'</label>'+
@@ -311,6 +318,7 @@
     const clearStartupTimer=()=>{if(startupTimer!==null){clearTimeout(startupTimer);startupTimer=null;}};
     function cancelActiveSpeech() {
       clearStartupTimer();
+      localVoice?.stop();
       if(!synth)return;
       try{if(synth.speaking||synth.pending||synth.paused)synth.cancel();}catch(error){console.warn('SePrepare: falha ao limpar fila de voz',error);}
     }
@@ -331,8 +339,8 @@
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(5);
       update();
     }
-    function startUtterance(text, offset, voice, isPreview) {
-      if(!synth||typeof global.SpeechSynthesisUtterance!=='function') {
+    function startUtterance(text, offset, voice, isPreview, useLocal=false) {
+      if(!useLocal&&(!synth||typeof global.SpeechSynthesisUtterance!=='function')) {
         o.toast(t(17));return false;
       }
       // The first speak() must run synchronously in the user's tap gesture on iOS.
@@ -367,10 +375,10 @@
         const retryable=['voice-unavailable','language-unavailable','synthesis-unavailable','synthesis-failed','network','startup-timeout','preview-timeout'].includes(code);
         // A retry from an asynchronous callback loses the user's tap gesture
         // on iOS. Use a different voice only on the next explicit tap.
-        if(isIOS&&retryable) {
+        if(!useLocal&&isIOS&&retryable) {
           if(currentVoice)failedVoices.add(voiceKey(currentVoice));
           else failedSystemLocales.add(preferredLocale.toLowerCase());
-        } else if(retryable && fallback()) {
+        } else if(!useLocal&&retryable && fallback()) {
           currentUtterance=null;
           if(isPreview)previewUtterance=null;else activeUtterance=null;
           cancelActiveSpeech();
@@ -391,7 +399,7 @@
           ja:'iPhoneでこの音声を読み上げられませんでした。別の音声をお試しください。'
         };
         const messageCode=isPreview&&['startup-timeout','preview-timeout'].includes(code)?'synthesis-failed':code;
-        o.toast(isIOS&&retryable&&!isPreview ? retryText[lang()]||retryText.pt : speechErrorMessage(messageCode));
+        o.toast(!useLocal&&isIOS&&retryable&&!isPreview ? retryText[lang()]||retryText.pt : speechErrorMessage(messageCode));
         console.warn('SePrepare: speech synthesis failed',code,{language:preferredLocale,preview:isPreview,voice:currentVoice?.name||'system'});
         update();dispatch();
         if(!isPreview&&['voice-unavailable','language-unavailable'].includes(code))missingVoiceHandler?.();
@@ -413,7 +421,7 @@
           else if(wordsEnd>100)length=wordsEnd+1;
         }
         const chunk=remaining.slice(0,length);
-        const utterance=new global.SpeechSynthesisUtterance(chunk);
+        const utterance=useLocal ? {text:chunk} : new global.SpeechSynthesisUtterance(chunk);
         utterance.lang=currentVoice?.lang||preferredLocale;
         if(currentVoice)utterance.voice=currentVoice;
         utterance.rate=clamp(Number(isPreview?document.getElementById('voiceRate')?.value||o.getSettings().rate||1:o.getSettings().rate||1),.5,1.8);
@@ -460,6 +468,7 @@
         currentUtterance=utterance;
         if(isPreview)previewUtterance=utterance;else activeUtterance=utterance;
         try {
+          if(useLocal){localVoice.play(utterance);return;}
           if(synth.paused&&typeof synth.resume==='function')synth.resume();
           synth.speak(utterance);
           if(!started && isCurrent()) {
@@ -489,10 +498,10 @@
       }
       if(audio.offset>=audio.text.length)audio.offset=0;
       refreshVoices();
-      const v=selectedVoice();
-      // With no enumerated voices, ask iOS to choose its system voice by lang.
+      const useLocal=!!localVoice&&!o.getSettings().voice;
+      const voice=useLocal ? null : selectedVoice();
       audio.state='starting';
-      if(!startUtterance(audio.text,audio.offset,v,false))audio.state='paused';
+      if(!startUtterance(audio.text,audio.offset,voice,false,useLocal))audio.state='paused';
       update();dispatch();
     }
     function pause() {
@@ -507,7 +516,7 @@
       const wasPlaying=audio.state==='playing'||audio.state==='starting';
       const fraction=clamp(Number(value)||0,0,1000)/1000;
       audio.offset=Math.min(audio.text.length-1,Math.round(audio.text.length*fraction));
-      if(wasPlaying){request++;synth?.cancel();audio.state='paused';play();}
+      if(wasPlaying){request++;cancelActiveSpeech();audio.state='paused';play();}
       else {update();dispatch();}
     }
     function preview() {
@@ -518,10 +527,11 @@
       const text=(field?.value||'').trim() || t(19);
       if(field&&!field.value.trim())field.value=text;
       refreshVoices();
-      const voice=selectedVoice(true);
+      const useLocal=!!localVoice&&!document.getElementById('voiceName')?.value;
+      const voice=useLocal ? null : selectedVoice(true);
       previewing=true;
       const label=document.getElementById('audioTestLabel');if(label)label.textContent=startingLabel();
-      if(!startUtterance(text,0,voice,true)){previewing=false;if(label)label.textContent=t(5);}
+      if(!startUtterance(text,0,voice,true,useLocal)){previewing=false;if(label)label.textContent=t(5);}
       update();
     }
     function progressHTML() {

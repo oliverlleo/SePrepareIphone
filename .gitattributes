@@ -5,6 +5,7 @@ rehearsal/voice/*.wasm -text
 rehearsal/voice/*.onnx -text
 voice/**/*.wasm -text
 voice/**/*.onnx -text
+voice/**/*.gz -text
 
 /review-packs/** binary
 /review-runtime/** -text
