@@ -21,19 +21,20 @@ check('Erro de permissão encerra o estado de teste e mostra orientação',()=>{
 check('iPhone sem lista de vozes usa o idioma do sistema',()=>{const h=harness({empty:true});try{h.api.preview();assert.equal(h.utterances.length,1);assert.equal(h.utterances[0].lang,'pt-BR');}finally{h.close();}});
 check('Indisponibilidade do sintetizador restaura o botão e informa erro',()=>{const h=harness({unavailable:true});try{h.api.preview();assert.equal(h.label(),'Testar voz');assert(h.toasts.length);}finally{h.close();}});
 check('Ensaio também recupera fila pausada antes de narrar um trecho',()=>{const h=harness({paused:true});try{let started=false;h.api.speakSegment({text:'Trecho de teste.',locale:'pt-BR',onStart:()=>started=true});assert(started);assert(!h.synth.paused);}finally{h.close();}});
-check('Botões ficam no mesmo grupo, sem duplicação após nova ligação',()=>{const h=harness();try{h.api.bindSettings();const groups=h.w.document.querySelectorAll('.audio-settings-actions');assert.equal(groups.length,1);assert.equal(groups[0].querySelectorAll('button').length,3);}finally{h.close();}});
+check('Botões ficam no mesmo grupo, sem duplicação após nova ligação',()=>{const h=harness();try{h.api.bindSettings();const groups=h.w.document.querySelectorAll('.audio-settings-actions');assert.equal(groups.length,1);assert.equal(groups[0].querySelectorAll('button').length,2);}finally{h.close();}});
 check('Automática usa voz instalada do idioma em vez de depender da resolução do sistema',()=>{
  const h=harness();
  try{h.api.preview();assert.equal(h.utterances[0].voice.voiceURI,'fixture');assert.equal(h.utterances[0].lang,'pt-BR');}finally{h.close();}
 });
-check('Outra voz pode ser testada por um novo toque sem gravar preferência',()=>{
+check('Conclusão permite repetir o teste no mesmo botão, sem gravar preferência',()=>{
  const h=harness();
  try{
   h.api.preview();h.utterances[0].onend();
-  const alternative=h.w.document.getElementById('audioAlternateVoice');
-  assert.equal(alternative.hidden,false);alternative.click();
-  assert.equal(h.utterances.length,2);assert.equal(h.utterances[1].voice,undefined);
-  assert.equal(h.utterances[1].lang,'pt-BR');assert.equal(h.settings.voice,'');
+  assert.equal(h.label(),'Testar voz');
+  assert.deepEqual([...h.w.document.querySelectorAll('.audio-settings-actions button')].map(button=>button.dataset.action),['test-voice','install-voices']);
+  h.api.preview();
+  assert.equal(h.utterances.length,2);assert.equal(h.utterances[1].voice.voiceURI,'fixture');
+  assert.equal(h.settings.voice,'');
  }finally{h.close();}
 });
 check('Teste sem fim, mesmo após iniciar, limpa a fila e libera nova tentativa',()=>{
