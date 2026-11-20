@@ -1,4 +1,5 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';
+import {gunzipSync} from 'node:zlib';
 import {JSDOM} from '../qa/time-dom/node_modules/jsdom/lib/api.js';
 const source=fs.readFileSync(new URL('../audio-parity.js',import.meta.url),'utf8'),checks=[];
 function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false,pending=false,language='pt-BR',localVoice}={}){
@@ -13,6 +14,14 @@ function harness({paused=false,ipad=false,ios=true,empty=false,unavailable=false
  return {w,dom,api,timers,synth,log,utterances,toasts,settings,audio,label:()=>w.document.querySelector('#audioTestLabel').textContent,close:()=>dom.window.close()};
 }
 function check(name,fn){fn();checks.push(name);console.log('PASS '+name);}
+check('Os dados de voz preservam os bytes gzip após checkout',()=>{
+ const folder=new URL('../voice/local-v0.2.1/espeak-ng-data/',import.meta.url);
+ const manifest=JSON.parse(fs.readFileSync(new URL('manifest.json',folder),'utf8'));
+ for(const file of [manifest.core,...['pt','en','es','ja'].map(language=>manifest.dictionaries[language])]){
+  const decoded=gunzipSync(fs.readFileSync(new URL(file.file,folder)));
+  assert.equal(decoded.length,file.size);
+ }
+});
 check('Botão só anuncia teste iniciado após o evento real do sintetizador',()=>{const h=harness({pending:true});try{h.api.preview();assert.equal(h.label(),'Iniciando teste…');h.utterances[0].onstart();assert.equal(h.label(),'Parar teste');h.api.preview();assert.equal(h.label(),'Testar voz');}finally{h.close();}});
 check('Ausência de início encerra a espera e permite tentar novamente',()=>{const h=harness({pending:true});try{h.api.preview();assert(h.timers.length);h.timers.at(-1)();assert.equal(h.label(),'Testar voz');assert(h.toasts.length);h.api.preview();assert.equal(h.utterances.length,2);}finally{h.close();}});
 check('Exceção ao solicitar voz restaura o teste sem travar o botão',()=>{const h=harness();try{h.synth.speak=()=>{throw Error('simulated');};h.api.preview();assert.equal(h.label(),'Testar voz');assert(h.toasts.length);}finally{h.close();}});
