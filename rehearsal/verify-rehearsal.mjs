@@ -393,3 +393,45 @@ check('Host Apple compilado inclui Ensaio interativo 1.0.74 preservando contrato
   assert.equal(withOverride.assignments.get('p1').voice, 'Luciana (Aprimorada)');
   check('Ensaio escolhe automaticamente vozes do idioma/variante exatos e preserva escolha manual do usuário');
 }
+
+// 13. Partner narration -> user turn enables 500 ms echoGuardMs while initial user turn uses 0 ms
+{
+  const listenOpts = [];
+  const fakePlayer = createFakePlayer();
+  const audio = createRehearsalAudio({ player: fakePlayer, getSettings: () => ({ language: 'pt-BR', rate: 1 }) });
+  const fakeVad = {
+    ensureSession: async () => ({ ok: true }),
+    async startListeningTurn(opts) {
+      listenOpts.push(opts);
+      return { started: true };
+    },
+    stopListening() {},
+    release() {}
+  };
+  const speechTwo = newPart();
+  speechTwo.id = 'part-echo-guard';
+  speechTwo.participants = [{ id: 'p1', name: 'João' }, { id: 'p2', name: 'Maria' }];
+  speechTwo.myParticipantId = 'p1';
+  speechTwo.delta = {
+    ops: [
+      { insert: 'Fala inicial do usuário.\n', attributes: { speaker: 'p1' } },
+      { insert: 'Fala do parceiro antes da fala 2.\n', attributes: { speaker: 'p2' } },
+      { insert: 'Fala 2 do usuário.\n', attributes: { speaker: 'p1' } }
+    ]
+  };
+  normalizeVersions(speechTwo);
+  const controller = createRehearsalController({ audio, vad: fakeVad });
+  await controller.start({ speech: speechTwo, mode: 'auto', silenceSeconds: 3 });
+  assert.equal(listenOpts.length, 1);
+  assert.equal(listenOpts[0].echoGuardMs, 0);
+  controller.finishUserTurn();
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(controller.getSnapshot().state, 'narrating');
+  fakePlayer.finishCurrent();
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(listenOpts.length, 2);
+  assert.equal(listenOpts[1].echoGuardMs, 500);
+  assert.equal(controller.getSnapshot().currentTurnIndex, 2);
+  controller.stop();
+  check('Vez do usuário após narração do parceiro ativa proteção contra eco de 500 ms');
+}

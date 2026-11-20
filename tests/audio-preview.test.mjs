@@ -297,30 +297,30 @@ check('Aviso de qualidade da voz aparece apenas no iPhone quando usa voz compact
  const win=harness({ios:false,voices:compactOnly});
  try{assert.equal(win.w.document.querySelector('#audioQualityHint'),null);}finally{win.close();}
 });
-check('Leitura empacota trechos curtos no iPhone em uma única fala, sanitiza símbolos, preserva frases até 250 chars e pausa entre parágrafos no desktop',()=>{
+check('Leitura empacota trechos curtos no iPhone em uma única fala sem quebras de linha, sanitiza símbolos, preserva frases até 185 chars no iPhone e pausa entre parágrafos no desktop',()=>{
  const shortMulti='Introdução\n\n...\n\n•\n\n---\n\n• Primeiro ponto — com <atenção> natural... Fim.';
  const hShort=harness({speechText:shortMulti,captureAllTimers:true});
  try{
   hShort.api.play();
   assert.equal(hShort.utterances.length,1);
-  assert.equal(hShort.utterances[0].text,'Introdução.\n\nPrimeiro ponto, com atenção natural... Fim.');
+  assert.equal(hShort.utterances[0].text,'Introdução. Primeiro ponto, com atenção natural... Fim.');
   assert.equal(hShort.audio.text,shortMulti);
  }finally{hShort.close();}
 
- const longSentence='A preparação cuidadosa de uma apresentação ajuda quem fala a manter o ritmo calmo, dar ênfase às ideias principais com clareza e responder às necessidades reais de cada pessoa presente na reunião sem perder o fio até o fim.';
- assert(longSentence.length>205&&longSentence.length<=250);
- const speech=shortMulti+'\n\n'+longSentence;
+ const iosSentence='A preparação cuidadosa de uma apresentação ajuda quem fala a manter o ritmo calmo e dar ênfase às ideias principais com muita clareza até concluir o raciocínio.';
+ assert(iosSentence.length>150&&iosSentence.length<=185);
+ const speech=shortMulti+'\n\n'+iosSentence;
  const h=harness({speechText:speech,captureAllTimers:true});
  try{
   h.api.play();
   assert.equal(h.utterances.length,1);
-  assert.equal(h.utterances[0].text,'Introdução.\n\nPrimeiro ponto, com atenção natural... Fim.');
+  assert.equal(h.utterances[0].text,'Introdução. Primeiro ponto, com atenção natural... Fim.');
   h.utterances[0].onend();
   const p1=h.shortDelays.at(-1);
   assert(p1&&p1.ms===0&&!p1.cleared);
   p1.fn();
   assert.equal(h.utterances.length,2);
-  assert.equal(h.utterances[1].text,longSentence);
+  assert.equal(h.utterances[1].text,iosSentence);
 
   h.api.stopPreview();
   h.api.pause();
@@ -336,6 +336,15 @@ check('Leitura empacota trechos curtos no iPhone em uma única fala, sanitiza s�
   assert.equal(h.utterances.length,countBeforePause);
  }finally{h.close();}
 
+ const longIosSentence='A preparação cuidadosa de uma apresentação ajuda quem fala a manter o ritmo calmo, dar ênfase às ideias principais com clareza e responder às necessidades reais de cada pessoa presente na reunião sem perder o fio até o fim.';
+ assert(longIosSentence.length>205&&longIosSentence.length<=250);
+ const hSplitIos=harness({speechText:longIosSentence,captureAllTimers:true});
+ try{
+  hSplitIos.api.play();
+  assert.equal(hSplitIos.utterances.length,1);
+  assert(hSplitIos.utterances[0].text.length<185&&hSplitIos.utterances[0].text.endsWith(','));
+ }finally{hSplitIos.close();}
+
  const onlyPunct=harness({speechText:'... \n\n --- \n\n •',captureAllTimers:true});
  try{
   onlyPunct.api.play();
@@ -343,19 +352,21 @@ check('Leitura empacota trechos curtos no iPhone em uma única fala, sanitiza s�
   assert.equal(onlyPunct.audio.state,'finished');
  }finally{onlyPunct.close();}
 
- const win=harness({ios:false,speechText:'Introdução\n\nSegunda parte.',captureAllTimers:true});
+ const win=harness({ios:false,speechText:'Introdução\n\n'+longIosSentence,captureAllTimers:true});
  try{
   win.api.play();
   assert.equal(win.utterances[0].text,'Introdução.');
   win.utterances[0].onend();
   const pWin=win.shortDelays.at(-1);
   assert(pWin&&pWin.ms>=250);
+  pWin.fn();
+  assert.equal(win.utterances[1].text,longIosSentence);
  }finally{win.close();}
 });
 check('iPhone recupera fila travada após troca de bloco sem bloquear voz que já funcionou',()=>{
  const firstPara='Bloco inicial completo com duração suficiente para separar os trechos da leitura.';
  const secondPara='Segundo bloco longo que vem logo em seguida e testa a recuperação automática na troca.';
- const speech=firstPara+'\n\n'+(secondPara+' ').repeat(2).trim();
+ const speech=firstPara+'\n\n'+secondPara;
 
  const recover=harness({pending:true,speechText:speech,captureAllTimers:true});
  try{
@@ -394,19 +405,19 @@ check('iPhone recupera fila travada após troca de bloco sem bloquear voz que j�
   assert.equal(keepVoice.utterances.at(-1).voice.voiceURI,'fixture');
  }finally{keepVoice.close();}
 });
-check('speakSegment empacota falas curtas no iPhone, recupera troca travada, pausa no desktop e cancelSegment limpa timer',()=>{
+check('speakSegment empacota falas curtas no iPhone sem quebras de linha, recupera troca travada, pausa no desktop e cancelSegment limpa timer',()=>{
  const shortSeg=harness({captureAllTimers:true});
  try{
   let ended=0;
   shortSeg.api.speakSegment({text:'Primeira fala\n\nSegunda fala.',locale:'pt-BR',onEnd:()=>ended++});
   assert.equal(shortSeg.utterances.length,1);
-  assert.equal(shortSeg.utterances[0].text,'Primeira fala.\n\nSegunda fala.');
+  assert.equal(shortSeg.utterances[0].text,'Primeira fala. Segunda fala.');
   shortSeg.utterances[0].onend();
   assert.equal(ended,1);
  }finally{shortSeg.close();}
 
  const longTurn='Primeira frase longa o suficiente para completar um trecho antes da mudança de bloco.\n\n'+
-  'Segunda frase também longa para garantir dois blocos separados durante o ensaio interativo. '.repeat(2).trim();
+  'Segunda frase também longa para garantir dois blocos separados durante o ensaio interativo.';
  const h=harness({captureAllTimers:true});
  try{
   let ended=0;
@@ -445,4 +456,125 @@ check('speakSegment empacota falas curtas no iPhone, recupera troca travada, pau
   const pWin=win.shortDelays.at(-1);
   assert(pWin&&pWin.ms>=250);
  }finally{win.close();}
+});
+check('Voz compacta padrão (super-compact default) vence compacta secundária e perde para voz Aprimorada',()=>{
+ const voices=[
+  {name:'Felipe',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.compact.pt-BR.Felipe'},
+  {name:'Luciana',lang:'pt-BR',localService:true,default:true,voiceURI:'com.apple.voice.super-compact.pt-BR.Luciana'}
+ ];
+ const hCompact=harness({voices,language:'pt-BR'});
+ try{
+  hCompact.api.play();
+  assert.equal(hCompact.utterances[0].voice.name,'Luciana');
+ }finally{hCompact.close();}
+
+ const hEnhanced=harness({voices:[...voices,{name:'Felipe (Aprimorado)',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.voice.enhanced.pt-BR.Felipe'}],language:'pt-BR'});
+ try{
+  hEnhanced.api.play();
+  assert.equal(hEnhanced.utterances[0].voice.name,'Felipe (Aprimorado)');
+ }finally{hEnhanced.close();}
+});
+check('speakSegment ignora onend de utterance cancelada durante recuperação e não pula o turno',()=>{
+ const h=harness({pending:true,captureAllTimers:true});
+ try{
+  let ended=0,errors=0;
+  h.synth.cancel=function(){
+   h.log.push('cancel');
+   const u=h.utterances.at(-1);
+   this.speaking=false;this.pending=false;
+   u?.onend?.();
+  };
+  h.api.speakSegment({text:'Fala com recuperação segura.',locale:'pt-BR',onEnd:()=>ended++,onError:()=>errors++});
+  assert.equal(h.utterances.length,1);
+  h.shortDelays.filter(d=>d.ms===2200).at(-1).fn();
+  assert.equal(ended,0,'Não deve concluir o turno quando synth.cancel dispara onend na utterance descartada');
+  h.shortDelays.filter(d=>d.ms===100).at(-1).fn();
+  assert.equal(h.utterances.length,2);
+  h.utterances[1].onstart();
+  h.utterances[1].onend();
+  assert.equal(ended,1);
+  assert.equal(errors,0);
+ }finally{h.close();}
+});
+check('Chunk 0 no iOS tenta fallback seguro para system-default e nunca bane a única voz pt-BR para pt-PT',()=>{
+ const voices=[
+  {name:'Eddy',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.eloquence.pt-BR.Eddy'},
+  {name:'Siri Voz 1',lang:'pt-BR',localService:true,default:false,voiceURI:'com.apple.ttsbundle.siri_pt-BR_1'},
+  {name:'Luciana',lang:'pt-BR',localService:true,default:true,voiceURI:'com.apple.voice.compact.pt-BR.Luciana'},
+  {name:'Joana',lang:'pt-PT',localService:true,default:false,voiceURI:'com.apple.voice.compact.pt-PT.Joana'}
+ ];
+ const hFallback=harness({pending:true,voices,language:'pt-BR',captureAllTimers:true});
+ try{
+  let ended=0,errors=0;
+  hFallback.api.speakSegment({text:'Primeira fala.',locale:'pt-BR',onEnd:()=>ended++,onError:()=>errors++});
+  assert.equal(hFallback.utterances[0].voice.name,'Luciana');
+  hFallback.shortDelays.filter(d=>d.ms===2200).at(-1).fn();
+  hFallback.shortDelays.filter(d=>d.ms===100).at(-1).fn();
+  assert.equal(hFallback.utterances.length,2);
+  assert.equal(hFallback.utterances[1].voice,undefined);
+  assert.equal(hFallback.utterances[1].lang,'pt-BR');
+  hFallback.utterances[1].onstart();
+  hFallback.utterances[1].onend();
+  assert.equal(ended,1);
+  assert.equal(errors,0);
+ }finally{hFallback.close();}
+
+ const hNoBlacklist=harness({pending:true,voices,language:'pt-BR',captureAllTimers:true});
+ try{
+  const errs=[];
+  hNoBlacklist.api.speakSegment({text:'Falha total transitória.',locale:'pt-BR',onError:e=>errs.push(e.code)});
+  hNoBlacklist.shortDelays.filter(d=>d.ms===2200).at(-1).fn();
+  hNoBlacklist.shortDelays.filter(d=>d.ms===100).at(-1).fn();
+  hNoBlacklist.timers.at(-1)();
+  assert.deepEqual(errs,['startup-timeout']);
+  hNoBlacklist.api.speakSegment({text:'Nova tentativa.',locale:'pt-BR'});
+  assert.equal(hNoBlacklist.utterances.at(-1).voice.name,'Luciana');
+  assert.notEqual(hNoBlacklist.utterances.at(-1).voice?.name,'Joana');
+ }finally{hNoBlacklist.close();}
+});
+check('Transição encadeada Fala 1 -> Fala 2 dentro de onEnd no iOS evita cancel() e aguarda pausa limpa de 60 ms',()=>{
+ const h=harness({captureAllTimers:true});
+ try{
+  let turn2Ended=0;
+  h.api.speakSegment({
+   text:'Fala um do parceiro.',
+   locale:'pt-BR',
+   onEnd:()=>{
+    h.api.speakSegment({text:'Fala dois do parceiro.',locale:'pt-BR',onEnd:()=>turn2Ended++});
+   }
+  });
+  assert.equal(h.utterances.length,1);
+  h.log.length=0;
+  h.utterances[0].onend();
+  assert.equal(h.log.includes('cancel'),false);
+  assert.equal(h.utterances.length,1);
+  const pause60=h.shortDelays.filter(d=>d.ms===60).at(-1);
+  assert(pause60&&!pause60.cleared);
+  pause60.fn();
+  assert.equal(h.utterances.length,2);
+  assert.equal(h.utterances[1].text,'Fala dois do parceiro.');
+  h.utterances[1].onend();
+  assert.equal(turn2Ended,1);
+ }finally{h.close();}
+});
+check('startUtterance ignora onerror(canceled) ao recuperar chunk travado no iOS',()=>{
+ const h=harness({pending:true,captureAllTimers:true,speechText:'Leitura que recupera sem abortar.'});
+ try{
+  h.synth.cancel=function(){
+   h.log.push('cancel');
+   const u=h.utterances.at(-1);
+   this.speaking=false;this.pending=false;
+   u?.onerror?.({error:'canceled'});
+  };
+  h.api.play();
+  assert.equal(h.utterances.length,1);
+  h.shortDelays.filter(d=>d.ms===2200).at(-1).fn();
+  assert.equal(h.toasts.length,0);
+  h.shortDelays.filter(d=>d.ms===100).at(-1).fn();
+  assert.equal(h.utterances.length,2);
+  h.utterances[1].onstart();
+  h.utterances[1].onend();
+  assert.equal(h.audio.state,'finished');
+  assert.equal(h.toasts.length,0);
+ }finally{h.close();}
 });
