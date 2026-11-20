@@ -1,3 +1,4 @@
+import {shareUxText as ux} from './share-ux-i18n.js';
 import {withChangeOrigin} from '../protection/change-origin.js';
 import {t as translateUI,tr as formatUI,h as markupUI,html as htmlUI,uiLocale,setLanguage,normalizeLanguage,systemMessage} from '../localization/shared.js';
 import {encodeShareCode,decodeShareMessage,MAX_SHARED_MESSAGE_LENGTH} from './share-code.js';
@@ -8,14 +9,17 @@ import {clone,newSpeech,validState,copyDocumentVersions,uid,isPart,plain,words} 
 export function createShareCodeUI(c){
  const {$,rt,btn,option,esc,closeModal,toast}=c;
  const openModal=(...args)=>{c.openModal(...args);$('.modal')?.classList.add('share-code-dialog');};
- let generated='',message='',source=null,received=null,generation=0,previewId='',identities={},selectedVersionIds=[];
+ let generated='',message='',source=null,received=null,generation=0,previewId='',identities={},selectedVersionIds=[],versionSelection=[];
  const errorText=error=>systemMessage(error?.message)||translateUI('Não foi possível concluir. Tente novamente.');
  const sameCategory=(a,b)=>a&&b&&a.name===b.name&&a.icon===b.icon&&a.color.toLowerCase()===b.color.toLowerCase();
- function addShareOption(){
-  const list=$('.sheet-options'),speech=c.getState().speeches.find(item=>item.id===rt.shareSpeechId);if(!list||!speech)return;
-  const item=document.createElement('div');item.innerHTML=option('share-code','Copy',translateUI('Gerar código'),translateUI('Escolha as versões e envie com instruções para importar no Android, iPhone ou web.'));list.append(item.firstElementChild);
-  const notice=list.previousElementSibling;if(notice?.classList.contains('notice'))notice.innerHTML=markupUI`Texto e arquivo: versão <strong>${esc(speech.versions.find(version=>version.id===speech.activeVersionId)?.name||translateUI('Versão original'))}</strong>.`;
+ function openShare(){versionSelection=[];rt.shareVersions=false;renderShareMenu();}
+ function renderShareMenu(){
+  const speech=c.getState().speeches.find(item=>item.id===rt.shareSpeechId&&!item.deleted);if(!speech)return;
+  const ids=chosenIds(speech),version=speech.versions.find(item=>item.id===ids[0]),summary=ids.length===1?ux('version')+': '+(version?.name||''):ids.length+' '+ux('selected');
+  openModal(ux('title'),markupUI`<p class="share-preparation-title">${esc(speech.title)}</p><p class="notice share-version-summary">${esc(summary)}</p><div class="sheet-options share-destinations">${option('share-code','Smartphone',ux('iphone'),ux('iphoneDetail'))}${option('share-file','FileDown',ux('file'),ux('fileDetail'))}${option('share-text','MessageCircle',ux('message'),ux('messageDetail'))}</div>${speech.versions.length>1?btn('share-versions',ux('versions'),'Layers','secondary share-versions-link'):''}`);
+  $('.modal')?.classList.add('share-destination-dialog');rt.modal='share';
  }
+ function addShareOption(){openShare();}
  function openImport(){
   openModal(translateUI('Importar compartilhamento'),markupUI`<p class="help">Recebeu uma preparação? Escolha como deseja abrir.</p><div class="sheet-options">${option('import-file','FileUp',translateUI('Usar arquivo'),translateUI('Abra um arquivo, texto ou backup, como antes.'))}${option('import-code','Copy',translateUI('Usar código'),translateUI('Cole o código recebido pelo WhatsApp ou outro aplicativo.'))}</div>`);rt.modal='import-choice';
  }
@@ -33,21 +37,23 @@ export function createShareCodeUI(c){
    field.value=text;field.dispatchEvent(new Event('input',{bubbles:true}));
   }catch(error){field.focus();toast(error?.message?.includes('grande')?error.message:translateUI('Toque e segure no campo e escolha Colar.'));}
  }
- function chosenIds(speech){return rt.shareVersions?[...document.querySelectorAll('input[name="shareVersion"]:checked')].map(input=>input.value):[speech.activeVersionId];}
+ function chosenIds(speech){return rt.shareVersions?[...versionSelection]:[speech.activeVersionId];}
  function versionChoices(speech,name,ids){return speech.versions.map(version=>markupUI`<label class="sheet-option version-choice share-version-choice ${ids.includes(version.id)?'selected':''}"><input type="checkbox" name="${name}" value="${esc(version.id)}" ${ids.includes(version.id)?'checked':''}><span><strong>${esc(version.name)}</strong><small>${version.id===speech.activeVersionId?translateUI('Versão ativa · '):''}${words(plain(version.id===speech.activeVersionId?speech.delta:version.delta))} palavras</small></span></label>`).join('');}
  function chooseVersions(){
-  c.syncCurrent();const speech=c.getState().speeches.find(item=>item.id===rt.shareSpeechId&&!item.deleted);if(!speech)return;rt.shareVersions=true;
-  openModal(translateUI('Compartilhar versões'),markupUI`<p class="help">Marque só as versões de <strong>${esc(speech.title)}</strong> que deseja enviar. Depois escolha texto, arquivo ou código.</p><div class="sheet-options">${versionChoices(speech,'shareVersion',[speech.activeVersionId])}</div><p class="notice" id="shareVersionCount" style="margin-top:15px"></p>`,btn('share-text',translateUI('Texto'),'FileText','secondary share-format-action')+btn('share-file',translateUI('Arquivo'),'BookOpen','secondary share-format-action')+btn('share-code',translateUI('Código'),'Copy','share-format-action'));rt.modal='share';
-  const update=()=>{const count=document.querySelectorAll('input[name="shareVersion"]:checked').length;$('#shareVersionCount').textContent=count===1?translateUI('1 versão selecionada'):formatUI`${count} versões selecionadas`;document.querySelectorAll('.modal-footer button').forEach(button=>button.disabled=!count);document.querySelectorAll('input[name="shareVersion"]').forEach(input=>input.closest('label').classList.toggle('selected',input.checked));};
+  c.syncCurrent();const speech=c.getState().speeches.find(item=>item.id===rt.shareSpeechId&&!item.deleted);if(!speech)return;
+  openModal(ux('versions'),markupUI`<p class="share-preparation-title">${esc(speech.title)}</p><div class="sheet-options">${versionChoices(speech,'shareVersion',chosenIds(speech))}</div><p class="notice" id="shareVersionCount"></p>`,btn('share-menu',ux('back'),'','secondary')+btn('share-confirm-versions',ux('continue'),'ArrowRight'));rt.modal='share';
+  const update=()=>{const count=document.querySelectorAll('input[name="shareVersion"]:checked').length;$('#shareVersionCount').textContent=count===1?translateUI('1 versão selecionada'):count+' '+ux('selected');$('[data-action="share-confirm-versions"]').disabled=!count;document.querySelectorAll('input[name="shareVersion"]').forEach(input=>input.closest('label').classList.toggle('selected',input.checked));};
   document.querySelectorAll('input[name="shareVersion"]').forEach(input=>input.addEventListener('change',update));update();
  }
+ function confirmVersions(){const ids=[...document.querySelectorAll('input[name="shareVersion"]:checked')].map(input=>input.value);if(!ids.length)return;versionSelection=ids;rt.shareVersions=true;renderShareMenu();}
  function generate(){
   c.syncCurrent();const speech=c.getState().speeches.find(item=>item.id===rt.shareSpeechId&&!item.deleted);if(!speech)return;
   selectedVersionIds=chosenIds(speech);if(!selectedVersionIds.length){toast(translateUI('Selecione pelo menos uma versão.'));return;}
   source=clone(speech);generated='';message='';const notes=source.versions.some(version=>version.presenterNotes?.length);
-  openModal(translateUI('Código de compartilhamento'),markupUI`<p class="help">${esc(source.title)}</p>${source.versions.length>1?markupUI`<div class="field"><label>Versões para enviar</label><div class="sheet-options share-code-versions">${versionChoices(source,'codeVersion',selectedVersionIds)}</div></div>`:''}<div class="row wrap"><span class="badge" id="codeVersionSummary"></span><span class="badge" id="codeActiveName"></span></div><p class="notice share-code-description">Leva só as versões marcadas, com texto, formatação, participantes, categoria e ajustes de leitura. Inclui agendamento e fixação. Conta Google, ensaios e histórico pessoal ficam no seu aparelho.</p>${notes?htmlUI('<label class="check-label share-code-notes"><input type="checkbox" id="includeCodeNotes">Incluir minhas anotações privadas</label>'):''}<div class="field"><label for="generatedShareCode">Mensagem com código</label><textarea id="generatedShareCode" class="share-code-text" rows="5" readonly spellcheck="false" aria-describedby="shareCodeSize"></textarea><small id="shareCodeSize" role="status">Preparando mensagem…</small></div><p class="notice">A mensagem já inclui instruções para importar e o <a href="${APP_DOWNLOAD_URL}" target="_blank" rel="noopener">link para baixar ou acessar o SePrepare</a>. Quem receber pode copiar tudo e colar no aplicativo.</p>`,btn('copy-share-code',translateUI('Copiar mensagem'),'Copy','','disabled')+btn('send-share-code',translateUI('Compartilhar'),'Share2','secondary','disabled'));
+  openModal(ux('iphone'),markupUI`<p class="share-preparation-title">${esc(source.title)}</p><div class="row wrap"><span class="badge" id="codeVersionSummary"></span><span class="badge" id="codeActiveName"></span></div>${notes?markupUI`<label class="check-label share-code-notes"><input type="checkbox" id="includeCodeNotes"><span>${esc(ux('codeNotes'))}</span></label>`:''}<div class="field"><label for="generatedShareCode">${esc(ux('codeField'))}</label><textarea id="generatedShareCode" class="share-code-text" rows="3" readonly spellcheck="false" aria-describedby="shareCodeSize"></textarea><small id="shareCodeSize" role="status">${translateUI('Preparando mensagem…')}</small></div><p class="notice">${esc(ux('privacy'))}</p><details class="share-content-details"><summary>${esc(ux('contents'))}</summary><p>${esc(ux('details'))}</p></details>`,btn('copy-share-code',ux('copy'),'Copy','','disabled')+btn('send-share-code',ux('send'),'Share2','secondary','disabled'));
+  $('.modal')?.classList.add('share-send-dialog');
   rt.modal='share-code';$('#includeCodeNotes')?.addEventListener('change',refreshCode);
-  document.querySelectorAll('input[name="codeVersion"]').forEach(input=>input.addEventListener('change',()=>{selectedVersionIds=[...document.querySelectorAll('input[name="codeVersion"]:checked')].map(item=>item.value);document.querySelectorAll('input[name="codeVersion"]').forEach(item=>item.closest('label').classList.toggle('selected',item.checked));refreshCode();}));refreshCode();
+  refreshCode();
  }
  function refreshCode(){
   const token=++generation,field=$('#generatedShareCode'),label=$('#shareCodeSize'),includeNotes=$('#includeCodeNotes')?.checked===true,ids=[...selectedVersionIds];
@@ -59,7 +65,7 @@ export function createShareCodeUI(c){
    if(token!==generation||!field.isConnected)return;
    try{
     const category=c.getState().categories.find(item=>item.id===source.categoryId);generated=encodeShareCode(source,{category,includeNotes,versionIds:ids});message=codeShareMessage(source,generated,selected.length);field.value=message;
-    label.textContent=message.length.toLocaleString(uiLocale())+' '+translateUI('caracteres')+' · '+(message.length>60000?translateUI('Mensagem extensa: copie inteira ou prefira enviar como arquivo.'):translateUI('Código, instruções e link prontos para enviar.'));
+    label.textContent=ux(message.length>60000?'long':'ready');
     $('[data-action="copy-share-code"]').disabled=false;$('[data-action="send-share-code"]').disabled=message.length>60000;
    }catch(error){label.textContent=errorText(error);}
   },0);
@@ -68,7 +74,7 @@ export function createShareCodeUI(c){
   if(!message||!$('#generatedShareCode'))return;
   try{
    if(c.native?.copy)c.native.copy(message,'');else if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(message);else throw Error('clipboard');
-   toast(translateUI('Mensagem copiada com código, instruções e link do SePrepare.'));
+   toast(ux('copied'));
   }catch{
    const field=$('#generatedShareCode');if(!field)return;field.focus();field.select();field.setSelectionRange(0,field.value.length);
    toast(document.execCommand?.('copy')?translateUI('Mensagem copiada.'):translateUI('Mensagem selecionada. Toque em Copiar.'));
@@ -77,7 +83,7 @@ export function createShareCodeUI(c){
  async function send(){
   if(!message||message.length>60000)return;
   try{if(c.native?.shareText)c.native.shareText(source.title,message);else if(navigator.share)await navigator.share({title:source.title,text:message});else await copy();}
-  catch(error){if(error.name!=='AbortError')toast(translateUI('Não foi possível compartilhar. Use Copiar mensagem.'));}
+  catch(error){if(error.name!=='AbortError')toast(ux('sendError'));}
  }
  async function copyFileMessage(){
   const field=$('#sharedFileMessage');if(!field)return;
@@ -94,7 +100,7 @@ export function createShareCodeUI(c){
     const file=new File([json],name,{type:SPEECH_MIME});
     if(navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({title:speech.title,text,files:[file]});closeModal();return;}
     if(c.native?.shareSpeechFile)c.native.shareSpeechFile(name,json);else c.exportFile(name,SPEECH_MIME,json);
-    openModal(translateUI('Arquivo pronto para enviar'),markupUI`<p class="help">Envie o arquivo <strong>${esc(name)}</strong> junto com esta mensagem. Ela explica como importar e onde encontrar o SePrepare.</p><div class="field"><label for="sharedFileMessage">Mensagem para acompanhar o arquivo</label><textarea id="sharedFileMessage" rows="5" readonly>${esc(text)}</textarea></div>`,btn('copy-file-share-message',translateUI('Copiar mensagem'),'Copy')+btn('close-modal',translateUI('Concluir'),'Check','secondary'));rt.modal='share-file-message';
+    openModal(ux('fileReady'),markupUI`<p class="help">${esc(ux('fileHelp'))}</p><div class="field"><label for="sharedFileMessage">Mensagem para acompanhar o arquivo</label><textarea id="sharedFileMessage" rows="5" readonly>${esc(text)}</textarea></div>`,btn('copy-file-share-message',translateUI('Copiar mensagem'),'Copy')+btn('close-modal',translateUI('Concluir'),'Check','secondary'));rt.modal='share-file-message';
    }else{
     const text=textShareMessage(speech,ids);if(text.length>100000)throw Error(translateUI('O texto selecionado é muito longo para mensagem. Compartilhe como arquivo.'));
     if(c.native?.shareText){c.native.shareText(speech.title,text);closeModal();return;}
@@ -121,24 +127,30 @@ export function createShareCodeUI(c){
   const render=()=>{$('#codePreviewDocument').innerHTML=c.documentHTML(speech,select?.value||'');c.refreshContrast();};
   select?.addEventListener('change',()=>{identities[previewId]=select.value;render();});render();
  }
- function save(){
-  if(!received||rt.incomingSpeech?.source!=='code')return;const state=c.getState();
+ async function save(){
+  if(!received||rt.incomingSpeech?.source!=='code'||rt.importingSharedCode)return;const state=c.getState();
   if(state.speeches.length>=2000){toast(translateUI('Seu caderno atingiu o limite de preparações.'));return;}
   const selected=$('#codeIncomingCategory')?.value||'',category=selected==='__received_category__'?received.category:null;
   if(category&&state.categories.length>=300){toast(translateUI('Escolha uma categoria existente. O limite é de 300 categorias.'));return;}
   const createdCategory=category?{id:uid(),...clone(category)}:null,categoryId=createdCategory?.id||(state.categories.some(item=>item.id===selected)?selected:'');
+  let speech=null,adoption=null,staged=false,committed=false,release=()=>{};const button=$('[data-action="save-share-code"]');
+  rt.importingSharedCode=true;if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
   try{
-   const adoption=c.rhythms?.receive(received.speech,'codeIncomingRhythms');
-   const speech={...newSpeech(categoryId),...(adoption?.content||clone(received.speech))};validState({schema:1,speeches:[speech],categories:[]});
+   release=c.lockImport?.()||release;
+   adoption=c.rhythms?.receive(received.speech,'codeIncomingRhythms');
+   speech={...newSpeech(categoryId),...(adoption?.content||clone(received.speech))};validState({schema:1,speeches:[speech],categories:[]});
    for(const version of speech.versions){version.createdAt=speech.createdAt;version.updatedAt=speech.updatedAt;if(isPart(speech))version.myParticipantId=version.participants.some(person=>person.id===identities[version.id])?identities[version.id]:'';}
    if($('#codeKeepSchedule')&&!$('#codeKeepSchedule').checked){speech.scheduledAt=0;speech.reminders=[];}
-   copyDocumentVersions(speech);if(createdCategory)state.categories.push(createdCategory);state.speeches.unshift(speech);
-   if(c.withChangeOrigin('shared-import',()=>persist(true))===false){adoption?.rollback();state.speeches=state.speeches.filter(item=>item.id!==speech.id);if(createdCategory)state.categories=state.categories.filter(item=>item.id!==createdCategory.id);return;}
-   c.onImported?.(speech);received=null;closeModal();rt.returnTo='home';c.go('reader',speech.id);toast(isPart(speech)?translateUI('Parte importada com todas as versões.'):translateUI('Discurso importado com todas as versões.'));
-  }catch(error){toast(errorText(error));}
+   copyDocumentVersions(speech);if(createdCategory)state.categories.push(createdCategory);state.speeches.unshift(speech);staged=true;
+   if(await withChangeOrigin('shared-import',()=>c.persist(true))===false||c.flush&&!await c.flush())throw Error(ux('receiveError'));
+   committed=true;rt.importingSharedCode=false;c.onSharedSaved?.();c.onImported?.(speech);received=null;closeModal();rt.returnTo='home';await c.go('reader',speech.id);toast(isPart(speech)?translateUI('Parte importada com todas as versões.'):translateUI('Discurso importado com todas as versões.'));
+  }catch(error){
+   if(!committed){adoption?.rollback();if(staged){state.speeches=state.speeches.filter(item=>item.id!==speech.id);if(createdCategory)state.categories=state.categories.filter(item=>item.id!==createdCategory.id);try{await withChangeOrigin('shared-import',()=>c.persist(true));if(c.flush)await c.flush();}catch{}}}
+   toast(errorText(error));
+  }finally{rt.importingSharedCode=false;release();if(button?.isConnected){button.disabled=false;button.removeAttribute('aria-busy');}}
  }
  function handle(action){
-  switch(action){case 'share-versions':chooseVersions();break;case 'share-text':void sendPreparation(false);break;case 'share-file':void sendPreparation(true);break;case 'copy-file-share-message':void copyFileMessage();break;case 'import-code':openInput();break;case 'import-file':closeModal();c.importFile();break;case 'paste-share-code':void paste();break;case 'preview-share-code':preview();break;case 'share-code':generate();break;case 'copy-share-code':void copy();break;case 'send-share-code':void send();break;case 'save-share-code':save();break;default:return false;}return true;
+  switch(action){case 'share-menu':renderShareMenu();break;case 'share-confirm-versions':confirmVersions();break;case 'share-versions':chooseVersions();break;case 'share-text':void sendPreparation(false);break;case 'share-file':void sendPreparation(true);break;case 'copy-file-share-message':void copyFileMessage();break;case 'import-code':openInput();break;case 'import-file':closeModal();c.importFile();break;case 'paste-share-code':void paste();break;case 'preview-share-code':preview();break;case 'share-code':generate();break;case 'copy-share-code':void copy();break;case 'send-share-code':void send();break;case 'save-share-code':save();break;default:return false;}return true;
  }
- return {openImport,addShareOption,handle};
+ return {openImport,openShare,addShareOption,handle};
 }

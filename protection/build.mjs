@@ -5,7 +5,7 @@ import {build} from '../sharing/node_modules/esbuild/lib/main.js';
 import {parse} from '../sharing/node_modules/acorn/dist/acorn.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,'..');
 const marker=(name,text)=>`/* SEPREPARE PROTECTION ${name} START */${text}/* SEPREPARE PROTECTION ${name} END */`;
-let source=readFileSync(path.join(root,'app.js'),'utf8').replace(/\/\* SEPREPARE PROTECTION ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE PROTECTION \1 END \*\//g,'');
+let source=readFileSync(path.join(root,'app.js'),'utf8').replace(/\/\* SEPREPARE PARITY ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE PARITY \1 END \*\//g,'').replace(/\/\* SEPREPARE PROTECTION ([A-Z]+) START \*\/[\s\S]*?\/\* SEPREPARE PROTECTION \1 END \*\//g,'');
 const nodes=[],ast=parse(source,{ecmaVersion:'latest'});
 const bundleRanges=[...source.matchAll(/\/\* SEPREPARE [A-Z]+ (BUNDLE|CODEC) START \*\/[\s\S]*?\/\* SEPREPARE [A-Z]+ \1 END \*\//g)].map(m=>[m.index,m.index+m[0].length]);
 function walk(node){if(!node||typeof node!=='object'||node.type&&bundleRanges.some(([a,b])=>node.start>=a&&node.end<=b))return;if(node.type)nodes.push(node);for(const value of Object.values(node)){if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')walk(value);}}
@@ -20,15 +20,15 @@ const checkpoint=fn('Dr'),checkpointText=source.slice(checkpoint.start,checkpoin
 const pruneCurrent=source.slice(syncCurrent.start,syncCurrent.end);if(!pruneCurrent.includes('pruneRedundantCheckpoints')){
  const existing=edits.find(e=>e.start===syncCurrent.start);const text=existing?existing.text:pruneCurrent;const changed=text.replace('nt(t))','window.SePrepareDriveProtection.pruneRedundantCheckpoints(t),nt(t))');if(existing)existing.text=changed;else edit(syncCurrent.start,syncCurrent.end,changed);
 }
-const importer=fn('QM'),importText=source.slice(importer.start,importer.end);if(!importText.includes('mergeImportedMetadata')){
- let changed=importText.replace('let r=0;for','let spIds=new Map;let r=0;for').replace('for(let a of t.speeches){','for(let a of t.speeches){spIds.set(a.id,a.id);').replace('o&&(s.id=vt()),s.categoryId','o&&(s.id=vt()),spIds.set(a.id,s.id),s.categoryId').replace('B.vocabulary=','window.SePrepareDriveProtection.mergeImportedMetadata(B,t,spIds,e,vt);B.vocabulary=');edit(importer.start,importer.end,changed);
-}
+const importer=fn('QM');
+edit(importer.start,importer.end,`function QM(){const dialog=L(".modal");return window.SePrepareDriveProtection.importFileBackup({rt:d,isCurrent:()=>L(".modal")===dialog,getState:()=>B,setState:next=>{B=next;},persist:()=>le(true),flush:()=>Yt.flushPendingSaves(),prepare:next=>spPerfLedger.prepare(next,'manual-restore'),save:raw=>{if(fe)return fe.saveState(raw);try{localStorage.setItem('orador-state-v1',raw);}catch{}return Yt.saveState(raw);},commit:raw=>{spPerfLedger.commit(B);try{sI?.driveLocalSaved?.('manual-restore',raw);}catch{}},lock:window.SePrepareDriveProtection.lockFileImport,done:added=>{he();d.view='home';d.speechId=null;d.q=null;fr();ae(SPLocale.tr\`\${added} discursos importados.\`);},fail:message=>ae(SPLocale.t(message))});}`);
 const bridge=fn('Bb');edit(bridge.start,bridge.end,'function Bb({getState:t}){return window.SePrepareDriveProtection.createBridge({getState:t,canWrite:()=>!!window.orador&&!yo&&!e0&&Yt.isAllowedIPhone()});}');
 const ui=fn('Mm');edit(ui.start,ui.end,'function Mm(config){return window.SePrepareDriveProtection.createUI(config);}');
 const save=only(nodes.filter(node=>node.type==='FunctionDeclaration'&&node.id.name==='le'&&source.slice(node.start,node.end).includes('Yt.saveState')),'gravação iPhone');
+edit(save.body.start+1,save.body.start+1,marker('IMPORTLOCK','if(d.fileImportCommit)return false;'));
 const returns=save.body.body.filter(node=>node.type==='ReturnStatement');const result=only(returns.filter(node=>source.slice(node.start,node.end).endsWith(',r')),'resultado da gravação');
 // Observe after the existing local-save result; do not wait on the network.
-edit(result.argument.end,result.argument.end,marker('SAVED',',r&&(spPerfLedger.commit(B),sI?.driveLocalSaved?.(window.SePrepareDriveProtection.currentChangeOrigin(),e)),r'));
+edit(result.argument.end,result.argument.end,marker('SAVED',',r&&spPerfLedger.commit(B),window.SePrepareParityRuntime?window.SePrepareParityRuntime.observeSave(e,r,window.SePrepareDriveProtection.currentChangeOrigin()):r&&sI?.driveLocalSaved?.(window.SePrepareDriveProtection.currentChangeOrigin(),e),r'));
 const ledgerBridge=only(nodes.filter(n=>n.type==='VariableDeclaration'&&n.declarations.some(d=>d.id?.name==='SPShareCodes')),'índice de exclusões');
 edit(ledgerBridge.start,ledgerBridge.start,marker('LEDGER','var spPerfLedger=window.SePrepareDriveProtection.createDeletionLedger(B,()=>JSON.parse(sI?.driveBackupIndex?.()||"{}"));'));
 const stateJSON=only(nodes.filter(n=>n.type==='VariableDeclaration'&&n.start>save.start&&n.end<save.end&&source.slice(n.start,n.end).includes('JSON.stringify(B)')),'snapshot do caderno');
@@ -37,7 +37,7 @@ const render=only(nodes.filter(node=>node.type==='FunctionDeclaration'&&node.id.
 edit(render.body.end-1,render.body.end-1,marker('CARDS',';void Ml?.refreshCards?.();'));
 const card=fn('fM'),cardText=source.slice(card.start,card.end);
 if(!cardText.includes('Ml.cardIndicator(t)')){const token='${bn(t)}';const at=source.indexOf(token,card.start);if(at<0||at>=card.end)throw Error('Linha de tipo do card ausente.');edit(at,at+token.length,'<div class="drive-card-type-row">${bn(t)}${Ml.cardIndicator(t)}</div>');}
-const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.73"');
+const version=only(nodes.filter(node=>node.type==='VariableDeclarator'&&node.id.name==='Xb'),'versão');edit(version.init.start,version.init.end,'"1.0.101"');
 const guide=only(nodes.filter(node=>node.type==='ObjectExpression'&&node.properties.some(property=>property.key?.name==='id'&&property.value?.value==='backup')),'guia de backup');
 edit(guide.start,guide.end,readFileSync(path.join(here,'backup-guide.txt'),'utf8').trim());
 const heading='<section class="setting-card"><h3>${te("ShieldCheck")}Seu caderno fica com voc\\xEA</h3>';

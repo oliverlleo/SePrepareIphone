@@ -8,3 +8,6 @@ export const h=(strings,...values)=>locale()?.h(strings,...values)??interpolate(
 export const html=value=>locale()?.html(value)??value;
 export const uiLocale=()=>locale()?.uiLocale()??'pt-BR';
 export const systemMessage=value=>locale()?.systemMessage(value)??value;
+
+export const setLanguage=value=>locale()?.setLanguage(value);
+export const normalizeLanguage=value=>["pt-BR","en","es","ja"].includes(value)?value:"pt-BR";

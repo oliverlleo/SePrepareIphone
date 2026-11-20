@@ -36,3 +36,7 @@ review/
 inspect-idempotence.mjs
 
 recordings/
+
+parity/
+typing/
+qa-output/
