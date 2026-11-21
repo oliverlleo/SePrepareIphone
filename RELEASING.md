@@ -1,3 +1,7 @@
+# Editor expandido — shell 20261121.1
+
+Cabeçalho recolhido durante a edição expandida e segunda barra com nomes completos, sem quebra de palavras. A barra permite deslizar quando faltar espaço. Salvamento e gesto existente para mostrar o cabeçalho preservados. Fontes, testes e limites em [EDITOR-EXPANDIDO-20261121.md](EDITOR-EXPANDIDO-20261121.md).
+
 # Atualização 1.0.101
 
 Shell `20261120.3`. A Agenda mantém data e horário com opções de salvar, remover e exportar ao Calendário. O iPhone usa o Calendário para avisos. A exportação usa a data do formulário e o salvamento grava pela fila local. A tela de memória dá acesso direto a **Exportar backup** e **Cópias de recuperação**. Os textos foram revisados nos quatro idiomas.

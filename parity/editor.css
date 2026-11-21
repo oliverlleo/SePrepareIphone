@@ -13,7 +13,7 @@
 .editor-drive-status:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:4px}
 @media(max-width:420px){.editor-shell .editor-top .editor-save{max-width:132px;padding:7px 9px;gap:5px}.editor-protection{column-gap:12px}.editor-shell .editor-name .name{white-space:nowrap;overflow:visible;text-overflow:clip;font-size:15px;line-height:1.3}}
 
-body.editor-open .editor-shell.editor-scrolled header.editor-top{display:flex}
+/* Expanded editing uses the host's clean layout; saving continues in the runtime. */
 
 .apple-simple-sheet{display:grid;gap:14px;min-width:0}
 .apple-simple-sheet .help,.apple-simple-sheet .section-head{margin:0;overflow-wrap:break-word}
