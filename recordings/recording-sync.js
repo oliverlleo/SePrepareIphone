@@ -4,7 +4,7 @@ export function createRecordingSync({store,transport,account,readBlob,removeLoca
  async function sync(){if(busy)return busy;busy=run().finally(()=>{busy=null;onChange();});return busy;}
  async function run(){const owner=account();if(!owner||!transport)throw Error('Conecte o Google Drive em Ajustes para proteger as gravações.');const same=()=>{if(owner!==account())throw Error('A conta do Drive mudou.');};
   const remote=await transport.list(),seen=new Map();same();
-  for(const row of remote){const value=await transport.read(row.id);same();if(!validRecording(value))throw Error('O Drive retornou uma gravação inválida.');const old=seen.get(value.id);if(!old||Number(value.updatedAt||value.createdAt)>Number(old.data.updatedAt||old.data.createdAt))seen.set(value.id,{file:row,data:value});}
+  for(const row of remote){const value=await transport.read(row.id,row.appProperties?.kind);same();if(!validRecording(value))throw Error('O Drive retornou uma gravação inválida.');const old=seen.get(value.id);if(!old||Number(value.updatedAt||value.createdAt)>Number(old.data.updatedAt||old.data.createdAt))seen.set(value.id,{file:row,data:value});}
   for(const {file,data}of seen.values()){
    const local=await store.getRecord(data.id),receipt={metaId:file.id,audioId:data.audioFileId,snapshotFileId:data.snapshotFileId,hash:data.sha256};
    if(data.status==='deleted'){if(local?.localAvailable)await removeLocal(local);await store.saveRecord(remoteRecording(local,{...data,receipt},owner));}

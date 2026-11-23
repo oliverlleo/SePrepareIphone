@@ -2,6 +2,7 @@ import {reviewKey,renderReviewDialog,rebaseReviewMatches} from './review-positio
 import{mountEditorFind}from'./editor-find-ui.js';
 import{mountToolbarIndicator}from'./toolbar-scroll-indicator.js';
 import{mountContextHelp}from'./editor-context-help.js';
+import{mountEditorToolsToggle}from'./editor-tools-toggle.js';
 import{mountSettingsNavigation,styleSettingsDialog}from'./settings-navigation.js';
 import*as personal from'./personal-corrections.js';
 import{semanticEdit,formatNewVersion}from'./format-destination.js';
@@ -9,4 +10,4 @@ import editorCss from'./editor-improvements.css';
 import settingsCss from'./settings-navigation.css';
 import platformCss from'./platform.css';
 const style=document.createElement('style');style.id='seprepare-enhancements-style';style.textContent=editorCss+'\n'+settingsCss+'\n'+platformCss;document.head.append(style);
-window.SePrepareEnhancements={reviewKey,renderReviewDialog,rebaseReviewMatches,mountEditorFind,mountToolbarIndicator,mountContextHelp,mountSettingsNavigation,styleSettingsDialog,semanticEdit,formatNewVersion,...personal};
+window.SePrepareEnhancements={reviewKey,renderReviewDialog,rebaseReviewMatches,mountEditorFind,mountToolbarIndicator,mountContextHelp,mountEditorToolsToggle,mountSettingsNavigation,styleSettingsDialog,semanticEdit,formatNewVersion,...personal};

@@ -46,10 +46,8 @@
 }
 
 @media(min-width:751px) and (min-height:500px){
- .home-filter-row{display:flex;align-items:center;gap:16px;margin-bottom:15px}
- .home-filter-row .type-filters{flex:0 0 360px;margin:0}
- .home-filter-row .filters{flex:1;min-width:0;padding:2px 1px}
- .home-filter-row .filters .chip{flex-shrink:0}
+ .home-filter-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+ .home-filter-row .type-filters{flex:0 1 460px;max-width:460px;margin:0}
 }
 
 .reader-primary-timer{display:flex;align-items:stretch;gap:8px;min-width:0}
@@ -64,19 +62,31 @@
 }
 .timer-dock .dock-timer-toggle{display:none}
 
-/* Phone home: type tabs at the left, category/pinned picker at the right. */
-.home-category-picker{display:none}
-@media(max-width:750px){
- .home-filter-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
- .home-filter-row .type-filters{flex:0 0 auto;max-width:none;margin:0}
- .home-filter-row .type-filter{padding:9px 8px;white-space:nowrap}
- .home-filter-row .filters{display:none}
- .home-category-picker{position:relative;display:flex;align-items:center;gap:7px;flex:0 1 auto;min-width:0;max-width:45%;min-height:46px;padding:8px 11px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--muted);font-size:12px}
- .home-category-picker svg{width:15px;height:15px}
- .home-category-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
- .home-category-picker select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
- .home-category-picker.active{background:var(--soft);border-color:var(--green);color:var(--green)}
- .home-category-picker:focus-within{outline:3px solid var(--copper);outline-offset:3px}
+/* Home: compact type row plus compact category/pinned picker inline with the first section header. */
+.home-filter-row{display:flex;align-items:center;justify-content:flex-start;gap:12px;margin-bottom:10px}
+.home-filter-row .type-filters{flex:0 1 460px;max-width:460px;width:100%;margin:0;min-width:0}
+.home-filter-row .type-filter{flex:1 1 auto;padding:9px 8px;white-space:nowrap}
+.home-filter-row .filters{display:none}
+.home-filter-row>.home-category-picker{display:none!important}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 14px}
+.section-head h3{font-size:12px;letter-spacing:.7px;text-transform:uppercase;font-weight:600;min-width:0;flex:1 1 auto}
+.section-head-right{display:inline-flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto;max-width:62%;min-width:0}
+.section-head .section-count,.section-head>span{font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0}
+.home-category-empty-bar{display:flex;justify-content:flex-end;margin:6px 0 10px}
+.home-category-picker{position:relative;display:inline-flex;align-items:center;gap:5px;flex:0 1 auto;min-width:0;max-width:152px;height:30px;min-height:30px;padding:0 8px 0 9px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);font-size:11px;font-weight:500;line-height:1}
+.home-category-picker svg{width:13px;height:13px;flex-shrink:0}
+.home-category-picker .category-icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.home-category-picker .category-icon svg{width:13px;height:13px}
+.home-category-picker>svg:last-of-type{opacity:.68}
+.home-category-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-category-picker select{position:absolute;inset:-5px 0;width:100%;height:calc(100% + 10px);opacity:0;cursor:pointer}
+.home-category-picker.active{background:var(--soft);border-color:var(--green);color:var(--green);font-weight:600}
+.home-category-picker:focus-within{outline:3px solid var(--copper);outline-offset:2px}
+@media(max-width:360px){
+ .section-head{gap:8px}
+ .section-head h3{font-size:11px;letter-spacing:.5px}
+ .section-head-right{gap:6px;max-width:64%}
+ .home-category-picker{max-width:116px;padding:0 6px 0 7px;gap:4px}
 }
 
 /* Phone timer: time above the actions, with a softly translucent surface. */
@@ -124,15 +134,6 @@
 /* SePrepare 1.0.18 - only requested layout corrections; all header fields remain accessible. */
 /* Tablet - category/fixed selector on opposite end of the type selector. */
 @media (min-width:751px) and (min-height:560px){
- .home-filter-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:15px}
- .home-filter-row .type-filters{flex:0 1 360px;margin:0;min-width:0}
- .home-filter-row .filters{display:none}
- .home-filter-row .home-category-picker{position:relative;display:flex;align-items:center;gap:7px;flex:0 1 auto;min-width:0;max-width:42%;min-height:46px;padding:8px 12px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--muted);font-size:12px}
- .home-filter-row .home-category-picker svg{width:15px;height:15px}
- .home-filter-row .home-category-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
- .home-filter-row .home-category-picker select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
- .home-filter-row .home-category-picker.active{background:var(--soft);border-color:var(--green);color:var(--green)}
- .home-filter-row .home-category-picker:focus-within{outline:3px solid var(--copper);outline-offset:3px}
  /* Move only tablet review/analysis to the toolbar, directly after Paste. */
  .editor-shell .editor-smart-actions{display:none}
  .editor-shell .toolbar .tool[data-short-tool]{display:inline-flex;flex:0 0 auto;width:auto;min-width:0;padding:0 8px;gap:5px;white-space:nowrap;font-size:11px;font-weight:600}

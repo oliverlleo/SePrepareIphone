@@ -22,7 +22,7 @@ for(const{node:n}of collect(ui).filter(({node:n})=>n.type==='FunctionDeclaration
  const old=fn(map[n.id.name]);edit(old.start,old.end,code);
 }
 const appearance=only(collect(ui).map(x=>x.node).filter(n=>n.type==='FunctionDeclaration'&&n.id?.name==='appearanceSettings'),'aparência');
-const registry='var {reviewKey,renderReviewDialog,rebaseReviewMatches,mountEditorFind,mountToolbarIndicator,mountContextHelp,mountSettingsNavigation,styleSettingsDialog,dictionaryWords,correctionRecords,rememberedCorrections,rememberCorrection,forgetCorrection,rememberedMatches,rememberWord,replaceDictionaryWords,semanticEdit,formatNewVersion}=window.SePrepareEnhancements;var sp62Settings=null,sp62Find=null,sp62Toolbar=()=>{},sp62Help=mountContextHelp();';
+const registry='var {reviewKey,renderReviewDialog,rebaseReviewMatches,mountEditorFind,mountToolbarIndicator,mountContextHelp,mountEditorToolsToggle,mountSettingsNavigation,styleSettingsDialog,dictionaryWords,correctionRecords,rememberedCorrections,rememberCorrection,forgetCorrection,rememberedMatches,rememberWord,replaceDictionaryWords,semanticEdit,formatNewVersion}=window.SePrepareEnhancements;var sp62Settings=null,sp62Find=null,sp62Toolbar=()=>{},sp62Help=mountContextHelp();';
 const mount=`function sp62MountSettings(){
  const host=L('#viewContent'),cards=[...host.querySelectorAll('.settings-list>.setting-card')],memory=cards.find(c=>c.querySelector('[data-action="pwa-memory-vault"]')),notifications=cards.find(c=>c.querySelector('h3')?.textContent.trim()===SPLocale.t('Notificações no iPhone'));
  if(!memory||!notifications)throw Error('Os controles do aparelho precisam permanecer disponíveis.');
@@ -37,7 +37,10 @@ hook(fn('he','audioPlayer.stopPreview'),'CLOSE','sp62Settings?.release();');
 const e=editor.node;let editorSource=text(e),redo=only(nodes.filter(n=>n.type==='CallExpression'&&n.start>e.start&&n.end<e.end&&n.callee?.name==='$r'&&n.arguments[0]?.value==='redo'),'refazer');
 editorSource=editorSource.replace('$r("editor-find",SPLocale.t("Buscar e substituir"),"Search")','$r("editor-find","Search",SPLocale.t("Buscar e substituir"))');
 if(!editorSource.includes('"editor-find"'))editorSource=editorSource.replace('${'+text(redo)+'}','${'+text(redo)+'}${$r("editor-find","Search",SPLocale.t("Buscar e substituir"))}');
-editorSource=editorSource.slice(0,-1)+marker('ATTACH',';sp62Toolbar=mountToolbarIndicator(L(".toolbar"));sp62Find=mountEditorFind({q:d.q,root:L(".editor-shell"),Delta:qt,icon:te,persist:le,checkpoint:Dr,toast:ae});')+'}';edit(e.start,e.end,editorSource);
+const revealNeedle='n.classList.remove("editor-scrolled")';
+if(!editorSource.includes(revealNeedle))throw Error('Gesto de cabeçalho do editor Apple não encontrado.');
+editorSource=editorSource.replace(revealNeedle,marker('REVEAL','(n.classList.contains("editor-tools-hidden")?n.classList.remove("editor-tools-hidden"):')+revealNeedle+marker('REVEALCLOSE',')'));
+editorSource=editorSource.slice(0,-1)+marker('ATTACH',';mountEditorToolsToggle({shell:L(".editor-shell"),t:SPLocale.t});sp62Toolbar=mountToolbarIndicator(L(".toolbar"));sp62Find=mountEditorFind({q:d.q,root:L(".editor-shell"),Delta:qt,icon:te,persist:le,checkpoint:Dr,toast:ae});')+'}';edit(e.start,e.end,editorSource);
 const back=only(nodes.filter(n=>n.type==='FunctionDeclaration'&&text(n).includes('.editorFrom')&&text(n).includes('.modal-backdrop')&&text(n).length<1500),'Voltar');hook(back,'BACK','if(sp62Find?.isOpen()){sp62Find.close();return true;}');
 const actions=only(nodes.filter(n=>n.type==='SwitchStatement'&&n.discriminant?.name==='r'&&n.cases.some(c=>c.test?.value==='share-text')),'ações');
 const code=readFileSync(path.join(here,'host-actions.js'),'utf8'),cases=collect(code).map(x=>x.node).filter(n=>n.type==='SwitchCase'),added=[];

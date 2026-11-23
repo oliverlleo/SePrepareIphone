@@ -1,3 +1,4 @@
+import {hasInterviewData} from '../interviews/interview-data.js';
 import {protectedGlobals} from './sync-globals.js';
 import {normalizedDelta} from './drive-compare.js';
 
@@ -63,7 +64,7 @@ export function createContentIndex({maxBytes=32*1024*1024,onMetrics=()=>{}}={}){
   const stateHash=await digest('state',{format:CONTENT_SIGNATURE_FORMAT,...rest,deletions,documents:documentRows.map(r=>({id:r.id,hash:r.hash})).sort(byId),categories:categoryRows.sort(byId),drafts:[...drafts].map(([id,row])=>({id,hash:row.hash})).sort(byId),settings,vocabulary:JSON.parse(root.vocabulary||'[]').sort()});
   const globals=Object.create(null);for(const[key,value]of Object.entries(protectedGlobals({...rest,settings,vocabulary:JSON.parse(root.vocabulary||'[]')})))globals[key]=await digest('global',value,key);
   lastMetrics={hashes:hashes-before.hashes,hits:hits-before.hits,parsedVersions:parsedVersions-before.parsedVersions,cacheBytes:bytes,elapsedMs:performance.now()-start};onMetrics(lastMetrics);
-  const result={globals,format:CONTENT_SIGNATURE_FORMAT,legacy:documentRows.some(row=>!row.versions.length),hasProtectedData:!!(documentRows.length||deletionRows.length||drafts.size),stateHash,documents,syncDocuments,categories,versions,drafts:Object.fromEntries([...drafts].map(([id,row])=>[id,row.hash])),metrics:lastMetrics};lastSnapshot={raw,result};return result;
+  const result={globals,format:CONTENT_SIGNATURE_FORMAT,legacy:documentRows.some(row=>!row.versions.length),hasProtectedData:!!(documentRows.length||deletionRows.length||drafts.size||hasInterviewData(rest.interviews)),stateHash,documents,syncDocuments,categories,versions,drafts:Object.fromEntries([...drafts].map(([id,row])=>[id,row.hash])),metrics:lastMetrics};lastSnapshot={raw,result};return result;
  }
  async function exportCache(){const body={format:CONTENT_SIGNATURE_FORMAT,entries:[...cache].map(([key,rows])=>[key,rows.map(({source,value})=>({source,value}))])};return {body,seal:await contentSHA(JSON.stringify(body))};}
  async function importCache(envelope){try{if(envelope?.body?.format!==CONTENT_SIGNATURE_FORMAT||await contentSHA(JSON.stringify(envelope.body))!==envelope.seal)return false;const body=envelope.body;if(!Array.isArray(body.entries))return false;const staged=[];let size=0;for(const[key,rows]of body.entries){if(typeof key!=='string'||!Array.isArray(rows)||rows.length>3)return false;for(const row of rows){if(typeof row.source!=='string')return false;size+=row.source.length*2+JSON.stringify(row.value).length*2+80;staged.push([key,row.source,row.value]);}}if(size>maxBytes)return false;cache.clear();bytes=0;for(const row of staged)put(...row);return true;}catch{return false;}}

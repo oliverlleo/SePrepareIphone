@@ -1,3 +1,4 @@
+import {mergeInterviewLibraries} from '../interviews/interview-data.js';
 import{mergeTeleprompter,mergeDocumentTeleprompter}from'../memorization/teleprompter-data.js';
 import {mergeMemorization,mergeDocumentMemorization} from '../memorization/memorization-data.js';
 import {parseRhythm,rhythmValue,visitRhythmOps} from './rhythm-core.js';
@@ -29,7 +30,7 @@ export function inspectDriveBackup(local,raw,indexes=null){
  for(const remote of incoming.categories){const target=local.categories.find(c=>c.id===remote.id);if(target&&stable(target)!==stable(remote)&&!local.categories.some(c=>c.driveSourceId===remote.id&&c.driveSourceKey===stable(remote)))conflicts.push({kind:'category',id:remote.id,title:target.name||remote.name,newer:'unknown',localAt:0,cloudAt:0});}
  return {conflicts,added,versions,identical,localNewer,cloudNewer,remoteItems:incoming.speeches.filter(s=>!s.deleted).length,localItems:local.speeches.filter(s=>!s.deleted).length,incoming};
 }
-export async function mergeDriveBackup(local,raw,{manual=false,policy='both',documentPolicies={},categoryPolicies={},unchangedDocuments=[],removedDocuments=[],draftPolicies={},globalPolicies={}}={}){
+export async function mergeDriveBackup(local,raw,{manual=false,policy='both',documentPolicies={},categoryPolicies={},unchangedDocuments=[],removedDocuments=[],draftPolicies={},globalPolicies={},interviewBase}={}){
  if(!['both','local','cloud'].includes(policy))throw Error('Escolha como deseja preservar os conteúdos.');
  let added=0,alternatives=0;
  if(policy==='local')return {state:local,changed:false,added,alternatives};
@@ -38,6 +39,8 @@ export async function mergeDriveBackup(local,raw,{manual=false,policy='both',doc
  const incoming=parsed(raw);
  if(policy==='cloud'&&manual&&!Object.keys(documentPolicies).length&&!Object.keys(categoryPolicies).length){
   const state=clone(incoming);for(const doc of state.speeches){mergeDocumentMemorization(local.speeches.find(d=>d.id===doc.id),doc);mergeDocumentTeleprompter(local.speeches.find(d=>d.id===doc.id),doc);pauseAllVersionTimers(doc);}
+  const interviews=mergeInterviewLibraries(local.interviews,incoming.interviews,interviewBase);
+  if(interviews!==undefined)state.interviews=interviews;
   return {state,changed:stable(local)!==stable(state),added:state.speeches.filter(d=>!local.speeches.some(l=>l.id===d.id)).length,alternatives:0};
  }
  const next={...local,speeches:local.speeches.slice(),categories:local.categories.slice(),vocabulary:local.vocabulary.slice(),settings:clone(local.settings)};
@@ -122,7 +125,9 @@ export async function mergeDriveBackup(local,raw,{manual=false,policy='both',doc
  const tombstones=mergeDeletionTombstones(local.deletionTombstones,incoming.deletionTombstones);if(tombstones.length||local.deletionTombstones||incoming.deletionTombstones)next.deletionTombstones=tombstones.filter(row=>!next.speeches.some(d=>d.id===row.id)||removedDocuments.includes(row.id));
  if(removedDocuments.length){const removed=new Set(removedDocuments);next.speeches=next.speeches.filter(d=>!removed.has(d.id));if(next.editorDrafts)next.editorDrafts=next.editorDrafts.filter(d=>!removed.has(d.speechId));}
  next.vocabulary=[...new Set([...next.vocabulary,...incoming.vocabulary])];if(empty)next.settings=clone(incoming.settings);
- const incomingGlobals=protectedGlobals(incoming);for(const[key,choice]of Object.entries(globalPolicies))if(choice==='cloud')applyProtectedGlobal(next,key,incomingGlobals[key]);
+ const interviews=mergeInterviewLibraries(local.interviews,incoming.interviews,interviewBase,categoryMap);
+ if(interviews!==undefined)next.interviews=interviews;
+ const incomingGlobals=protectedGlobals(incoming);for(const[key,choice]of Object.entries(globalPolicies))if(key!=='root:interviews'&&choice==='cloud')applyProtectedGlobal(next,key,incomingGlobals[key]);
 
  if(next.categories.length>300||next.vocabulary.length>5000)throw Error('O conjunto ultrapassa o limite de categorias ou palavras do dicionário. Nenhum dado foi alterado.');
  if(next.speeches.length>2000)throw Error('Há muitas preparações para juntar os backups. Nenhum dado foi alterado.');
@@ -180,6 +185,7 @@ export async function planDriveRestore(local,raw,baseline=null){
  }
  const globals=new Set([...Object.keys(localIndex.globals||{}),...Object.keys(remoteIndex.globals||{})]);
  for(const key of globals){
+  if(key==='root:interviews')continue;
   const lhs=localIndex.globals?.[key]||null,rhs=remoteIndex.globals?.[key]||null,oldLocal=baseline?.local?.globals?.[key]||null,oldRemote=baseline?.remote?.globals?.[key]||null;
   if(lhs===rhs){globalPolicies[key]='local';continue;}
   if(baseline?.local?.globals&&baseline?.remote?.globals){if(rhs===oldRemote){globalPolicies[key]='local';continue;}if(lhs===oldLocal){globalPolicies[key]='cloud';continue;}}
@@ -216,6 +222,6 @@ export async function planDriveRestore(local,raw,baseline=null){
   if(localIndex.documents[original.id]===baseline.local.documents[original.id])removedDocuments.push(original.id);
   else conflicts.push({kind:'speech',id:original.id,title:original.title,newer:'unknown',localAt:original.updatedAt||0,cloudAt:0,fields:['Texto','Exclusão no Drive'],localPreview:body(activeVersion(original)).slice(0,280),cloudPreview:''});
  }
- const result=conflicts.length?null:await mergeDriveBackup(local,mergedIncoming,{documentPolicies:documents,categoryPolicies:categories,unchangedDocuments,removedDocuments,draftPolicies,globalPolicies});
- return {report:{...report,conflicts},documents,categories,draftPolicies,globalPolicies,dirtyLocal,localIndex,remoteIndex,result,snapshot:JSON.stringify(local)};
+ const result=conflicts.length?null:await mergeDriveBackup(local,mergedIncoming,{documentPolicies:documents,categoryPolicies:categories,unchangedDocuments,removedDocuments,draftPolicies,globalPolicies,interviewBase:baseState?.interviews});
+ return {report:{...report,conflicts},documents,categories,draftPolicies,globalPolicies,interviewBase:baseState?.interviews,dirtyLocal,localIndex,remoteIndex,result,snapshot:JSON.stringify(local)};
 }

@@ -21,9 +21,23 @@
 .rhythm-default-badge{display:block;font-size:10px;font-weight:600;color:var(--green);margin-top:5px}
 @media(max-width:750px){.editor-find-panel{right:10px;left:10px;width:auto;max-width:none;bottom:calc(38px + var(--find-keyboard,0px));padding:12px 14px 10px}.editor-find-open .editor-info{display:none}}
 @media(max-height:600px){.editor-find-panel{max-height:66dvh}.editor-find-open .part-assignment-bar{display:none}.editor-find-panel header{margin-bottom:4px}.editor-find-panel h2{font-size:18px}.editor-find-tabs{margin-bottom:6px}.editor-find-filters{margin-top:5px}}
-/* Keep the longer modality label and the existing category picker on one row. */
-@media(max-width:360px){.home-filter-row{gap:8px}.home-filter-row .type-filters{flex:1 1 auto;min-width:0}.home-filter-row .type-filter{padding-inline:4px;min-width:0}.home-filter-row .home-category-picker{flex:0 0 42px;width:42px;min-width:42px;max-width:42px;justify-content:center;padding-inline:8px;gap:0}.home-filter-row .home-category-label,.home-filter-row .home-category-picker>svg:last-of-type{display:none}}
+/* Keep the modality tabs balanced on very narrow screens. */
+@media(max-width:360px){.home-filter-row{gap:8px}.home-filter-row .type-filters{flex:1 1 auto;min-width:0;padding:3px;gap:2px}.home-filter-row .type-filter{flex:1 1 auto;padding:8px 4px;font-size:11px;min-width:0}}
 @media(max-height:600px){.editor-find-panel{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}.editor-find-panel>header,.editor-find-tabs,.editor-find-query,.editor-find-filters,.editor-find-navigation,#editorFindMessage{grid-column:1/-1}.editor-find-panel>header{grid-row:1;margin:0}.editor-find-tabs{grid-row:2}.editor-find-query{grid-row:3}.editor-find-filters{grid-row:4}.editor-find-navigation{grid-row:5}.editor-find-panel.is-replace .editor-find-query{grid-column:1}.editor-replace-controls:not([hidden]){display:contents}.editor-replace-controls .field{grid-row:3;grid-column:2}.editor-find-replace-actions{grid-row:6;grid-column:1/-1;margin-top:0}#editorFindMessage{grid-row:7}}
 @media(min-width:650px) and (max-height:500px){.editor-find-open .editor-info{display:none}.editor-find-open .editor-scroll{padding-right:380px}.editor-find-open .editor-scroll::after{height:0}.editor-find-panel{top:10px;bottom:43px;max-height:none;left:auto;right:12px;width:354px;align-content:start}}
 @media(max-height:600px){.editor-shell.editor-find-open .editor-smart-actions,.editor-shell.editor-find-open .scope-bar{display:none}}
 @media(max-width:649px) and (max-height:460px){.editor-find-open .editor-top{display:none}}
+.editor-hide-tools-btn,.editor-hide-tools-sep{display:none!important}
+.editor-shell.editor-scrolled .editor-hide-tools-btn{display:inline-flex!important;color:var(--green)}
+.editor-shell.editor-scrolled .editor-hide-tools-sep{display:inline-block!important}
+body.editor-open .editor-shell.editor-scrolled.editor-tools-hidden .editor-top,
+.editor-shell.editor-scrolled.editor-tools-hidden .editor-top,
+.editor-shell.editor-scrolled.editor-tools-hidden .editor-tools,
+.editor-shell.editor-scrolled.editor-tools-hidden .part-assignment-bar,
+.editor-shell.editor-scrolled.editor-tools-hidden .editor-status{display:none!important}
+.editor-shell.editor-scrolled.editor-tools-hidden .editor-scroll{padding-top:max(8px,env(safe-area-inset-top))}
+.editor-restore-tools-btn{display:none;position:fixed;top:max(10px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:38;width:38px;height:38px;border-radius:12px;align-items:center;justify-content:center;border:1px solid color-mix(in srgb,var(--line) 75%,transparent);background:color-mix(in srgb,var(--paper) 64%,transparent);color:var(--ink);opacity:.68;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 3px 14px #182b2918;transition:opacity .15s ease,background .15s ease,border-color .15s ease,color .15s ease}
+.editor-restore-tools-btn svg{width:18px;height:18px}
+.editor-restore-tools-btn:hover,.editor-restore-tools-btn:focus-visible,.editor-restore-tools-btn:active{opacity:.96;background:color-mix(in srgb,var(--paper) 92%,transparent);border-color:var(--green);color:var(--green)}
+.editor-shell.editor-scrolled.editor-tools-hidden .editor-restore-tools-btn{display:inline-flex}
+@media(max-width:440px){.interview-editor.editor-scrolled .editor-hide-tools-sep{display:none!important}}

@@ -20,7 +20,7 @@ export function createRecordingUI(host){
  let nativeTransportCache,syncRetry;
  const noun=n=>t(n===1?'recordingNoun':'recordings');
  function nativeTransport(){return nativeTransportCache||=(Object.fromEntries([
-  ['list',()=>native.request('drive-list')],['read',id=>native.request('drive-read','',{id})],['snapshot',id=>native.request('drive-snapshot','',{id})],
+  ['list',()=>native.request('drive-list','',{includeInterviews:true})],['read',(id,metadataKind)=>native.request('drive-read','',{id,metadataKind})],['snapshot',id=>native.request('drive-snapshot','',{id})],
   ['putSnapshot',(hash,data)=>native.request('drive-put-snapshot','',{hash,data})],['putMeta',(data,id)=>native.request('drive-put-meta','',{data,id:id||''})],
   ['uploadNative',record=>native.request('drive-upload','',{record})],['downloadNative',(id,record)=>native.request('drive-download','',{id,record})],['removeAudio',id=>native.request('drive-remove-audio','',{id})]
  ]));}
@@ -125,7 +125,7 @@ export function createRecordingUI(host){
    objectUrl=localUrl;playingRecord=record;playerControl=mountRecordingPlayer({slot,url,record,t,icon,inline,onError:()=>fail(Error('Playback error'))});player=playerControl.audio;updateListenButton();await player.play().catch(()=>{});
   }catch(error){fail(error,record.localAvailable?'audioError':'driveError');}
  }
- async function showText(id){const slot=document.querySelector(`[data-recording-id="${id}"] .rec-player-slot`);if(!slot)return;let row=slot.querySelector('.rec-text');if(!row){row=document.createElement('div');row.className='rec-text';row.hidden=true;slot.append(row);}if(!row.hidden){row.hidden=true;return;}const record=await store.getRecord(id),snapshot=await store.snapshot(record.snapshotId);row.textContent=snapshot?.delta?.ops?.map(op=>typeof op.insert==='string'?op.insert:'').join('')||t('snapshotMissing');row.hidden=false;}
+ async function showText(id){const slot=document.querySelector(`[data-recording-id="${id}"] .rec-player-slot`);if(!slot)return;let row=slot.querySelector('.rec-text');if(!row){row=document.createElement('div');row.className='rec-text';row.hidden=true;slot.append(row);}if(!row.hidden){row.hidden=true;return;}const record=await store.getRecord(id),snapshot=await store.snapshot(record.snapshotId);row.textContent=(record.type==='interview'?snapshot?.questions?.map(question=>question.prompt).join('\n\n'):snapshot?.delta?.ops?.map(op=>typeof op.insert==='string'?op.insert:'').join(''))||t('snapshotMissing');row.hidden=false;}
  async function share(id){try{if(shareFile?.id===id&&navigator.canShare?.({files:[shareFile.file]})){await navigator.share({files:[shareFile.file]});return;}const record=await store.getRecord(id);if(native&&record.storage==='native'){await native.request('share',id,{title:t('share'),mime:record.mime.split(';')[0]});return;}const blob=await readBlob(record);if(!blob)throw Error(t('audioError'));const file=new File([blob],'SePrepare-'+new Date(record.createdAt).toISOString().slice(0,10)+'.'+audioExtension(record.mime),{type:record.mime});if(navigator.canShare?.({files:[file]}))await navigator.share({files:[file],title:record.title});else {const url=URL.createObjectURL(file),link=document.createElement('a');link.href=url;link.download=file.name;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}}catch(error){if(error.name!=='AbortError')fail(error);}}
  let deleting=[];
  function askDelete(ids){deleting=records.filter(r=>ids.includes(r.id)&&r.status==='ready');if(!deleting.length)return;const canEvict=deleting.every(r=>r.localAvailable&&Object.values(r.cloud||{}).some(c=>c.audioId&&c.hash===r.sha256&&!c.deleted));cleanupPlayer();host.openModal(t('confirm'),`<div class="rec-confirm"><p>${deleting.length} ${esc(noun(deleting.length))}</p><p>${esc(t('keepHistory'))}</p>${canEvict?button('recording-evict',t('evict'),'HardDrive')+`<p class="help">${esc(t('evictHelp'))}</p>`:''}${button('recording-permanent',t('permanent'),'Trash2','','rec-danger')}<p class="help">${esc(t('permanentHelp'))}</p></div>`,button('recording-return',t('cancel'),'ArrowLeft'));host.rt.modal='recording-delete';}
@@ -185,5 +185,17 @@ export function createRecordingUI(host){
  window.addEventListener('nativeDrive',()=>{if(!active&&!starting)void store.setting('autoBackup').then(v=>{if(v!==false)void sync(false);}).catch(()=>{});});
  window.addEventListener('online',()=>{void store.setting('autoBackup').then(v=>{if(v!==false)void sync(false);}).catch(()=>{});});
  document.addEventListener('click',event=>{const el=event.target.closest('[data-action]');if(el?.dataset.action==='versions')setTimeout(appendVersionEntry,0);if(el&&!el.disabled&&guardAction(el.dataset.action,el)){event.preventDefault();event.stopImmediatePropagation();}},true);
- return {start,mount,tick,timerLabel,handle,guard,guardAction,interceptFinish,onClose,openManager,store,getSnapshot:()=>({active:active?{...active}:null,starting,saving:!!saving}),sync};
+ async function interviewPlayback(id){
+  let record=await store.getRecord(id);
+  if(!record||!record.localAvailable){
+   const service=ensureSync();
+   if(service&&account()){if(!record){await service.sync();record=await store.getRecord(id);}if(record?.status==='ready'&&record.type==='interview'&&!record.localAvailable)record=await service.download(record);}
+  }
+  if(record?.type!=='interview'||record.status!=='ready'||!record.localAvailable)throw Error(t('audioError'));
+  if(native&&record.storage==='native')return {record,url:native.url(id),release:()=>{}};
+  const url=URL.createObjectURL(await readBlob(record));
+  return {record,url,release:()=>URL.revokeObjectURL(url)};
+ }
+ function syncIfEnabled(){void store.setting('autoBackup').then(enabled=>{if(enabled!==false)void sync(false);}).catch(()=>{});}
+ return {start,mount,tick,timerLabel,handle,guard,guardAction,interceptFinish,onClose,openManager,store,nativeBridge:native,interviewPlayback,syncIfEnabled,getSnapshot:()=>({active:active?{...active}:null,starting,saving:!!saving}),sync};
 }

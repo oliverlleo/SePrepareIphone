@@ -1,3 +1,4 @@
+import {hasInterviewData} from '../interviews/interview-data.js';
 import {createRecordingDriveTransport} from '../recordings/recording-drive-transport.js';
 import * as SPLocale from './i18n.js';
 import {validState} from './core.js';
@@ -296,7 +297,7 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   const raw=localRaw();if(await driveHash(raw)!==consent.localHash)throw failure(SPLocale.t('O caderno mudou. Confira o backup novamente antes de enviar.'));
   const latest=await files(true);if((latest?.id||'')!==t.head)return preflight(latest,t.enable);
   if(raw!==localRaw())throw failure(SPLocale.t('O caderno mudou. Confira o backup novamente antes de enviar.'));
-  const state=snapshot(raw,now()),empty=!JSON.parse(state).speeches.length;if(empty&&!t.enable&&!consent.emptyApproved)throw failure(SPLocale.t('Confirme primeiro se deseja guardar um caderno vazio.'));
+  const state=snapshot(raw,now()),backup=JSON.parse(state),empty=!backup.speeches.length&&!hasInterviewData(backup.interviews);if(empty&&!t.enable&&!consent.emptyApproved)throw failure(SPLocale.t('Confirme primeiro se deseja guardar um caderno vazio.'));
   const unchanged=latest&&(latest.appProperties?.hash===await driveHash(state)||t.remoteState&&await backupStateHash(t.remoteState)===await backupStateHash(state));
   if(!(empty&&t.enable)&&!unchanged){
    const completed=data().lastBackupFinishedAt||data().lastBackupAt||0,wait=completed?Math.max(0,completed+DRIVE_BACKUP_GAP-now()):0;

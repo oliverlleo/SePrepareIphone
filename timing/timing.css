@@ -57,3 +57,29 @@ html[data-seprepare-mode=installed][data-seprepare-compact-viewport] .editor-she
 .reader-controls .reader-subtools>.btn[data-action="speak"]{padding-inline:8px}
 .reader-controls .reader-subtools.show-tool-names>.icon-btn,.reader-controls .reader-subtools.show-rhythm-name>[data-action="toggle-reader-rhythms"],.reader-controls .reader-subtools.show-note-name>[data-action="toggle-presenter-notes"]{flex:0 0 auto;width:auto;padding-inline:8px}
 .reader-subtools.show-note-name [data-action="toggle-presenter-notes"] .reader-tool-label{position:static;visibility:visible}
+.time-mark-dialog{max-width:420px;width:calc(100% - 24px)}
+.time-mark-dialog .modal-footer{flex-wrap:wrap;gap:8px}
+.time-mark-dialog .modal-footer .btn{min-height:44px}
+.time-mark-mode-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.time-mark-mode-option{width:100%;min-height:60px;text-align:left}
+.time-mark-mode-option.selected{background:var(--soft);box-shadow:inset 0 0 0 1px var(--green);border-color:var(--green)}
+.time-mark-mode-option>span{min-width:0;flex:1}
+.time-mark-mode-option strong{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.time-mark-mode-preview{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;background:var(--soft);color:var(--green);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.time-mark-mode-option.selected .time-mark-mode-preview{background:var(--paper)}
+.time-mark-inputs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:8px}
+.time-mark-inputs .field{margin:0;min-width:0}
+.time-mark-inputs .field input{width:100%;min-height:48px;text-align:center;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;padding:8px 6px}
+.time-mark-sep{display:flex;align-items:center;justify-content:center;height:48px;font-size:22px;font-weight:700;color:var(--muted);padding-bottom:2px}
+.time-mark-steps{display:flex;gap:8px}
+.time-mark-steps .btn{flex:1 1 0;min-width:0;min-height:36px;padding:6px 8px;font-size:12px;font-variant-numeric:tabular-nums}
+.time-mark-rhythm-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font-size:12px}
+.time-mark-rhythm-bar strong{font-variant-numeric:tabular-nums}
+.time-mark-rhythm-bar .btn{min-height:36px;white-space:nowrap}
+.time-mark-error{margin:0;color:var(--danger,#b44339);font-size:12px;line-height:1.4}
+.time-mark-error:empty{display:none}
+.time-mark-hint-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;padding-top:2px;color:var(--muted)}
+.time-mark-hint-row small{flex:1 1 170px;font-size:11px;line-height:1.45}
+.time-mark-hint-row .btn{min-height:32px;padding:4px 6px;font-size:11px;white-space:nowrap}
+body.dark .time-mark-mode-option.selected{background:color-mix(in srgb,var(--green) 16%,var(--paper));border-color:var(--green)}
+@media(max-width:359px){.time-mark-dialog{width:calc(100% - 16px)}.time-mark-inputs{gap:6px}.time-mark-inputs .field input{font-size:20px}}
