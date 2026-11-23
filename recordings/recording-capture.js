@@ -2,10 +2,10 @@ import {sharedMicrophone} from './shared-microphone.js';
 import {supportedRecordingMime} from './recording-core.js';
 export function createBrowserRecordingCapture({store,Recorder=globalThis.MediaRecorder,microphone=sharedMicrophone,onInterruption=()=>{}}){
  let recorder,stream,id,index=0,pending=Promise.resolve(),closing=null,error=null,started=0,elapsed=0,paused=false,stopResolve;
- async function start(record){
+ async function start(record,streamRequest){
   if(!Recorder)throw Error('Gravação de áudio indisponível neste navegador.');
   // Calling getUserMedia before the first await preserves the originating user gesture.
-  const request=microphone.getUserMedia({audio:{channelCount:{ideal:1},echoCancellation:true,noiseSuppression:true},video:false});
+  const request=streamRequest||microphone.getUserMedia({audio:{channelCount:{ideal:1},echoCancellation:true,noiseSuppression:true},video:false});
   stream=await request;id=record.id;index=0;pending=Promise.resolve();closing=null;error=null;elapsed=0;paused=false;
   try{
    const mime=supportedRecordingMime(Recorder);recorder=new Recorder(stream,{...(mime?{mimeType:mime}:{}),audioBitsPerSecond:48000});
@@ -14,11 +14,11 @@ export function createBrowserRecordingCapture({store,Recorder=globalThis.MediaRe
    recorder.onerror=()=>{error||=Error('A captação de áudio foi interrompida.');onInterruption('capture');};
    recorder.onstop=()=>stopResolve?.();
    for(const track of stream.getAudioTracks())track.addEventListener('ended',()=>{if(!closing)onInterruption('capture');});
-   started=performance.now();recorder.start(2000);return {mime:recorder.mimeType||mime||'audio/webm'};
+   started=performance.now();recorder.start(2000);if(record.initiallyPaused)pause();return {mime:recorder.mimeType||mime||'audio/webm'};
   }catch(reason){for(const track of stream?.getTracks()||[])track.stop();stream=null;throw reason;}
  }
- function pause(){if(recorder?.state==='recording'){elapsed+=performance.now()-started;paused=true;try{recorder.requestData();recorder.pause();}catch{onInterruption('capture');}}}
- function resume(){if(recorder?.state==='paused'){started=performance.now();paused=false;try{recorder.resume();}catch{onInterruption('capture');}}}
+ function pause(){if(recorder?.state==='recording'){elapsed+=performance.now()-started;paused=true;try{recorder.requestData();recorder.pause();}catch{onInterruption('capture');}}return {positionMs:Math.round(elapsed)};}
+ function resume(){if(recorder?.state==='paused'){started=performance.now();paused=false;try{recorder.resume();}catch{onInterruption('capture');}}return {positionMs:Math.round(elapsed)};}
  function finish(){
   if(closing)return closing;
   closing=(async()=>{const durationMs=Math.round(elapsed+(!paused?Math.max(0,performance.now()-started):0));if(recorder&&recorder.state!=='inactive'){let timeout;const stopped=new Promise(resolve=>{stopResolve=resolve;timeout=setTimeout(resolve,4000);});try{recorder.requestData();recorder.stop();}catch{}await stopped;clearTimeout(timeout);}for(const track of stream?.getTracks()||[])track.stop();stream=null;await pending;return {durationMs,error:error?.message};})();return closing;

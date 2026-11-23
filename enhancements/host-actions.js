@@ -5,4 +5,6 @@ case 'review-custom':{const m=rt.review?.matches[Number(el.dataset.index)];if(m)
 case 'apply-custom-review':{const r=rt.review,m=r?.matches[Number(el.dataset.index)];if(!m)break;const value=m.customValue.trim();if(!value){toast(SPLocale.t('Digite uma correção válida.'));break;}if(r.protect&&m.protected)break;m.customValue=value;m.chosen=value;applyReview(true,m);break;}
 case 'forget-correction':{const row=rememberedCorrections(state.vocabulary,rt.dictionaryLanguage)[Number(el.dataset.index)];if(row){state.vocabulary=forgetCorrection(state.vocabulary,row.word,rt.dictionaryLanguage);persist(true);dictionary();}break;}
 case 'save-dictionary':state.vocabulary=replaceDictionaryWords(state.vocabulary,$('#personalDictionary').value.split('\n'),rt.dictionaryLanguage);if(worker){worker.terminate();worker=null;}persist(true);closeModal();toast(SPLocale.t('Dicionário pessoal salvo.'));break;
+case 'hide-editor-tools':{const shell=$('.editor-shell');if(shell?.classList.contains('editor-scrolled')){sp62Find?.close();sp62Help?.hide();shell.classList.add('editor-tools-hidden');}break;}
+case 'show-editor-tools':{$('.editor-shell')?.classList.remove('editor-tools-hidden');break;}
 }}

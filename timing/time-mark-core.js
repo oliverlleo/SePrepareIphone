@@ -40,7 +40,7 @@ export function compareTimeMark(expected,elapsed,tolerance=TIME_MARK_TOLERANCE){
 export function timeMarkColors(state,intensity){
  const amount=Math.max(0,Math.min(1,intensity));
  const blend=(a,b)=>'#'+a.map((value,i)=>Math.round(value+(b[i]-value)*amount).toString(16).padStart(2,'0')).join('');
- if(state==='early')return {background:blend([255,226,187],[246,168,138]),foreground:'#602500'};
+ if(state==='early')return {background:blend([220,239,224],[167,219,181]),foreground:'#143d22'};
  if(state==='late'){
   const background=blend([252,219,215],[123,27,28]);
   const luminance=hex=>{const c=hex.match(/[a-f0-9]{2}/gi).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
@@ -59,4 +59,17 @@ export function timeMarks(delta){
   position+=text===null?1:text.length;
  }
  return result;
+}
+export function previousTimeMark(q,index,end,marks=timeMarks(q.getContents())){
+ const atTop=q.getBounds(index,0)?.top;let anchor=null;
+ for(const row of marks){
+  let where=row.position;if(row.attribute===TIME_MARK_ATTRIBUTE){const [,offset]=q.getLine(where);where-=offset;}
+  const rowTop=q.getBounds(where,0)?.top;
+  if(atTop!==undefined&&rowTop!==undefined&&Math.abs(rowTop-atTop)<=1)continue;
+  const rowEnd=timeLineEnd(q,where);
+  if(rowEnd===null||rowEnd>=end)continue;
+  if(atTop!==undefined&&rowTop!==undefined&&rowTop>=atTop-1)continue;
+  if(!anchor||rowEnd>anchor.end||(rowEnd===anchor.end&&row.position>anchor.position))anchor={...row,end:rowEnd};
+ }
+ return anchor;
 }

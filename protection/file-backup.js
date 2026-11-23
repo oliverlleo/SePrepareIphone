@@ -1,3 +1,4 @@
+import {mergeInterviewLibraries} from '../interviews/interview-data.js';
 import {clone,validState,uid,isPart,documentVersionsKey,pauseAllVersionTimers} from './core.js';
 import {receiveRhythms} from '../rhythms/rhythm-core.js';
 import {mergeImportedMetadata} from './import-metadata.js';
@@ -26,5 +27,7 @@ export function prepareFileBackup(local,incoming,{maxLength=Infinity,newId=uid}=
  if(next.vocabulary.length>5000)throw Error('O arquivo ultrapassa o limite de importação.');
  validState(next);
  if(JSON.stringify(next).length>maxLength)throw Error('O arquivo ultrapassa o limite de importação.');
+ const interviews=mergeInterviewLibraries(next.interviews,data.interviews,undefined,categories);
+ if(interviews!==undefined)next.interviews=interviews;
  return {state:next,added:next.speeches.length-local.speeches.length};
 }
