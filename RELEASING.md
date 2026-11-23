@@ -1,3 +1,11 @@
+# Atualização 1.2.0 — shell 20261123.3
+
+Consolida Entrevistas no Editor/Apresentação (catálogo local de 146 perguntas em 12 áreas e 4 idiomas, botão inteligente `+ Pontos sugeridos` com rolagem, modo Manual/Automático, Ajustes sob demanda e correção de autosave), filtro compacto de categorias na linha da 1ª seção do Caderno, botão de ocultar barra de ferramentas no modo expandido (com botão translúcido e retorno em 2 puxadas), Marcar tempo com seleção Pelo ritmo/Tempo manual (segurar altera), edição no selo da margem, cálculo cumulativo, ativação imediata do 1º selo visível (verde em folga, vermelho apenas no atraso) e versão alinhada para `1.2.0`, preservando os rótulos em linha única e o editor expandido limpo do shell `20261121.1`.
+
+# Editor expandido — shell 20261121.1
+
+Cabeçalho recolhido durante a edição expandida e segunda barra com nomes completos, sem quebra de palavras. A barra permite deslizar quando faltar espaço. Salvamento e gesto existente para mostrar o cabeçalho preservados. Fontes, testes e limites em [EDITOR-EXPANDIDO-20261121.md](EDITOR-EXPANDIDO-20261121.md).
+
 # Atualização 1.0.101
 
 Shell `20261120.3`. A Agenda mantém data e horário com opções de salvar, remover e exportar ao Calendário. O iPhone usa o Calendário para avisos. A exportação usa a data do formulário e o salvamento grava pela fila local. A tela de memória dá acesso direto a **Exportar backup** e **Cópias de recuperação**. Os textos foram revisados nos quatro idiomas.

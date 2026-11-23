@@ -40,7 +40,11 @@ html[data-seprepare-mode=installed][data-seprepare-compact-viewport] .editor-she
 @media(max-width:359px){.reader-controls{padding-inline:12px}.reader-controls .reader-subtools{gap:3px}}
 @media(min-width:800px){.reader-controls{grid-template-columns:minmax(0,272px) minmax(0,var(--reader-tools-width,1fr));justify-content:center;gap:10px;padding-inline:24px}}
 
-/* Wide editor actions keep their natural text width. Phone portrait stays compact. */
+/* Keep complete action names at their natural width, including on iPhone.
+   The row scrolls when necessary instead of splitting words or hiding labels. */
+.editor-shell .editor-tools .editor-smart-actions .btn{flex:1 0 auto;white-space:nowrap;padding-inline:9px}
+.editor-shell .editor-tools .editor-smart-actions .btn span{display:block;white-space:nowrap;overflow-wrap:normal;overflow:visible;max-width:none}
+/* Wide layouts retain their existing compact horizontal controls. */
 @media(min-width:601px){
  .editor-shell .editor-tools .editor-smart-actions .btn{flex:0 0 auto;white-space:nowrap;padding-inline:9px}
  .editor-shell .editor-tools .editor-smart-actions .btn span{white-space:nowrap;overflow-wrap:normal;max-width:none}
