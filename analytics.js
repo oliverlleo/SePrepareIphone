@@ -1,6 +1,16 @@
 /* SePrepare product metrics v1. All values sent by the app are from this catalog. */
 (() => {
   'use strict';
+  if (location.origin !== 'https://ios.seprepareapp.com.br' || navigator.webdriver === true) return;
+  // A visita de QA manual continua sem telemetria ao navegar na mesma aba.
+  const qaSessionKey = 'seprepare.metrics.qa.v1';
+  const qaRequested = new URLSearchParams(location.search).get('sp_qa') === '1';
+  try {
+    if (qaRequested) sessionStorage.setItem(qaSessionKey, '1');
+    if (sessionStorage.getItem(qaSessionKey) === '1') return;
+  } catch { /* The URL still applies when session storage is unavailable. */ }
+  if (qaRequested) return;
+
   const preference = 'seprepare.metrics.opt-in.v1';
   const lastActivityKey = 'seprepare.metrics.activity.v1';
   const firstPwaOpenKey = 'seprepare.metrics.pwa-opened.v1';
