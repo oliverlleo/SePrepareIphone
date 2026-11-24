@@ -49,20 +49,31 @@ export function createEditorRuntime(c){
    if(!await durable()){protection.mark('error');return false;}
    if(view==='part')view='editor';const doc=c.getState().speeches.find(item=>item.id===id);
    const next=view==='editor'&&doc?openEditorDraft(c.getState(),doc,{preferSavedVersion:c.rt.view==='reader'&&id===c.rt.speechId}):null;
-   c.rt.q=null;c.closeModal();working=next;c.rt.view=view;c.rt.speechId=id;c.rt.page=0;c.rt.focus=false;c.render();window.scrollTo(0,0);c.keepAwake(['reader','teleprompter'].includes(view));return true;
+   const fromSearch=c.rt.view==='home'&&c.rt.search&&view==='reader';
+   c.rt.q=null;c.closeModal();working=next;c.rt.view=view;c.rt.speechId=id;c.rt.page=0;c.rt.focus=false;c.render();window.scrollTo(0,0);c.keepAwake(['reader','teleprompter'].includes(view));
+   if(next&&doc&&hasEditorChanges(doc,next))globalThis.SePrepareMetrics?.used('editor','recuperar_rascunho',{tipo:doc.type==='part'?'demonstracao':'discurso'});
+   if(view==='reader'&&doc)globalThis.SePrepareMetrics?.used('apresentacao','usar_apresentacao',{tipo:doc.type==='part'?'demonstracao':'discurso'});
+   if(fromSearch&&doc)globalThis.SePrepareMetrics?.used('caderno','abrir_resultado_busca');
+   return true;
   }catch{protection.mark('error');c.toast(t('Não foi possível salvar. Exporte um backup antes de fechar.'));return false;}
   finally{busy=false;release();updateSaveButton();}
  }
  async function confirm(){
   if(busy||!getEditor()||!saved())return false;
   busy=true;updateSaveButton();const release=c.lock?.()||(()=>{});let previous,index,pending,drafts,staged=false;
+  let finishMetric;
   try{
-   c.syncCurrent();retain();if(!await durable())throw Error('save');
+   c.syncCurrent();retain();
+   if(hasEditorChanges(saved(),working)&&working.delta?.ops.some(op=>typeof op.insert==='string'&&op.insert.trim())){
+     finishMetric=globalThis.SePrepareMetrics?.begin('editor','salvar_preparacao',{tipo:working.type==='part'?'demonstracao':'discurso'});
+   }
+   if(!await durable())throw Error('save');
    const state=c.getState();previous=saved();index=state.speeches.indexOf(previous);pending=clone(working);drafts=clone(state.editorDrafts||[]);
    const next=confirmEditorDraft(previous,working);state.speeches[index]=next;restore(working,next);staged=true;
    if(!await durable())throw Error('save');
-   staged=false;updateSaveButton();c.onConfirmed?.();c.toast(t('Alterações salvas. A apresentação foi atualizada.'));return true;
+   staged=false;finishMetric?.('sucesso');updateSaveButton();c.onConfirmed?.();c.toast(t('Alterações salvas. A apresentação foi atualizada.'));return true;
   }catch{
+   finishMetric?.('erro');
    if(staged){c.getState().speeches[index]=previous;c.getState().editorDrafts=drafts;restore(working,pending);retain();try{await durable();}catch{}}
    protection.mark('error');updateSaveButton();c.toast(t('Não foi possível salvar. Exporte um backup antes de fechar.'));return false;
   }finally{busy=false;release();updateSaveButton();}
@@ -86,6 +97,7 @@ export function createEditorRuntime(c){
   try{
    for(const item of targets)item.scheduledAt=date;
    if(!await durable())throw Error('save');
+   if(date)globalThis.SePrepareMetrics?.used('agenda','agendar');
    return true;
   }catch{
    for(const [item,previous] of previousDates)item.scheduledAt=previous;

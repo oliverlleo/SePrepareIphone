@@ -24,6 +24,26 @@ const sync=one(nodes.filter(n=>n.type==='CallExpression'&&n.callee?.name==='_r'&
 for(const ret of nodes.filter(n=>n.type==='ReturnStatement'&&n.start>save.start&&n.end<save.end&&n.argument?.value===false)){insert(ret.argument.start,'ERROR','(window.SePrepareParityRuntime?.mark("error"),');insert(ret.argument.end,'ERROR',')');}
 const actions=one(nodes.filter(n=>n.type==='SwitchStatement'&&n.discriminant?.name==='r'&&n.cases.some(x=>x.test?.value==='save-editor')),'actions');
 const byText=(name,fragment)=>one(nodes.filter(n=>n.type==='FunctionDeclaration'&&n.id?.name===name&&source.slice(n.start,n.end).includes(fragment)),name+' '+fragment);
+hook('aI','METRICSREADY','if(!yo&&!e0&&Yt.isAllowedIPhone())window.SePrepareMetrics?.ready();',true);
+hook('vM','METRICSLINES','if(ue()?.read.onlyMine)window.SePrepareMetrics?.used("demonstracao","filtrar_minhas_falas");',true);
+hook('kl','METRICSHOME',`let spSearchTimer;
+ L("#searchSpeeches")?.addEventListener("input",()=>{clearTimeout(spSearchTimer);if(d.search.trim())spSearchTimer=setTimeout(()=>{if(d.view==="home")window.SePrepareMetrics?.used("caderno","buscar");},500);});
+ L("#homeCategoryFilter")?.addEventListener("change",()=>window.SePrepareMetrics?.used("caderno","filtrar_categoria"),{capture:true});`,true);
+const pin=one(actions.cases.filter(n=>n.test?.value==='pin'),'fixar');
+const pinSaved=one(nodes.filter(n=>n.type==='CallExpression'&&n.callee?.name==='le'&&n.start>pin.start&&n.end<pin.end),'salvar fixado');
+insert(pinSaved.end,'METRICSPIN','&&ue().pinned&&window.SePrepareMetrics?.used("caderno","fixar")');
+const speaker=byText('C','Antes de identificar trecho');
+const speakerSaved=one(nodes.filter(n=>n.type==='CallExpression'&&n.callee?.name==='c'&&n.start>speaker.start&&n.end<speaker.end),'gravar identificação');
+insert(speakerSaved.end,'METRICSSPEAKER','&&E&&window.SePrepareMetrics?.used("demonstracao","atribuir_falas")');
+const restored=byText('HM','Antes de restaurar texto');
+const restoredCommit=one(nodes.filter(n=>n.type==='CallExpression'&&n.callee?.name==='n0'&&n.start>restored.start&&n.end<restored.end),'gravar revisão restaurada');
+insert(restoredCommit.start,'METRICSHISTORYOPEN','const spHistoryMetric=window.SePrepareMetrics?.begin("versoes","restaurar",{tipo:se(e)?"demonstracao":"discurso"});((ok)=>{spHistoryMetric?.(ok?"sucesso":"erro");return ok;})(');
+insert(restoredCommit.end,'METRICSHISTORYCLOSE',')');
+const compare=byText('ee','id="versionComparison"');
+insert(compare.body.end-1,'METRICSCOMPARE',';window.SePrepareMetrics?.used("versoes","comparar",{tipo:S.type==="part"?"demonstracao":"discurso"});');
+const useVersion=byText('E','version-finish-switch');
+const successVersion=one(nodes.filter(n=>n.type==='CallExpression'&&n.start>useVersion.start&&n.end<useVersion.end&&source.slice(n.start,n.end).includes('mr(u()).name')&&n.callee?.name==='c'),'version confirmation');
+insert(successVersion.start,'METRICSVERSION','(v==="select"||v==="create")&&window.SePrepareMetrics?.used("versoes",v==="select"?"trocar":S.copy?"duplicar":"criar"),');
 const hookBody=(f,label,code)=>insert(f.body.start+1,label,code);
 const vault=byText('M','pwa-snapshot-preview');
 hookBody(vault,'LOCALCOPIES',`if(window.SePrepareParity){await ct();await ne();window.SePrepareParity.openLocalCopies({copies:w.slice(0,fn),openModal:l,button:s,icon:o,escape:i,formatDate:Br,formatSize:rt});r.modal="pwa-vault";return;}`);
@@ -39,7 +59,8 @@ insert(clear.consequent[0].start,'AGENDACLEAR',`if(window.SePrepareParityRuntime
 hookBody(byText('Be','case"pwa-export-ics"'),'CALENDAREXPORT',`if(k==="pwa-export-ics"&&window.SePrepareParity){const speech=f().speeches.find(item=>item.id===(_||r.speechId));const date=window.SePrepareParity.readAgendaDate(a("#scheduleDate"),u);if(speech&&date!==null)Pe({...speech,scheduledAt:date});return true;}`);
 const exportCalendar=byText('Pe','BEGIN:VCALENDAR');
 const exportMessage=one(nodes.filter(n=>n.type==='CallExpression'&&n.start>exportCalendar.start&&n.end<exportCalendar.end&&n.callee?.name==='u'&&n.arguments[0]?.arguments?.[0]?.value?.startsWith('Abrindo o Calendário')),'calendar export message');
-insert(exportMessage.arguments[0].start,'CALENDARMESSAGE','SPLocale.t("Abra o arquivo para adicionar o evento ao Calendário.")||');
+insert(exportMessage.arguments[0].start,'CALENDARMESSAGE','(window.SePrepareMetrics?.used("agenda","gerar_calendario"),SPLocale.t("Abra o arquivo para adicionar o evento ao Calendário.")||');
+insert(exportMessage.arguments[0].end,'CALENDARMETRICSEND',')');
 hook('pM','AGENDAEMPTY','const help=L("#viewContent .empty p");if(help)help.textContent=SPLocale.t("Adicione uma data para ver suas próximas apresentações aqui.");',true);
 const settingsRender=fn('hM').body.body[0];
 if(!source.slice(settingsRender.start,settingsRender.end).includes('settings-list'))throw Error('Apple settings template unavailable');

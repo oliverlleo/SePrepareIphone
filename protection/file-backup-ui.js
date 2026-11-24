@@ -5,6 +5,7 @@ import {prepareFileBackup} from './file-backup.js';
 export async function importFileBackup(c){
  const data=c.rt.importBackup;if(!data||c.rt.importingBackup)return false;
  c.rt.importingBackup=true;let previous=null,staged=false,release=()=>{};
+ const finishMetric=globalThis.SePrepareMetrics?.begin('protecao','restaurar_backup',{formato:'arquivo'});
  try{
   if(!c.persist()||!await c.flush())throw Error('Não foi possível salvar o caderno atual.');
   if(c.isCurrent&& !c.isCurrent())return false;
@@ -15,11 +16,12 @@ export async function importFileBackup(c){
   if(!c.save(raw))throw Error('Não foi possível salvar a restauração. Seu caderno foi preservado.');
   c.setState(result.state);
   if(!await c.flush())throw Error('Não foi possível salvar a restauração. Seu caderno foi preservado.');
-  staged=false;c.rt.importBackup=null;c.commit(raw);c.done(result.added);return true;
+  staged=false;finishMetric?.('sucesso');c.rt.importBackup=null;c.commit(raw);c.done(result.added);return true;
  }catch(error){
+  finishMetric?.('erro');
   if(staged){c.setState(previous);try{if(c.save(JSON.stringify(previous)))await c.flush();}catch{}}
   c.fail(error.message);return false;
- }finally{c.rt.fileImportCommit=false;c.rt.importingBackup=false;release();}
+ }finally{finishMetric?.('cancelado');c.rt.fileImportCommit=false;c.rt.importingBackup=false;release();}
 }
 
 export function lockFileImport(){

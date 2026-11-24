@@ -918,6 +918,7 @@
         fallbackCount++;
         return true;
       }
+      const finishMetric=!isPreview?globalThis.SePrepareMetrics?.begin('audio','ler_em_voz_alta'):null;
       function fail(code,at,{afterRetry=false}={}) {
         if(!valid())return;
         clearStartupTimer();
@@ -944,6 +945,7 @@
         } else {
           audio.state='paused';activeUtterance=null;
         }
+        finishMetric?.('erro',code==='network'?'sem_rede':'indisponivel');
         scheduleIOSAudioSessionRelease();
         const retryText={
           pt:'O iPhone não conseguiu ler com esta voz. Tente outra voz.',
@@ -993,7 +995,7 @@
         let started=false;
         utterance.onstart=()=>{
           if(!isCurrent())return;
-          started=true;anyChunkStarted=true;clearStartupTimer();
+          started=true;anyChunkStarted=true;clearStartupTimer();finishMetric?.('sucesso');
           if(isPreview){
             const label=document.getElementById('audioTestLabel');if(label)label.textContent=t(6);
           } else {

@@ -3,7 +3,7 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 export function createPdfExportUI(host){
  let state=null,serial=0;
  const t=host.t||String,$=s=>document.querySelector(s);
- function dispose(){const old=state;state=null;if(!old)return;clearTimeout(old.timer);clearTimeout(old.timeout);clearTimeout(old.resizeTimer);old.worker?.terminate();old.observer?.disconnect();try{old.renderTask?.cancel();void old.doc?.destroy?.()?.catch(()=>{});}catch{}old.bytes=null;}
+ function dispose(){const old=state;state=null;if(!old)return;old.finishMetric?.('cancelado');clearTimeout(old.timer);clearTimeout(old.timeout);clearTimeout(old.resizeTimer);old.worker?.terminate();old.observer?.disconnect();try{old.renderTask?.cancel();void old.doc?.destroy?.()?.catch(()=>{});}catch{}old.bytes=null;}
  function status(message,error=false){const el=$('#pdfStatus');if(el){el.textContent=t(message);el.classList.toggle('pdf-error',error);el.setAttribute('role',error?'alert':'status');}}
  function saveEnabled(){const button=$('[data-action="pdf-save"]');if(button)button.disabled=!state?.bytes||state.busy||state.pending;}
  async function open(){
@@ -18,13 +18,13 @@ export function createPdfExportUI(host){
   generate();
  }
  function generate(){
-  const s=state;if(!s)return;if(s.busy){s.pending=true;return;}s.busy=true;s.pending=false;s.bytes=null;saveEnabled();status('Preparando o PDF…');
+  const s=state;if(!s)return;if(s.busy){s.pending=true;return;}s.finishMetric?.('cancelado');s.finishMetric=globalThis.SePrepareMetrics?.begin('exportacao','gerar_pdf');s.busy=true;s.pending=false;s.bytes=null;saveEnabled();status('Preparando o PDF…');
   try{
-   if(!s.worker){s.worker=new Worker(new URL('pdf/export-worker.js'+(host.assetVersion?'?v='+host.assetVersion:''),document.baseURI));s.worker.onmessage=event=>{if(state!==s)return;clearTimeout(s.timeout);s.busy=false;const data=event.data;if(data.id!==s.generation)return;if(s.pending){generate();return;}if(data.error){failed(data.error);return;}s.bytes=data.bytes;saveEnabled();void preview(s);};s.worker.onerror=()=>{if(state===s)failed(t('Não foi possível carregar o gerador de PDF. Tente novamente com o aplicativo atualizado.'));};}
+   if(!s.worker){s.worker=new Worker(new URL('pdf/export-worker.js'+(host.assetVersion?'?v='+host.assetVersion:''),document.baseURI));s.worker.onmessage=event=>{if(state!==s)return;clearTimeout(s.timeout);s.busy=false;const data=event.data;if(data.id!==s.generation)return;if(s.pending){generate();return;}if(data.error){failed(data.error);return;}s.bytes=data.bytes;s.finishMetric?.('sucesso');saveEnabled();void preview(s);};s.worker.onerror=()=>{if(state===s)failed(t('Não foi possível carregar o gerador de PDF. Tente novamente com o aplicativo atualizado.'));};}
    s.generation++;s.worker.postMessage({id:s.generation,source:s.source,options:s.options});s.timeout=setTimeout(()=>{if(state===s)failed(t('A geração demorou mais que o esperado. Feche e tente novamente.'));},90000);
   }catch(error){failed(error.message);}
  }
- function failed(message){if(!state)return;clearTimeout(state.timeout);state.busy=false;state.worker?.terminate();state.worker=null;saveEnabled();status(message,true);const placeholder=$('#pdfPlaceholder');if(placeholder){placeholder.hidden=false;placeholder.textContent=t('Não foi possível preparar a prévia.');}}
+ function failed(message){if(!state)return;state.finishMetric?.('erro');clearTimeout(state.timeout);state.busy=false;state.worker?.terminate();state.worker=null;saveEnabled();status(message,true);const placeholder=$('#pdfPlaceholder');if(placeholder){placeholder.hidden=false;placeholder.textContent=t('Não foi possível preparar a prévia.');}}
  async function preview(s){
   const id=s.generation;try{const module=await import(new URL('pdf/preview.js'+(host.assetVersion?'?v='+host.assetVersion:''),document.baseURI).href);if(state!==s||s.pending||id!==s.generation)return;const doc=await module.openPreview(s.bytes.slice(0));if(state!==s||s.pending||id!==s.generation){void doc.destroy();return;}s.renderTask?.cancel();await s.doc?.destroy();if(state!==s){void doc.destroy();return;}s.doc=doc;s.previewGeneration=id;s.page=Math.min(s.page,doc.numPages);await draw();}
   catch(error){if(state===s&&!s.pending){status('PDF pronto. A prévia não pôde ser exibida; você ainda pode salvar o arquivo.',true);$('#pdfPlaceholder').hidden=false;$('#pdfPlaceholder').textContent=t('Prévia indisponível neste aparelho.');}}

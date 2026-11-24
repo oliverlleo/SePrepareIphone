@@ -82,6 +82,7 @@ export function createShareCodeUI(c){
  }
  async function send(){
   if(!message||message.length>60000)return;
+  globalThis.SePrepareMetrics?.used('compartilhamento','compartilhar',{formato:'codigo'});
   try{if(c.native?.shareText)c.native.shareText(source.title,message);else if(navigator.share)await navigator.share({title:source.title,text:message});else await copy();}
   catch(error){if(error.name!=='AbortError')toast(ux('sendError'));}
  }
@@ -93,6 +94,7 @@ export function createShareCodeUI(c){
  async function sendPreparation(asFile){
   c.syncCurrent();const speech=c.getState().speeches.find(item=>item.id===rt.shareSpeechId&&!item.deleted);if(!speech)return;
   const ids=chosenIds(speech);if(!ids.length){toast(translateUI('Selecione pelo menos uma versão.'));return;}
+  globalThis.SePrepareMetrics?.used('compartilhamento','compartilhar',{formato:asFile?'arquivo':'texto'});
   try{
    if(asFile){
     const name=shareFilename(speech.title),json=encodeSpeechVersions(speech,ids),text=fileShareMessage();
@@ -134,6 +136,7 @@ export function createShareCodeUI(c){
   if(category&&state.categories.length>=300){toast(translateUI('Escolha uma categoria existente. O limite é de 300 categorias.'));return;}
   const createdCategory=category?{id:uid(),...clone(category)}:null,categoryId=createdCategory?.id||(state.categories.some(item=>item.id===selected)?selected:'');
   let speech=null,adoption=null,staged=false,committed=false,release=()=>{};const button=$('[data-action="save-share-code"]');
+  const finishMetric=globalThis.SePrepareMetrics?.begin('compartilhamento','importar',{formato:'codigo',tipo:isPart(received.speech)?'demonstracao':'discurso'});
   rt.importingSharedCode=true;if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
   try{
    release=c.lockImport?.()||release;
@@ -143,8 +146,9 @@ export function createShareCodeUI(c){
    if($('#codeKeepSchedule')&&!$('#codeKeepSchedule').checked){speech.scheduledAt=0;speech.reminders=[];}
    copyDocumentVersions(speech);if(createdCategory)state.categories.push(createdCategory);state.speeches.unshift(speech);staged=true;
    if(await withChangeOrigin('shared-import',()=>c.persist(true))===false||c.flush&&!await c.flush())throw Error(ux('receiveError'));
-   committed=true;rt.importingSharedCode=false;c.onSharedSaved?.();c.onImported?.(speech);received=null;closeModal();rt.returnTo='home';await c.go('reader',speech.id);toast(isPart(speech)?translateUI('Parte importada com todas as versões.'):translateUI('Discurso importado com todas as versões.'));
+   committed=true;finishMetric?.('sucesso');rt.importingSharedCode=false;c.onSharedSaved?.();c.onImported?.(speech);received=null;closeModal();rt.returnTo='home';await c.go('reader',speech.id);toast(isPart(speech)?translateUI('Parte importada com todas as versões.'):translateUI('Discurso importado com todas as versões.'));
   }catch(error){
+   finishMetric?.('erro');
    if(!committed){adoption?.rollback();if(staged){state.speeches=state.speeches.filter(item=>item.id!==speech.id);if(createdCategory)state.categories=state.categories.filter(item=>item.id!==createdCategory.id);try{await withChangeOrigin('shared-import',()=>c.persist(true));if(c.flush)await c.flush();}catch{}}}
    toast(errorText(error));
   }finally{rt.importingSharedCode=false;release();if(button?.isConnected){button.disabled=false;button.removeAttribute('aria-busy');}}
