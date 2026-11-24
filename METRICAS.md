@@ -14,6 +14,8 @@ Android direto e Play usam o app Firebase registrado para `br.com.orador.app`. W
 
 ## Privacidade e limites de leitura
 
+O GA4 do iPhone/iPad só inicia em `https://ios.seprepareapp.com.br` com Estatísticas de uso ativas. Navegadores que sinalizam automação são excluídos. Para uma conferência manual no domínio público, abra o endereço com `?sp_qa=1`. O bloqueio acompanha a mesma aba enquanto ela estiver aberta. Em testes automatizados, continue interceptando a rede de medição.
+
 O interruptor em **Ajustes → Privacidade → Estatísticas de uso** começa desligado. Android desabilita a coleta no manifesto e por consentimento. As PWAs só carregam a tag do Google depois da opção ativa. A escolha não é vinculada ao Drive. Os eventos próprios usam valores enumerados e excluem textos, áudios, notas, buscas, códigos, caminhos de arquivos, links privados e identificadores do Caderno.
 
 Enquanto uma PWA está aberta e offline, até 60 eventos válidos podem ficar em memória. São descartados ao fechar a página ou revogar consentimento e escoados uma vez quando ela volta à rede. Um fluxo interrompido pelo encerramento do app pode aparecer apenas como iniciado. Os SDKs também podem adicionar identificador da instalação/navegador, sessão e dados técnicos descritos na política.
