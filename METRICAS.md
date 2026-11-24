@@ -6,6 +6,7 @@
 - `sp_recurso_usado` registra uma ação observável, como uma comparação realmente exibida ou o início do teleprompter.
 - `sp_operacao_iniciada` abre uma tentativa. `sp_operacao_finalizada` registra sucesso, erro ou cancelamento, uma vez por tentativa acompanhada.
 - `sp_destino_escolhido` pertence à página Baixar. Registra o botão escolhido quando o visitante permite cookies de estatística.
+- `sp_pwa_primeira_abertura` registra a primeira abertura observada do Caderno a partir da Tela de Início, uma vez por armazenamento da PWA com Estatísticas de uso ativas. Uma instalação anterior entra na contagem em sua primeira abertura observada após a atualização.
 
 Os parâmetros dos produtos são `plataforma`, `canal`, `versao_app`, `build_app`, `recurso`, `acao` e, conforme o evento, `resultado`, `motivo`, `tipo`, `modo` ou `formato`. O catálogo aceito está em `analytics.js`; a ponte nativa Android verifica novamente os valores e acrescenta canal e versão do build.
 
