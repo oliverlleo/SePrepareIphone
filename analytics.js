@@ -3,6 +3,7 @@
   'use strict';
   const preference = 'seprepare.metrics.opt-in.v1';
   const lastActivityKey = 'seprepare.metrics.activity.v1';
+  const firstPwaOpenKey = 'seprepare.metrics.pwa-opened.v1';
   const idleMs = 30 * 60 * 1000;
   const actions = {
     caderno: ['buscar', 'abrir_resultado_busca', 'filtrar_categoria', 'fixar'],
@@ -37,7 +38,10 @@
   const write = (key, value) => {
     try { localStorage.setItem(key, value); return true; } catch { return false; }
   };
-  let config, available = false, tagLoaded = false, lastActivity = 0, consentRevision = 0;
+  const installedModes = ['standalone', 'window-controls-overlay']
+    .map(mode => globalThis.matchMedia?.(`(display-mode: ${mode})`));
+  const inPwa = () => installedModes.some(mode => mode?.matches) || navigator.standalone === true;
+  let config, available = false, tagLoaded = false, tagReady = false, lastActivity = 0, consentRevision = 0;
   const pending = [];
   function allowed() {
     try {
@@ -64,6 +68,10 @@
     const tag = document.createElement('script');
     tag.async = true;
     tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+    tag.addEventListener('load', () => {
+      tagReady = true;
+      reportPwaMetrics();
+    }, {once: true});
     document.head.append(tag);
   }
   function send(event, fields) {
@@ -79,14 +87,32 @@
         return;
       }
       startTag();
-      const channel = globalThis.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
-        ? 'pwa' : 'navegador';
+      const channel = inPwa() ? 'pwa' : 'navegador';
       gtag('event', event, {
         ...fields, plataforma: config.platform, canal: channel, versao_app: config.version,
         build_app: config.build, send_to: config.measurement, page_location: location.origin + '/',
         page_referrer: '', ignore_referrer: true
       });
     } catch { /* Statistics must never block a product action. */ }
+  }
+  function firstPwaOpenPending() {
+    return available && !document.hidden && inPwa() && read(firstPwaOpenKey) !== '1';
+  }
+  function reportPwaMetrics() {
+    const canReport = () => config?.measurement && !native() && allowed() && navigator.onLine !== false;
+    if (!canReport() || !firstPwaOpenPending()) return;
+    if (!tagReady) {
+      startTag();
+      return;
+    }
+    const report = () => {
+      if (!canReport()) return;
+      if (firstPwaOpenPending() && write(firstPwaOpenKey, '1')) {
+        send('sp_pwa_primeira_abertura', {});
+      }
+    };
+    if (navigator.locks?.request) navigator.locks.request(firstPwaOpenKey, report).catch(() => {});
+    else report();
   }
   function activity() {
     if (!available || document.hidden || !allowed()) return;
@@ -143,7 +169,10 @@
       globalThis['ga-disable-' + config.measurement] = !on;
       if (tagLoaded) gtag('consent', 'update', {analytics_storage: on ? 'granted' : 'denied'});
     }
-    if (on) activity();
+    if (on) {
+      activity();
+      reportPwaMetrics();
+    }
     return true;
   }
   function mountSettings(root) {
@@ -165,7 +194,11 @@
     root.append(label, description);
   }
   function configure(options) { config = options; }
-  function ready() { available = true; activity(); }
+  function ready() {
+    available = true;
+    activity();
+    reportPwaMetrics();
+  }
   function blocked() { available = false; }
   globalThis.SePrepareMetrics = Object.freeze({configure, ready, blocked, used, begin, mountSettings});
   const script = document.currentScript;
@@ -175,6 +208,7 @@
   });
   globalThis.addEventListener('online', () => {
     for (const [event, fields] of pending.splice(0)) send(event, fields);
+    reportPwaMetrics();
   });
   globalThis.addEventListener('storage', e => {
     if (e.key !== preference || native()) return;
@@ -185,8 +219,13 @@
       if (tagLoaded) gtag('consent', 'update', {analytics_storage: allowed() ? 'granted' : 'denied'});
     }
     for (const toggle of document.querySelectorAll('[data-sp-metrics-choice]')) toggle.checked = allowed();
+    reportPwaMetrics();
   });
-  document.addEventListener('visibilitychange', activity);
+  for (const mode of installedModes) mode?.addEventListener?.('change', reportPwaMetrics);
+  document.addEventListener('visibilitychange', () => {
+    activity();
+    reportPwaMetrics();
+  });
   document.addEventListener('pointerdown', activity, {passive: true});
   document.addEventListener('keydown', activity);
 })();
