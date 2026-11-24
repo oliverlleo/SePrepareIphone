@@ -16,7 +16,7 @@ function applyReview(keepOpen=false,only=null){const r=rt.review;if(!r||!rt.q)re
     replaceStyled(rt.q,at,m.length,m.chosen);last=m.offset;diff+=m.chosen.length-m.length;appliedEdits.push({offset:m.offset,length:m.length,replacement:m.chosen,match:m});applied++;
   }
   const length=r.range.length+diff;if(rt.selection.length)rt.selection={index:r.range.index,length};
-  rt.q.history.cutoff();state.vocabulary=nextVocabulary;persist(true);
+  rt.q.history.cutoff();state.vocabulary=nextVocabulary;if(persist(true)!==false&&applied>0)globalThis.SePrepareMetrics?.used('editor','aplicar_revisao');
   if(keepOpen){
    r.matches=rebaseReviewMatches(r.matches,appliedEdits);r.range={...r.range,length};r.text=plain(rt.q.getContents(r.range.index,length));r.quotes=quoteRanges(r.text,r.range);r.baseline=JSON.stringify(rt.q.getContents());
    // Pending worker/online replies refer to the old text and must never reinsert corrected matches.

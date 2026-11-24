@@ -104,7 +104,8 @@ export function createTimeMarkUI(c){
   if(attribute===TIME_MARK_ATTRIBUTE)q.formatLine(at,1,attribute,String(seconds),'user');else q.formatText(at,length,attribute,pointValue,'user');
   q.history.cutoff();q.focus({preventScroll:true});q.setSelection(index,0,'silent');rt.selection={index,length:0};
   const el=document.querySelector('.editor-scroll');if(el&&ctx.scroll!==undefined)el.scrollTop=ctx.scroll;
-  c.persist(true);chosen={position:at,length,attribute,seconds,value:pointValue};showRemoval();refreshEditor();
+  if(c.persist(true)!==false)globalThis.SePrepareMetrics?.used('tempo','salvar_marca',{modo:labelKey==='Tempo até esta linha:'?'ritmo':'manual'});
+  chosen={position:at,length,attribute,seconds,value:pointValue};showRemoval();refreshEditor();
   c.toast(c.t(labelKey)+' '+formatTimeMark(seconds));return true;
  }
  function removeRow(row,ctx=null){

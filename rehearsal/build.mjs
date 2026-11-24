@@ -47,6 +47,12 @@ const bridge = only(
 );
 
 const helpers = `
+const spPracticeMetrics=new Map();
+const spPracticeMetricKey=s=>s.id+'\\u0000'+s.activeVersionId;
+function spStartPracticeMetric(s){
+  const key=spPracticeMetricKey(s);
+  if(!spPracticeMetrics.has(key))spPracticeMetrics.set(key,window.SePrepareMetrics?.begin(se(s)?'demonstracao':'discurso','ensaiar'));
+}
 var sp73Rehearsal = window.SePrepareRehearsal.createInteractiveRehearsalUI({
   $: L,
   $$: $t,
@@ -66,7 +72,7 @@ var sp73Rehearsal = window.SePrepareRehearsal.createInteractiveRehearsalUI({
   openEditor: id => { d.editorFrom = d.returnTo || 'home'; gt('editor', id); },
   refreshIdentity: () => { const s = ue(), el = L('.reader-identity'); if (s && el) el.outerHTML = xM(s); },
   renderReaderContent: Ha,
-  ensureTimerRunning: () => { const s = ue(); if (s && !s.timer?.running) { Ln(s); le(true); wn(); } },
+  ensureTimerRunning: () => { const s = ue(); if (s && !s.timer?.running) { Ln(s); if(le(true)!==false)spStartPracticeMetric(s); wn(); } },
   pauseTimerIfRunning: () => { const s = ue(); if (s && s.timer?.running) { Ln(s); le(true); wn(); } },
   finishRehearsalRecord: meta => yM(meta),
   setReaderPage: p => { d.page = p; Ha(); }
@@ -104,7 +110,10 @@ function sp73FinishAction(options) {
   const meta = options || sp73Rehearsal?.consumeFinishMetadata();
   let e = sp73FinishVersion(t, meta);
   if (!e) { ae(SPLocale.t("Inicie o cronômetro para registrar um ensaio.")); return; }
-  le(true);
+  const key=spPracticeMetricKey(t),finishMetric=spPracticeMetrics.get(key);
+  spPracticeMetrics.delete(key);
+  if(le(true)===false){finishMetric?.('erro');wn();return false;}
+  if(finishMetric)void Promise.resolve(Yt.flushPendingSaves()).then(ok=>finishMetric(ok?'sucesso':'erro'),()=>finishMetric('erro'));
   wn();
   ae(e.duration > 0 ? SPLocale.tr\`Ensaio salvo: \${xa(e.duration)}.\` : SPLocale.t("Cronômetro encerrado."));
 }
@@ -160,7 +169,7 @@ hook(
   'if(window.orador&&!window.orador.getRehearsal)window.orador.getRehearsal=()=>sp73Rehearsal;sp73Rehearsal?.checkContextContinuity();'
 );
 hook(fn('he', 'audioPlayer.stopPreview'), 'CLOSE', 'sp73Rehearsal?.onModalClosed(d.modal);');
-hook(fn('Hb'), 'TIMER', ';sp73Rehearsal?.syncTimerState(!!ue()?.timer?.running);', true);
+hook(fn('Hb'), 'TIMER', ';if(ue()?.timer?.running)spStartPracticeMetric(ue());sp73Rehearsal?.syncTimerState(!!ue()?.timer?.running);', true);
 hook(fn('bM'), 'RESTART', 'sp73Rehearsal?.dispose();');
 hook(fn('On'), 'FINISHVER', 'return sp73FinishVersion(t,arguments[1]);');
 hook(fn('yM'), 'FINISHACT', 'return sp73FinishAction(arguments[0]);');

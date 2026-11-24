@@ -1361,12 +1361,14 @@ export function createInterviewUI(host) {
     } catch {finish(true);}
   }
 
+  const trainingMetrics=new Map();
   async function activate(row, fresh) {
     areaDropdownOpen = false;
     modal = null;
     if (!row) return;
     if (row.voice || row.record || config.autoMic) host.unlockAudio(row.record || config.autoMic);
     const previous = row;
+    if(!trainingMetrics.has(row.id))trainingMetrics.set(row.id,globalThis.SePrepareMetrics?.begin('entrevista','treinar',{modo:row.mode==='simulation'?'simulacao':'guiado'}));
     if (row.status === 'partial') row = {...row, status: 'paused', changedAt: Date.now()};
     let captureResult;
     if (row.record) {
@@ -1380,6 +1382,7 @@ export function createInterviewUI(host) {
       if (!vadRes?.ok) {config.autoMic = false; if (!row.record) host.releaseRecordingAudio(); setNotice('audioFail');}
     }
     if ((fresh || row !== previous) && !await storeSession(row, fresh ? undefined : previous)) {
+      trainingMetrics.get(row.id)?.('erro','conflito');trainingMetrics.delete(row.id);
       captureAbort?.abort(); if (captureResult) await captureResult; await closeCapture(); vad.release(); return;
     }
     sessionId = row.id;
@@ -1404,7 +1407,7 @@ export function createInterviewUI(host) {
     phase = markPartial ? 'idle' : 'paused';
     const next = {...row, status: markPartial ? 'partial' : 'paused', draft: copy(answerDraft), changedAt: Date.now()};
     if (!await storeSession(next, row)) {render(); return false;}
-    if (markPartial) {repeatSelection.clear(); phase = 'idle';}
+    if (markPartial) {trainingMetrics.get(row.id)?.('cancelado');trainingMetrics.delete(row.id);repeatSelection.clear(); phase = 'idle';}
     render();
     return true;
   }
@@ -1425,10 +1428,11 @@ export function createInterviewUI(host) {
     if (row.cursor + 1 === row.questions.length) {vad.release(); await closeCapture();}
     const next = confirmInterviewAnswer(row, question.id, outcome, copy(answerDraft));
     if (next && repeat) next.attempts[next.attempts.length - 1].review = 'repeat';
-    if (!next || !await storeSession(next, row)) {phase = 'paused'; vad.release(); await closeCapture(); render(); return;}
+    if (!next || !await storeSession(next, row)) {trainingMetrics.get(row.id)?.('erro');trainingMetrics.delete(row.id);phase = 'paused'; vad.release(); await closeCapture(); render(); return;}
     hintOpen = false;
     answerDraft = copy(next.draft);
-    if (next.status === 'done') {repeatSelection.clear(); phase = 'idle'; render(true); return;}
+    if(repeat)globalThis.SePrepareMetrics?.used('entrevista','repetir_pergunta');
+    if (next.status === 'done') {trainingMetrics.get(row.id)?.('sucesso');trainingMetrics.delete(row.id);repeatSelection.clear(); phase = 'idle'; render(true); return;}
     await ask(next.voice);
   }
 
@@ -1524,7 +1528,10 @@ export function createInterviewUI(host) {
       return false;
     }
     const saved = {...copy(draftItem), title: draftItem.title.trim(), changedAt: Date.now()};
-    if (!await commit(data => ({...data, items: [...data.items.filter(r => r.id !== saved.id), saved]}))) return false;
+    const finishMetric=draftDirty||!originalItem?globalThis.SePrepareMetrics?.begin('editor','salvar_preparacao',{tipo:'entrevista'}):null;
+    if (!await commit(data => ({...data, items: [...data.items.filter(r => r.id !== saved.id), saved]}))) {finishMetric?.('erro');return false;}
+    finishMetric?.('sucesso');
+    if(!originalItem)globalThis.SePrepareMetrics?.used('entrevista','criar_roteiro',{modo:version.questions.some(q=>q.reference)?'catalogo':'manual'});
     itemId = saved.id;
     originalItem = copy(saved);
     draftDirty = false;
@@ -1567,6 +1574,7 @@ export function createInterviewUI(host) {
       const pts = pointsTextFor(q);
       q.notes = !q.notes.trim() ? pts : `${q.notes.trimEnd()}\n${pts}`.slice(0, 800);
     }
+    globalThis.SePrepareMetrics?.used('entrevista','aplicar_pontos');
     const first = targets[0];
     activeQId = first.id; activeField = 'notes';
     draftDirty = true; version.changedAt = Date.now();

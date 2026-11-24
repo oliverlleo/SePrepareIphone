@@ -29,9 +29,13 @@ export function createRecordingUI(host){
  function current(){const s=host.getActive();return s&&{s,v:s.versions?.find(v=>v.id===s.activeVersionId)||s};}
  function elapsed(s){const timer=s?.timer||{};return (timer.elapsedMs||0)+(timer.running?Math.max(0,Date.now()-timer.startedAt):0);}
  function sameContext(){const c=current();return c&&c.s.id===active?.speechId&&(c.s.activeVersionId||c.v.id)===active?.versionId;}
+
+ let finishRecordingMetric;
  async function startRecording(){
   if(active||starting||saving){host.toast(t('busy'));return;}
-  const c=current();if(!c)return;if(!native&&(!globalThis.MediaRecorder||!navigator.mediaDevices?.getUserMedia)){host.toast(t('unsupported'));return;}
+  const c=current();if(!c)return;
+  finishRecordingMetric=globalThis.SePrepareMetrics?.begin('audio','gravar',{tipo:c.s.type==='part'?'demonstracao':'discurso'});
+  if(!native&&(!globalThis.MediaRecorder||!navigator.mediaDevices?.getUserMedia)){finishRecordingMetric?.('erro','indisponivel');host.toast(t('unsupported'));return;}
   cleanupPlayer();starting=true;mount();let created=false;
   try{
    if(!await store.lease(owner))throw Error(t('otherTab'));
@@ -46,13 +50,13 @@ export function createRecordingUI(host){
    if(!c.s.timer?.running)host.toggleTimer();
 
    navigator.storage?.persist?.().catch(()=>{});
-  }catch(error){if(capture)try{await capture.finish();}catch{}if(created)await store.patch(active.id,{status:'failed'}).catch(()=>{});active=null;capture=null;await store.lease(owner,true).catch(()=>{});if(error.message===t('otherTab'))host.toast(error.message);else fail(error);}
+  }catch(error){finishRecordingMetric?.('erro',error.name==='NotAllowedError'?'permissao_negada':error.name==='QuotaExceededError'?'sem_espaco':error.message===t('otherTab')?'conflito':'outro');if(capture)try{await capture.finish();}catch{}if(created)await store.patch(active.id,{status:'failed'}).catch(()=>{});active=null;capture=null;await store.lease(owner,true).catch(()=>{});if(error.message===t('otherTab'))host.toast(error.message);else fail(error);}
   finally{if(!active)clearInterval(leaseTimer);starting=false;mount();tick();}
  }
  async function finish(options,interruption=false){
   if(saving)return saving;if(!active)return false;
   if(sameContext()&&host.getActive()?.timer?.running)host.toggleTimer();
-  const record=active,cap=capture;clearInterval(leaseTimer);starting=false;
+  const record=active,cap=capture,finishMetric=finishRecordingMetric;clearInterval(leaseTimer);starting=false;
   saving=(async()=>{
    let result;
    try{
@@ -63,9 +67,9 @@ export function createRecordingUI(host){
     internal=true;try{host.finishRehearsal(options);}finally{internal=false;}
     const c=current(),rehearsal=c?.v.rehearsals?.at(-1);
     await store.patch(record.id,{...fields,status:'ready',interrupted:interruption||!!result.error,rehearsalAt:rehearsal?.at||Date.now(),updatedAt:Date.now()});
-    active=null;capture=null;showSaved(record.id,interruption);if(await store.setting('autoBackup')!==false)void sync(false);
+    finishMetric?.('sucesso');active=null;capture=null;showSaved(record.id,interruption);if(await store.setting('autoBackup')!==false)void sync(false);
     return true;
-   }catch(error){if(sameContext()&&host.getActive()?.timer?.running)host.toggleTimer();active=null;capture=null;host.toast(t('audioError'));console.error('Recording finalization failed; journal retained',error);return false;}
+   }catch(error){finishMetric?.('erro',error.name==='QuotaExceededError'?'sem_espaco':'outro');if(sameContext()&&host.getActive()?.timer?.running)host.toggleTimer();active=null;capture=null;host.toast(t('audioError'));console.error('Recording finalization failed; journal retained',error);return false;}
    finally{await store.lease(owner,true).catch(()=>{});saving=null;mount();void refreshLatest();tick();}
   })();mount();return saving;
  }
@@ -122,7 +126,7 @@ export function createRecordingUI(host){
    if(token!==selectionToken||inline&&contextKey()!==record.speechId+'\u0000'+record.versionId||!inline&&!manager)return;
    const slot=inline?$('#recordingInlinePlayer'):document.querySelector(`[data-recording-id="${id}"] .rec-player-slot`);if(!slot)return;
    let url,localUrl='';if(native&&record.storage==='native')url=native.url(id);else{const blob=await readBlob(record);if(!blob)throw Error(t('audioError'));shareFile={id,file:new File([blob],'SePrepare-'+new Date(record.createdAt).toISOString().slice(0,10)+'.'+audioExtension(record.mime),{type:record.mime})};url=localUrl=URL.createObjectURL(blob);}if(token!==selectionToken){if(localUrl)URL.revokeObjectURL(localUrl);return;}
-   objectUrl=localUrl;playingRecord=record;playerControl=mountRecordingPlayer({slot,url,record,t,icon,inline,onError:()=>fail(Error('Playback error'))});player=playerControl.audio;updateListenButton();await player.play().catch(()=>{});
+   objectUrl=localUrl;playingRecord=record;playerControl=mountRecordingPlayer({slot,url,record,t,icon,inline,onError:()=>fail(Error('Playback error'))});player=playerControl.audio;updateListenButton();await player.play().then(()=>globalThis.SePrepareMetrics?.used('audio','reproduzir'),()=>{});
   }catch(error){fail(error,record.localAvailable?'audioError':'driveError');}
  }
  async function showText(id){const slot=document.querySelector(`[data-recording-id="${id}"] .rec-player-slot`);if(!slot)return;let row=slot.querySelector('.rec-text');if(!row){row=document.createElement('div');row.className='rec-text';row.hidden=true;slot.append(row);}if(!row.hidden){row.hidden=true;return;}const record=await store.getRecord(id),snapshot=await store.snapshot(record.snapshotId);row.textContent=(record.type==='interview'?snapshot?.questions?.map(question=>question.prompt).join('\n\n'):snapshot?.delta?.ops?.map(op=>typeof op.insert==='string'?op.insert:'').join(''))||t('snapshotMissing');row.hidden=false;}
