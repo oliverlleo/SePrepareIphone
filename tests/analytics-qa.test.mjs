@@ -7,9 +7,9 @@ const origin = 'https://ios.seprepareapp.com.br';
 const preference = 'seprepare.metrics.opt-in.v1';
 const session = new Map();
 
-function launch(url, {automated = false, optedIn = true, trialSession = new Map()} = {}) {
+function launch(url, {automated = false, preferenceValue, trialSession = new Map()} = {}) {
   const tagRequests = [];
-  const local = new Map(optedIn ? [[preference, 'on']] : []);
+  const local = new Map(preferenceValue !== undefined ? [[preference, preferenceValue]] : []);
   const scope = {
     location: new URL(url),
     navigator: {webdriver: automated, onLine: true, standalone: true},
@@ -39,14 +39,17 @@ function launch(url, {automated = false, optedIn = true, trialSession = new Map(
 }
 
 const cases = [
-  ['localhost consentido', 'http://localhost:4173/'],
-  ['loopback consentido', 'http://127.0.0.1:4173/'],
-  ['prévia HTTPS consentida', 'https://preview.example.test/'],
+  ['localhost sem preferência (padrão ativo)', 'http://localhost:4173/'],
+  ['loopback IPv4 sem preferência (padrão ativo)', 'http://127.0.0.1:4173/'],
+  ['IP local 192.168 sem preferência (padrão ativo)', 'http://192.168.1.15:4173/'],
+  ['IP local 10.x sem preferência (padrão ativo)', 'http://10.0.0.5:8080/'],
+  ['loopback IPv6 sem preferência (padrão ativo)', 'http://[::1]:4173/'],
+  ['prévia HTTPS sem preferência', 'https://preview.example.test/'],
   ['origem parecida com a oficial', origin+'.preview.example.test/'],
-  ['automação na produção', origin, {automated: true}],
-  ['QA manual na produção', origin+'/?sp_qa=1', {trialSession: session}],
+  ['automação na produção (padrão ativo)', origin, {automated: true}],
+  ['QA manual na produção (padrão ativo)', origin+'/?sp_qa=1', {trialSession: session}],
   ['navegação na mesma aba após sinalizar QA', origin+'/', {trialSession: session}],
-  ['navegação sem consentimento na produção', origin, {optedIn: false}]
+  ['usuário que desligou estatísticas (opt-out)', origin, {preferenceValue: 'off'}]
 ];
 
 for (const [name, url, options] of cases) {
@@ -59,7 +62,11 @@ for (const [name, url, options] of cases) {
   assert.equal(local.has('seprepare.metrics.pwa-install-pending.v1'), false, name);
 }
 
-const regular = launch(origin);
-assert.equal(regular.tagRequests.length, 1);
-assert(regular.scope.dataLayer.some(row => row[0] === 'event' && row[1] === 'sp_caderno_pronto'));
-console.log('PASS GA4 só inicia na origem oficial, em uso normal e com consentimento.');
+const defaultActive = launch(origin);
+assert.equal(defaultActive.tagRequests.length, 1);
+assert(defaultActive.scope.dataLayer.some(row => row[0] === 'event' && row[1] === 'sp_caderno_pronto'));
+
+const explicitOn = launch(origin, {preferenceValue: 'on'});
+assert.equal(explicitOn.tagRequests.length, 1);
+assert(explicitOn.scope.dataLayer.some(row => row[0] === 'event' && row[1] === 'sp_caderno_pronto'));
+console.log('PASS GA4 inicia ativo por padrão na origem oficial, respeita opt-out e bloqueia localhost, IPs locais, prévias, automação e QA.');
