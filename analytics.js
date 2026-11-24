@@ -56,7 +56,7 @@
   function allowed() {
     try {
       return typeof native()?.metricsConsent === 'function'
-        ? native().metricsConsent() === true : read(preference) === 'on';
+        ? native().metricsConsent() === true : read(preference) !== 'off';
     } catch { return false; }
   }
   function startTag() {
