@@ -26,6 +26,7 @@ const actions=one(nodes.filter(n=>n.type==='SwitchStatement'&&n.discriminant?.na
 const byText=(name,fragment)=>one(nodes.filter(n=>n.type==='FunctionDeclaration'&&n.id?.name===name&&source.slice(n.start,n.end).includes(fragment)),name+' '+fragment);
 hook('aI','METRICSREADY','if(!yo&&!e0&&Yt.isAllowedIPhone())window.SePrepareMetrics?.ready();',true);
 hook('vM','METRICSLINES','if(ue()?.read.onlyMine)window.SePrepareMetrics?.used("demonstracao","filtrar_minhas_falas");',true);
+hook('t0','READERDRAFT','window.SePrepareParityRuntime?.syncReaderDraftNotice?.();',true);
 hook('kl','METRICSHOME',`let spSearchTimer;
  L("#searchSpeeches")?.addEventListener("input",()=>{clearTimeout(spSearchTimer);if(d.search.trim())spSearchTimer=setTimeout(()=>{if(d.view==="home")window.SePrepareMetrics?.used("caderno","buscar");},500);});
  L("#homeCategoryFilter")?.addEventListener("change",()=>window.SePrepareMetrics?.used("caderno","filtrar_categoria"),{capture:true});`,true);
