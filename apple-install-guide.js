@@ -193,7 +193,7 @@
     guide.innerHTML =
       '<header class="install-header"><div class="install-shell install-topbar">' +
         '<a class="install-brand" href="https://seprepareapp.com.br/" aria-label="SePrepare">' +
-          '<img src="branding/logo-dark.png" alt="SePrepare" width="174" height="58"></a>' +
+          '<img src="branding/logo-light.png" alt="SePrepare" width="174" height="58"></a>' +
         '<span class="install-top-label"><span class="install-top-dot"></span>' + escapeHtml(t.label) + '</span>' +
       '</div></header>' +
       '<div class="install-shell install-page">' +
