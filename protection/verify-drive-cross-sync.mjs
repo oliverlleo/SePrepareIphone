@@ -19,7 +19,7 @@ function editDoc(doc,text,notes){
  captureContentVersion(next);return next;
 }
 
-function harnessFor(f,{view='home',speechId=null,q=null,cardDom=false}={}){
+function harnessFor(f,{view='home',speechId=null,q=null,cardDom=false,hasOpenEditorChanges,intervalHook}={}){
  let modal=null,restores=[],lastRestoreOptions=null;
  const rt={view,speechId,q,modal:null};
  const draftNode={dataset:{driveDraft:'prepared'},hidden:true,textContent:''};
@@ -29,6 +29,10 @@ function harnessFor(f,{view='home',speechId=null,q=null,cardDom=false}={}){
  globalThis.window=f.win;globalThis.document=f.doc;
  const shell={classList:{add(){}}};
  const ui=createDriveUI({
+  window:f.win,document:f.doc,
+  setIntervalFn:intervalHook?(fn,ms)=>{intervalHook(fn,ms);return 1;}:undefined,
+  clearIntervalFn:intervalHook?()=>{}:undefined,
+  hasOpenEditorChanges,
   native:{...f.drive,driveTakeOffer:()=>false},rt,
   $:selector=>selector==='.modal'?shell:selector==='.modal-backdrop'?(modal?shell:null):null,
   icon:name=>name,btn:(action,label)=>`<button data-action="${action}">${label}</button>`,esc:String,
@@ -39,10 +43,13 @@ function harnessFor(f,{view='home',speechId=null,q=null,cardDom=false}={}){
    lastRestoreOptions=options||null;
    await new Promise(resolve=>setTimeout(resolve,2));
    restores.push({next,options});
+   if(options?.reloadEditorSpeechId&&rt.view==='editor'&&rt.speechId===options.reloadEditorSpeechId){
+    f.setState(next);f.drive.driveLocalSaved('drive',JSON.stringify(next));return true;
+   }
    if(options?.preserveEditorSpeechId&&rt.view==='editor'&&rt.speechId===options.preserveEditorSpeechId){
     f.setState(next);f.drive.driveLocalSaved('drive',JSON.stringify(next));return true;
    }
-   if(options?.preserveView&&rt.view==='reader'){
+   if(options?.preserveView&&['reader','home','agenda','categories','settings'].includes(rt.view)){
     f.setState(next);f.drive.driveLocalSaved('drive',JSON.stringify(next));return true;
    }
    rt.q=null;rt.view='home';rt.speechId=null;f.setState(next);f.drive.driveLocalSaved('drive',JSON.stringify(next));return true;
@@ -137,6 +144,39 @@ await check('Apple: indicador de rascunho nos cards reflete editorDrafts',async(
   s.editorDrafts=[];
   await h.ui.refreshCards();assert.equal(h.draftNode.hidden,true);
  }finally{f.dispose();}
+});
+
+await check('Apple: sincroniza ao vivo com app aberto sem trocar foco e recarrega editor sem alterações locais',async()=>{
+ const docA=makeSpeech('prepared','Texto iOS inicial\n');
+ const f=fixture();
+ const origNow=Date.now;Date.now=()=>f.now();
+ f.setState({schema:1,contentVersion:2,categories:[],speeches:[clone(docA)],settings:{theme:'light'},vocabulary:[]});
+ let liveTick=null,dirtyEditor=false,h;
+ try{
+  await f.action('connect');await f.send();
+  h=harnessFor(f,{view:'agenda',hasOpenEditorChanges:()=>dirtyEditor,intervalHook:fn=>{liveTick=fn;}});
+  await until(()=>typeof liveTick==='function'&&!f.status().busy);
+  const remoteAgenda=clone(f.getState());remoteAgenda.speeches[0]=editDoc(docA,'Editado no PC\n');
+  await f.addRemote('remote-ios-agenda',JSON.stringify(remoteAgenda));
+  f.advance(16000);liveTick();
+  await until(()=>h.restores().length===1);
+  assert.equal(h.rt.view,'agenda');
+  assert.deepEqual(h.lastOptions(),{preserveView:true});
+  assert.equal(f.getState().speeches[0].delta.ops[0].insert,'Editado no PC\n');
+
+  const checksHidden=f.events.filter(e=>e.kind==='check').length;
+  f.doc.hidden=true;f.advance(20000);liveTick();await new Promise(r=>setTimeout(r,15));
+  assert.equal(f.events.filter(e=>e.kind==='check').length,checksHidden);
+  f.doc.hidden=false;
+
+  h.rt.view='editor';h.rt.speechId='prepared';h.rt.q={quill:true};dirtyEditor=false;
+  const remoteClean=clone(f.getState());remoteClean.speeches[0]=editDoc(docA,'Atualizado no editor iPhone\n');
+  await f.addRemote('remote-ios-clean',JSON.stringify(remoteClean));
+  f.advance(16000);liveTick();
+  await until(()=>h.restores().length===2);
+  assert.deepEqual(h.lastOptions(),{preserveView:true,reloadEditorSpeechId:'prepared'});
+  assert.equal(f.getState().speeches[0].delta.ops[0].insert,'Atualizado no editor iPhone\n');
+ }finally{h?.ui?.dispose();Date.now=origNow;f.dispose();}
 });
 
 console.log('TOTAL '+checks.length);
