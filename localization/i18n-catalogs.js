@@ -6200,7 +6200,10 @@ const appleSheetCopy=[
  ["Sem som? Desative o Modo Silencioso do iPhone e aumente o volume.","No sound? Turn off Silent Mode on iPhone and turn up the volume.","¿Sin sonido? Desactiva el modo Silencio del iPhone y sube el volumen.","音が出ないときは、iPhoneの消音モードをオフにして音量を上げてください。"],
  ["Rascunho salvo","Draft saved","Borrador guardado","下書き保存済み"],
  ["Há alterações salvas em rascunho neste item.","There are changes saved as a draft in this item.","Hay cambios guardados en borrador en este elemento.","この項目には下書きとして保存された変更があります。"],
- ["Abrir no editor","Open in editor","Abrir en el editor","エディターで開く"]
+ ["Abrir no editor","Open in editor","Abrir en el editor","エディターで開く"],
+ ["Recupera novidades do Drive com o app aberto ou ao voltar. Versões diferentes pedem sua escolha.","Recovers updates from Drive while the app is open or when returning. Different versions ask for your choice.","Recupera novedades de Drive con la aplicación abierta o al volver. Las versiones diferentes requieren tu elección.","アプリを開いている間や戻ったときにDriveから新しい内容を復元します。異なるバージョンがある場合は選択を求めます。"],
+ ["A recuperação consulta com o aplicativo aberto e ao voltar, com pelo menos 15 segundos entre tentativas. Seus textos diferentes podem ser preservados como versões no mesmo item.","Recovery checks Drive while the app is open and when returning, at least 15 seconds apart. Your different texts can be preserved as versions of the same item.","La recuperación comprueba Drive con la aplicación abierta y al volver, con al menos 15 segundos entre intentos. Tus textos diferentes pueden conservarse como versiones del mismo elemento.","アプリを開いている間や戻ったときに確認し、試行間隔は最低15秒です。異なるテキストは同じ項目の別バージョンとして保持できます。"],
+ ["A recuperação confere o Drive com o aplicativo aberto e ao voltar, com pelo menos 15 segundos entre tentativas. Cópias idênticas e enviadas por este iPhone não são restauradas novamente.","Recovery checks Drive while the app is open and when returning, at least 15 seconds apart. Identical copies and copies uploaded from this iPhone are not restored again.","La recuperación comprueba Drive con la aplicación abierta y al volver, con al menos 15 segundos entre intentos. No se vuelven a restaurar copias idénticas o enviadas desde este iPhone.","アプリを開いている間や戻ったときにDriveを確認し、試行間隔は最低15秒です。同一のコピーやこのiPhoneから送信したコピーは再復元されません。"]
 ];
 for(const [source,en,es,ja] of appleSheetCopy){
  catalogs.en[source]=en;

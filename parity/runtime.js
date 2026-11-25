@@ -113,12 +113,20 @@ export function createEditorRuntime(c){
   if(busy)return false;busy=true;const release=c.lock?.()||(()=>{}),previous=c.getState(),oldWorking=working,q=c.rt.q,view=c.rt.view,speechId=c.rt.speechId;
   try{
    next.settings.language=previous.settings.language;
+   if(options?.reloadEditorSpeechId&&c.rt.view==='editor'&&c.rt.speechId===options.reloadEditorSpeechId){
+    const target=next.speeches.find(s=>s.id===c.rt.speechId&&!s.deleted);
+    working=target?openEditorDraft(next,target):null;c.rt.q=null;c.setState(next);if(!await durable())throw Error('save');
+    if(!target){c.rt.view='home';c.rt.speechId=null;c.render();return true;}
+    const y=window.scrollY;c.render();window.scrollTo(0,y);return true;
+   }
    if(options?.preserveEditorSpeechId&&c.rt.view==='editor'&&working?.id===options.preserveEditorSpeechId){
     c.setState(next);retain();if(!await durable())throw Error('save');updateSaveButton();void protection.refresh();return true;
    }
-   if(options?.preserveView&&c.rt.view==='reader'){
+   if(options?.preserveView&&['reader','home','agenda','categories','settings'].includes(c.rt.view)){
     working=null;c.rt.q=null;c.setState(next);if(!await durable())throw Error('save');
-    if(!next.speeches.some(s=>s.id===c.rt.speechId&&!s.deleted)){c.rt.view='home';c.rt.speechId=null;c.render();return true;}
+    if(c.rt.view==='reader'){
+     if(!next.speeches.some(s=>s.id===c.rt.speechId&&!s.deleted)){c.rt.view='home';c.rt.speechId=null;c.render();return true;}
+    }else c.rt.speechId=null;
     const y=window.scrollY;c.render();window.scrollTo(0,y);return true;
    }
    working=null;c.rt.q=null;c.setState(next);if(!await durable())throw Error('save');c.rt.view='home';c.rt.speechId=null;c.render();return true;
@@ -126,6 +134,7 @@ export function createEditorRuntime(c){
   catch{c.setState(previous);working=oldWorking;c.rt.q=q;c.rt.view=view;c.rt.speechId=speechId;try{await durable();}catch{}protection.mark('error');return false;}
   finally{busy=false;release();}
  }
+ function hasOpenEditorChanges(){if(!getEditor()||!saved())return false;c.syncCurrent();return hasEditorChanges(saved(),working);}
  function syncReaderDraftNotice(){
   if(c.rt.view!=='reader')return;
   const doc=saved(),paper=c.$('.reader-paper');if(!doc||!paper?.parentElement)return;
@@ -138,5 +147,5 @@ export function createEditorRuntime(c){
   action.innerHTML=c.icon('PenLine');const label=document.createElement('span');label.textContent=t('Abrir no editor');action.append(label);
   banner.append(message,action);paper.parentElement.insertBefore(banner,paper);
  }
- return {getEditor,editorState,prepareSave,retain,observeSave,notifyDrive,mountEditor,updateSaveButton,navigate,confirm,versionSnapshot,versionChanged,versionRollback,saveAgendaDate,commitRestore,syncReaderDraftNotice,receiveFile:()=>receiveFilePreparation({...c,navigate}),mark:protection.mark};
+ return {getEditor,editorState,hasOpenEditorChanges,prepareSave,retain,observeSave,notifyDrive,mountEditor,updateSaveButton,navigate,confirm,versionSnapshot,versionChanged,versionRollback,saveAgendaDate,commitRestore,syncReaderDraftNotice,receiveFile:()=>receiveFilePreparation({...c,navigate}),mark:protection.mark};
 }
