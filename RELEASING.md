@@ -1,3 +1,7 @@
+# Atualização shell 20261125.2
+
+Corrige o logotipo do cabeçalho do guia público de instalação (`apple-install-guide.js`) para usar `branding/logo-light.png` sobre o fundo claro (`#fffefa`).
+
 # Atualização shell 20261125.1 (SEO)
 
 Metadados descritivos (`<title>` e `<meta name="description">`) e diretiva `<meta name="robots" content="noindex, follow">` adicionados em `index.html`, concentrando o ranqueamento na página oficial [https://seprepareapp.com.br/](https://seprepareapp.com.br/).
