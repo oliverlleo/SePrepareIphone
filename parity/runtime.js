@@ -109,11 +109,34 @@ export function createEditorRuntime(c){
  }
  // Restore must serialize the received notebook without projecting an old Quill
  // editor into it. Keep the old projection available if the write fails.
- async function commitRestore(next){
-  if(busy)return false;busy=true;const release=c.lock?.()||(()=>{}),previous=c.getState(),oldWorking=working,q=c.rt.q;
-  try{next.settings.language=previous.settings.language;working=null;c.rt.q=null;c.setState(next);if(!await durable())throw Error('save');c.rt.view='home';c.rt.speechId=null;c.render();return true;}
-  catch{c.setState(previous);working=oldWorking;c.rt.q=q;try{await durable();}catch{}protection.mark('error');return false;}
+ async function commitRestore(next,options){
+  if(busy)return false;busy=true;const release=c.lock?.()||(()=>{}),previous=c.getState(),oldWorking=working,q=c.rt.q,view=c.rt.view,speechId=c.rt.speechId;
+  try{
+   next.settings.language=previous.settings.language;
+   if(options?.preserveEditorSpeechId&&c.rt.view==='editor'&&working?.id===options.preserveEditorSpeechId){
+    c.setState(next);retain();if(!await durable())throw Error('save');updateSaveButton();void protection.refresh();return true;
+   }
+   if(options?.preserveView&&c.rt.view==='reader'){
+    working=null;c.rt.q=null;c.setState(next);if(!await durable())throw Error('save');
+    if(!next.speeches.some(s=>s.id===c.rt.speechId&&!s.deleted)){c.rt.view='home';c.rt.speechId=null;c.render();return true;}
+    const y=window.scrollY;c.render();window.scrollTo(0,y);return true;
+   }
+   working=null;c.rt.q=null;c.setState(next);if(!await durable())throw Error('save');c.rt.view='home';c.rt.speechId=null;c.render();return true;
+  }
+  catch{c.setState(previous);working=oldWorking;c.rt.q=q;c.rt.view=view;c.rt.speechId=speechId;try{await durable();}catch{}protection.mark('error');return false;}
   finally{busy=false;release();}
  }
- return {getEditor,editorState,prepareSave,retain,observeSave,notifyDrive,mountEditor,updateSaveButton,navigate,confirm,versionSnapshot,versionChanged,versionRollback,saveAgendaDate,commitRestore,receiveFile:()=>receiveFilePreparation({...c,navigate}),mark:protection.mark};
+ function syncReaderDraftNotice(){
+  if(c.rt.view!=='reader')return;
+  const doc=saved(),paper=c.$('.reader-paper');if(!doc||!paper?.parentElement)return;
+  paper.parentElement.querySelector('.reader-draft-notice')?.remove();
+  const draft=(c.getState().editorDrafts||[]).find(item=>item.speechId===doc.id)?.document;
+  if(!draft||draft.id!==doc.id||draft.type!==doc.type||!hasEditorChanges(doc,draft))return;
+  const banner=document.createElement('div');banner.className='reader-draft-notice';banner.setAttribute('role','status');
+  const message=document.createElement('span');message.textContent=t('Há alterações salvas em rascunho neste item.');
+  const action=document.createElement('button');action.type='button';action.className='btn small secondary';action.dataset.action='edit';action.dataset.id=doc.id;
+  action.innerHTML=c.icon('PenLine');const label=document.createElement('span');label.textContent=t('Abrir no editor');action.append(label);
+  banner.append(message,action);paper.parentElement.insertBefore(banner,paper);
+ }
+ return {getEditor,editorState,prepareSave,retain,observeSave,notifyDrive,mountEditor,updateSaveButton,navigate,confirm,versionSnapshot,versionChanged,versionRollback,saveAgendaDate,commitRestore,syncReaderDraftNotice,receiveFile:()=>receiveFilePreparation({...c,navigate}),mark:protection.mark};
 }

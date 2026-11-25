@@ -3,6 +3,7 @@ import {withChangeOrigin} from './change-origin.js';
 import {t as translateUI,tr as formatUI,h as markupUI,html as htmlUI,uiLocale,setLanguage,normalizeLanguage,systemMessage} from './i18n.js';
 import {mergeDriveBackup,inspectDriveBackup,driveHash,driveIndex,planDriveRestore} from './drive-core.js';
 import {backupDocumentHash,backupContentIndex} from './drive-backup-state.js';
+import {hasEditorChanges} from '../parity/editor-drafts.js';
 export function createDriveUI(c){
  const {native,rt,$,icon,btn,esc,openModal,closeModal,toast}=c;
  let info={connected:false,autoBackup:true,autoRead:true,busy:false},files=[],pending=null,preview=null,merging=false,inflight=false,lastRequest='',activeAction='',connectionNotice='',shownPending='',foregroundVisible=!document.hidden,checkOnIdle=false,planning=false,cardGeneration=0;
@@ -37,9 +38,11 @@ export function createDriveUI(c){
  function refreshEntry(readNative=false){if(readNative)update();const target=$('#driveConnectionStatus');if(target)target.innerHTML=summary();void refreshCards();}
  function settingsEntry(){update();return markupUI`<div class="drive-settings-entry" id="driveConnectionStatus">${summary()}</div>`;}
  function mark(kind){rt.modal=kind;$('.modal')?.classList.add('drive-screen');$('.modal-backdrop')?.classList.add('drive-screen-backdrop');}
- function cardIndicator(s){return markupUI`<span class="drive-card-status drive-card-status-pending" data-drive-document="${esc(s.id)}" role="img" aria-label="${translateUI('Conferindo a cópia deste conteúdo')}" title="${translateUI('Conferindo a cópia deste conteúdo')}">${icon('Cloud')}</span>`;}
+ const hasDraft=(doc,state)=>{if(!doc)return false;const draft=(state?.editorDrafts||[]).find(item=>item.speechId===doc.id)?.document;if(!draft||draft.id!==doc.id||draft.type!==doc.type)return false;try{return hasEditorChanges(doc,draft);}catch{return false;}};
+ function cardIndicator(s){return markupUI`<span class="drive-draft-pill" data-drive-draft="${esc(s.id)}"${hasDraft(s,c.getState?.())?'':' hidden'}>${translateUI('Rascunho salvo')}</span><span class="drive-card-status drive-card-status-pending" data-drive-document="${esc(s.id)}" role="img" aria-label="${translateUI('Conferindo a cópia deste conteúdo')}" title="${translateUI('Conferindo a cópia deste conteúdo')}">${icon('Cloud')}</span>`;}
  const cardHashes=new Map();
  async function refreshCards(){
+  if(pending&&!merging&&!planning&&eligible(pending)&&(safe()||canInPlaceReconcile(null)))setTimeout(()=>void drain(),0);
   const generation=++cardGeneration,nodes=[...document.querySelectorAll('[data-drive-document]')];if(!nodes.length)return;
   const account=info.email;let saved={};try{saved=JSON.parse(native?.driveBackupIndex?.()||'{}');}catch{}
   const state=c.getState(),documents=new Map(state.speeches.map(doc=>[doc.id,doc])),lookup={categories:new Map(state.categories.map(category=>[category.id,category])),drafts:new Map((state.editorDrafts||[]).map(draft=>[draft.speechId,draft]))};
@@ -52,6 +55,8 @@ export function createDriveUI(c){
    else if(saved.account===account&&saved.documents?.[doc.id]){try{const hash=contentIndex.documents[doc.id];if(saved.documents[doc.id]===hash){tone='saved';symbol='CloudCheck';label=translateUI('Esta versão está salva no Google Drive');}}catch{label=translateUI('Não foi possível conferir a cópia deste conteúdo');}}
    if(tone==='pending'&&info.backupError){tone='warning';symbol='CloudAlert';label=translateUI('O envio desta alteração está pendente. Veja Backup e recuperação nos Ajustes.');}
    if(generation!==cardGeneration||account!==info.email||!node.isConnected)return;
+   const draftNode=[...(node.parentElement?.children||[])].find(el=>el.dataset?.driveDraft===doc.id);
+   if(draftNode){const showDraft=hasDraft(doc,state);draftNode.hidden=!showDraft;draftNode.textContent=translateUI('Rascunho salvo');}
    node.className='drive-card-status drive-card-status-'+tone;node.innerHTML=icon(symbol);node.setAttribute('aria-label',label);node.title=label;
   }));
  }
@@ -61,7 +66,7 @@ export function createDriveUI(c){
   update();const busy=info.busy||info.readOnly||info.authorizationLoading?'disabled':'',connected=info.connected,s=connectionState();
   const header=markupUI`<div class="drive-account"><span class="drive-emblem">${icon('Cloud')}</span><div><strong>${connected?esc(info.email):translateUI('Google Drive')}</strong><small>${esc(s.title)}</small></div><span class="drive-state drive-state-${s.tone}">${icon(s.symbol)}</span></div>`;
   const error=info.error||connectionNotice?markupUI`<p class="drive-feedback" role="status">${icon('Info')}<span>${esc(systemMessage(info.error||connectionNotice))}</span></p>`:'';
-  const prefs=connected?markupUI`${info.reconnectSetupRequired||info.needsReconnect||info.needsAuthorization&&!info.authorizationPending&&!info.managedAuthorization?btn('drive-connect',info.reconnectSetupRequired?translateUI('Autorizar reconexão automática'):translateUI('Autorizar acesso aos backups'),'Cloud','full',busy):''}<div class="drive-section-heading">Proteção automática</div><div class="drive-preferences"><label class="drive-toggle"><span><strong>Backup automático</strong><small>Salva quando o conteúdo muda de verdade.</small></span><input id="driveAutoBackup" type="checkbox" role="switch" ${info.autoBackup?'checked':''} ${busy}></label><label class="drive-toggle"><span><strong>Recuperação automática</strong><small>Ao abrir o app, recupera novidades do Drive. Versões diferentes pedem sua escolha.</small></span><input id="driveAutoRead" type="checkbox" role="switch" ${info.autoRead?'checked':''} ${busy}></label></div><details class="drive-details"><summary>Como a proteção funciona</summary><p>Alterações próximas são reunidas em uma cópia, com pelo menos 10 segundos entre a confirmação de um backup e o próximo envio. As etapas do mesmo backup não têm essa pausa. Sem internet, o envio aguarda e tenta novamente. O navegador precisa permanecer aberto. Abas em segundo plano podem adiar os envios.</p><p>A recuperação consulta ao abrir ou voltar ao aplicativo, com pelo menos 15 minutos entre tentativas. Seus textos diferentes podem ser preservados como versões no mesmo item.</p></details>${pending?.requiresDecision?markupUI`<div class="drive-feedback">${icon('Info')}<span>Há versões diferentes aguardando sua escolha.</span></div>${btn('drive-review-pending',translateUI('Conferir versões diferentes'),'Copy','secondary full',busy)}`:''}<div class="drive-section-heading">Cópias no Google Drive</div><div class="drive-main-actions">${btn('drive-backup',translateUI('Salvar uma cópia agora'),'CloudUpload','full',busy)}${btn('drive-list',translateUI('Recuperar meus discursos'),'History','secondary full',busy)}</div><details class="drive-details drive-operation-details"><summary>Detalhes das operações</summary><div class="drive-times"><p><span>Último envio deste aparelho</span><strong>${info.lastBackupAt?stamp(info.lastBackupAt):translateUI('Ainda não realizada neste aparelho')}</strong></p><p><span>Última tentativa de envio</span><strong>${info.lastBackupAttemptAt?stamp(info.lastBackupAttemptAt):translateUI('Nenhuma registrada')}</strong></p><p><span>Última verificação no Drive</span><strong>${info.lastCheckedAt?stamp(info.lastCheckedAt):translateUI('Ainda não realizada')}</strong></p><p><span>Último backup conferido</span><strong>${info.lastReadAt?stamp(info.lastReadAt):translateUI('Ainda não conferido')}</strong></p><p><span>Última recuperação aplicada</span><strong>${info.lastRestoredAt?stamp(info.lastRestoredAt):translateUI('Nenhuma registrada')}</strong></p></div>${info.backupCleanupPending?markupUI`<p class="drive-feedback">${icon('Info')}<span>Seu backup está salvo. A limpeza de algumas cópias anteriores será tentada novamente.</span></p>`:''}</details>`:markupUI`<p class="help">Conecte sua conta para salvar e recuperar seus discursos automaticamente.</p>${benefits()}${btn('drive-connect',translateUI('Conectar Google Drive'),'Cloud','full',supported()?busy:'disabled')}${!supported()?htmlUI('<p class="notice">A conexão com o Drive não está disponível agora.</p>'):''}`;
+  const prefs=connected?markupUI`${info.reconnectSetupRequired||info.needsReconnect||info.needsAuthorization&&!info.authorizationPending&&!info.managedAuthorization?btn('drive-connect',info.reconnectSetupRequired?translateUI('Autorizar reconexão automática'):translateUI('Autorizar acesso aos backups'),'Cloud','full',busy):''}<div class="drive-section-heading">Proteção automática</div><div class="drive-preferences"><label class="drive-toggle"><span><strong>Backup automático</strong><small>Salva quando o conteúdo muda de verdade.</small></span><input id="driveAutoBackup" type="checkbox" role="switch" ${info.autoBackup?'checked':''} ${busy}></label><label class="drive-toggle"><span><strong>Recuperação automática</strong><small>Ao abrir o app, recupera novidades do Drive. Versões diferentes pedem sua escolha.</small></span><input id="driveAutoRead" type="checkbox" role="switch" ${info.autoRead?'checked':''} ${busy}></label></div><details class="drive-details"><summary>Como a proteção funciona</summary><p>Alterações próximas são reunidas em uma cópia, com pelo menos 10 segundos entre a confirmação de um backup e o próximo envio. As etapas do mesmo backup não têm essa pausa. Sem internet, o envio aguarda e tenta novamente. O navegador precisa permanecer aberto. Abas em segundo plano podem adiar os envios.</p><p>A recuperação consulta ao abrir ou voltar ao aplicativo, com pelo menos 15 segundos entre tentativas. Seus textos diferentes podem ser preservados como versões no mesmo item.</p></details>${pending?.requiresDecision?markupUI`<div class="drive-feedback">${icon('Info')}<span>Há versões diferentes aguardando sua escolha.</span></div>${btn('drive-review-pending',translateUI('Conferir versões diferentes'),'Copy','secondary full',busy)}`:''}<div class="drive-section-heading">Cópias no Google Drive</div><div class="drive-main-actions">${btn('drive-backup',translateUI('Salvar uma cópia agora'),'CloudUpload','full',busy)}${btn('drive-list',translateUI('Recuperar meus discursos'),'History','secondary full',busy)}</div><details class="drive-details drive-operation-details"><summary>Detalhes das operações</summary><div class="drive-times"><p><span>Último envio deste aparelho</span><strong>${info.lastBackupAt?stamp(info.lastBackupAt):translateUI('Ainda não realizada neste aparelho')}</strong></p><p><span>Última tentativa de envio</span><strong>${info.lastBackupAttemptAt?stamp(info.lastBackupAttemptAt):translateUI('Nenhuma registrada')}</strong></p><p><span>Última verificação no Drive</span><strong>${info.lastCheckedAt?stamp(info.lastCheckedAt):translateUI('Ainda não realizada')}</strong></p><p><span>Último backup conferido</span><strong>${info.lastReadAt?stamp(info.lastReadAt):translateUI('Ainda não conferido')}</strong></p><p><span>Última recuperação aplicada</span><strong>${info.lastRestoredAt?stamp(info.lastRestoredAt):translateUI('Nenhuma registrada')}</strong></p></div>${info.backupCleanupPending?markupUI`<p class="drive-feedback">${icon('Info')}<span>Seu backup está salvo. A limpeza de algumas cópias anteriores será tentada novamente.</span></p>`:''}</details>`:markupUI`<p class="help">Conecte sua conta para salvar e recuperar seus discursos automaticamente.</p>${benefits()}${btn('drive-connect',translateUI('Conectar Google Drive'),'Cloud','full',supported()?busy:'disabled')}${!supported()?htmlUI('<p class="notice">A conexão com o Drive não está disponível agora.</p>'):''}`;
   openModal(translateUI('Opções de backup'),markupUI`<div class="drive-panel">${header}${error}${prefs}<div class="drive-section-heading">Backup em arquivo</div><div class="drive-file-actions">${btn('backup',translateUI('Exportar backup'),'Download','secondary full')}${btn('import',translateUI('Importar arquivo'),'FileUp','secondary full')}</div>${connected?markupUI`<div class="drive-account-actions">${btn('drive-disconnect-confirm',translateUI('Desconectar conta'),'CloudOff','link full',busy)}</div>`:''}<p class="drive-private">${icon('ShieldCheck')}O conteúdo fica na área privada do SePrepare na sua conta Google.</p></div>`,btn('close-modal',translateUI('Concluir'),'Check'));mark('drive-settings');
   $('#driveAutoBackup')?.addEventListener('change',e=>request(e.target.checked?'prepare-backup':'auto-backup',e.target.checked?JSON.stringify({enable:true}):'false'));
   $('#driveAutoRead')?.addEventListener('change',e=>request('auto-read',String(e.target.checked)));
@@ -130,25 +135,43 @@ export function createDriveUI(c){
    openModal(title,markupUI`<div class="drive-review"><p class="help">${esc(intro)}</p>${report.conflicts.length?markupUI`<p class="drive-change-summary">${[...new Set(report.conflicts.flatMap(row=>row.fields||[]))].map(field=>esc(translateUI(field))).join(' · ')}</p>`:''}${payload.at?markupUI`<p class="drive-copy-date">${icon('History')}${stamp(payload.at)}</p>`:''}${report.conflicts.length?choices():''}${report.conflicts.length?markupUI`<details class="drive-details drive-conflict-details"><summary>Ver os detalhes das diferenças</summary>${counts}${differences(report)}</details>`:markupUI`${counts}<div class="drive-feedback">${icon('ShieldCheck')}<span>Seus dados atuais serão preservados. Textos diferentes poderão ser mantidos como versões.</span></div>`}<p class="drive-private">${icon('ShieldCheck')}Formatação, anotações e ensaios acompanham cada versão.</p></div>`,btn('drive-apply',beforeBackup||report.conflicts.length?translateUI('Confirmar escolha'):translateUI('Recuperar esta cópia'),'CloudDownload')+btn('drive-later',translateUI('Agora não'),'','secondary'));mark('drive-review');
   }catch(e){toast(e.message||translateUI('Este backup não é válido. Seu caderno foi preservado.'));}
  }
- function safe(){return !info.busy&&!inflight&&foregroundVisible&&!document.hidden&&!rt.q&&!['reader','editor','memorization'].includes(rt.view)&&!rt.audio?.state?.includes('playing')&&!c.getState().speeches.some(s=>s.timer?.running||s.versions?.some(v=>v.timer?.running))&&(!$('.modal-backdrop')||rt.modal==='drive-settings');}
+ const baseSafe=()=>!info.busy&&!inflight&&foregroundVisible&&!document.hidden&&!rt.audio?.state?.includes('playing')&&!c.getState().speeches.some(s=>s.timer?.running||s.versions?.some(v=>v.timer?.running))&&(!$('.modal-backdrop')||rt.modal==='drive-settings');
+ function safe(){return baseSafe()&&!rt.q&&!['reader','editor','memorization','interview','teleprompter'].includes(rt.view);}
+ function canInPlaceReconcile(plan=null){
+  if(!baseSafe())return null;
+  if(rt.view==='reader'&&!rt.q)return !plan||!plan.report.conflicts.length?{preserveView:true}:null;
+  if(rt.view==='editor'&&rt.speechId){
+   if(!plan)return {preserveView:true,preserveEditorSpeechId:rt.speechId};
+   if(plan.report.conflicts.length)return null;
+   const docPolicy=plan.documents?.[rt.speechId],draftPolicy=plan.draftPolicies?.[rt.speechId];
+   if(['cloud','merge'].includes(docPolicy)||['cloud','merge'].includes(draftPolicy))return null;
+   return {preserveView:true,preserveEditorSpeechId:rt.speechId};
+  }
+  return null;
+ }
  async function applyChoice(policy='both',automatic=false,payload=preview,plan=null){
   if(payload?.mode==='backup'){if(!automatic)await confirmBackup(payload);return;}
-  if(merging||!payload)return;if(automatic&&(!eligible(payload)||!safe()))return;
+  if(merging||!payload)return;
   plan=plan||payload.plan;
+  const initialMode=automatic&&!safe()?canInPlaceReconcile(plan):null;
+  if(automatic&&(!eligible(payload)||(!safe()&&!initialMode)))return;
   const account=info.email,modal=rt.modal;
   const finishMetric=!automatic?globalThis.SePrepareMetrics?.begin('protecao','restaurar_backup',{formato:'drive'}):null;
   merging=true;
   try{
    if(!c.persist(true))throw Error(translateUI('Não foi possível salvar o caderno atual.'));const before=JSON.stringify(c.getState());
    if(plan&&plan.snapshot!==before)plan=await planDriveRestore(c.getState(),payload.state,await baseline());
-   if(automatic&&plan?.report.conflicts.length){merging=false;void showDecision(payload,'read',plan);return;}
+   const activeMode=automatic&&!safe()?canInPlaceReconcile(plan):null;
+   if(automatic&&!safe()&&!activeMode){merging=false;return;}
+   if(automatic&&(plan?.report.conflicts.length||!info.autoRead&&plan?.result?.changed)){merging=false;if(safe())void showDecision(payload,'read',plan);return;}
    const result=plan?.result&&policy==='both'&&plan.snapshot===before?plan.result:payload.state?await mergeDriveBackup(c.getState(),payload.state,{manual:!automatic,policy,...(automatic&&plan?{documentPolicies:plan.documents,categoryPolicies:plan.categories,draftPolicies:plan.draftPolicies,globalPolicies:plan.globalPolicies,interviewBase:plan.interviewBase}:{})}):{changed:false,state:c.getState()};
-   if(before!==JSON.stringify(c.getState()))throw Error(translateUI('O caderno mudou durante a leitura. Confira novamente para preservar suas alterações.'));
+   if(before!==JSON.stringify(c.getState())){if(automatic){setTimeout(()=>void drain(),0);return;}throw Error(translateUI('O caderno mudou durante a leitura. Confira novamente para preservar suas alterações.'));}
    if(account!==info.email||!info.connected||payload.account&&payload.account!==info.email)return;
-   if(automatic&&(!eligible(payload)||!safe()||pending!==payload))return;
+   const restoreMode=automatic&&!safe()?canInPlaceReconcile(plan):null;
+   if(automatic&&(!eligible(payload)||(!safe()&&!restoreMode)||pending!==payload))return;
    if(!automatic&&rt.modal!==modal)return;
    if(result.changed&&!native.drivePrepareRestore())throw Error(translateUI('Não foi possível guardar sua cópia de recuperação.'));
-   if(result.changed&&!withChangeOrigin(automatic?'drive':'manual-restore',()=>c.commitRestore(result.state)))throw Error(translateUI('Não foi possível salvar a restauração. Seu caderno foi preservado.'));
+   if(result.changed&&!await withChangeOrigin(automatic?'drive':'manual-restore',()=>restoreMode?c.commitRestore(result.state,restoreMode):c.commitRestore(result.state)))throw Error(translateUI('Não foi possível salvar a restauração. Seu caderno foi preservado.'));
    const applied=JSON.parse(JSON.stringify(c.getState())),appliedIndex=!result.changed&&plan?JSON.parse(JSON.stringify(plan.localIndex)):await driveIndex(applied),remoteIndex=plan?.remoteIndex||await driveIndex(payload.state);
    if(account!==info.email)return;
    if(automatic&&plan?.dirtyLocal){Object.assign(appliedIndex.documents,plan.dirtyLocal.documents);Object.assign(appliedIndex.categories,plan.dirtyLocal.categories);if(plan.dirtyLocal.drafts)Object.assign(appliedIndex.drafts||=(Object.create(null)),plan.dirtyLocal.drafts);}
@@ -159,7 +182,7 @@ export function createDriveUI(c){
    if(!automatic&&plan?.report.conflicts.length)globalThis.SePrepareMetrics?.used('protecao','resolver_conflito',{formato:'drive'});
    if(!automatic){closeModal();settings();}else if(rt.modal==='drive-settings'){connectionNotice=result.changed?translateUI('Seu caderno foi atualizado com o backup do Drive.'):translateUI('Seu caderno já está atualizado com este backup.');settings();}if(result.changed)toast(result.alternatives?translateUI('Conteúdo preservado. Textos diferentes ficaram como versões no mesmo item.'):translateUI('Preparações recuperadas do Google Drive.'));else if(!automatic)toast(policy==='local'?translateUI('Conteúdo deste aparelho mantido.'):translateUI('Seu caderno já contém este backup.'));
   }catch(e){finishMetric?.('erro');if(automatic){if(!pending||pending===payload)pending=payload;shownPending=pendingKey(payload);}toast(e.message||translateUI('Não foi possível concluir. Seu caderno foi preservado.'));}
-  finally{finishMetric?.('cancelado');merging=false;if(pending&&pending!==payload&&eligible(pending)&&safe())setTimeout(()=>void drain(),0);}
+  finally{finishMetric?.('cancelado');merging=false;if(pending&&pending!==payload&&eligible(pending)&&(safe()||canInPlaceReconcile(null)))setTimeout(()=>void drain(),0);}
  }
  let baselineCache=null;
  async function baseline(){
@@ -171,22 +194,26 @@ export function createDriveUI(c){
   if(saved.account===info.email){try{const source=JSON.parse(native.driveRestoreBase?.()||'{}');if(source.account===info.email&&source.id===saved.id&&source.state)saved.state=source.state;}catch{}return saved;}return null;
  }
  async function drain(){
-  if(planning||merging||!eligible(pending)||!safe()||shownPending===pendingKey(pending))return;
+  if(planning||merging||!eligible(pending)||shownPending===pendingKey(pending))return;
+  const entrySafe=safe(),entryInPlace=!entrySafe&&canInPlaceReconcile(null);
+  if(!entrySafe&&!entryInPlace)return;
   const payload=pending,account=info.email,original=JSON.stringify(c.getState());planning=true;
   try{
    const saved=await baseline(),plan=await planDriveRestore(c.getState(),payload.state,saved?.account===account?saved:null);
-   if(account!==info.email||payload!==pending||!eligible(payload)||!safe())return;
+   const nowSafe=safe(),nowInPlace=!nowSafe&&canInPlaceReconcile(plan);
+   if(account!==info.email||payload!==pending||!eligible(payload)||(!nowSafe&&!nowInPlace))return;
    if(original!==JSON.stringify(c.getState())){setTimeout(()=>void drain(),0);return;}
-   if(plan.report.conflicts.length||!info.autoRead&&plan.result?.changed)void showDecision(payload,'read',plan);
-   else {planning=false;await applyChoice('both',true,payload,plan);}
+   if(plan.report.conflicts.length||!info.autoRead&&plan.result?.changed){if(nowSafe)void showDecision(payload,'read',plan);return;}
+   planning=false;await applyChoice('both',true,payload,plan);
   }catch(e){shownPending=pendingKey(payload);toast(e.message||translateUI('Não foi possível recuperar o backup.'));}
-  finally{planning=false;if(pending&&pending!==payload&&eligible(pending)&&safe())setTimeout(()=>void drain(),0);}
+  finally{planning=false;if(pending&&pending!==payload&&eligible(pending)&&(safe()||canInPlaceReconcile(null)))setTimeout(()=>void drain(),0);}
  }
  function loadPending(){if(!native.drivePending)return;try{const p=JSON.parse(native.drivePending()||'{}');if(p.state&&eligible(p)){if(pending&&pendingKey(pending)===pendingKey(p)&&pending.state===p.state&&pending.reason===p.reason)return;pending=p;}else pending=null;}catch{}}
- function checkEntry(){const last=Number(info.lastCheckAttemptAt)||0;if(!foregroundVisible||document.hidden||!info.connected||!info.autoRead){checkOnIdle=false;return;}if(last&&Date.now()>=last&&Date.now()-last<900000){checkOnIdle=false;return;}if(info.busy||inflight){checkOnIdle=true;return;}checkOnIdle=false;request('check');}
- function foreground(){foregroundVisible=true;shownPending='';refreshEntry(true);loadPending();drain();checkEntry();}
+ function checkEntry(){const last=Number(info.lastCheckAttemptAt)||0;if(!foregroundVisible||document.hidden||!info.connected||!info.autoRead){checkOnIdle=false;return;}if(info.authorizationLoading||info.authorizationPending||(info.needsAuthorization&&info.managedAuthorization)){checkOnIdle=true;return;}if(last&&Date.now()>=last&&Date.now()-last<15000){checkOnIdle=false;return;}if(info.busy||inflight){checkOnIdle=true;return;}checkOnIdle=false;request('check');}
+ function foreground(){foregroundVisible=!document.hidden;shownPending='';refreshEntry(true);loadPending();drain();checkEntry();}
  function received(event){
   const data=event.detail||{};if(data.kind!=='progress'&&data.requestId===lastRequest){inflight=false;activeAction='';}
+  const wasWaitingAuth=Boolean(info.authorizationLoading||info.authorizationPending||info.needsAuthorization);
   if(data.status){const accountChanged=data.status.email!==info.email;if(accountChanged){pending=null;preview=null;files=[];shownPending='';baselineCache=null;}info={...info,...data.status};if(accountChanged&&rt.modal==='drive-review')settings();}
   if(!data.error&&data.status&&!data.status.busy&&!data.status.error)connectionNotice='';
   if(data.status&&!data.status.busy&&!data.payload?.automatic)loadPending();
@@ -200,7 +227,8 @@ export function createDriveUI(c){
   if(data.error&&data.errorCode!=='cancelled'&&data.errorCode!=='busy'&&data.kind!=='check'&&rt.modal!=='drive-settings')toast(data.error);
   if(data.payload?.state&&data.payload.automatic)pending=data.payload;
   if(['drive-settings','drive-offer'].includes(rt.modal))settings();
-  if(data.error){if(rt.modal==='drive-loading')settings();if(checkOnIdle&&!info.busy)checkEntry();return;}
+  const authReady=wasWaitingAuth&&info.connected&&info.autoRead&&!info.needsAuthorization&&!info.authorizationPending&&!info.authorizationLoading&&!info.needsReconnect;
+  if(data.error){if(rt.modal==='drive-loading')settings();if((checkOnIdle||authReady)&&!info.busy&&!inflight)checkEntry();return;}
   if(data.payload?.mode==='backup-review'){if(['drive-settings','drive-review'].includes(rt.modal))showDecision(data.payload,'backup');else toast(translateUI('Backup conferido. Volte aos Ajustes para confirmar o envio.'));}
   else if(data.payload?.state){if(data.payload.automatic){pending=data.payload;drain();}else if(['drive-settings','drive-loading'].includes(rt.modal)){const file=files.find(file=>file.id===data.payload.id);showDecision({...data.payload,at:data.payload.at||file&&fileTime(file)},'restore');}}
   if(data.kind==='list'&&rt.modal==='drive-loading')list();
@@ -209,7 +237,7 @@ export function createDriveUI(c){
   if(data.kind==='auto-read'&&info.autoRead)foreground();
   if(data.kind==='disconnect'){pending=null;preview=null;files=[];checkOnIdle=false;toast(translateUI('Conta desconectada. Os backups continuam no Google Drive.'));}
   if(!info.busy&&!inflight){loadPending();void drain();}
-  if(checkOnIdle&&!info.busy&&!inflight)checkEntry();
+  if((checkOnIdle||authReady)&&!info.busy&&!inflight)checkEntry();
  }
  function handle(action,id){switch(action){
   case 'drive-settings':settings();break;
@@ -226,7 +254,7 @@ export function createDriveUI(c){
  }return true;}
  function start(){
   update();if(!supported())return;loadPending();window.addEventListener('nativeDrive',received);offer();
-  window.addEventListener('focus',()=>refreshEntry(true));window.addEventListener('nativeForeground',foreground);window.addEventListener('nativeBackground',()=>{foregroundVisible=false;});
+  window.addEventListener('focus',foreground);window.addEventListener('pageshow',foreground);window.addEventListener('nativeForeground',foreground);window.addEventListener('nativeBackground',()=>{foregroundVisible=false;});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)foregroundVisible=false;else if(!foregroundVisible)foreground();});foreground();
  }
  return {handle,start,drain,settingsEntry,cardIndicator,refreshCards,isBusy:()=>merging||inflight||planning||info.busy};

@@ -10,7 +10,7 @@ export const BROWSER_DRIVE_CLIENT_ID='4184165315-bjgek38jqbhjb2v8bggfh9ib7f84n33
 const SCOPE='https://www.googleapis.com/auth/drive.appdata';
 const SCOPES=[SCOPE];
 const KEY='seprepare-drive-web-v1',RECOVERY_KEY=KEY+'-recovery';
-const LIMIT=12000000,WIRE_LIMIT=26000000,READ_GAP=900000;
+const LIMIT=12000000,WIRE_LIMIT=26000000,READ_GAP=15000;
 const API='https://www.googleapis.com/drive/v3',UPLOAD='https://www.googleapis.com/upload/drive/v3';
 const fields='id,name,createdTime,size,appProperties';
 const query="trashed = false and appProperties has { key='seprepareBackup' and value='1' }";
@@ -332,16 +332,22 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   if(kind==='auto-read'){commit({autoRead:argument==='true'});return {};}
   if(kind==='check'){
    const last=data().lastCheckAttemptAt,t=now();if(!active()||!data().autoRead||last&&t>=last&&t-last<READ_GAP)return {payload:{skipped:true}};
-   if(!tokenValid()&&resumeTask)await resumeTask;
+   await sourceReady;
+   if(!tokenValid()){
+    startAuthorization();
+    if(!resumeTask&&gisLoading)try{await gisLoading;}catch{}
+    startAuthorization();
+    if(!tokenValid()&&resumeTask)await resumeTask;
+   }
    if(!tokenValid())return {payload:{skipped:true}};
-   requireToken();commit({lastCheckAttemptAt:t});
+   requireToken();commit({lastCheckAttemptAt:now()});
   }else if(!tokenValid()&&['list','restore','prepare-backup','backup-confirm'].includes(kind)){
    if(resumeTask)await resumeTask;
    if(!tokenValid())await renewAuthorization('user');
   }else requireToken();
   let result={};
   if(kind==='list')result={files:await files()};
-  else if(kind==='restore'){lastReadSource={id:argument,state:await download(argument),automatic:false,account:data().email};result={payload:lastReadSource};}
+  else if(kind==='restore'){await sourceReady;lastReadSource={id:argument,state:await download(argument),automatic:false,account:data().email};result={payload:lastReadSource};}
   else if(kind==='prepare-backup'){localRaw();let options;try{options=argument?JSON.parse(argument):{};}catch{throw failure(SPLocale.t('Opção de backup inválida.'));}result={payload:await preflight(await files(true),options.enable===true)};}
   else if(kind==='backup-confirm')result={payload:await confirm(argument)};
   else if(kind==='check'){const latest=await files(true);commit({hasRemote:!!latest});result={payload:latest?await stage(latest):null};}
@@ -360,18 +366,18 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
  }
  async function automatic(){
   if(busy||!active()||win.navigator?.onLine===false||!data().connected||!tokenValid()||!data().autoBackup)return;
-  await confirmationTask;await observe();
+  await sourceReady;await confirmationTask;await observe();
   if(busy||disposed||!active()||!tokenValid()||data().needsReview||data().backupBlocked)return;
   const cleanupOnly=!data().backupPending&&data().backupCleanupPending&&now()-data().lastCleanupAttemptAt>=60000;
   if(!cleanupOnly&&(!data().backupPending||now()<due()))return;
   busy=true;let payload=null;emit('progress');
   try{
    commit({lastAutoAttemptAt:now()});const latest=await files(true),head=latest?.id||'';
-   if(!active()||!tokenValid())return;
+   if(disposed||!canWrite()||!data().connected||!data().autoBackup||!tokenValid())return;
    if(latest&&!await recognized(latest)&&head!==data().approvedRemoteId){payload=await stage(latest,!data().autoRead);return;}
    const raw=localRaw(),state=snapshot(raw,now()),index=await backupContentIndex(state),hash=index.stateHash;
    if(index.hasProtectedData&&(!latest||hash!==data().lastConfirmedHash)){
-    const current=await files(true);if(!active()||!tokenValid())return;
+    const current=await files(true);if(disposed||!canWrite()||!data().connected||!data().autoBackup||!tokenValid())return;
     if((current?.id||'')!==head){if(current)payload=await stage(current,!data().autoRead);return;}
     if(raw!==stateRaw())return;await upload(state,current);
    }else if(latest&&data().backupCleanupPending)await cleanupBackups(head);
@@ -385,7 +391,8 @@ export function createBrowserDrive({getState,saveState,canWrite=()=>true,environ
   if(!d.connected||receipt.account!==d.email||!validId(receipt.id)||!['restored','current','kept-local'].includes(receipt.outcome))return false;validateIndex(receipt.local);validateIndex(receipt.remote);
   const incoming=record.pending?.id===receipt.id&&record.pending.account===d.email?record.pending:lastReadSource?.id===receipt.id&&lastReadSource.account===d.email?lastReadSource:null;
   commit({lastReadId:receipt.id,lastReadAt:now(),lastReadOutcome:receipt.outcome,...(receipt.outcome==='restored'?{lastRestoredAt:now()}:{}),...(incoming?{needsReview:false,approvedRemoteId:receipt.id}:{})},{baseline:{account:d.email,id:receipt.id,local:receipt.local,remote:receipt.remote},...(incoming?{pending:null}:{})});
-  if(incoming){confirmationTask=remember(incoming.id,incoming.state,incoming.at||now(),false,receipt).then(()=>observe()).catch(fail);}else void observe();return true;
+  const flushMerged=()=>{if(!disposed&&data().backupPending&&data().autoBackup&&data().connected&&!data().needsReview&&!data().backupBlocked){if(data().lastAutoAttemptAt)commit({lastAutoAttemptAt:0});schedule();void automatic();}};
+  if(incoming){confirmationTask=remember(incoming.id,incoming.state,incoming.at||now(),false,receipt).then(()=>observe()).then(flushMerged).catch(fail);}else void observe().then(flushMerged);return true;
  }catch(e){fail(e);return false;}}
  const onForeground=()=>{committedRaw=null;if(active()){startAuthorization();void observe();schedule();void automatic();}else schedule();};
  const onStorage=event=>{
