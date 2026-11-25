@@ -1,3 +1,7 @@
+# Atualização shell 20261125.1 (SEO)
+
+Metadados descritivos (`<title>` e `<meta name="description">`) e diretiva `<meta name="robots" content="noindex, follow">` adicionados em `index.html`, concentrando o ranqueamento na página oficial [https://seprepareapp.com.br/](https://seprepareapp.com.br/).
+
 # Atualização 1.2.0 — shell 20261123.3
 
 Consolida Entrevistas no Editor/Apresentação (catálogo local de 146 perguntas em 12 áreas e 4 idiomas, botão inteligente `+ Pontos sugeridos` com rolagem, modo Manual/Automático, Ajustes sob demanda e correção de autosave), filtro compacto de categorias na linha da 1ª seção do Caderno, botão de ocultar barra de ferramentas no modo expandido (com botão translúcido e retorno em 2 puxadas), Marcar tempo com seleção Pelo ritmo/Tempo manual (segurar altera), edição no selo da margem, cálculo cumulativo, ativação imediata do 1º selo visível (verde em folga, vermelho apenas no atraso) e versão alinhada para `1.2.0`, preservando os rótulos em linha única e o editor expandido limpo do shell `20261121.1`.
